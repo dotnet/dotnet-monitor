@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    internal static class Utilities
+    public static class Utilities
     {
         public const string ArtifactType_Dump = "dump";
         public const string ArtifactType_GCDump = "gcdump";
@@ -40,12 +40,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             return scope;
         }
 
-        public static ProcessKey? GetProcessKey(int? pid, Guid? uid, string name)
+        public static ProcessKey? GetProcessKey(int? pid, Guid? uid, string? name)
         {
             return (!pid.HasValue && !uid.HasValue && string.IsNullOrEmpty(name)) ? null : new ProcessKey(pid, uid, name);
         }
 
-        public static ISet<string> SplitTags(string tags)
+        public static ISet<string> SplitTags(string? tags)
         {
             if (string.IsNullOrEmpty(tags))
             {

@@ -29,8 +29,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                 {
                     builder.Clear();
                     builder.Append(Indent);
-                    BuildFrame(builder, stackResult.NameCache, frame);
-                    await writer.WriteLineAsync(builder, token);
+                    if (BuildFrame(builder, stackResult.NameCache, frame))
+                    {
+                        await writer.WriteLineAsync(builder, token);
+                    }
                 }
                 await writer.WriteLineAsync();
             }
@@ -42,14 +44,20 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
 #endif
         }
 
-        private static void BuildFrame(StringBuilder builder, NameCache cache, CallStackFrame frame)
+        /// <returns>True if the frame should be included in the stack trace.</returns>
+        private static bool BuildFrame(StringBuilder builder, NameCache cache, CallStackFrame frame)
         {
             if (frame.FunctionId == 0)
             {
                 builder.Append(NativeFrame);
             }
-            else if (cache.FunctionData.TryGetValue(frame.FunctionId, out FunctionData functionData))
+            else if (cache.FunctionData.TryGetValue(frame.FunctionId, out FunctionData? functionData))
             {
+                if (StackUtilities.ShouldHideFunctionFromStackTrace(cache, functionData))
+                {
+                    return false;
+                }
+
                 builder.Append(NameFormatter.GetModuleName(cache, functionData.ModuleId));
                 builder.Append(ModuleSeparator);
                 NameFormatter.BuildTypeName(builder, cache, functionData);
@@ -61,6 +69,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             {
                 builder.Append(UnknownFunction);
             }
+
+            return true;
         }
     }
 }

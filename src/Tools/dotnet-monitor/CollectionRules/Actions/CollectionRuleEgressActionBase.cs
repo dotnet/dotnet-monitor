@@ -15,18 +15,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
     {
         protected IServiceProvider ServiceProvider { get; }
 
-        protected EgressOperationStore EgressOperationStore { get; }
+        protected IEgressOperationStore EgressOperationStore { get; }
 
         protected CollectionRuleEgressActionBase(IServiceProvider serviceProvider, IProcessInfo processInfo, TOptions options)
             : base(processInfo, options)
         {
             ServiceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-            EgressOperationStore = ServiceProvider.GetRequiredService<EgressOperationStore>();
+            EgressOperationStore = ServiceProvider.GetRequiredService<IEgressOperationStore>();
         }
 
-        protected abstract EgressOperation CreateArtifactOperation(CollectionRuleMetadata collectionRuleMetadata);
+        protected abstract EgressOperation CreateArtifactOperation(CollectionRuleMetadata? collectionRuleMetadata);
 
-        protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(CollectionRuleMetadata collectionRuleMetadata, CancellationToken token)
+        protected override async Task<CollectionRuleActionResult> ExecuteCoreAsync(CollectionRuleMetadata? collectionRuleMetadata, CancellationToken token)
         {
             EgressOperation egressOperation = CreateArtifactOperation(collectionRuleMetadata);
             Task<ExecutionResult<EgressResult>> executeTask = EgressOperationStore.ExecuteOperation(egressOperation);

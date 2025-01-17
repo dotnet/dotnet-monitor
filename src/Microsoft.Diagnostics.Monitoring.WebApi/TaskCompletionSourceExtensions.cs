@@ -20,7 +20,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         /// </remarks>
         public static async Task<T> WithCancellation<T>(this TaskCompletionSource<T> source, CancellationToken token)
         {
-            using (token.Register(source => ((TaskCompletionSource<T>)source).TrySetCanceled(token), source))
+            using (token.Register(() => source.TrySetCanceled(token)))
             {
                 return await source.Task.ConfigureAwait(false);
             }
@@ -28,7 +28,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public static async Task WithCancellation(this TaskCompletionSource source, CancellationToken token)
         {
-            using (token.Register(source => ((TaskCompletionSource)source).TrySetCanceled(token), source))
+            using (token.Register(() => source.TrySetCanceled(token)))
             {
                 await source.Task.ConfigureAwait(false);
             }

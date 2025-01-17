@@ -16,8 +16,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
     internal class MonitorApiKeyConfiguration : AuthenticationSchemeOptions
     {
         public bool Configured { get; set; }
-        public string Subject { get; set; }
-        public SecurityKey PublicKey { get; set; }
-        public IEnumerable<ValidationResult> ValidationErrors { get; set; }
+        public string? Subject { get; set; }
+        public SecurityKey? PublicKey { get; set; }
+        public IEnumerable<ValidationResult>? ValidationErrors { get; set; }
+        public string? Issuer { get; set; }
     }
 }

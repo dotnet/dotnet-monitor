@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi%exceptions)
-
 # Exceptions History - Get
 
 Captures a history of first chance exceptions that were thrown in the specified process.
@@ -94,8 +91,6 @@ System.InvalidOperationException: Operation is not valid due to the current stat
 First chance exception at 2023-07-13T21:46:18.7530773Z
 System.ObjectDisposedException: Cannot access a disposed object.
 Object name: 'System.Net.Sockets.NetworkStream'.
-   at System.ThrowHelper.ThrowObjectDisposedException(System.Object)
-   at System.ObjectDisposedException.ThrowIf(System.Boolean,System.Object)
    at System.Net.Sockets.NetworkStream.ReadAsync(System.Memory`1[[System.Byte, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]][System.Byte],System.Threading.CancellationToken)
    at System.Net.Http.HttpConnection+<<EnsureReadAheadTaskHasStarted>g__ReadAheadWithZeroByteReadAsync|43_0>d.MoveNext()
    at System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1+AsyncStateMachineBox`1[System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1+AsyncStateMachineBox`1+TResult,System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1+AsyncStateMachineBox`1+TStateMachine].ExecutionContextCallback(System.Object)
@@ -126,8 +121,56 @@ Accept: application/x-ndjson
 HTTP/1.1 200 OK
 Content-Type: application/x-ndjson
 
-{"id":2,"timestamp":"2023-07-13T21:45:11.8056355Z","typeName":"System.InvalidOperationException","moduleName":"System.Private.CoreLib.dll","message":"Operation is not valid due to the current state of the object.","innerExceptions":[],"stack":{"threadId":4768,"threadName":null,"frames":[{"methodName":"MoveNext","parameterTypes":[],"typeName":"WebApplication3.Pages.IndexModel\u002B\u003CGetData\u003Ed__3","moduleName":"WebApplication3.dll"},{"methodName":"RunInternal","parameterTypes":["System.Threading.ExecutionContext","System.Threading.ContextCallback","System.Object"],"typeName":"System.Threading.ExecutionContext","moduleName":"System.Private.CoreLib.dll"},{"methodName":"MoveNext","parameterTypes":["System.Threading.Thread"],"typeName":"System.Runtime.CompilerServices.AsyncTaskMethodBuilder\u00601\u002BAsyncStateMachineBox\u00601[System.Runtime.CompilerServices.AsyncTaskMethodBuilder\u00601\u002BAsyncStateMachineBox\u00601\u002BTResult,System.Runtime.CompilerServices.AsyncTaskMethodBuilder\u00601\u002BAsyncStateMachineBox\u00601\u002BTStateMachine]","moduleName":"System.Private.CoreLib.dll"},{"methodName":"\u003COutputCorrelationEtwEvent\u003Eb__6_0","parameterTypes":["System.Action","System.Threading.Tasks.Task"],"typeName":"System.Runtime.CompilerServices.YieldAwaitable\u002BYieldAwaiter\u002B\u003C\u003Ec","moduleName":"System.Private.CoreLib.dll"},{"methodName":"Dispatch","parameterTypes":[],"typeName":"System.Threading.ThreadPoolWorkQueue","moduleName":"System.Private.CoreLib.dll"},{"methodName":"WorkerThreadStart","parameterTypes":[],"typeName":"System.Threading.PortableThreadPool\u002BWorkerThread","moduleName":"System.Private.CoreLib.dll"}]}}
-{"id":3,"timestamp":"2023-07-13T21:46:18.7530773Z","typeName":"System.ObjectDisposedException","moduleName":"System.Private.CoreLib.dll","message":"Cannot access a disposed object.\r\nObject name: \u0027System.Net.Sockets.NetworkStream\u0027.","innerExceptions":[],"stack":{"threadId":15912,"threadName":null,"frames":[{"methodName":"ThrowObjectDisposedException","parameterTypes":["System.Object"],"typeName":"System.ThrowHelper","moduleName":"System.Private.CoreLib.dll"},{"methodName":"ThrowIf","parameterTypes":["System.Boolean","System.Object"],"typeName":"System.ObjectDisposedException","moduleName":"System.Private.CoreLib.dll"},{"methodName":"ReadAsync","parameterTypes":["System.Memory\u00601[[System.Byte, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]][System.Byte]","System.Threading.CancellationToken"],"typeName":"System.Net.Sockets.NetworkStream","moduleName":"System.Net.Sockets.dll"},{"methodName":"MoveNext","parameterTypes":[],"typeName":"System.Net.Http.HttpConnection\u002B\u003C\u003CEnsureReadAheadTaskHasStarted\u003Eg__ReadAheadWithZeroByteReadAsync|43_0\u003Ed","moduleName":"System.Net.Http.dll"},{"methodName":"ExecutionContextCallback","parameterTypes":["System.Object"],"typeName":"System.Runtime.CompilerServices.AsyncTaskMethodBuilder\u00601\u002BAsyncStateMachineBox\u00601[System.Runtime.CompilerServices.AsyncTaskMethodBuilder\u00601\u002BAsyncStateMachineBox\u00601\u002BTResult,System.Runtime.CompilerServices.AsyncTaskMethodBuilder\u00601\u002BAsyncStateMachineBox\u00601\u002BTStateMachine]","moduleName":"System.Private.CoreLib.dll"},{"methodName":"RunInternal","parameterTypes":["System.Threading.ExecutionContext","System.Threading.ContextCallback","System.Object"],"typeName":"System.Threading.ExecutionContext","moduleName":"System.Private.CoreLib.dll"},{"methodName":"MoveNext","parameterTypes":["System.Threading.Thread"],"typeName":"System.Runtime.CompilerServices.AsyncTaskMethodBuilder\u00601\u002BAsyncStateMachineBox\u00601[System.Runtime.CompilerServices.AsyncTaskMethodBuilder\u00601\u002BAsyncStateMachineBox\u00601\u002BTResult,System.Runtime.CompilerServices.AsyncTaskMethodBuilder\u00601\u002BAsyncStateMachineBox\u00601\u002BTStateMachine]","moduleName":"System.Private.CoreLib.dll"},{"methodName":"MoveNext","parameterTypes":[],"typeName":"System.Runtime.CompilerServices.AsyncTaskMethodBuilder\u00601\u002BAsyncStateMachineBox\u00601[System.Runtime.CompilerServices.AsyncTaskMethodBuilder\u00601\u002BAsyncStateMachineBox\u00601\u002BTResult,System.Runtime.CompilerServices.AsyncTaskMethodBuilder\u00601\u002BAsyncStateMachineBox\u00601\u002BTStateMachine]","moduleName":"System.Private.CoreLib.dll"},{"methodName":"\u003C.cctor\u003Eb__176_0","parameterTypes":["System.UInt32","System.UInt32","System.Threading.NativeOverlapped*"],"typeName":"System.Net.Sockets.SocketAsyncEventArgs\u002B\u003C\u003Ec","moduleName":"System.Net.Sockets.dll"},{"methodName":"Invoke","parameterTypes":["System.Threading.PortableThreadPool\u002BIOCompletionPoller\u002BEvent"],"typeName":"System.Threading.PortableThreadPool\u002BIOCompletionPoller\u002BCallback","moduleName":"System.Private.CoreLib.dll"},{"methodName":"System.Threading.IThreadPoolWorkItem.Execute","parameterTypes":[],"typeName":"System.Threading.ThreadPoolTypedWorkItemQueue\u00602[System.Threading.ThreadPoolTypedWorkItemQueue\u00602\u002BT,System.Threading.ThreadPoolTypedWorkItemQueue\u00602\u002BTCallback]","moduleName":"System.Private.CoreLib.dll"},{"methodName":"Dispatch","parameterTypes":[],"typeName":"System.Threading.ThreadPoolWorkQueue","moduleName":"System.Private.CoreLib.dll"},{"methodName":"WorkerThreadStart","parameterTypes":[],"typeName":"System.Threading.PortableThreadPool\u002BWorkerThread","moduleName":"System.Private.CoreLib.dll"}]}}
+{
+  "id": 2,
+  "timestamp": "2023-07-13T21:45:11.8056355Z",
+  "typeName": "System.InvalidOperationException",
+  "moduleName": "System.Private.CoreLib.dll",
+  "message": "Operation is not valid due to the current state of the object.",
+  "innerExceptions": [],
+  "stack": {
+    "threadId": 4768,
+    "threadName": null,
+    "frames": [
+      {
+        "methodName": "MoveNext",
+        "methodToken": 100663639,
+        "parameterTypes": [],
+        "typeName": "WebApplication3.Pages.IndexModel\u002B\u003CGetData\u003Ed__3",
+        "moduleName": "WebApplication3.dll",
+        "moduleVersionId": "bf769014-c2e2-496a-93b7-76fbbcd04be5",
+        "hidden": false
+      },
+      ... // see stacks.md
+    ]
+  }
+}
+{
+  "id": 3,
+  "timestamp": "2023-07-13T21:46:18.7530773Z",
+  "typeName": "System.ObjectDisposedException",
+  "moduleName": "System.Private.CoreLib.dll",
+  "message": "Cannot access a disposed object.\r\nObject name: \u0027System.Net.Sockets.NetworkStream\u0027.",
+  "innerExceptions": [],
+  "stack": {
+    "threadId": 15912,
+    "threadName": null,
+    "frames": [
+      {
+        "methodName": "ThrowObjectDisposedException",
+        "methodToken": 100663639,
+        "parameterTypes": [
+          "System.Object"
+        ],
+        "typeName": "System.ThrowHelper",
+        "moduleName": "System.Private.CoreLib.dll",
+        "moduleVersionId": "bf769014-c2e2-496a-93b7-76fbbcd04be5",
+        "hidden": true
+      },
+      ... // see stacks.md
+    ]
+  }
+}
 ```
 
 ## Supported Runtimes

@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fconfiguration%2Fdefault-process-configuration)
-
 # Default Process Configuration
 
 Default process configuration is used to determine which process is used for metrics and in situations where the process is not specified in the query to retrieve an artifact. A process must match all the specified filters. If a `Key` is not specified, the default is `ProcessId`.
@@ -41,7 +38,7 @@ Optionally, a shorthand format allows you to omit the `Key` and `Value` terms an
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   DefaultProcess__Filters__0__Key: "ProcessName"
   DefaultProcess__Filters__0__Value: "iisexpress"
@@ -50,7 +47,7 @@ Optionally, a shorthand format allows you to omit the `Key` and `Value` terms an
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_DefaultProcess__Filters__0__Key
     value: "ProcessName"
@@ -77,7 +74,7 @@ Optionally, a shorthand format allows you to omit the `Key` and `Value` terms an
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   DefaultProcess__Filters__0__ProcessName: "iisexpress"
   ```
@@ -85,7 +82,7 @@ Optionally, a shorthand format allows you to omit the `Key` and `Value` terms an
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_DefaultProcess__Filters__0__ProcessName
     value: "iisexpress"
@@ -111,7 +108,7 @@ Optionally, a shorthand format allows you to omit the `Key` and `Value` terms an
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   DefaultProcess__Filters__0__Key: "ProcessId"
   DefaultProcess__Filters__0__Value: "1"
@@ -120,7 +117,7 @@ Optionally, a shorthand format allows you to omit the `Key` and `Value` terms an
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_DefaultProcess__Filters__0__Key
     value: "ProcessId"
@@ -147,7 +144,7 @@ Optionally, a shorthand format allows you to omit the `Key` and `Value` terms an
 
 <details>
   <summary>Kubernetes ConfigMap</summary>
-  
+
   ```yaml
   DefaultProcess__Filters__0__ProcessId: "1"
   ```
@@ -155,7 +152,7 @@ Optionally, a shorthand format allows you to omit the `Key` and `Value` terms an
 
 <details>
   <summary>Kubernetes Environment Variables</summary>
-  
+
   ```yaml
   - name: DotnetMonitor_DefaultProcess__Filters__0__ProcessId
     value: "1"

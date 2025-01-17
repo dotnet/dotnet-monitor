@@ -35,7 +35,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 
         protected override MonitoringSourceConfiguration CreateConfiguration()
         {
-            return new EventPipeProviderSourceConfiguration(requestRundown: false, bufferSizeInMB: 64, new[]
+            return new EventPipeProviderSourceConfiguration(rundownKeyword: 0, bufferSizeInMB: 64, new[]
             {
                 new EventPipeProvider(ExceptionEvents.SourceName, EventLevel.Informational, (long)EventKeywords.All)
             });
@@ -63,7 +63,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                         traceEvent.GetPayload<uint>(NameIdentificationEvents.ClassDescPayloads.Token),
                         traceEvent.GetPayload<ulong>(NameIdentificationEvents.ClassDescPayloads.ModuleId),
                         traceEvent.GetPayload<ClassFlags>(NameIdentificationEvents.ClassDescPayloads.Flags),
-                        traceEvent.GetPayload<ulong[]>(NameIdentificationEvents.ClassDescPayloads.TypeArgs)
+                        traceEvent.GetPayload<ulong[]>(NameIdentificationEvents.ClassDescPayloads.TypeArgs),
+                        traceEvent.GetBoolPayload(NameIdentificationEvents.ClassDescPayloads.StackTraceHidden)
                         );
                     break;
                 case "ExceptionGroup":
@@ -94,17 +95,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 case "FunctionDescription":
                     _cache.AddFunction(
                         traceEvent.GetPayload<ulong>(NameIdentificationEvents.FunctionDescPayloads.FunctionId),
+                        traceEvent.GetPayload<uint>(NameIdentificationEvents.FunctionDescPayloads.MethodToken),
                         traceEvent.GetPayload<ulong>(NameIdentificationEvents.FunctionDescPayloads.ClassId),
                         traceEvent.GetPayload<uint>(NameIdentificationEvents.FunctionDescPayloads.ClassToken),
                         traceEvent.GetPayload<ulong>(NameIdentificationEvents.FunctionDescPayloads.ModuleId),
                         traceEvent.GetPayload<string>(NameIdentificationEvents.FunctionDescPayloads.Name),
                         traceEvent.GetPayload<ulong[]>(NameIdentificationEvents.FunctionDescPayloads.TypeArgs),
-                        traceEvent.GetPayload<ulong[]>(NameIdentificationEvents.FunctionDescPayloads.ParameterTypes)
+                        traceEvent.GetPayload<ulong[]>(NameIdentificationEvents.FunctionDescPayloads.ParameterTypes),
+                        traceEvent.GetBoolPayload(NameIdentificationEvents.FunctionDescPayloads.StackTraceHidden)
                         );
                     break;
                 case "ModuleDescription":
                     _cache.AddModule(
                         traceEvent.GetPayload<ulong>(NameIdentificationEvents.ModuleDescPayloads.ModuleId),
+                        traceEvent.GetPayload<Guid>(NameIdentificationEvents.ModuleDescPayloads.ModuleVersionId),
                         traceEvent.GetPayload<string>(NameIdentificationEvents.ModuleDescPayloads.Name)
                         );
                     break;
@@ -121,7 +125,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                         traceEvent.GetPayload<uint>(NameIdentificationEvents.TokenDescPayloads.Token),
                         traceEvent.GetPayload<uint>(NameIdentificationEvents.TokenDescPayloads.OuterToken),
                         traceEvent.GetPayload<string>(NameIdentificationEvents.TokenDescPayloads.Name),
-                        traceEvent.GetPayload<string>(NameIdentificationEvents.TokenDescPayloads.Namespace)
+                        traceEvent.GetPayload<string>(NameIdentificationEvents.TokenDescPayloads.Namespace),
+                        traceEvent.GetBoolPayload(NameIdentificationEvents.TokenDescPayloads.StackTraceHidden)
                         );
                     break;
                 case "Flush":

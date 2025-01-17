@@ -17,7 +17,7 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
             {
                 if (null != property.GetCustomAttribute<ExperimentalAttribute>())
                 {
-                    string description = context.Schema.Properties[property.Name].Description;
+                    string? description = context.Schema.Properties[property.Name].Description;
                     if (string.IsNullOrEmpty(description))
                     {
                         description = ExperimentalPrefix;

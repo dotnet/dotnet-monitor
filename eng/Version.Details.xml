@@ -4,17 +4,17 @@
       <Uri>https://dev.azure.com/dnceng/internal/_git/dotnet-aspnetcore</Uri>
       <Sha>88ec3bc3f37e76fbcc932a25f9f0c1c29fe2b343</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="8.0.510501">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="9.0.0-preview.25064.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
-      <Sha>8c08c89a0643d31db91e119b1adb463be3e0ffe5</Sha>
+      <Sha>6ab43b9cba184783b40e24a6c7d09d19b7eda490</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="8.0.510501">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="9.0.0-preview.25064.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
-      <Sha>8c08c89a0643d31db91e119b1adb463be3e0ffe5</Sha>
+      <Sha>6ab43b9cba184783b40e24a6c7d09d19b7eda490</Sha>
     </Dependency>
-    <Dependency Name="System.CommandLine" Version="2.0.0-beta4.24126.1">
+    <Dependency Name="System.CommandLine" Version="2.0.0-beta4.24528.1">
       <Uri>https://github.com/dotnet/command-line-api</Uri>
-      <Sha>5ea97af07263ea3ef68a18557c8aa3f7e3200bda</Sha>
+      <Sha>feb61c7f328a2401d74f4317b39d02126cfdfe24</Sha>
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
@@ -22,33 +22,33 @@
       <Uri>https://github.com/dotnet/roslyn-analyzers</Uri>
       <Sha>abef8ced132657943b7150f01a308e2199a17d5d</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="8.0.0-beta.24170.6">
+    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="8.0.0-beta.25060.1">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>8e3e00a76f467cc262dc14f6466ab884b2c4eb96</Sha>
+      <Sha>c255aae7f2b128fa20a4441f0e192c3c53561621</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.Build.Tasks.Archives" Version="8.0.0-beta.24170.6">
+    <Dependency Name="Microsoft.DotNet.Build.Tasks.Archives" Version="8.0.0-beta.25060.1">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>8e3e00a76f467cc262dc14f6466ab884b2c4eb96</Sha>
+      <Sha>c255aae7f2b128fa20a4441f0e192c3c53561621</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.CodeAnalysis" Version="8.0.0-beta.24170.6">
+    <Dependency Name="Microsoft.DotNet.CodeAnalysis" Version="8.0.0-beta.25060.1">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>8e3e00a76f467cc262dc14f6466ab884b2c4eb96</Sha>
+      <Sha>c255aae7f2b128fa20a4441f0e192c3c53561621</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.Helix.Sdk" Version="8.0.0-beta.24170.6">
+    <Dependency Name="Microsoft.DotNet.Helix.Sdk" Version="8.0.0-beta.25060.1">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>8e3e00a76f467cc262dc14f6466ab884b2c4eb96</Sha>
+      <Sha>c255aae7f2b128fa20a4441f0e192c3c53561621</Sha>
     </Dependency>
     <Dependency Name="Microsoft.Dotnet.Sdk.Internal" Version="8.0.205-servicing.24204.5">
       <Uri>https://github.com/dotnet/installer</Uri>
       <Sha>8ca08e05637bb16dfb5cc967b0c3f8047ca988c2</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="8.0.0-beta.24170.6">
+    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="8.0.0-beta.25060.1">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>8e3e00a76f467cc262dc14f6466ab884b2c4eb96</Sha>
+      <Sha>c255aae7f2b128fa20a4441f0e192c3c53561621</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.FileFormats" Version="1.0.517001">
-      <Uri>https://github.com/dotnet/symstore</Uri>
-      <Sha>3a8a570f6b53a077bcc62b8224089f3d23236c13</Sha>
+    <Dependency Name="Microsoft.FileFormats" Version="1.0.606401">
+      <Uri>https://github.com/dotnet/diagnostics</Uri>
+      <Sha>6ab43b9cba184783b40e24a6c7d09d19b7eda490</Sha>
     </Dependency>
     <Dependency Name="Microsoft.NETCore.App.Runtime.win-x64" Version="8.0.3" CoherentParentDependency="Microsoft.Dotnet.Sdk.Internal">
       <Uri>https://dev.azure.com/dnceng/internal/_git/dotnet-runtime</Uri>

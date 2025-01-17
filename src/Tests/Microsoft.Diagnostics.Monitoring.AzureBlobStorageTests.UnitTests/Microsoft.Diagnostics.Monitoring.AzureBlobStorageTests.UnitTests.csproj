@@ -6,10 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\ContentTypes.cs" Link="ContentTypes.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\Extensions\AzureBlobStorage\AzureBlobStorage.csproj" />
     <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.Extension.Common\Microsoft.Diagnostics.Monitoring.Extension.Common.csproj" />
     <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.TestCommon\Microsoft.Diagnostics.Monitoring.TestCommon.csproj" />

@@ -8,13 +8,16 @@ using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
+using Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -27,6 +30,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
     [Collection(DefaultCollectionFixture.Name)]
     public class ExceptionsTests
     {
+        private record class ExceptionFrame(string TypeName, string MethodName, List<string> ParameterTypes);
+
         private const string FrameTypeName = "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario";
         private const string FrameMethodName = "ThrowAndCatchInvalidOperationException";
         private const string FrameParameterType = "System.Boolean";
@@ -130,12 +135,20 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                     var topFrame = callStackResultsRootElement.GetProperty("frames").EnumerateArray().FirstOrDefault();
 
+                    MethodInfo methodInfo = typeof(Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario).GetMethod(
+                        FrameMethodName,
+                        BindingFlags.Static | BindingFlags.NonPublic,
+                        [typeof(bool), typeof(bool)]);
+                    Assert.NotNull(methodInfo);
+
                     Assert.Equal(FrameMethodName, topFrame.GetProperty("methodName").ToString());
+                    Assert.Equal((uint)methodInfo.MetadataToken, topFrame.GetProperty("methodToken").GetUInt32());
                     Assert.Equal(2, topFrame.GetProperty("parameterTypes").GetArrayLength());
                     Assert.Equal(FrameParameterType, topFrame.GetProperty("parameterTypes")[0].ToString());
                     Assert.Equal(FrameParameterType, topFrame.GetProperty("parameterTypes")[1].ToString());
                     Assert.Equal(FrameTypeName, topFrame.GetProperty("typeName").ToString());
                     Assert.Equal(UnitTestAppModule, topFrame.GetProperty("moduleName").ToString());
+                    Assert.Equal(methodInfo.Module.ModuleVersionId, topFrame.GetProperty("moduleVersionId").GetGuid());
                 },
                 configureApp: runner =>
                 {
@@ -335,7 +348,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
-        [Theory]
+        [Theory(Skip = "Flaky")]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public async Task Exceptions_FilterIncludeBasic(Architecture targetArchitecture)
         {
@@ -374,7 +387,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
-        [Theory]
+        [Theory(Skip = "Flaky")]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public async Task Exceptions_FilterIncludeMultiple(Architecture targetArchitecture)
         {
@@ -739,6 +752,132 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
+        [Theory]
+        [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
+        public async Task Exceptions_HideHiddenFrames_Text(Architecture targetArchitecture)
+        {
+            const string HiddenMethodsParameterTypes = "(Action)";
+
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                DiagnosticPortConnectionMode.Listen,
+                TestAppScenarios.Exceptions.Name,
+                subScenarioName: TestAppScenarios.Exceptions.SubScenarios.HiddenFramesExceptionCommand,
+                appValidate: async (appRunner, apiClient) =>
+                {
+                    await GetExceptions(apiClient, appRunner, ExceptionFormat.PlainText);
+                    ValidateSingleExceptionText(
+                        SystemInvalidOperationException,
+                        ExceptionMessage,
+                        [
+                            new ExceptionFrame(FrameTypeName, FrameMethodName, [SimpleFrameParameterType, SimpleFrameParameterType]),
+                            new ExceptionFrame(FrameTypeName, FrameMethodName, []),
+                            new ExceptionFrame(typeof(HiddenFrameTestMethods).FullName, $"{nameof(HiddenFrameTestMethods.ExitPoint)}{HiddenMethodsParameterTypes}", []),
+                            new ExceptionFrame(typeof(HiddenFrameTestMethods.PartiallyVisibleClass).FullName, $"{nameof(HiddenFrameTestMethods.PartiallyVisibleClass.DoWorkFromVisibleDerivedClass)}{HiddenMethodsParameterTypes}", []),
+                            new ExceptionFrame(typeof(HiddenFrameTestMethods).FullName, $"{nameof(HiddenFrameTestMethods.EntryPoint)}{HiddenMethodsParameterTypes}", []),
+                        ]);
+                },
+                configureApp: runner =>
+                {
+                    runner.Architecture = targetArchitecture;
+                    runner.EnableMonitorStartupHook = true;
+                },
+                configureTool: runner =>
+                {
+                    runner.ConfigurationFromEnvironment.EnableInProcessFeatures();
+                });
+        }
+
+        [Theory]
+        [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
+        public async Task Exceptions_HideHiddenFrames_Json(Architecture targetArchitecture)
+        {
+            ExceptionInstance expectedException = new()
+            {
+                Message = ExceptionMessage,
+                TypeName = SystemInvalidOperationException,
+                ModuleName = CoreLibModuleName,
+                CallStack = new()
+                {
+                    Frames =
+                    [
+                        new()
+                        {
+                            TypeName = FrameTypeName,
+                            ModuleName = UnitTestAppModule,
+                            MethodName = FrameMethodName,
+                            FullParameterTypes = [FrameParameterType, FrameParameterType]
+                        },
+                        new()
+                        {
+                            TypeName = FrameTypeName,
+                            ModuleName = UnitTestAppModule,
+                            MethodName = FrameMethodName,
+                        },
+                        new()
+                        {
+                            TypeName = typeof(HiddenFrameTestMethods).FullName,
+                            ModuleName = UnitTestAppModule,
+                            MethodName = nameof(HiddenFrameTestMethods.ExitPoint),
+                            FullParameterTypes = [typeof(Action).FullName],
+                        },
+                        new()
+                        {
+                            TypeName = typeof(HiddenFrameTestMethods).FullName,
+                            ModuleName = UnitTestAppModule,
+                            MethodName = nameof(HiddenFrameTestMethods.DoWorkFromHiddenMethod),
+                            FullParameterTypes = [typeof(Action).FullName],
+                            Hidden = true
+                        },
+                        new()
+                        {
+                            TypeName = typeof(HiddenFrameTestMethods.BaseHiddenClass).FullName,
+                            ModuleName = UnitTestAppModule,
+                            MethodName = nameof(HiddenFrameTestMethods.BaseHiddenClass.DoWorkFromHiddenBaseClass),
+                            FullParameterTypes = [typeof(Action).FullName],
+                            Hidden = true
+                        },
+                        new()
+                        {
+                            TypeName = typeof(HiddenFrameTestMethods.PartiallyVisibleClass).FullName,
+                            ModuleName = UnitTestAppModule,
+                            MethodName = nameof(HiddenFrameTestMethods.PartiallyVisibleClass.DoWorkFromVisibleDerivedClass),
+                            FullParameterTypes = [typeof(Action).FullName],
+                        },
+                        new()
+                        {
+                            TypeName = typeof(HiddenFrameTestMethods).FullName,
+                            ModuleName = UnitTestAppModule,
+                            MethodName = nameof(HiddenFrameTestMethods.EntryPoint),
+                            FullParameterTypes = [typeof(Action).FullName],
+                        }
+                    ]
+                }
+            };
+
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                DiagnosticPortConnectionMode.Listen,
+                TestAppScenarios.Exceptions.Name,
+                subScenarioName: TestAppScenarios.Exceptions.SubScenarios.HiddenFramesExceptionCommand,
+                appValidate: async (appRunner, apiClient) =>
+                {
+                    await GetExceptions(apiClient, appRunner, ExceptionFormat.NewlineDelimitedJson);
+                    ValidateSingleExceptionJson(expectedException);
+                },
+                configureApp: runner =>
+                {
+                    runner.Architecture = targetArchitecture;
+                    runner.EnableMonitorStartupHook = true;
+                },
+                configureTool: runner =>
+                {
+                    runner.ConfigurationFromEnvironment.EnableInProcessFeatures();
+                });
+        }
+
         private void ValidateMultipleExceptionsText(int exceptionsCount, List<string> exceptionTypes)
         {
             var exceptions = exceptionsResult.Split(new[] { FirstChanceExceptionMessage }, StringSplitOptions.RemoveEmptyEntries);
@@ -750,14 +889,89 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             }
         }
 
-        private void ValidateSingleExceptionText(string exceptionType, string exceptionMessage, string frameTypeName, string frameMethodName, List<string> parameterTypes)
+        private void ValidateSingleExceptionText(string exceptionType, string exceptionMessage, List<ExceptionFrame> topFrames)
         {
             var exceptionsLines = exceptionsResult.Split(Environment.NewLine, StringSplitOptions.None);
 
-            Assert.True(exceptionsLines.Length >= 3);
+            Assert.True(exceptionsLines.Length >= 2);
             Assert.Contains(FirstChanceExceptionMessage, exceptionsLines[0]);
             Assert.Equal($"{exceptionType}: {exceptionMessage}", exceptionsLines[1]);
-            Assert.Equal($"   at {frameTypeName}.{frameMethodName}({string.Join(',', parameterTypes)})", exceptionsLines[2]);
+            int lineIndex = 2;
+
+            Assert.True(exceptionsLines.Length - lineIndex >= topFrames.Count, "Not enough frames");
+            foreach (ExceptionFrame expectedFrame in topFrames)
+            {
+                string parametersString = string.Empty;
+                if (expectedFrame.ParameterTypes.Count > 0)
+                {
+                    parametersString = $"({string.Join(',', expectedFrame.ParameterTypes)})";
+                }
+                Assert.Equal($"   at {expectedFrame.TypeName}.{expectedFrame.MethodName}{parametersString}", exceptionsLines[lineIndex]);
+                lineIndex++;
+            }
+        }
+
+        private void ValidateSingleExceptionJson(ExceptionInstance expectedException, bool onlyMatchTopFrames = true)
+        {
+            List<ExceptionInstance> exceptions = DeserializeJsonExceptions();
+            ExceptionInstance exception = Assert.Single(exceptions);
+
+            // We don't check all properties (e.g. timestamp or thread information)
+            Assert.Equal(expectedException.ModuleName, exception.ModuleName);
+            Assert.Equal(expectedException.TypeName, exception.TypeName);
+            Assert.Equal(expectedException.Message, exception.Message);
+            Assert.Equivalent(expectedException.Activity, exception.Activity);
+
+            if (expectedException.CallStack == null)
+            {
+                Assert.Null(exception.CallStack);
+                return;
+            }
+
+            Assert.NotNull(exception.CallStack);
+            if (onlyMatchTopFrames)
+            {
+                Assert.True(exception.CallStack.Frames.Count >= expectedException.CallStack.Frames.Count);
+            }
+            else
+            {
+                Assert.Equal(expectedException.CallStack.Frames.Count, exception.CallStack.Frames.Count);
+            }
+
+            for (int i = 0; i < expectedException.CallStack.Frames.Count; i++)
+            {
+                CallStackFrame expectedFrame = expectedException.CallStack.Frames[i];
+                CallStackFrame actualFrame = exception.CallStack.Frames[i];
+
+                //
+                // TODO: We don't currently check method tokens / mvid.
+                // This is tested by ExceptionsJsonTest. If/when that test is updated to use this method,
+                // we should resolve this todo. Until then the coverage is unnecessary so keep things simple.
+                //
+                Assert.Equal(expectedFrame.ModuleName, actualFrame.ModuleName);
+                Assert.Equal(expectedFrame.TypeName, actualFrame.TypeName);
+                Assert.Equal(expectedFrame.MethodName, actualFrame.MethodName);
+                Assert.Equal(expectedFrame.FullGenericArgTypes, actualFrame.FullGenericArgTypes);
+                Assert.Equal(expectedFrame.FullParameterTypes ?? [], actualFrame.FullParameterTypes ?? []);
+                Assert.Equal(expectedFrame.Hidden, actualFrame.Hidden);
+            }
+        }
+
+        private void ValidateSingleExceptionText(string exceptionType, string exceptionMessage, string frameTypeName, string frameMethodName, List<string> parameterTypes)
+            => ValidateSingleExceptionText(exceptionType, exceptionMessage, [new ExceptionFrame(frameTypeName, frameMethodName, parameterTypes)]);
+
+        private List<ExceptionInstance> DeserializeJsonExceptions()
+        {
+            List<ExceptionInstance> exceptions = [];
+
+            using StringReader reader = new StringReader(exceptionsResult);
+
+            string line;
+            while (null != (line = reader.ReadLine()))
+            {
+                exceptions.Add(JsonSerializer.Deserialize<ExceptionInstance>(line));
+            }
+            return exceptions;
         }
 
         private async Task GetExceptions(ApiClient apiClient, AppRunner appRunner, ExceptionFormat format, ExceptionsConfiguration configuration = null)

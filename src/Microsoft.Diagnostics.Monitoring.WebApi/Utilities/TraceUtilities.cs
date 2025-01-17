@@ -44,6 +44,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
                 configurations.Add(new MetricSourceConfiguration(options.GetIntervalSeconds(), defaultProviders));
             }
+            if (profile.HasFlag(Models.TraceProfile.GcCollect))
+            {
+                configurations.Add(new GcCollectConfiguration());
+            }
 
             return new AggregateSourceConfiguration(configurations.ToArray());
         }
@@ -54,7 +58,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             foreach (Models.EventPipeProvider providerModel in configurationProviders)
             {
-                if (!IntegerOrHexStringAttribute.TryParse(providerModel.Keywords, out long keywords, out string parseError))
+                if (!IntegerOrHexStringAttribute.TryParse(providerModel.Keywords, out long keywords, out string? parseError))
                 {
                     throw new InvalidOperationException(parseError);
                 }
@@ -69,7 +73,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             return new EventPipeProviderSourceConfiguration(
                 providers: providers.ToArray(),
-                requestRundown: requestRundown,
+                rundownKeyword: requestRundown ? EventPipeSession.DefaultRundownKeyword : 0,
                 bufferSizeInMB: bufferSizeInMB);
         }
     }

@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Exceptions
 
         DateTime Timestamp { get; }
 
-        CallStack CallStack { get; }
+        CallStack? CallStack { get; }
 
         ulong[] InnerExceptionIds { get; }
 

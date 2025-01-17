@@ -39,8 +39,8 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
             EgressArtifactSettings artifactSettings,
             CancellationToken token)
         {
-            IS3Storage client = null;
-            string uploadId = null;
+            IS3Storage? client = null;
+            string? uploadId = null;
             bool uploadDone = false;
             try
             {
@@ -70,7 +70,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
             }
             catch (AmazonS3Exception e)
             {
-                if (uploadId != null && !uploadDone)
+                if (client != null && uploadId != null && !uploadDone)
                     await client.AbortMultipartUploadAsync(uploadId, token);
                 throw CreateException(e.Message);
             }

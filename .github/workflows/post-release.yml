@@ -1,3 +1,4 @@
+name: 'Post release'
 run-name: '[${{ github.ref_name }}] Post release'
 
 on:

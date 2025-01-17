@@ -33,7 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
 
         protected override MonitoringSourceConfiguration CreateConfiguration()
         {
-            return new EventPipeProviderSourceConfiguration(requestRundown: false, bufferSizeInMB: 256, new[]
+            return new EventPipeProviderSourceConfiguration(rundownKeyword: 0, bufferSizeInMB: 256, new[]
             {
                 new EventPipeProvider(CallStackEvents.Provider, EventLevel.LogAlways)
             });
@@ -85,7 +85,22 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                 {
                     for (int i = 0; i < functionIds.Length; i++)
                     {
-                        stack.Frames.Add(new CallStackFrame { FunctionId = functionIds[i], Offset = offsets[i] });
+                        CallStackFrame stackFrame = new CallStackFrame
+                        {
+                            FunctionId = functionIds[i],
+                            Offset = offsets[i]
+                        };
+
+                        if (_result.NameCache.FunctionData.TryGetValue(stackFrame.FunctionId, out FunctionData? functionData))
+                        {
+                            stackFrame.MethodToken = functionData.MethodToken;
+                            if (_result.NameCache.ModuleData.TryGetValue(functionData.ModuleId, out ModuleData? moduleData))
+                            {
+                                stackFrame.ModuleVersionId = moduleData.ModuleVersionId;
+                            }
+                        }
+
+                        stack.Frames.Add(stackFrame);
                     }
                 }
             }
@@ -94,11 +109,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                 ulong id = action.GetPayload<ulong>(NameIdentificationEvents.FunctionDescPayloads.FunctionId);
                 var functionData = new FunctionData(
                     action.GetPayload<string>(NameIdentificationEvents.FunctionDescPayloads.Name),
+                    action.GetPayload<uint>(NameIdentificationEvents.FunctionDescPayloads.MethodToken),
                     action.GetPayload<ulong>(NameIdentificationEvents.FunctionDescPayloads.ClassId),
                     action.GetPayload<uint>(NameIdentificationEvents.FunctionDescPayloads.ClassToken),
                     action.GetPayload<ulong>(NameIdentificationEvents.FunctionDescPayloads.ModuleId),
                     action.GetPayload<ulong[]>(NameIdentificationEvents.FunctionDescPayloads.TypeArgs) ?? Array.Empty<ulong>(),
-                    action.GetPayload<ulong[]>(NameIdentificationEvents.FunctionDescPayloads.ParameterTypes) ?? Array.Empty<ulong>()
+                    action.GetPayload<ulong[]>(NameIdentificationEvents.FunctionDescPayloads.ParameterTypes) ?? Array.Empty<ulong>(),
+                    action.GetBoolPayload(NameIdentificationEvents.FunctionDescPayloads.StackTraceHidden)
                     );
 
                 _result.NameCache.FunctionData.TryAdd(id, functionData);
@@ -110,7 +127,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                     action.GetPayload<uint>(NameIdentificationEvents.ClassDescPayloads.Token),
                     action.GetPayload<ulong>(NameIdentificationEvents.ClassDescPayloads.ModuleId),
                     (ClassFlags)action.GetPayload<uint>(NameIdentificationEvents.ClassDescPayloads.Flags),
-                    action.GetPayload<ulong[]>(NameIdentificationEvents.ClassDescPayloads.TypeArgs) ?? Array.Empty<ulong>()
+                    action.GetPayload<ulong[]>(NameIdentificationEvents.ClassDescPayloads.TypeArgs) ?? Array.Empty<ulong>(),
+                    action.GetBoolPayload(NameIdentificationEvents.ClassDescPayloads.StackTraceHidden)
                     );
 
                 _result.NameCache.ClassData.TryAdd(id, classData);
@@ -119,7 +137,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
             {
                 ulong id = action.GetPayload<ulong>(NameIdentificationEvents.ModuleDescPayloads.ModuleId);
                 var moduleData = new ModuleData(
-                    action.GetPayload<string>(NameIdentificationEvents.ModuleDescPayloads.Name)
+                    action.GetPayload<string>(NameIdentificationEvents.ModuleDescPayloads.Name),
+                    action.GetPayload<Guid>(NameIdentificationEvents.ModuleDescPayloads.ModuleVersionId)
                     );
 
                 _result.NameCache.ModuleData.TryAdd(id, moduleData);
@@ -131,7 +150,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                 var tokenData = new TokenData(
                     action.GetPayload<string>(NameIdentificationEvents.TokenDescPayloads.Name),
                     action.GetPayload<string>(NameIdentificationEvents.TokenDescPayloads.Namespace),
-                    action.GetPayload<uint>(NameIdentificationEvents.TokenDescPayloads.OuterToken)
+                    action.GetPayload<uint>(NameIdentificationEvents.TokenDescPayloads.OuterToken),
+                    action.GetBoolPayload(NameIdentificationEvents.TokenDescPayloads.StackTraceHidden)
                     );
 
                 _result.NameCache.TokenData.TryAdd(new ModuleScopedToken(modId, token), tokenData);

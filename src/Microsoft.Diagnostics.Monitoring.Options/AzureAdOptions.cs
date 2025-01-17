@@ -14,29 +14,29 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureAdOptions_Instance))]
         [DefaultValue(AzureAdOptionsDefaults.DefaultInstance)]
-        public Uri Instance { get; set; }
+        public Uri? Instance { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureAdOptions_TenantId))]
         [DefaultValue(AzureAdOptionsDefaults.DefaultTenantId)]
-        public string TenantId { get; set; }
+        public string? TenantId { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureAdOptions_ClientId))]
         [Required]
-        public string ClientId { get; set; }
+        public string ClientId { get; set; } = string.Empty;
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureAdOptions_AppIdUri))]
-        public Uri AppIdUri { get; set; }
+        public Uri? AppIdUri { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AzureAdOptions_RequiredRole))]
         [Required]
-        public string RequiredRole { get; set; }
+        public string RequiredRole { get; set; } = string.Empty;
     }
 }

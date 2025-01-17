@@ -17,30 +17,22 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
     internal static class StackUtilities
     {
-        public static Models.CallStack TranslateCallStackToModel(CallStack stack, NameCache cache, bool methodNameIncludesGenericParameters = true)
+        public static Models.CallStack TranslateCallStackToModel(CallStack stack, NameCache cache, bool ensureParameterTypeFieldsNotNull = true)
         {
             Models.CallStack stackModel = new Models.CallStack();
             stackModel.ThreadId = stack.ThreadId;
             stackModel.ThreadName = stack.ThreadName;
 
-            StringBuilder builder = new();
             foreach (CallStackFrame frame in stack.Frames)
             {
-                var frameModel = CreateFrameModel(frame, cache);
-                if (methodNameIncludesGenericParameters)
-                {
-                    builder.Append(frameModel.MethodName);
-                    NameFormatter.BuildGenericArgTypes(builder, frameModel.FullGenericArgTypes);
-                    frameModel.MethodName = builder.ToString();
-                    builder.Clear();
-                }
+                var frameModel = CreateFrameModel(frame, cache, ensureParameterTypeFieldsNotNull);
                 stackModel.Frames.Add(frameModel);
             }
 
             return stackModel;
         }
 
-        internal static Models.CallStackFrame CreateFrameModel(CallStackFrame frame, NameCache cache)
+        internal static Models.CallStackFrame CreateFrameModel(CallStackFrame frame, NameCache cache, bool ensureParameterTypeFieldsNotNull)
         {
             var builder = new StringBuilder();
 
@@ -48,9 +40,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 TypeName = NameFormatter.UnknownClass,
                 MethodName = StacksFormatter.UnknownFunction,
+                MethodToken = 0,
                 //TODO Bring this back once we have a useful offset value
                 //Offset = frame.Offset,
-                ModuleName = NameFormatter.UnknownModule
+                ModuleName = NameFormatter.UnknownModule,
+                ModuleVersionId = Guid.Empty,
+                Hidden = false,
+
+                SimpleParameterTypes = ensureParameterTypeFieldsNotNull ? [] : null,
+                FullParameterTypes = ensureParameterTypeFieldsNotNull ? [] : null,
             };
             if (frame.FunctionId == 0)
             {
@@ -58,9 +56,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 frameModel.ModuleName = StacksFormatter.NativeFrame;
                 frameModel.TypeName = StacksFormatter.NativeFrame;
             }
-            else if (cache.FunctionData.TryGetValue(frame.FunctionId, out FunctionData functionData))
+            else if (cache.FunctionData.TryGetValue(frame.FunctionId, out FunctionData? functionData))
             {
+                frameModel.MethodToken = functionData.MethodToken;
                 frameModel.ModuleName = NameFormatter.GetModuleName(cache, functionData.ModuleId);
+                frameModel.Hidden = ShouldHideFunctionFromStackTrace(cache, functionData);
+
+                if (cache.ModuleData.TryGetValue(functionData.ModuleId, out ModuleData? moduleData))
+                {
+                    frameModel.ModuleVersionId = moduleData.ModuleVersionId;
+                }
 
                 builder.Clear();
                 builder.Append(functionData.Name);
@@ -85,6 +90,32 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
 
             return frameModel;
+        }
+
+        public static bool ShouldHideFunctionFromStackTrace(NameCache cache, FunctionData functionData)
+        {
+            if (functionData.StackTraceHidden)
+            {
+                return true;
+            }
+
+            if (cache.ClassData.TryGetValue(functionData.ParentClass, out ClassData? classData))
+            {
+                if (classData.StackTraceHidden)
+                {
+                    return true;
+                }
+            }
+
+            if (cache.TokenData.TryGetValue(new ModuleScopedToken(functionData.ModuleId, functionData.ParentClassToken), out TokenData? tokenData))
+            {
+                if (tokenData.StackTraceHidden)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         internal static StacksFormatter CreateFormatter(StackFormat format, Stream outputStream) =>

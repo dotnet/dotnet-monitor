@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2FlearningPath%2Fsample-pull-request)
-
 # Sample Pull Request
 
 To contribute to the `dotnet monitor` repo, you'll need to create a [pull request](https://github.com/dotnet/dotnet-monitor/pulls). When you submit a pull request, you'll receive feedback on your changes from the `dotnet monitor` team. Before your code can be merged, you'll need the following:

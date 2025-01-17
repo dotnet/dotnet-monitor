@@ -1,11 +1,8 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Frelease-process)
-
 # Release Process
 
 ## Prepare the release branch
 
-1. Update the [internal pipeline](https://dev.azure.com/dnceng/internal/_build?definitionId=954) variables to prevent consumption of nightly builds into dotnet-docker. Set `NightlyUpdateDockerFromMain` variable to `false` on the pipeline itself, not just on a new build.
+1. Update the [internal pipeline](https://dev.azure.com/dnceng/internal/_build?definitionId=954) variables to prevent consumption of nightly builds into dotnet-docker. Update `AutoUpdateDockerBranches` variable on the pipeline itself, not just on a new build, to the list of branch references (e.g. `refs/heads/main`) that you want to automatically update dotnet/dotnet-docker when scheduled builds are run; likely want to clear the variable when preparing for release.
 1. Merge from the `main` branch to the appropriate release branch (e.g. `release/5.0`). Note that for patch releases, fixes should be made directly to the appropriate release branch and we do not merge from the `main` branch. Note that it is acceptable to use a release/major.x branch. Alternatively, you can create a new release branch for the minor version. See [additional branch steps](#additional-steps-when-creating-a-new-release-branch) below.
 1. Review and merge in any outstanding dependabot PRs for the release branch.
 1. Run the [Update release version](https://github.com/dotnet/dotnet-monitor/actions/workflows/update-release-version.yml) workflow, setting `Use workflow from` to the release branch and correctly setting the `Release type` and `Release version` options. (*NOTE:* Release version should include only major.minor.patch, without any extra labels). Review and merge in the PR created by this workflow.
@@ -49,6 +46,8 @@ https://github.com/dotnet/installer (.NET 8.0.1xx SDK Preview 6) ==> 'https://gi
   - Id: 2f528213-5355-43ec-0bf5-08db410c84fe
 
 ```
+
+**For internal/release/\* build**: You will likely need to update the existing subscription to the **internal** sdk release.
 
 ## Build Release Branch
 
@@ -106,7 +105,7 @@ The nightly image is `mcr.microsoft.com/dotnet/nightly/monitor`. The tag list is
 
 The remainder of the release will automatically push NuGet packages to nuget.org, [tag](https://github.com/dotnet/dotnet-monitor/tags) the commit from the build with the release version, and add a new [GitHub release](https://github.com/dotnet/dotnet-monitor/releases).
 
-**For internal/release/\* build**: Before the `Create GitHub Release` job executes, the sources for an internal release build must be merged into the corresponding public release branch, otherwise GitHub release creation will fail (it requires the commit of the build, which would not be public). Open a PR that merges the commit chain for the release into corresponding public release branch e.g. [example PR](https://github.com/dotnet/dotnet-monitor/pull/5326) demonstrating the `internal/release/8.x -> release/8.x` merge. Depending on when this PR is opened, its builds may fail to acquire the runtimes since the aka.ms links for them may not have been updated by the .NET release yet. (Dev opportunity: Consider automating this step before `Create GitHub Release` is executed)
+**For internal/release/\* build**: Before the `Create GitHub Release` job executes, the sources for an internal release build must be merged into the corresponding public release branch, otherwise GitHub release creation will fail (it requires the commit of the build, which would not be public). Open a PR that merges the commit chain for the release into corresponding public release branch e.g. [example PR](https://github.com/dotnet/dotnet-monitor/pull/5326) demonstrating the `internal/release/8.x -> release/8.x` merge. Depending on when this PR is opened, its builds may fail to acquire the runtimes since the aka.ms links for them may not have been updated by the .NET release yet. Be sure to merge, not squash. (Dev opportunity: Consider automating this step before `Create GitHub Release` is executed)
 
 ## Release to Storage Accounts
 
@@ -121,13 +120,25 @@ The remainder of the release will automatically push NuGet packages to nuget.org
 1. The .NET Containers team will merge from `nightly` branch to `main` branch and wait for `dotnet-monitor` team approval. Typically, these changes are completed the day before the release date.
 1. The .NET Containers team will start the build ahead of the release and wait for the all-clear from `dotnet-monitor` team before publishing the images.
 
-**For internal/release/\* build**: A PR will need to be opened directly into the `main` branch that updates the .NET Monitor versions and checksums as appropriate since these values do not exist publicly until [Release to Storage Accounts](#release-to-storage-accounts) has been performed: [Example PR](https://github.com/dotnet/dotnet-docker/pull/4862). Coordinate with .NET Containers team for creating this PR.
+**For internal/release/\* build**: A PR will need to be opened directly into the `main` branch that updates the .NET Monitor versions and checksums as appropriate since these values do not exist publicly until [Release to Storage Accounts](#release-to-storage-accounts) has been performed: [Example PR](https://github.com/dotnet/dotnet-docker/pull/4862). The checksums file can be found in the build's artifacts at `Artifacts_Pack_Sign/packages/Release/Shipping/{version}-sha.txt` Coordinate with .NET Containers team for creating this PR. Example:
+
+```
+.\eng\Set-DotnetVersions.ps1 -ProductVersion 9.0 -MonitorVersion 9.0.0-rc.2.24504.9 -ChecksumsFile "9.0.0-rc.2.24504.9-sha.txt"
+```
 
 The release image is `mcr.microsoft.com/dotnet/monitor`. The tag list is https://mcr.microsoft.com/v2/dotnet/monitor/tags/list.
 
 ## After the Release
 
-1. Change the `NightlyUpdateDockerFromMain` variable to `true` in the [internal pipeline](https://dev.azure.com/dnceng/internal/_build?definitionId=954) to begin the consumption of nightly builds into dotnet-docker. Note this should not necessarily be done right after the release, but after the merge from main to nightly in the dotnet-docker repo (such as https://github.com/dotnet/dotnet-docker/pull/4741).
+1. Update the `AutoUpdateDockerBranches` variable to `refs/heads/main` in the [internal pipeline](https://dev.azure.com/dnceng/internal/_build?definitionId=954) to begin the consumption of nightly builds into dotnet-docker. Note this should not necessarily be done right after the release, but after the merge from main to nightly in the dotnet-docker repo (such as https://github.com/dotnet/dotnet-docker/pull/4741). Include additional branch references and semi-colon delimit each value e.g. `refs/heads/main;refs/heads/feature/9.x`.
 1. Review and merge the automatically create `Register new release information` PR.
+1. For each release, push its corresponding tag to the [internal repository](https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet-monitor).
 1. For each release, push its corresponding tag to the `shipped/v<version>` branch in the [internal repository](https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet-monitor) e.g `v8.0.0-rc.1.23458.6 -> shipped/v8.0`. If done correctly, this should be a fast-forward merge.
+```sh
+git remote add internal https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet-monitor
+git fetch --tags
+git checkout v8.0.0-rc.1.23458.6
+git push internal tag v8.0.0-rc.1.23458.6 # Push the tag
+git push internal HEAD:shipped/v8.0 # Update the shipped branch
+```
 1. When necessary, update this document if its instructions were unclear or incorrect.

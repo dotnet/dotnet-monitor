@@ -4,6 +4,7 @@
 using Microsoft.AspNetCore.Hosting;
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -20,6 +21,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private const string TestHostingStartupAssemblyName = "Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup";
         private const string TestStartupHookAssemblyName = "Microsoft.Diagnostics.Monitoring.Tool.TestStartupHook";
 
+#nullable disable
         [Conditional("DEBUG")]
         public static void SimulateStartupHook()
         {
@@ -42,6 +44,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 }
             }
         }
+#nullable restore
 
         [Conditional("DEBUG")]
         public static void AddHostingStartup(IWebHostBuilder builder)
@@ -64,10 +67,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
         }
 
-        private static bool TryComputeBuildOutputAssemblyPath(string assemblyName, out string path)
+        private static bool TryComputeBuildOutputAssemblyPath(string assemblyName, [NotNullWhen(true)] out string? path)
         {
             Assembly thisAssembly = Assembly.GetExecutingAssembly();
-            string thisAssemblyName = thisAssembly.GetName().Name;
+            string? thisAssemblyName = thisAssembly.GetName()?.Name;
+            if (thisAssemblyName == null)
+            {
+                path = null;
+                return false;
+            }
+
             string separator = Path.DirectorySeparatorChar + ArtifactsDirectoryName + Path.DirectorySeparatorChar;
             int artifactsIndex = AppContext.BaseDirectory.IndexOf(separator);
             if (artifactsIndex != -1)

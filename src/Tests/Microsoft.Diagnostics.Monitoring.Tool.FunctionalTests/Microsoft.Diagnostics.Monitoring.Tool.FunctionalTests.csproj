@@ -74,6 +74,7 @@
     <Compile Include="..\..\Tools\dotnet-monitor\LoggingEventIds.cs" Link="LoggingEventIds.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\OutputFormat.cs" Link="Options\OutputFormat.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\RootOptions.cs" Link="Options\RootOptions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\ConvertUtils.cs" Link="ConvertUtils.cs" />
     <Compile Include="..\Microsoft.Diagnostics.Monitoring.Tool.UnitTestCommon\ExecuteActionTestHelper.cs" Link="ExecuteActionTestHelper.cs" />
     <Compile Include="..\Microsoft.Diagnostics.Monitoring.Tool.UnitTestCommon\Options\CollectionRuleOptionsExtensions.cs" Link="Options\CollectionRuleOptionsExtensions.cs" />
   </ItemGroup>
@@ -85,7 +86,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.HostingStartup\Microsoft.Diagnostics.Monitoring.HostingStartup.csproj" />
     <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.Options\Microsoft.Diagnostics.Monitoring.Options.csproj" />
     <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.StartupHook\Microsoft.Diagnostics.Monitoring.StartupHook.csproj" />
     <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Microsoft.Diagnostics.Monitoring.WebApi.csproj" />
@@ -95,6 +95,7 @@
       <SetTargetFramework>TargetFramework=net8.0</SetTargetFramework>
     </ProjectReference>
     <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.TestCommon\Microsoft.Diagnostics.Monitoring.TestCommon.csproj" />
+    <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.UnitTestApp\Microsoft.Diagnostics.Monitoring.UnitTestApp.csproj" />
   </ItemGroup>
 
   <ItemGroup>

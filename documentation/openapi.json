@@ -20,7 +20,7 @@
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -78,7 +78,7 @@
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -133,7 +133,7 @@
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -218,7 +218,7 @@
             "$ref": "#/components/responses/TooManyRequestsResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/octet-stream": {
                 "schema": {
@@ -296,7 +296,7 @@
             "$ref": "#/components/responses/TooManyRequestsResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/octet-stream": {
                 "schema": {
@@ -394,7 +394,7 @@
             "$ref": "#/components/responses/TooManyRequestsResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/octet-stream": {
                 "schema": {
@@ -503,7 +503,7 @@
             "$ref": "#/components/responses/TooManyRequestsResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/octet-stream": {
                 "schema": {
@@ -601,7 +601,7 @@
             "$ref": "#/components/responses/TooManyRequestsResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/x-ndjson": {
                 "schema": {
@@ -718,7 +718,7 @@
             "$ref": "#/components/responses/TooManyRequestsResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/x-ndjson": {
                 "schema": {
@@ -758,7 +758,7 @@
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -813,7 +813,7 @@
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -880,7 +880,7 @@
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -934,6 +934,13 @@
             }
           },
           {
+            "name": "egressProvider",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
             "name": "tags",
             "in": "query",
             "schema": {
@@ -970,6 +977,26 @@
           },
           "429": {
             "$ref": "#/components/responses/TooManyRequestsResponse"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/x-ndjson": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json-seq": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "202": {
             "description": "Accepted"
@@ -1033,7 +1060,7 @@
             "$ref": "#/components/responses/TooManyRequestsResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -1132,7 +1159,7 @@
             "$ref": "#/components/responses/TooManyRequestsResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json-seq": {
                 "schema": {
@@ -1240,7 +1267,7 @@
             "$ref": "#/components/responses/TooManyRequestsResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json-seq": {
                 "schema": {
@@ -1311,7 +1338,7 @@
             "$ref": "#/components/responses/BadRequestResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/x-ndjson": {
                 "schema": {
@@ -1410,7 +1437,7 @@
             "$ref": "#/components/responses/BadRequestResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/x-ndjson": {
                 "schema": {
@@ -1444,7 +1471,7 @@
             "$ref": "#/components/responses/BadRequestResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "text/plain; version=0.0.4": {
                 "schema": {
@@ -1504,7 +1531,7 @@
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -1551,7 +1578,7 @@
             }
           },
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -1591,7 +1618,7 @@
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
           "200": {
-            "description": "Success"
+            "description": "OK"
           },
           "202": {
             "description": "Accepted"
@@ -2174,7 +2201,8 @@
           "Cpu",
           "Http",
           "Logs",
-          "Metrics"
+          "Metrics",
+          "GcCollect"
         ],
         "type": "string"
       },

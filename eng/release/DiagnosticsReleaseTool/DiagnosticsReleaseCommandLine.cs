@@ -107,8 +107,9 @@ namespace DiagnosticsReleaseTool.CommandLine
 
         private static Option<string> AzureStorageAccountKeyOption() =>
             new Option<string>(
-                aliases: new[] { "-k", "--account-key" },
-                description: "Storage account key, in base 64 format.")
+                aliases: new[] { "-k", "--client-id" },
+                description: "Identity Client ID. If left blank, ambient identity will be used.",
+                getDefaultValue: () => null)
             {
                 IsRequired = true,
             };

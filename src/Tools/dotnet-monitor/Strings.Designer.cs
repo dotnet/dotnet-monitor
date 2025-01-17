@@ -232,6 +232,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The expiration offset must be a positive time span value..
+        /// </summary>
+        internal static string ErrorMessage_ExpirationMustBePositive {
+            get {
+                return ResourceManager.GetString("ErrorMessage_ExpirationMustBePositive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The extension file &apos;{0}&apos; for extension &apos;{1}&apos; could not be found..
         /// </summary>
         internal static string ErrorMessage_ExtensionFileNotFound {
@@ -530,15 +539,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to find hosting startup assembly at determined path..
-        /// </summary>
-        internal static string ErrorMessage_UnableToFindHostingStartupAssembly {
-            get {
-                return ResourceManager.GetString("ErrorMessage_UnableToFindHostingStartupAssembly", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Unable to find profiler assembly at determined path..
         /// </summary>
         internal static string ErrorMessage_UnableToFindProfilerAssembly {
@@ -625,6 +625,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         internal static string HelpDescription_CommandShow {
             get {
                 return ResourceManager.GetString("HelpDescription_CommandShow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The expiration time on or after the generated key will no longer be accepted. This is a time span offset (e.g. &quot;7.00:00:00&quot; for 7 days) that will be added to the current date time to create the expiration date time..
+        /// </summary>
+        internal static string HelpDescription_Expiration {
+            get {
+                return ResourceManager.GetString("HelpDescription_Expiration", resourceCulture);
             }
         }
         
@@ -1484,7 +1493,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to apply the startup hook. Not all in process features will be available..
+        ///   Looks up a localized string similar to Failed to apply the startup hook &quot;{startupHookFileName}&quot;. Not all in process features will be available..
         /// </summary>
         internal static string LogFormatString_StartupHookApplyFailed {
             get {
@@ -1493,38 +1502,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The DOTNET_STARTUP_HOOKS environment variable is missing from target process {processId}..
-        /// </summary>
-        internal static string LogFormatString_StartupHookEnvironmentMissing {
-            get {
-                return ResourceManager.GetString("LogFormatString_StartupHookEnvironmentMissing", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Exception-based features require that the DOTNET_STARTUP_HOOKS environment variable is set on the target process and must contain the path to the .NET Monitor startup hook library. The path to the library is &quot;{path}&quot;..
+        ///   Looks up a localized string similar to Certain in process features require that the DOTNET_STARTUP_HOOKS environment variable is set on the target process {processId} and must contain the path to the &quot;{startupHookFileName}&quot; startup hook library. The path to the library is &quot;{path}&quot;..
         /// </summary>
         internal static string LogFormatString_StartupHookInstructions {
             get {
                 return ResourceManager.GetString("LogFormatString_StartupHookInstructions", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The DOTNET_STARTUP_HOOKS environment variable for target process {processId} does not contain the &apos;{name}&apos; startup hook..
-        /// </summary>
-        internal static string LogFormatString_StartupHookMissing {
-            get {
-                return ResourceManager.GetString("LogFormatString_StartupHookMissing", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unable to apply hosting startup..
-        /// </summary>
-        internal static string LogFormatString_UnableToApplyHostingStartup {
-            get {
-                return ResourceManager.GetString("LogFormatString_UnableToApplyHostingStartup", resourceCulture);
             }
         }
         
@@ -1655,15 +1637,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This feature is only available on processes using ASP.NET Core. If the process is using ASP.NET Core and has successfully started, ensure that it has not been configured to prevent hosting startup assemblies from loading..
-        /// </summary>
-        internal static string ParameterCapturingNotAvailable_Reason_HostingStartupDidNotLoad {
-            get {
-                return ResourceManager.GetString("ParameterCapturingNotAvailable_Reason_HostingStartupDidNotLoad", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The process has Hot Reload enabled..
         /// </summary>
         internal static string ParameterCapturingNotAvailable_Reason_HotReload {
@@ -1682,11 +1655,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The process has prevented hosting startup assemblies from loading using the ASPNETCORE_PREVENTHOSTINGSTARTUP environment variable..
+        ///   Looks up a localized string similar to This feature requires the startup hook to be loaded in the target process..
         /// </summary>
-        internal static string ParameterCapturingNotAvailable_Reason_PreventedHostingStartup {
+        internal static string ParameterCapturingNotAvailable_Reason_StartupHookDidNotLoad {
             get {
-                return ResourceManager.GetString("ParameterCapturingNotAvailable_Reason_PreventedHostingStartup", resourceCulture);
+                return ResourceManager.GetString("ParameterCapturingNotAvailable_Reason_StartupHookDidNotLoad", resourceCulture);
             }
         }
         

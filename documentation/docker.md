@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fdocker)
-
 # Running in Docker
 
 In addition to its availability as a .NET CLI tool, the `dotnet monitor` tool is available as a prebuilt Docker image that can be run in container runtimes and orchestrators. See [Releases](releases.md) for information on how long each image version will be supported.
@@ -18,3 +15,8 @@ In addition to its availability as a .NET CLI tool, the `dotnet monitor` tool is
 ### Nightly Repository
 - Docker Hub: https://hub.docker.com/_/microsoft-dotnet-nightly-monitor
 - Microsoft Container Registry: https://mcr.microsoft.com/v2/dotnet/nightly/monitor/tags/list
+
+## Sample Usage
+
+- For a Docker Compose sample, see [Running in Docker Compose](./docker-compose.md)
+- For a Kubernetes sample, see [Running in Kubernetes](./kubernetes.md)

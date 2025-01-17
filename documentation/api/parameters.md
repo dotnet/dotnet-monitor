@@ -1,12 +1,6 @@
+# Parameters (experimental feature)
 
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi%2Fparameters)
-
-# Parameters - Post (experimental feature)
-
-Captures parameters for one or more methods each time they are called. Parameters are logged inside the target application using its [`ILogger`](https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger).
-
-> [!NOTE]
-> Unlike other artifacts, parameters do **not** support being sent to an egress provider.
+Captures parameters for one or more methods each time they are called.
 
 > [!IMPORTANT]
 > This feature is not enabled by default and requires configuration to be enabled. See [Enabling](#enabling) for more information.
@@ -26,7 +20,7 @@ This feature is currently marked as experimental and so needs to be explicitly e
 ## HTTP Route
 
 ```http
-POST /parameters?pid={pid}&uid={uid}&name={name}&durationSeconds={durationSeconds}&tags={tags} HTTP/1.1
+POST /parameters?pid={pid}&uid={uid}&name={name}&durationSeconds={durationSeconds}&egressProvider={egressProvider}&tags={tags} HTTP/1.1
 ```
 
 > [!NOTE]
@@ -44,6 +38,7 @@ The default host address for these routes is `https://localhost:52323`. This rou
 | `uid` | query | false | guid | A value that uniquely identifies a runtime instance within a process. |
 | `name` | query | false | string | The name of the process. |
 | `durationSeconds` | query | false | int | The duration of the parameters operation in seconds. Default is `30`. Min is `-1` (indefinite duration). Max is `2147483647`. |
+| `egressProvider` | query | false | string | If specified, uses the named egress provider for egressing the captured parameters. When not specified, the parameters are written to the HTTP response stream. See [Egress Providers](../egress.md) for more details. |
 | `tags` | query | false | string | A comma-separated list of user-readable identifiers for the operation. |
 
 See [ProcessIdentifier](definitions.md#processidentifier) for more details about the `pid`, `uid`, and `name` parameters.
@@ -68,30 +63,19 @@ The expected content type is `application/json`.
 
 | Name | Type | Description | Content Type |
 |---|---|---|---|
-| 202 Accepted | | The artifact has begun being collected. | |
+| 200 OK | [CapturedMethod](definitions.md#capturedmethod)[] | Separator-delimited JSON representation of the captured parameters. | application/json-seq |
+| 200 OK | [CapturedMethod](definitions.md#capturedmethod)[] | Newline-delimited JSON representation of the captured parameters. | application/x-ndjson |
+| 200 OK | text | Text representation of the captured parameters. | text/plain |
+| 202 Accepted | | When an egress provider is specified, the artifact has begun being collected. | |
 | 400 Bad Request | [ValidationProblemDetails](definitions.md#validationproblemdetails) | An error occurred due to invalid input. The response body describes the specific problem(s). | `application/problem+json` |
 | 401 Unauthorized | | Authentication is required to complete the request. See [Authentication](./../authentication.md) for further information. | |
 | 429 Too Many Requests | | There are too many parameters requests at this time. Try to request parameters at a later time. | `application/problem+json` |
-
-## `UserCode` vs `SystemCode`
-
-Methods that belong to any of the following namespaces are considered `SystemCode`:
-- `Microsoft.*`
-- `System.*`
-
-All other methods are considered `UserCode`. `UserCode` methods will have their parameters captured inline, meaning that the added log statements are performed synchronously inside your method, preserving the logger's scope.
-
-`SystemCode` methods will have their parameters captured asynchronously and without scope information.
-
-The [examples](#examples) include a mixture of `UserCode` and `SystemCode` to help showcase the difference.
 
 ## Logger Categories
 
 The following logger categories are used inside the target application when capturing parameters:
 | Category Name | Description |
 | -- | -- |
-| `DotnetMonitor.ParameterCapture.UserCode` | Parameters captured in methods considered `UserCode`. |
-| `DotnetMonitor.ParameterCapture.SystemCode` | Parameters captured in methods considered `SystemCode`. |
 | `DotnetMonitor.ParameterCapture.Service` | Diagnostic messages by `dotnet-monitor`, such as when parameter capturing starts, stops, or is unable to find a requested method. |
 
 ## Examples
@@ -102,6 +86,7 @@ The following logger categories are used inside the target application when capt
 POST /parameters?pid=21632&durationSeconds=60 HTTP/1.1
 Host: localhost:52323
 Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
+Accept: application/x-ndjson
 
 {
     "methods": [
@@ -123,23 +108,11 @@ Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 ### Sample Response
 
 ```http
-HTTP/1.1 202 Accepted
-Content-Type: application/json
-Location: localhost:52323/operations/67f07e40-5cca-4709-9062-26302c484f18
-```
+HTTP/1.1 200 OK
+Content-Type: application/x-ndjson
 
-### Sample Output (Target Application)
-
-```
-info: DotnetMonitor.ParameterCapture.UserCode[0]
-      => SpanId:e40e62cffe1cf1cb, TraceId:c76b911969aa8abcf335907e96c62b33, ParentId:0000000000000000 => ConnectionId:0HMT2D6L8GT2Q => RequestPath:/ RequestId:0HMT2D6L8GT2Q:00000003 => SampleWebApp.Controllers.HomeController.Index (SampleWebApp)
-      SampleWebApp.Controllers.HomeController.Index(
-        this: 'SampleWebApp.Controllers.HomeController',
-        number: 10)
-info: DotnetMonitor.ParameterCapture.SystemCode[0]
-      System.String.Concat(
-        str0: 'firstString',
-        str1: '.secondString')
+{"activityId":"00-aeacc84edb640c5dc72477747729a975-42f991d5c79b02d8-00","activityIdFormat":"W3C","threadId":13,"timestamp":"2024-04-18T08:49:54.1957076-04:00","moduleName":"System.Private.CoreLib.dll","typeName":"System.String","methodName":"Concat","parameters":[{"parameterName":"str0","typeName":"System.String","moduleName":"System.Private.CoreLib.dll","value":"\u0027localhost\u0027"},{"parameterName":"str1","typeName":"System.String","moduleName":"System.Private.CoreLib.dll","value":"\u0027:\u0027"},{"parameterName":"str2","typeName":"System.String","moduleName":"System.Private.CoreLib.dll","value":"\u00277290\u0027"}]}
+{"activityId":"00-aeacc84edb640c5dc72477747729a975-42f991d5c79b02d8-00","activityIdFormat":"W3C","threadId":13,"timestamp":"2024-04-18T08:49:54.196018-04:00","moduleName":"System.Private.CoreLib.dll","typeName":"System.String","methodName":"Concat","parameters":[{"parameterName":"str0","typeName":"System.String","moduleName":"System.Private.CoreLib.dll","value":"\u0027\u0027"},{"parameterName":"str1","typeName":"System.String","moduleName":"System.Private.CoreLib.dll","value":"\u0027/Account/SignIn\u0027"}]}
 ```
 
 ## Supported Runtimes
@@ -152,13 +125,10 @@ info: DotnetMonitor.ParameterCapture.SystemCode[0]
 
 ## Additional Requirements
 
-- The target application must use ASP.NET Core.
 - The target application cannot have [Hot Reload](https://learn.microsoft.com/visualstudio/debugger/hot-reload) enabled.
-- `dotnet-monitor` must be set to `Listen` mode, and the target application must start suspended. See [diagnostic port configuration](../configuration/diagnostic-port-configuration.md) for information on how to do this.
-- The target application must have [`ILogger`](https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger) available via [ASP.NET Core's dependency injection](https://learn.microsoft.com/aspnet/core/fundamentals/dependency-injection).
-- This feature relies on a hosting startup assembly. If the target application [disabled automatic loading](https://learn.microsoft.com/aspnet/core/fundamentals/host/platform-specific-configuration#disable-automatic-loading-of-hosting-startup-assemblies) of these, this feature will not be available.
+- `dotnet-monitor` must be set to `Listen` mode. See [diagnostic port configuration](../configuration/diagnostic-port-configuration.md) for information on how to do this.
+- If the target application is using .NET 7 then the dotnet-monitor startup hook must be manually configured and the target application must start suspended. In .NET 8+ this is not a requirement.
 - This feature relies on a [ICorProfilerCallback](https://docs.microsoft.com/dotnet/framework/unmanaged-api/profiling/icorprofilercallback-interface) implementation. If the target application is already using an `ICorProfiler` that isn't notify-only, this feature will not be available.
-- If a target application is using .NET 7 then the `dotnet-monitor` startup hook must be configured. This is automatically done in .NET 8+.
 
 ## Additional Notes
 
@@ -174,3 +144,4 @@ Currently some types of parameters are unable to be captured. When a method cont
 ### When to use `pid` vs `uid`
 
 See [Process ID `pid` vs Unique ID `uid`](pidvsuid.md) for clarification on when it is best to use either parameter.
+

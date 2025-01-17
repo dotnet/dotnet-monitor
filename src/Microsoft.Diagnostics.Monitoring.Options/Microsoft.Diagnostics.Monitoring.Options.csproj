@@ -8,6 +8,7 @@
     <TargetFrameworks>$(TestTargetFrameworks)</TargetFrameworks>
     <IsShippingAssembly>true</IsShippingAssembly>
     <OutputType>Library</OutputType>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

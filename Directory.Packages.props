@@ -1,6 +1,8 @@
 <Project>
   <ItemGroup>
     <PackageVersion Include="AWSSDK.S3" Version="$(AwsSdkS3Version)" />
+    <PackageVersion Include="AWSSDK.SecurityToken" Version="$(AwsSdkSecurityTokenVersion)" />
+    <PackageVersion Include="Azure.Core" Version="$(AzureCoreVersion)" />
     <PackageVersion Include="Azure.Identity" Version="$(AzureIdentityVersion)" />
     <PackageVersion Include="Azure.Storage.Blobs" Version="$(AzureStorageBlobsVersion)" />
     <PackageVersion Include="Azure.Storage.Queues" Version="$(AzureStorageQueuesVersion)" />
@@ -27,5 +29,6 @@
     <PackageVersion Include="System.CommandLine" Version="$(SystemCommandLineVersion)" />
     <PackageVersion Include="System.Private.Uri" Version="$(SystemPrivateUriVersion)" />
     <PackageVersion Include="System.Security.Principal.Windows" Version="$(SystemSecurityPrincipalWindowsVersion)" />
+    <PackageVersion Include="System.Text.Json" Version="$(SystemTextJsonVersion)" />
   </ItemGroup>
 </Project>

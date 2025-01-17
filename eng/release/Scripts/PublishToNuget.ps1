@@ -50,25 +50,28 @@ $failedToPublish = 0
 foreach ($nugetPack in $manifestJson.NugetAssets)
 {
     $packagePath = Join-Path $StagingPath $nugetPack.PublishRelativePath
-    try
+    if (!(Test-Path $packagePath))
     {
-        Write-Host "Downloading: $nugetPack."
-        $progressPreference = 'silentlyContinue'
-        Invoke-WebRequest -Uri $nugetPack.PublishedPath -OutFile (New-Item -Path $packagePath -Force)
-        $progressPreference = 'Continue'
-
-        Write-Host "Publishing $packagePath."
-        & "$PSScriptRoot/../../../dotnet.cmd" nuget push $packagePath --source $FeedEndpoint --api-key $FeedPat
-        if ($LastExitCode -ne 0)
+        Write-Error "Error: Expected package at $packagePath"
+        $failedToPublish++
+    }
+    else
+    {
+        try
+        {
+            Write-Host "Publishing $packagePath."
+            & "$PSScriptRoot/../../../dotnet.cmd" nuget push $packagePath --source $FeedEndpoint --api-key $FeedPat
+            if ($LastExitCode -ne 0)
+            {
+                Write-Error "Error: unable to publish $($nugetPack.PublishRelativePath)."
+                $failedToPublish++
+            }
+        }
+        catch
         {
             Write-Error "Error: unable to publish $($nugetPack.PublishRelativePath)."
             $failedToPublish++
         }
-    }
-    catch
-    {
-        Write-Error "Error: unable to publish $($nugetPack.PublishRelativePath)."
-        $failedToPublish++
     }
 }
 

@@ -178,7 +178,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification
             // Validate throwing method remaining properties
             Assert.Equal(nameof(ExceptionGroupIdentifierCache_ThrownException), throwingMethodData.Name);
             Assert.NotEqual(InvalidId, throwingMethodData.ParentClass);
-            Assert.NotEqual(InvalidToken, throwingMethodData.ParentToken);
+            Assert.NotEqual(InvalidToken, throwingMethodData.ParentClassToken);
             Assert.Empty(throwingMethodData.TypeArgs);
 
             // Validate stack frame data

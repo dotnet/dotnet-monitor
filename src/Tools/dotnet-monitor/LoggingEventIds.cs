@@ -1,6 +1,8 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+#nullable enable
+
 using Microsoft.Extensions.Logging;
 using System;
 
@@ -89,8 +91,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         ConnectionModeListen = 77,
         ExperimentalFeatureEnabled = 78,
         StartCollectArtifact = 79,
-        StartupHookEnvironmentMissing = 80,
-        StartupHookMissing = 81,
+        StartupHookEnvironmentMissing = 80, // Unused
+        StartupHookMissing = 81, // Unused
         StartupHookInstructions = 82,
         ExtensionProbeStart = 83,
         ExtensionProbeRepo = 84,
@@ -119,7 +121,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         public static EventId EventId(this LoggingEventIds enumVal)
         {
-            string name = Enum.GetName(typeof(LoggingEventIds), enumVal);
+            string? name = Enum.GetName(typeof(LoggingEventIds), enumVal);
             int id = enumVal.Id();
             return new EventId(id, name);
         }

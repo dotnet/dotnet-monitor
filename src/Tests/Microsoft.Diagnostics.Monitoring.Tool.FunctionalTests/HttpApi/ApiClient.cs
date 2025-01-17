@@ -614,11 +614,29 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             throw await CreateUnexpectedStatusCodeExceptionAsync(responseBox.Value).ConfigureAwait(false);
         }
 
-        public async Task<OperationResponse> CaptureParametersAsync(int processId, TimeSpan duration, CaptureParametersConfiguration config, CancellationToken token)
+        public async Task<OperationResponse> CaptureParametersAsync(int processId, TimeSpan duration, string egressProvider, CaptureParametersConfiguration config, CapturedParameterFormat format, CancellationToken token)
         {
+            string contentType = "";
+
+            if (format == CapturedParameterFormat.JsonSequence)
+            {
+                contentType = ContentTypes.ApplicationJsonSequence;
+            }
+            else if (format == CapturedParameterFormat.NewlineDelimitedJson)
+            {
+                contentType = ContentTypes.ApplicationNDJson;
+            }
+
             bool isInfinite = (duration == Timeout.InfiniteTimeSpan);
-            string uri = FormattableString.Invariant($"/parameters?pid={processId}&durationSeconds={(isInfinite ? -1 : duration.Seconds)}");
+            string uri = FormattableString.Invariant($"/parameters?pid={processId}&durationSeconds={(isInfinite ? -1 : duration.TotalSeconds)}");
+            if (!string.IsNullOrEmpty(egressProvider))
+            {
+                uri += FormattableString.Invariant($"&egressProvider={egressProvider}");
+            }
+
             using HttpRequestMessage request = new(HttpMethod.Post, uri);
+
+            request.Headers.Add(HeaderNames.Accept, contentType);
 
             string content = JsonSerializer.Serialize(config, DefaultJsonSerializeOptions);
             request.Content = new StringContent(content, Encoding.UTF8, ContentTypes.ApplicationJson);
@@ -628,6 +646,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
             switch (response.StatusCode)
             {
                 case HttpStatusCode.Accepted:
+                case HttpStatusCode.OK:
                     return new OperationResponse(response.StatusCode, response.Headers.Location);
                 case HttpStatusCode.BadRequest:
                 case HttpStatusCode.TooManyRequests:

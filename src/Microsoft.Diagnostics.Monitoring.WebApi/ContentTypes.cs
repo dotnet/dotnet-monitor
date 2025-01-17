@@ -3,7 +3,7 @@
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    internal static class ContentTypes
+    public static class ContentTypes
     {
         public const string ApplicationJson = "application/json";
         public const string ApplicationJsonSequence = "application/json-seq";

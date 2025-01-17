@@ -7,6 +7,7 @@ using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Validators;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading;
@@ -76,8 +77,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 ValidAlgorithms = JwtAlgorithmChecker.GetAllowedJwsAlgorithmList(),
 
                 // Issuer Settings
-                ValidateIssuer = true, // This setting differs from actual token validation in the product because we want to make sure we set our Issuer
+                ValidateIssuer = true,
                 ValidIssuer = AuthConstants.ApiKeyJwtInternalIssuer,
+
+                // Issuer Signing Key Settings
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKeys = new SecurityKey[] { validatingKey },
                 TryAllIssuerSigningKeys = true,
@@ -88,8 +91,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
                 // Other Settings
                 ValidateActor = false,
-                ValidateLifetime = false,
+                ValidateLifetime = true,
             };
+            // Required for CodeQL. 
+            tokenValidationParams.EnableAadSigningKeyIssuerValidation();
+
             ClaimsPrincipal claimsPrinciple = tokenHandler.ValidateToken(tokenStr, tokenValidationParams, out SecurityToken validatedToken);
 
             Assert.True(claimsPrinciple.HasClaim(ClaimTypes.NameIdentifier, subject));

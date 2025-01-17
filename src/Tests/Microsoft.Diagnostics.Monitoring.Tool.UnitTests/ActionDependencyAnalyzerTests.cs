@@ -107,7 +107,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 ILogger<CollectionRuleService> logger = host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
                 TimeProvider timeProvider = host.Services.GetRequiredService<TimeProvider>();
 
-                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, logger, timeProvider);
+                Guid instanceId = Guid.NewGuid();
+                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, new TestProcessInfo(instanceId), HostInfo.GetCurrent(timeProvider), logger);
 
                 int callbackCount = 0;
                 Action startCallback = () => callbackCount++;
@@ -160,7 +161,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 string commandLine = FormattableString.Invariant($"{processName} arg1");
 
                 Guid instanceId = Guid.NewGuid();
-                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, new TestProcessInfo(instanceId, processId: processId, commandLine: commandLine), logger, timeProvider);
+                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, new TestProcessInfo(instanceId, processId: processId, commandLine: commandLine), HostInfo.GetCurrent(timeProvider), logger);
 
                 ActionOptionsDependencyAnalyzer analyzer = ActionOptionsDependencyAnalyzer.Create(context);
                 PassThroughOptions newSettings = (PassThroughOptions)analyzer.SubstituteOptionValues(new Dictionary<string, CollectionRuleActionResult>(), 1, settings);
@@ -171,6 +172,43 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             }, serviceCollection =>
             {
+                serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions>(nameof(PassThroughAction));
+            });
+        }
+
+        [Fact]
+        public async Task HostInfoTest()
+        {
+            PassThroughOptions settings = null;
+            await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
+            {
+                CollectionRuleOptions options = rootOptions.CreateCollectionRule(DefaultRuleName)
+                    .AddPassThroughAction("a1", ConfigurationTokenParser.HostNameReference, ConfigurationTokenParser.UnixTimeReference, "test")
+                    .SetStartupTrigger();
+
+                settings = (PassThroughOptions)options.Actions.Last().Settings;
+            }, host =>
+            {
+                using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TimeoutMs);
+
+                CollectionRuleOptions ruleOptions = host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>().Get(DefaultRuleName);
+                ILogger<CollectionRuleService> logger = host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
+                MockTimeProvider timeProvider = host.Services.GetRequiredService<TimeProvider>() as MockTimeProvider;
+
+                const string hostName = "exampleHost";
+                Guid instanceId = Guid.NewGuid();
+                HostInfo hostInfo = new HostInfo(hostName, timeProvider);
+                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, new TestProcessInfo(instanceId), hostInfo, logger);
+
+                ActionOptionsDependencyAnalyzer analyzer = ActionOptionsDependencyAnalyzer.Create(context);
+                PassThroughOptions newSettings = (PassThroughOptions)analyzer.SubstituteOptionValues(new Dictionary<string, CollectionRuleActionResult>(), 1, settings);
+
+                Assert.Equal(hostName, newSettings.Input1);
+                Assert.Equal(hostInfo.TimeProvider.GetUtcNow().ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture), newSettings.Input2);
+
+            }, serviceCollection =>
+            {
+                serviceCollection.AddSingleton<TimeProvider, MockTimeProvider>();
                 serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions>(nameof(PassThroughAction));
             });
         }
@@ -200,7 +238,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 ILogger<CollectionRuleService> logger = host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
                 TimeProvider timeProvider = host.Services.GetRequiredService<TimeProvider>();
 
-                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, null, logger, timeProvider);
+                Guid instanceId = Guid.NewGuid();
+                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, new TestProcessInfo(instanceId), HostInfo.GetCurrent(timeProvider), logger);
 
                 ActionOptionsDependencyAnalyzer analyzer = ActionOptionsDependencyAnalyzer.Create(context);
                 analyzer.GetActionDependencies(1);
@@ -240,7 +279,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 TimeProvider timeProvider = host.Services.GetRequiredService<TimeProvider>();
 
                 Guid instanceId = Guid.NewGuid();
-                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, new TestProcessInfo(instanceId), logger, timeProvider);
+                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, new TestProcessInfo(instanceId), HostInfo.GetCurrent(timeProvider), logger);
 
                 ActionOptionsDependencyAnalyzer analyzer = ActionOptionsDependencyAnalyzer.Create(context);
                 PassThroughOptions newSettings = (PassThroughOptions)analyzer.SubstituteOptionValues(new Dictionary<string, CollectionRuleActionResult>(), 1, settings);
@@ -286,7 +325,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 Guid instanceId = Guid.NewGuid();
 
-                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, new TestProcessInfo(instanceId), logger, timeProvider);
+                CollectionRuleContext context = new(DefaultRuleName, ruleOptions, new TestProcessInfo(instanceId), HostInfo.GetCurrent(timeProvider), logger);
 
                 int callbackCount = 0;
                 Action startCallback = () => callbackCount++;

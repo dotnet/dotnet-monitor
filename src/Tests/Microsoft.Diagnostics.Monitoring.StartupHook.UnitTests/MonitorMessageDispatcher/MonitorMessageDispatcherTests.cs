@@ -39,6 +39,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
         public void InvokesRegisteredCallback()
         {
             // Arrange
+            const ushort commandSet = 1;
+            const ushort command = 2;
             using MockMessageSource messageSource = new();
             using MonitorMessageDispatcher dispatcher = new(messageSource);
 
@@ -49,14 +51,14 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
             };
 
             bool didGetCallback = false;
-            dispatcher.RegisterCallback<SamplePayload>(IpcCommand.Callstack, (payload) =>
+            dispatcher.RegisterCallback<SamplePayload>(command, (payload) =>
             {
                 didGetCallback = true;
                 Assert.Equal(expectedPayload, payload);
             });
 
             // Act
-            messageSource.RaiseMessage(new JsonProfilerMessage(IpcCommand.Callstack, expectedPayload));
+            messageSource.RaiseMessage(new JsonProfilerMessage(commandSet, command, expectedPayload));
 
             // Assert
             Assert.True(didGetCallback);
@@ -66,11 +68,12 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
         public void Throws_OnUnhandledCommand()
         {
             // Arrange
+            const ushort commandSet = 1;
             using MockMessageSource messageSource = new();
             using MonitorMessageDispatcher dispatcher = new(messageSource);
 
             // Act and Assert
-            Assert.Throws<NotSupportedException>(() => messageSource.RaiseMessage(new JsonProfilerMessage(IpcCommand.Callstack, new object())));
+            Assert.Throws<NotSupportedException>(() => messageSource.RaiseMessage(new JsonProfilerMessage(commandSet, command: 0, new object())));
         }
     }
 }

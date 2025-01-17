@@ -8,8 +8,6 @@ pr: none
 
 variables:
 - template: /eng/common/templates-official/variables/pool-providers.yml@self
-- group: DotNet-ApiScan
-- group: DotNetBuilds storage account read tokens
 - group: Release-Pipeline
 - name: _TeamName
   value: DotNetCore
@@ -31,7 +29,7 @@ extends:
         workspace:
           clean: all
 
-        steps:    
+        steps:
         - task: PowerShell@2
           displayName: Get BAR ID
           inputs:
@@ -41,40 +39,40 @@ extends:
               -TaskVariableName 'BuildBarId'
           env:
             SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-        
-        - task: PowerShell@2
+
+        - task: AzureCLI@2
           displayName: 'Get Build Version (Full)'
           inputs:
-            filePath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBuildVersion.ps1
+            azureSubscription: "Darc: Maestro Production"
+            scriptType: ps
+            scriptPath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBuildVersion.ps1
             arguments: >-
               -BarId $(BuildBarId)
-              -MaestroToken $(MaestroAccessToken)
               -TaskVariableName 'BuildVersion'
 
-        - task: PowerShell@2
+        - task: AzureCLI@2
           displayName: 'Get Build Version (Major.Minor)'
           inputs:
-            filePath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBuildVersion.ps1
+            azureSubscription: "Darc: Maestro Production"
+            scriptType: ps
+            scriptPath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBuildVersion.ps1
             arguments: >-
               -BarId $(BuildBarId)
-              -MaestroToken $(MaestroAccessToken)
               -TaskVariableName 'BuildMajorMinorVersion'
               -MajorMinorOnly
 
         # Only scan the files that are being shipped; use the same gathering procedure
         # that the asset staging process uses.
-        - task: PowerShell@2
+        - task: AzureCLI@2
           displayName: 'Download Build Assets'
           inputs:
-            targetType: filePath
-            filePath: '$(Build.Repository.LocalPath)/eng/release/Scripts/AcquireBuild.ps1'
+            azureSubscription: 'DotNetStaging'
+            scriptType: ps
+            scriptPath: '$(Build.Repository.LocalPath)/eng/release/Scripts/AcquireBuild.ps1'
             arguments: >-
               -BarBuildId "$(BuildBarId)"
               -AzdoToken "$(dn-bot-all-drop-rw-code-rw-release-all)"
-              -MaestroToken "$(MaestroAccessToken)"
-              -GitHubToken "$(BotAccount-dotnet-bot-repo-PAT)"
               -DownloadTargetPath "$(System.ArtifactsDirectory)\BuildAssets"
-              -SasSuffixes "$(dotnetbuilds-internal-checksums-container-read-token),$(dotnetbuilds-internal-container-read-token)"
               -ReleaseVersion "$(BuildVersion)"
               -Separated $False
             workingDirectory: '$(Build.Repository.LocalPath)'
@@ -102,6 +100,23 @@ extends:
               -SourcePath '$(System.ArtifactsDirectory)\UnpackedBinaries'
               -TargetPath '$(System.ArtifactsDirectory)\ScannableBinaries'
 
+        - task: AzureCLI@2
+          displayName: 'Login to APISCan Identity (Step 1)'
+          inputs:
+            azureSubscription: 'dotnet-apiscan'
+            scriptType: pscore
+            scriptLocation: inlineScript
+            addSpnToEnvironment: true
+            inlineScript: |
+                echo "##vso[task.setvariable variable=ARM_CLIENT_ID;issecret=true]$env:servicePrincipalId"
+                echo "##vso[task.setvariable variable=ARM_ID_TOKEN;issecret=true]$env:idToken"
+                echo "##vso[task.setvariable variable=ARM_TENANT_ID;issecret=true]$env:tenantId"
+        # Re-log in
+        - script: |
+            az login --service-principal -u $(ARM_CLIENT_ID) --tenant $(ARM_TENANT_ID) --allow-no-subscriptions --federated-token $(ARM_ID_TOKEN)
+
+          displayName: 'Login to APISCan Identity (Step 2)'
+
         - task: APIScan@2
           displayName: Run APIScan
           inputs:
@@ -111,7 +126,7 @@ extends:
             softwareBuildNum: '$(resources.pipeline.Build.runID)'
             symbolsFolder: 'SRV*http://symweb;$(System.ArtifactsDirectory)\UnpackedSymbols'
           env:
-            AzureServicesAuthConnectionString: runAs=App;AppId=$(apiscan-service-principal-app-id);TenantId=72f988bf-86f1-41af-91ab-2d7cd011db47;AppKey=$(apiscan-service-principal-app-secret)
+            AzureServicesAuthConnectionString: RunAs=Developer;DeveloperTool=AzureCli
           continueOnError: true
 
         - task: PublishSecurityAnalysisLogs@3

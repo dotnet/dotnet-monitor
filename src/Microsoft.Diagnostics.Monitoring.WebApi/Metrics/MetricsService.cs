@@ -17,7 +17,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     /// </summary>
     internal sealed class MetricsService : BackgroundService
     {
-        private MetricsPipeline _counterPipeline;
+        private MetricsPipeline? _counterPipeline;
         private readonly IDiagnosticServices _services;
         private readonly MetricsStoreService _store;
         private IOptionsMonitor<MetricsOptions> _optionsMonitor;
@@ -55,7 +55,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     using var optionsTokenSource = new CancellationTokenSource();
 
                     //If metric options change, we need to cancel the existing metrics pipeline and restart with the new settings.
-                    using IDisposable monitorListener = _optionsMonitor.OnChange((_, _) => optionsTokenSource.SafeCancel());
+                    using IDisposable? monitorListener = _optionsMonitor.OnChange((_, _) => optionsTokenSource.SafeCancel());
 
                     MetricsPipelineSettings counterSettings = MetricsSettingsFactory.CreateSettings(counterOptions, Timeout.Infinite, options);
                     counterSettings.UseSharedSession = pi.EndpointInfo.RuntimeVersion?.Major >= 8;

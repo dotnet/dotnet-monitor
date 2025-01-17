@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Identification;
+using System;
 
 namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
 {
@@ -22,6 +23,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
                 data.ModuleId,
                 data.Token,
                 (uint)data.Flags,
+                Convert.ToUInt32(data.StackTraceHidden),
                 data.TypeArgs);
         }
 
@@ -38,9 +40,11 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
         {
             _source.FunctionDescription(
                 functionId,
+                data.MethodToken,
                 data.ParentClass,
-                data.ParentToken,
+                data.ParentClassToken,
                 data.ModuleId,
+                Convert.ToUInt32(data.StackTraceHidden),
                 data.Name,
                 data.TypeArgs,
                 data.ParameterTypes);
@@ -50,6 +54,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
         {
             _source.ModuleDescription(
                 moduleId,
+                data.ModuleVersionId,
                 data.Name);
         }
 
@@ -67,6 +72,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
                 moduleId,
                 typeToken,
                 data.OuterToken,
+                Convert.ToUInt32(data.StackTraceHidden),
                 data.Name,
                 data.Namespace);
         }

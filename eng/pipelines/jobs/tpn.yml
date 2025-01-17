@@ -8,7 +8,6 @@ jobs:
     variables:
     - _InternalInstallArgs: ''
     - ${{ if eq(variables['System.TeamProject'], 'internal') }}:
-      - group: DotNetBuilds storage account read tokens
       - _InternalInstallArgs: >-
           /p:DotNetRuntimeSourceFeed=https://dotnetbuilds.blob.core.windows.net/internal
           /p:DotNetRuntimeSourceFeedKey=$(dotnetbuilds-internal-container-read-token-base64)
@@ -16,6 +15,9 @@ jobs:
     - template: /eng/pipelines/steps/setup-nuget-sources.yml@self
       parameters:
         osGroup: Windows
+
+    # Populate internal runtime access variables
+    - template: /eng/common/templates/steps/enable-internal-runtimes.yml
 
     # Only restore the projects that are shipped so only packages we ship get included in the below CG scan
     - script: >-
@@ -41,6 +43,7 @@ jobs:
 
     - task: notice@0
       displayName: Generate TPN file
+      retryCountOnTaskFailure: 5
       inputs:
         outputfile: '$(Build.ArtifactStagingDirectory)/$(_TPNFile)'
         outputformat: text

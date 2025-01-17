@@ -235,7 +235,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     int processId = await appRunner.ProcessIdTask;
 
                     OperationResponse response1 = await EgressTraceWithDelay(apiClient, processId);
-                    OperationResponse response3 = await EgressTraceWithDelay(apiClient, processId);
+                    OperationResponse response2 = await EgressTraceWithDelay(apiClient, processId);
                     using HttpResponseMessage traceDirect1 = await TraceWithDelay(apiClient, processId);
                     Assert.Equal(HttpStatusCode.OK, traceDirect1.StatusCode);
 
@@ -253,10 +253,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     Assert.Equal(await egressDirect.Content.ReadAsStringAsync(), await traceDirect.Content.ReadAsStringAsync());
 
                     await CancelEgressOperation(apiClient, response1);
-                    OperationResponse response4 = await EgressTraceWithDelay(apiClient, processId, delay: false);
+                    OperationResponse response3 = await EgressTraceWithDelay(apiClient, processId, delay: false);
 
+                    await CancelEgressOperation(apiClient, response2);
                     await CancelEgressOperation(apiClient, response3);
-                    await CancelEgressOperation(apiClient, response4);
 
                     await appRunner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 },
@@ -426,9 +426,13 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
-        private static async Task<HttpResponseMessage> TraceWithDelay(ApiClient client, int processId, bool delay = true)
+        private async Task<HttpResponseMessage> TraceWithDelay(ApiClient client, int processId, bool delay = true)
         {
-            HttpResponseMessage message = await client.ApiCall(FormattableString.Invariant($"/trace?pid={processId}&durationSeconds=-1"));
+            HttpResponseMessage message = await RetryUtilities.RetryAsync(
+                func: () => client.ApiCall(FormattableString.Invariant($"/trace?pid={processId}&durationSeconds=-1")),
+                shouldRetry: IsTransientApiFailure,
+                outputHelper: _outputHelper);
+
             if (delay)
             {
                 await Task.Delay(TimeSpan.FromSeconds(1));
@@ -436,17 +440,22 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             return message;
         }
 
-        private static Task<HttpResponseMessage> EgressDirect(ApiClient client, int processId)
+        private async Task<HttpResponseMessage> EgressDirect(ApiClient client, int processId)
         {
-            return client.ApiCall(FormattableString.Invariant($"/trace?pid={processId}&egressProvider={FileProviderName}"));
+            return await RetryUtilities.RetryAsync(
+                func: () => client.ApiCall(FormattableString.Invariant($"/trace?pid={processId}&egressProvider={FileProviderName}")),
+                shouldRetry: IsTransientApiFailure,
+                outputHelper: _outputHelper);
         }
 
-        private static async Task<OperationResponse> EgressTraceWithDelay(ApiClient apiClient, int processId, bool delay = true)
+        private async Task<OperationResponse> EgressTraceWithDelay(ApiClient apiClient, int processId, bool delay = true)
         {
             try
             {
-                OperationResponse response = await apiClient.EgressTraceAsync(processId, durationSeconds: -1, FileProviderName);
-                return response;
+                return await RetryUtilities.RetryAsync(
+                    func: () => apiClient.EgressTraceAsync(processId, durationSeconds: -1, FileProviderName),
+                    shouldRetry: IsTransientApiFailure,
+                    outputHelper: _outputHelper);
             }
             finally
             {
@@ -472,6 +481,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             Assert.Equal(expected.EgressProviderName, summary.EgressProviderName);
             Assert.Equal(expected.IsStoppable, summary.IsStoppable);
         }
+
+        // When the process could not be found (due to transient responsiveness issues), dotnet-monitor APIs will return a 400 status code.
+        private static bool IsTransientApiFailure(Exception ex)
+            => ex is ValidationProblemDetailsException validationException
+            && validationException.StatusCode == HttpStatusCode.BadRequest;
 
         public void Dispose()
         {

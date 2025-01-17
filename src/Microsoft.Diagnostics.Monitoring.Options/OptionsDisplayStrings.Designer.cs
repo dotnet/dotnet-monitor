@@ -259,6 +259,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The name of the generated artifact..
+        /// </summary>
+        public static string DisplayAttributeDescription_CollectArtifactOptions_ArtifactName {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_CollectArtifactOptions_ArtifactName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The duration of time in which the artifact is collected..
         /// </summary>
         public static string DisplayAttributeDescription_CollectArtifactOptions_Duration {
@@ -1249,6 +1258,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         public static string DisplayAttributeDescription_MetricsOptions_Providers {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_MetricsOptions_Providers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The expected value of the &apos;iss&apos; or Issuer field in the JWT (JSON Web Token)..
+        /// </summary>
+        public static string DisplayAttributeDescription_MonitorApiKeyOptions_Issuer {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_MonitorApiKeyOptions_Issuer", resourceCulture);
             }
         }
         

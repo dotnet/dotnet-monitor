@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi%2Fmetrics)
-
 # Metrics - Get
 
 Gets a snapshot of metrics in the Prometheus exposition format of a single process.

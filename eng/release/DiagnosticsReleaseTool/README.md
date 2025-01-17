@@ -54,13 +54,11 @@ This can be shared by anyone who needs to release files to CDN and generate rele
                 "ToolName": "dotnet-counters",
                 "Rid": "linux-arm",
                 "PublishRelativePath": "ToolBundleAssets\\linux-arm\\dotnet-counters",
-                "PublishedPath": "\\\\random\\share\\68656-20201030-04\\ToolBundleAssets\\linux-arm\\dotnet-counters"
             }
         ],
         "NugetAssets": [
             {
                 "PublishRelativePath": "NugetAssets\\dotnet-counters.5.0.152202.nupkg",
-                "PublishedPath": "\\\\random\\share\\68656-20201030-04\\ToolBundleAssets\\linux-arm\\dotnet-counters"
             }
         ]
     }

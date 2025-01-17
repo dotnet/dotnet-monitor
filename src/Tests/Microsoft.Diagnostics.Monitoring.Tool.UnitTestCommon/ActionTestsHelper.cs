@@ -20,18 +20,19 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
     internal static class ActionTestsHelper
     {
-        public static TargetFrameworkMoniker[] tfmsToTest = new TargetFrameworkMoniker[]
-        {
+        private static TargetFrameworkMoniker[] tfmsToTest =
+        [
             TargetFrameworkMoniker.Net60,
             TargetFrameworkMoniker.Net70,
             TargetFrameworkMoniker.Net80
-        };
-        public static TargetFrameworkMoniker[] tfms6PlusToTest = new TargetFrameworkMoniker[]
-        {
+        ];
+
+        private static TargetFrameworkMoniker[] tfms6PlusToTest =
+        [
             TargetFrameworkMoniker.Net60,
             TargetFrameworkMoniker.Net70,
             TargetFrameworkMoniker.Net80
-        };
+        ];
 
         public static IEnumerable<object[]> GetTfms()
         {
@@ -57,6 +58,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 yield return new object[] { tfm, TraceProfile.Metrics };
                 yield return new object[] { tfm, TraceProfile.Http };
                 yield return new object[] { tfm, TraceProfile.Cpu };
+                yield return new object[] { tfm, TraceProfile.GcCollect };
             }
         }
 
@@ -114,11 +116,14 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             }
         }
 
-        internal static string ValidateEgressPath(CollectionRuleActionResult result)
+        internal static string ValidateEgressPath(CollectionRuleActionResult result, string expectedArtifactName = null)
         {
             Assert.NotNull(result.OutputValues);
             Assert.True(result.OutputValues.TryGetValue(CollectionRuleActionConstants.EgressPathOutputValueName, out string egressPath));
             Assert.True(File.Exists(egressPath));
+
+            if (expectedArtifactName != null)
+                Assert.Equal(expectedArtifactName, Path.GetFileName(egressPath));
 
             return egressPath;
         }

@@ -35,7 +35,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 return code.ToHashCode();
             }
 
-            public override bool Equals(object obj)
+            public override bool Equals(object? obj)
             {
                 if (obj is MetricKey metricKey)
                 {
@@ -99,7 +99,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             lock (_allMetrics)
             {
                 var metricKey = new MetricKey(metric);
-                if (!_allMetrics.TryGetValue(metricKey, out Queue<ICounterPayload> metrics))
+                if (!_allMetrics.TryGetValue(metricKey, out Queue<ICounterPayload>? metrics))
                 {
                     metrics = new Queue<ICounterPayload>();
                     _allMetrics.Add(metricKey, metrics);
@@ -120,7 +120,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         public async Task SnapshotMetrics(Stream outputStream, CancellationToken token)
         {
-            Dictionary<MetricKey, Queue<ICounterPayload>> copy = null;
+            Dictionary<MetricKey, Queue<ICounterPayload>>? copy = null;
             lock (_allMetrics)
             {
                 copy = new Dictionary<MetricKey, Queue<ICounterPayload>>();
@@ -186,7 +186,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private static bool IsMeter(ICounterPayload payload) =>
             payload switch
             {
-                GaugePayload or PercentilePayload or CounterEndedPayload or RatePayload => true,
+                GaugePayload or PercentilePayload or CounterEndedPayload or RatePayload or AggregatePercentilePayload or UpDownCounterPayload => true,
                 _ => false
             };
 

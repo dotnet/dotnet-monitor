@@ -20,66 +20,80 @@ stages:
       - group: DotNet-Diagnostics-Storage
       - group: DotNet-DotNetStage-Storage
       - group: Release-Pipeline
-      - group: DotNetBuilds storage account read tokens
     steps:
     - task: UseDotNet@2
-      displayName: 'Use .NET 6'
+      displayName: 'Use .NET 8'
       inputs:
         packageType: runtime
-        version: 6.x
+        version: 8.x
         installationPath: '$(Build.Repository.LocalPath)\.dotnet'
+
     - script: mkdir $(System.ArtifactsDirectory)\StagingToolLogs
       displayName: Create Staging Tool Logs Directory
+
     - script: '$(Build.SourcesDirectory)\dotnet.cmd build $(Build.Repository.LocalPath)\eng\release\DiagnosticsReleaseTool\DiagnosticsReleaseTool.csproj -c Release /bl'
       workingDirectory: '$(System.ArtifactsDirectory)\StagingToolLogs'
       displayName: 'Build Staging Tool'
+
     # Run tool for release and test release branches
     - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest'), or(startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), startsWith(variables['Build.SourceBranch'], 'refs/heads/internal/release/'), startsWith(variables['Build.SourceBranch'], 'refs/heads/test/release/'))) }}:
       - template: /eng/common/templates-official/post-build/setup-maestro-vars.yml@self
-      - task: PowerShell@2
+
+      - task: AzureCLI@2
         displayName: Get Build Version
         inputs:
-          filePath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBuildVersion.ps1
+          azureSubscription: "Darc: Maestro Production"
+          scriptType: ps
+          scriptPath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBuildVersion.ps1
           arguments: >-
             -BarId $(BARBuildId)
-            -MaestroToken $(MaestroAccessToken)
             -TaskVariableName 'BuildVersion'
-      - task: PowerShell@2
+
+      - task: AzureCLI@2
         displayName: 'Download Build Assets'
         inputs:
-          targetType: filePath
-          filePath: '$(Build.Repository.LocalPath)/eng/release/Scripts/AcquireBuild.ps1'
+          azureSubscription: 'DotNetStaging'
+          scriptType: ps
+          scriptPath: '$(Build.Repository.LocalPath)/eng/release/Scripts/AcquireBuild.ps1'
           arguments: >-
             -BarBuildId "$(BARBuildId)"
             -AzdoToken "$(dn-bot-all-drop-rw-code-rw-release-all)"
-            -MaestroToken "$(MaestroAccessToken)"
-            -GitHubToken "$(BotAccount-dotnet-bot-repo-PAT)"
             -DownloadTargetPath "$(System.ArtifactsDirectory)\BuildAssets"
-            -SasSuffixes "$(dotnetbuilds-internal-checksums-container-read-token),$(dotnetbuilds-internal-container-read-token)"
             -ReleaseVersion "$(Build.BuildNumber)"
           workingDirectory: '$(Build.Repository.LocalPath)'
         continueOnError: true
-      - script: >-
-          $(Build.SourcesDirectory)\dotnet.cmd run --project $(Build.Repository.LocalPath)\eng\release\DiagnosticsReleaseTool\DiagnosticsReleaseTool.csproj -c Release
-          --
-          prepare-release
-          --input-drop-path "$(System.ArtifactsDirectory)\BuildAssets"
-          --tool-manifest "$(Build.Repository.LocalPath)\eng\release\tool-list.json"
-          --staging-directory "$(System.ArtifactsDirectory)\AssetsLayout"
-          --release-name "$(Build.BuildNumber)"
-          --build-version "$(BuildVersion)"
-          --account-name "$(dotnet-diagnostics-storage-accountname)"
-          --account-key "$(dotnetstage-storage-key)"
-          --sas-valid-days "$(dotnet-diagnostics-storage-retentiondays)"
-          -v True
-        workingDirectory: '$(System.ArtifactsDirectory)\StagingToolLogs'
-        displayName: 'Stage Build Assets and Manifest'
+
+      - task: AzureCLI@2
+        displayName: 'Manifest Generation and Asset Publishing'
+        inputs:
+          workingDirectory: '$(System.ArtifactsDirectory)\StagingToolLogs'
+          azureSubscription: 'dotnetstage-dotnet-monitor-rw'
+          scriptType: pscore
+          scriptLocation: inlineScript
+          addSpnToEnvironment: true
+          inlineScript: >-
+            $(Build.SourcesDirectory)\dotnet.cmd run
+            --project $(Build.Repository.LocalPath)\eng\release\DiagnosticsReleaseTool\DiagnosticsReleaseTool.csproj
+            -c Release
+            --
+            prepare-release
+            --input-drop-path "$(System.ArtifactsDirectory)\BuildAssets"
+            --tool-manifest "$(Build.Repository.LocalPath)\eng\release\tool-list.json"
+            --staging-directory "$(System.ArtifactsDirectory)\AssetsLayout"
+            --release-name "$(Build.BuildNumber)"
+            --build-version "$(BuildVersion)"
+            --account-name "$(dotnet-diagnostics-storage-accountname)"
+            --container-name $(dotnet-monitor-container-name)
+            --client-id "$env:servicePrincipalId"
+            -v True
+
       - template: /eng/pipelines/steps/publish-pipeline-artifact.yml@self
         parameters:
           displayName: 'Upload Assets Layout'
           targetPath: '$(System.ArtifactsDirectory)\AssetsLayout'
           artifact: 'StagingToolAssetsLayout'
           is1ESPipeline: ${{ parameters.is1ESPipeline }}
+
       # Only tag build from real release branches
       - ${{ if not(startsWith(variables['Build.SourceBranch'], 'refs/heads/test/release/')) }}:
         - task: Powershell@2
@@ -87,12 +101,14 @@ stages:
           inputs:
             targetType: inline
             script: Write-Host "##vso[build.addbuildtag]MonitorRelease"
+
       - template: /eng/pipelines/steps/publish-pipeline-artifact.yml@self
         parameters:
           displayName: 'Upload Staging Tool Logs'
           targetPath: '$(System.ArtifactsDirectory)\StagingToolLogs'
           artifact: 'StagingToolLogs'
           is1ESPipeline: ${{ parameters.is1ESPipeline }}
+
     - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
       - task: Powershell@2
         displayName: 'Tag Build with update-docker'

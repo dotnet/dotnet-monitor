@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 #include "MainProfiler.h"
+#include "../Communication/MessageCallbackManager.h"
 #include "Environment/EnvironmentHelper.h"
 #include "Environment/ProfilerEnvironment.h"
 #include "Logging/LoggerFactory.h"
@@ -21,9 +22,7 @@ using namespace std;
 #define DLLEXPORT
 #endif
 
-typedef INT32 (STDMETHODCALLTYPE *ManagedMessageCallback)(INT16, const BYTE*, UINT64);
-mutex g_managedMessageCallbackMutex; // guards g_pManagedMessageCallback
-ManagedMessageCallback g_pManagedMessageCallback = nullptr;
+MessageCallbackManager g_MessageCallbacks;
 
 GUID MainProfiler::GetClsid()
 {
@@ -52,6 +51,8 @@ STDMETHODIMP MainProfiler::Shutdown()
 
     _commandServer->Shutdown();
     _commandServer.reset();
+
+    g_MessageCallbacks.Unregister(static_cast<unsigned short>(CommandSet::Profiler));
 
     return ProfilerBase::Shutdown();
 }
@@ -240,35 +241,50 @@ HRESULT MainProfiler::InitializeCommandServer()
     _commandServer = std::unique_ptr<CommandServer>(new CommandServer(m_pLogger, m_pCorProfilerInfo));
     tstring socketPath = sharedPath + separator + instanceId + _T(".sock");
 
-    IfFailRet(_commandServer->Start(to_string(socketPath), [this](const IpcMessage& message)-> HRESULT { return this->MessageCallback(message); }));
+    if (!g_MessageCallbacks.TryRegister(static_cast<unsigned short>(CommandSet::Profiler), [this](const IpcMessage& message)-> HRESULT { return this->ProfilerCommandSetCallback(message); }))
+    {
+        m_pLogger->Log(LogLevel::Error, _LS("Unable to register Profiler CommandSet callback."));
+        return E_FAIL;
+    }
+
+    hr = _commandServer->Start(
+        to_string(socketPath),
+        [this](const IpcMessage& message)-> HRESULT { return this->MessageCallback(message); },
+        [this](const IpcMessage& message)-> HRESULT { return this->ValidateMessage(message); });
+    if (FAILED(hr))
+    {
+        g_MessageCallbacks.Unregister(static_cast<unsigned short>(CommandSet::Profiler));
+        return hr;
+    }
 
     return S_OK;
 }
 
 HRESULT MainProfiler::MessageCallback(const IpcMessage& message)
 {
-    m_pLogger->Log(LogLevel::Debug, _LS("Message received from client %d"), message.Command);
+    m_pLogger->Log(LogLevel::Debug, _LS("Message received from client %hu:%hu"), message.CommandSet, message.Command);
+    return g_MessageCallbacks.DispatchMessage(message);
+}
 
-    switch (message.Command)
+HRESULT MainProfiler::ValidateMessage(const IpcMessage& message)
+{
+    if (g_MessageCallbacks.IsRegistered(message.CommandSet))
     {
-    case IpcCommand::Unknown:
-        return E_FAIL;
-    case IpcCommand::Callstack:
-        return ProcessCallstackMessage();
-    default:
-        lock_guard<mutex> lock(g_managedMessageCallbackMutex);
-        if (g_pManagedMessageCallback == nullptr)
-        {
-            return E_FAIL;
-        }
-
-        return g_pManagedMessageCallback(
-            static_cast<INT16>(message.Command),
-            message.Payload.data(),
-            message.Payload.size());
+        return S_OK;
     }
 
-    return E_FAIL;
+    return E_NOT_SUPPORTED;
+}
+
+HRESULT MainProfiler::ProfilerCommandSetCallback(const IpcMessage& message)
+{
+    switch (static_cast<ProfilerCommand>(message.Command))
+    {
+    case ProfilerCommand::Callstack:
+        return ProcessCallstackMessage();
+    default:
+        return E_FAIL;
+    }
 }
 
 HRESULT MainProfiler::ProcessCallstackMessage()
@@ -318,34 +334,22 @@ HRESULT MainProfiler::ProcessCallstackMessage()
 }
 
 STDAPI DLLEXPORT RegisterMonitorMessageCallback(
+    UINT16 commandSet,
     ManagedMessageCallback pCallback)
 {
-    //
-    // Note: Require locking to access g_pManagedMessageCallback as it is
-    // used on another thread (in ProcessCallstackMessage).
-    //
-    // A lock-free approach could be used to safely update and observe the value of the callback,
-    // however that would introduce the edge case where the provided callback is unregistered
-    // right before it is invoked.
-    // This means that the unregistered callback would still be invoked, leading to potential issues
-    // such as calling into an instanced method that has been disposed.
-    //
-    // For simplicitly just use locking for now as it prevents the above edge case.
-    //
-    lock_guard<mutex> lock(g_managedMessageCallbackMutex);
-    if (g_pManagedMessageCallback != nullptr)
+    if (g_MessageCallbacks.TryRegister(commandSet, pCallback))
     {
-        return E_FAIL;
+        return S_OK;
     }
-    g_pManagedMessageCallback = pCallback;
 
-    return S_OK;
+    return E_FAIL;
 }
 
-STDAPI DLLEXPORT UnregisterMonitorMessageCallback()
+STDAPI DLLEXPORT UnregisterMonitorMessageCallback(
+    UINT16 commandSet
+)
 {
-    lock_guard<mutex> lock(g_managedMessageCallbackMutex);
-    g_pManagedMessageCallback = nullptr;
+    g_MessageCallbacks.Unregister(commandSet);
 
     return S_OK;
 }

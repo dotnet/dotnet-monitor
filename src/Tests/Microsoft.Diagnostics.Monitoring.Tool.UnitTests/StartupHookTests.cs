@@ -4,7 +4,7 @@
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.NETCore.Client;
-using Microsoft.Diagnostics.Tools.Monitor.HostingStartup;
+using Microsoft.Diagnostics.Tools.Monitor.StartupHook;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;

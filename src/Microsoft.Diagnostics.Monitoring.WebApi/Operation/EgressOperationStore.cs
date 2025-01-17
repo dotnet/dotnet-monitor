@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    internal sealed class EgressOperationStore
+    internal sealed class EgressOperationStore : IEgressOperationStore
     {
         private sealed class EgressEntry
         {
@@ -23,16 +23,19 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 }
             }
 
+#nullable disable
             public ExecutionResult<EgressResult> ExecutionResult { get; set; }
-            public Models.OperationState State { get; set; }
+#nullable restore
 
-            public EgressRequest EgressRequest { get; set; }
+            public required Models.OperationState State { get; set; }
+
+            public required EgressRequest EgressRequest { get; set; }
 
             public DateTime CreatedDateTime { get; } = DateTime.UtcNow;
 
-            public Guid OperationId { get; set; }
+            public required Guid OperationId { get; set; }
 
-            public ISet<string> Tags { get; set; }
+            public required ISet<string> Tags { get; set; }
 
             public TaskCompletionSource TaskCompletionSource { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
         }
@@ -55,9 +58,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             EgressEntry entry = await AddOperationInternal(egressOperation, RequestLimitTracker.Unlimited);
 
-            await entry?.TaskCompletionSource.Task;
+            await entry.TaskCompletionSource.Task;
 
-            return entry?.ExecutionResult;
+            return entry.ExecutionResult;
         }
 
         public async Task<Guid> AddOperation(IEgressOperation egressOperation, string limitKey)
@@ -105,7 +108,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             lock (_requests)
             {
-                if (!_requests.TryGetValue(operationId, out EgressEntry entry))
+                if (!_requests.TryGetValue(operationId, out EgressEntry? entry))
                 {
                     throw new InvalidOperationException(Strings.ErrorMessage_OperationNotFound);
                 }
@@ -125,7 +128,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
                 CancellationToken token = entry.EgressRequest.CancellationTokenSource.Token;
                 _ = Task.Run(() => entry.EgressRequest.EgressOperation.StopAsync(token), token)
-                    .ContinueWith(task => onStopException(task.Exception),
+                    .ContinueWith(task => onStopException(task.Exception!),
                     token,
                     TaskContinuationOptions.OnlyOnFaulted,
                     TaskScheduler.Default);
@@ -136,7 +139,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             lock (_requests)
             {
-                if (!_requests.TryGetValue(operationId, out EgressEntry entry))
+                if (!_requests.TryGetValue(operationId, out EgressEntry? entry))
                 {
                     throw new InvalidOperationException(Strings.ErrorMessage_OperationNotFound);
                 }
@@ -154,7 +157,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             lock (_requests)
             {
-                if (!_requests.TryGetValue(operationId, out EgressEntry entry))
+                if (!_requests.TryGetValue(operationId, out EgressEntry? entry))
                 {
                     throw new InvalidOperationException(Strings.ErrorMessage_OperationNotFound);
                 }
@@ -178,7 +181,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             lock (_requests)
             {
-                if (!_requests.TryGetValue(operationId, out EgressEntry entry))
+                if (!_requests.TryGetValue(operationId, out EgressEntry? entry))
                 {
                     throw new InvalidOperationException(Strings.ErrorMessage_OperationNotFound);
                 }
@@ -206,7 +209,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
         }
 
-        public IEnumerable<Models.OperationSummary> GetOperations(ProcessKey? processKey, string tags)
+        public IEnumerable<Models.OperationSummary> GetOperations(ProcessKey? processKey, string? tags)
         {
             lock (_requests)
             {
@@ -278,7 +281,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             lock (_requests)
             {
-                if (!_requests.TryGetValue(operationId, out EgressEntry entry))
+                if (!_requests.TryGetValue(operationId, out EgressEntry? entry))
                 {
                     throw new InvalidOperationException(Strings.ErrorMessage_OperationNotFound);
                 }
@@ -307,11 +310,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 }
                 else if (entry.State == Models.OperationState.Failed)
                 {
+#nullable disable
                     status.Error = new Models.OperationError
                     {
                         Code = entry.ExecutionResult.ProblemDetails.Status?.ToString(CultureInfo.InvariantCulture),
                         Message = entry.ExecutionResult.ProblemDetails.Detail
                     };
+#nullable restore
                 }
 
                 return status;

@@ -1,6 +1,3 @@
-
-### Was this documentation helpful? [Share feedback](https://www.research.net/r/DGDQWXH?src=documentation%2Fapi%2Fstacks)
-
 # Stacks - Get
 
 Captures the call stacks of a target process. Note that only managed frames are collected.
@@ -45,6 +42,9 @@ Allowed schemes:
 
 ## Responses
 
+> [!NOTE]
+> Parameter type information is not available through this feature. The `parameterTypes` field of [CallStackFrame](definitions.md#callstackframe) is omitted.
+
 | Name | Type | Description | Content Type |
 |---|---|---|---|
 | 200 OK | [CallStackResult](definitions.md#callstackresult) | Callstacks for all managed threads in the process. | `application/json` |
@@ -62,7 +62,7 @@ Allowed schemes:
 ### Sample Request
 
 ```http
-GET /stack?pid=21632 HTTP/1.1
+GET /stacks?pid=21632 HTTP/1.1
 Host: localhost:52323
 Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 Accept: application/json
@@ -81,26 +81,36 @@ Location: localhost:52323/operations/67f07e40-5cca-4709-9062-26302c484f18
     "frames": [
         {
             "methodName": "GetQueuedCompletionStatus",
+            "methodToken": 100663634,
             "typeName": "Interop\u002BKernel32",
             "moduleName": "System.Private.CoreLib.dll",
+            "moduleVersionId": "194ddabd-a802-4520-90ef-854e2f1cd606",
+            "hidden": false
         },
         {
             "methodName": "WaitForSignal",
+            "methodToken": 100663639,
             "typeName": "System.Threading.LowLevelLifoSemaphore",
             "moduleName": "System.Private.CoreLib.dll",
+            "moduleVersionId": "194ddabd-a802-4520-90ef-854e2f1cd606",
+            "hidden": false
         },
         {
             "methodName": "Wait",
+            "methodToken": 100663643,
             "typeName": "System.Threading.LowLevelLifoSemaphore",
             "moduleName": "System.Private.CoreLib.dll",
+            "moduleVersionId": "194ddabd-a802-4520-90ef-854e2f1cd606",
+            "hidden": false
         }
+    ]
 }
 ```
 
 ### Sample Request
 
 ```http
-GET /stack?pid=21632 HTTP/1.1
+GET /stacks?pid=21632 HTTP/1.1
 Host: localhost:52323
 Authorization: Bearer fffffffffffffffffffffffffffffffffffffffffff=
 Accept: text/plain

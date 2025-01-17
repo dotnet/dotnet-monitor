@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 
-using Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions;
+using Microsoft.Diagnostics.Monitoring.StartupHook.Monitoring;
 using Microsoft.Diagnostics.Tools.Monitor.Profiler;
 using System;
 using System.Runtime.InteropServices;
@@ -13,23 +13,31 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
     {
         public event EventHandler<MonitorMessageArgs>? MonitorMessage;
 
-        public delegate int ProfilerMessageCallback(IpcCommand command, IntPtr nativeBuffer, long bufferSize);
+        public delegate int ProfilerMessageCallback(ushort command, IntPtr nativeBuffer, long bufferSize);
 
         [DllImport(ProfilerIdentifiers.NotifyOnlyProfiler.LibraryRootFileName, CallingConvention = CallingConvention.StdCall, PreserveSig = false)]
-        private static extern void RegisterMonitorMessageCallback(IntPtr callback);
+        private static extern void RegisterMonitorMessageCallback(ushort commandSet, IntPtr callback);
 
         [DllImport(ProfilerIdentifiers.NotifyOnlyProfiler.LibraryRootFileName, CallingConvention = CallingConvention.StdCall, PreserveSig = false)]
-        private static extern void UnregisterMonitorMessageCallback();
+        private static extern void UnregisterMonitorMessageCallback(ushort commandSet);
 
         private readonly ProfilerMessageCallback _messageCallbackDelegate;
 
+        private readonly ushort _commandSet;
+
         private long _disposedState;
 
-        public ProfilerMessageSource()
+
+        public ProfilerMessageSource(CommandSet commandSet)
+            : this((ushort)commandSet) { }
+
+        public ProfilerMessageSource(ushort commandSet)
         {
+            _commandSet = commandSet;
+
             ProfilerResolver.InitializeResolver<ProfilerMessageSource>();
             _messageCallbackDelegate = OnProfilerMessage;
-            RegisterMonitorMessageCallback(Marshal.GetFunctionPointerForDelegate(_messageCallbackDelegate));
+            RegisterMonitorMessageCallback(_commandSet, Marshal.GetFunctionPointerForDelegate(_messageCallbackDelegate));
         }
 
         private void RaiseMonitorMessage(MonitorMessageArgs e)
@@ -37,7 +45,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
             MonitorMessage?.Invoke(this, e);
         }
 
-        private int OnProfilerMessage(IpcCommand command, IntPtr nativeBuffer, long bufferSize)
+        private int OnProfilerMessage(ushort command, IntPtr nativeBuffer, long bufferSize)
         {
             using IDisposable _ = MonitorExecutionContextTracker.MonitorScope();
 
@@ -70,7 +78,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.MonitorMessageDispatcher
 
             try
             {
-                UnregisterMonitorMessageCallback();
+                UnregisterMonitorMessageCallback(_commandSet);
             }
             catch
             {
