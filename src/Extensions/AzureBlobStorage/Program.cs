@@ -13,9 +13,9 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
         static async Task<int> Main(string[] args)
         {
             // Expected command line format is: dotnet-monitor-egress-azureblobstorage.exe Egress
-            CliRootCommand rootCommand = new CliRootCommand("Egresses an artifact to Azure storage.");
+            RootCommand rootCommand = new RootCommand("Egresses an artifact to Azure storage.");
 
-            CliCommand egressCmd = EgressHelper.CreateEgressCommand<AzureBlobEgressProvider, AzureBlobEgressProviderOptions>(ConfigureServices);
+            Command egressCmd = EgressHelper.CreateEgressCommand<AzureBlobEgressProvider, AzureBlobEgressProviderOptions>(ConfigureServices);
 
             rootCommand.Add(egressCmd);
 
