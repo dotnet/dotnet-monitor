@@ -25,17 +25,17 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
         private static CancellationTokenSource CancelSource = new CancellationTokenSource();
         private const int ExpectedPayloadProtocolVersion = 1;
 
-        public static CliCommand CreateEgressCommand<TProvider, TOptions>(Action<IServiceCollection> configureServices = null)
+        public static Command CreateEgressCommand<TProvider, TOptions>(Action<IServiceCollection> configureServices = null)
             where TProvider : EgressProvider<TOptions>
             where TOptions : class, new()
         {
-            CliCommand executeCommand = new CliCommand("Execute", "Execute is for egressing an artifact.");
+            Command executeCommand = new Command("Execute", "Execute is for egressing an artifact.");
             executeCommand.SetAction((result, token) => Egress<TProvider, TOptions>(configureServices, token));
 
-            CliCommand validateCommand = new CliCommand("Validate", "Validate is for validating an extension's options on configuration change.");
+            Command validateCommand = new Command("Validate", "Validate is for validating an extension's options on configuration change.");
             validateCommand.SetAction((result, token) => Validate<TProvider, TOptions>(configureServices, token));
 
-            CliCommand egressCommand = new CliCommand("Egress", "The class of extension being invoked.")
+            Command egressCommand = new Command("Egress", "The class of extension being invoked.")
             {
                 executeCommand,
                 validateCommand
