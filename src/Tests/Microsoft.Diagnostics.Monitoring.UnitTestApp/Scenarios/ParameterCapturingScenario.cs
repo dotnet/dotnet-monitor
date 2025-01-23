@@ -14,15 +14,15 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 {
     internal sealed class ParameterCapturingScenario
     {
-        public static CliCommand Command()
+        public static Command Command()
         {
-            CliCommand aspNetAppCommand = new(TestAppScenarios.ParameterCapturing.SubScenarios.AspNetApp);
+            Command aspNetAppCommand = new(TestAppScenarios.ParameterCapturing.SubScenarios.AspNetApp);
             aspNetAppCommand.SetAction(AspNetAppAsync);
 
-            CliCommand nonAspNetAppCommand = new(TestAppScenarios.ParameterCapturing.SubScenarios.NonAspNetApp);
+            Command nonAspNetAppCommand = new(TestAppScenarios.ParameterCapturing.SubScenarios.NonAspNetApp);
             nonAspNetAppCommand.SetAction(NonAspNetAppAsync);
 
-            CliCommand scenarioCommand = new(TestAppScenarios.ParameterCapturing.Name);
+            Command scenarioCommand = new(TestAppScenarios.ParameterCapturing.Name);
             scenarioCommand.Subcommands.Add(aspNetAppCommand);
             scenarioCommand.Subcommands.Add(nonAspNetAppCommand);
 
