@@ -17,12 +17,12 @@ namespace Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp
     {
         static int Main(string[] args)
         {
-            CliRootCommand rootCommand = new CliRootCommand();
+            RootCommand rootCommand = new RootCommand();
 
-            CliCommand executeCommand = new CliCommand("Execute", "Execute is for egressing an artifact.");
+            Command executeCommand = new Command("Execute", "Execute is for egressing an artifact.");
             executeCommand.SetAction((result, token) => Egress(token));
 
-            CliCommand egressCommand = new CliCommand("Egress", "The class of extension being invoked.")
+            Command egressCommand = new Command("Egress", "The class of extension being invoked.")
             {
                 executeCommand
             };
