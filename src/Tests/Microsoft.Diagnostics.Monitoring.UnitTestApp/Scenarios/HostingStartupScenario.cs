@@ -15,18 +15,18 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 {
     internal sealed class HostingStartupScenario
     {
-        public static CliCommand Command()
+        public static Command Command()
         {
-            CliCommand aspnetAppNoHostingStartupCommand = new(TestAppScenarios.HostingStartup.SubScenarios.VerifyAspNetAppWithoutHostingStartup);
+            Command aspnetAppNoHostingStartupCommand = new(TestAppScenarios.HostingStartup.SubScenarios.VerifyAspNetAppWithoutHostingStartup);
             aspnetAppNoHostingStartupCommand.SetAction(VerifyAspNetAppWithoutHostingStartupAsync);
 
-            CliCommand aspnetAppCommand = new(TestAppScenarios.HostingStartup.SubScenarios.VerifyAspNetApp);
+            Command aspnetAppCommand = new(TestAppScenarios.HostingStartup.SubScenarios.VerifyAspNetApp);
             aspnetAppCommand.SetAction(VerifyAspNetAppAsync);
 
-            CliCommand nonAspNetAppCommand = new(TestAppScenarios.HostingStartup.SubScenarios.VerifyNonAspNetAppNotImpacted);
+            Command nonAspNetAppCommand = new(TestAppScenarios.HostingStartup.SubScenarios.VerifyNonAspNetAppNotImpacted);
             nonAspNetAppCommand.SetAction(VerifyNonAspNetAppNotImpactedAsync);
 
-            CliCommand scenarioCommand = new(TestAppScenarios.HostingStartup.Name);
+            Command scenarioCommand = new(TestAppScenarios.HostingStartup.Name);
             scenarioCommand.Subcommands.Add(aspnetAppNoHostingStartupCommand);
             scenarioCommand.Subcommands.Add(aspnetAppCommand);
             scenarioCommand.Subcommands.Add(nonAspNetAppCommand);

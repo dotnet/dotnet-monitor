@@ -17,21 +17,21 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 {
     internal sealed class ParameterCapturingScenario
     {
-        public static CliCommand Command()
+        public static Command Command()
         {
-            CliCommand expectLogStatementsCommand = new(TestAppScenarios.ParameterCapturing.SubScenarios.ExpectLogStatement);
+            Command expectLogStatementsCommand = new(TestAppScenarios.ParameterCapturing.SubScenarios.ExpectLogStatement);
             expectLogStatementsCommand.SetAction(ExpectLogStatementAsync);
 
-            CliCommand doNotExpectLogStatementsCommand = new(TestAppScenarios.ParameterCapturing.SubScenarios.DoNotExpectLogStatement);
+            Command doNotExpectLogStatementsCommand = new(TestAppScenarios.ParameterCapturing.SubScenarios.DoNotExpectLogStatement);
             doNotExpectLogStatementsCommand.SetAction(DoNotExpectLogStatementAsync);
 
-            CliCommand aspNetAppCommand = new(TestAppScenarios.ParameterCapturing.SubScenarios.AspNetApp);
+            Command aspNetAppCommand = new(TestAppScenarios.ParameterCapturing.SubScenarios.AspNetApp);
             aspNetAppCommand.SetAction(AspNetAppAsync);
 
-            CliCommand nonAspNetAppCommand = new(TestAppScenarios.ParameterCapturing.SubScenarios.NonAspNetApp);
+            Command nonAspNetAppCommand = new(TestAppScenarios.ParameterCapturing.SubScenarios.NonAspNetApp);
             nonAspNetAppCommand.SetAction(NonAspNetAppAsync);
 
-            CliCommand scenarioCommand = new(TestAppScenarios.ParameterCapturing.Name);
+            Command scenarioCommand = new(TestAppScenarios.ParameterCapturing.Name);
             scenarioCommand.Subcommands.Add(expectLogStatementsCommand);
             scenarioCommand.Subcommands.Add(doNotExpectLogStatementsCommand);
             scenarioCommand.Subcommands.Add(aspNetAppCommand);

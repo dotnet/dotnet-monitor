@@ -10,9 +10,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 {
     internal static class StacksScenario
     {
-        public static CliCommand Command()
+        public static Command Command()
         {
-            CliCommand command = new(TestAppScenarios.Stacks.Name);
+            Command command = new(TestAppScenarios.Stacks.Name);
 
             command.SetAction(ExecuteAsync);
             return command;
