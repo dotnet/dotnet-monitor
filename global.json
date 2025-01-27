@@ -6,25 +6,29 @@
         "$(MicrosoftAspNetCoreApp60Version)",
         "$(MicrosoftAspNetCoreApp70Version)",
         "$(MicrosoftAspNetCoreApp80Version)",
-        "$(VSRedistCommonAspNetCoreSharedFrameworkx6490Version)"
+        "$(VSRedistCommonAspNetCoreSharedFrameworkx6490Version)",
+        "$(MicrosoftAspNetCoreApp100Version)"
       ],
       "aspnetcore/x86": [
         "$(MicrosoftAspNetCoreApp60Version)",
         "$(MicrosoftAspNetCoreApp70Version)",
         "$(MicrosoftAspNetCoreApp80Version)",
-        "$(VSRedistCommonAspNetCoreSharedFrameworkx6490Version)"
+        "$(VSRedistCommonAspNetCoreSharedFrameworkx6490Version)",
+        "$(MicrosoftAspNetCoreApp100Version)"
       ],
       "dotnet": [
         "$(MicrosoftNETCoreApp60Version)",
         "$(MicrosoftNETCoreApp70Version)",
         "$(MicrosoftNETCoreApp80Version)",
-        "$(VSRedistCommonNetCoreSharedFrameworkx6490Version)"
+        "$(VSRedistCommonNetCoreSharedFrameworkx6490Version)",
+        "$(MicrosoftNETCoreApp100Version)"
       ],
       "dotnet/x86": [
         "$(MicrosoftNETCoreApp60Version)",
         "$(MicrosoftNETCoreApp70Version)",
         "$(MicrosoftNETCoreApp80Version)",
-        "$(VSRedistCommonNetCoreSharedFrameworkx6490Version)"
+        "$(VSRedistCommonNetCoreSharedFrameworkx6490Version)",
+        "$(MicrosoftNETCoreApp100Version)"
       ]
     }
   },
