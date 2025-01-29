@@ -24,9 +24,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
     {
         private delegate Task TestCaseAsync(FunctionProbesManager probeManager, PerFunctionProbeProxy probeProxy, CancellationToken token);
 
-        public static CliCommand Command()
+        public static Command Command()
         {
-            CliCommand scenarioCommand = new(TestAppScenarios.FunctionProbes.Name);
+            Command scenarioCommand = new(TestAppScenarios.FunctionProbes.Name);
 
 #if NET7_0_OR_GREATER
             Dictionary<string, TestCaseAsync> testCases = new()
@@ -63,7 +63,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
 
             foreach ((string subCommand, TestCaseAsync testCase) in testCases)
             {
-                CliCommand testCaseCommand = new(subCommand);
+                Command testCaseCommand = new(subCommand);
                 testCaseCommand.SetAction((result, token) =>
                 {
                     return ScenarioHelpers.RunScenarioAsync(async logger =>
@@ -80,7 +80,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
                 scenarioCommand.Subcommands.Add(testCaseCommand);
             }
 #else // NET7_0_OR_GREATER
-            CliCommand validateNoMutatingProfilerCommand = new(TestAppScenarios.FunctionProbes.SubScenarios.ValidateNoMutatingProfiler);
+            Command validateNoMutatingProfilerCommand = new(TestAppScenarios.FunctionProbes.SubScenarios.ValidateNoMutatingProfiler);
             validateNoMutatingProfilerCommand.SetAction(ValidateNoMutatingProfilerAsync);
             scenarioCommand.Subcommands.Add(validateNoMutatingProfilerCommand);
 #endif // NET7_0_OR_GREATER

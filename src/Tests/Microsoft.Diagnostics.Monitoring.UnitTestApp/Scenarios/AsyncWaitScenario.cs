@@ -13,9 +13,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
     /// </summary>
     internal static class AsyncWaitScenario
     {
-        public static CliCommand Command()
+        public static Command Command()
         {
-            CliCommand command = new(TestAppScenarios.AsyncWait.Name);
+            Command command = new(TestAppScenarios.AsyncWait.Name);
             command.SetAction(ExecuteAsync);
             return command;
         }

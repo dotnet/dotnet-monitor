@@ -12,7 +12,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
     {
         public static Task<int> Main(string[] args)
         {
-            CliRootCommand root = new()
+            RootCommand root = new()
             {
                 MetricsScenario.Command(),
                 AspNetScenario.Command(),
