@@ -4,6 +4,17 @@
     <TargetFrameworks>$(TestTargetFrameworks)</TargetFrameworks>
     <DefineConstants>$(DefineConstants);UNITTEST</DefineConstants>
   </PropertyGroup>
+  <!--
+    Microsoft.Identity.Web and related libraries no longer support building
+    on .NET 7 and lower. Suppress the build warning for now until either the tests
+    are refactored to not build on .NET 7 and lower or when they are removed.
+    -->
+  <PropertyGroup Condition="'$(TargetFramework)'=='net6.0'">
+    <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)'=='net7.0'">
+    <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
+  </PropertyGroup>
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
