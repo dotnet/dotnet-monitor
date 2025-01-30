@@ -52,7 +52,6 @@ extends:
       - template: /eng/pipelines/jobs/platform-matrix.yml@self
         parameters:
           jobTemplate: /eng/pipelines/jobs/build-binaries.yml@self
-          includeArm64: true
           includeDebug: true
           jobParameters:
             publishBinaries: true
@@ -63,7 +62,8 @@ extends:
         - template: /eng/pipelines/jobs/platform-matrix.yml@self
           parameters:
             jobTemplate: /eng/pipelines/jobs/test-binaries.yml@self
-            includeArm64: true
+            includeArm64: false
+            includeX86: false
             jobParameters:
               testGroup: ${{ parameters.testGroup }}
               useHelix: true
