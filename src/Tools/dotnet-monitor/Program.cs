@@ -12,9 +12,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 {
     internal static class Program
     {
-        private static CliCommand GenerateApiKeyCommand()
+        private static Command GenerateApiKeyCommand()
         {
-            CliCommand command = new CliCommand(
+            Command command = new Command(
                 name: "generatekey",
                 description: Strings.HelpDescription_CommandGenerateKey)
             {
@@ -33,9 +33,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return command;
         }
 
-        private static CliCommand CollectCommand()
+        private static Command CollectCommand()
         {
-            CliCommand command = new CliCommand(
+            Command command = new Command(
                 name: "collect",
                 description: Strings.HelpDescription_CommandCollect)
             {
@@ -68,9 +68,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return command;
         }
 
-        private static CliCommand ConfigCommand()
+        private static Command ConfigCommand()
         {
-            CliCommand showCommand = new CliCommand(
+            Command showCommand = new Command(
                 name: "show",
                 description: Strings.HelpDescription_CommandShow)
             {
@@ -101,7 +101,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     result.GetValue(ShowSourcesOption));
             });
 
-            CliCommand configCommand = new CliCommand(
+            Command configCommand = new Command(
                 name: "config",
                 description: Strings.HelpDescription_CommandConfig)
             {
@@ -111,102 +111,102 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return configCommand;
         }
 
-        private static CliOption<string[]> UrlsOption =
-            new CliOption<string[]>("--urls", "-u")
+        private static Option<string[]> UrlsOption =
+            new Option<string[]>("--urls", "-u")
             {
                 DefaultValueFactory = (_) => new[] { "https://localhost:52323" },
                 Description = Strings.HelpDescription_OptionUrls,
                 HelpName = "urls"
             };
 
-        private static CliOption<string[]> MetricUrlsOption =
-            new CliOption<string[]>("--metricUrls")
+        private static Option<string[]> MetricUrlsOption =
+            new Option<string[]>("--metricUrls")
             {
                 DefaultValueFactory = (_) => new[] { "http://localhost:52325" },
                 Description = Strings.HelpDescription_OptionMetricsUrls,
                 HelpName = "metricUrls"
             };
 
-        private static CliOption<bool> ProvideMetricsOption =
-            new CliOption<bool>("--metrics", "-m")
+        private static Option<bool> ProvideMetricsOption =
+            new Option<bool>("--metrics", "-m")
             {
                 DefaultValueFactory = (_) => true,
                 Description = Strings.HelpDescription_OptionMetrics,
                 HelpName = "metrics"
             };
 
-        private static CliOption<string> DiagnosticPortOption =
-            new CliOption<string>("--diagnostic-port")
+        private static Option<string> DiagnosticPortOption =
+            new Option<string>("--diagnostic-port")
             {
                 Description = Strings.HelpDescription_OptionDiagnosticPort,
                 HelpName = "diagnosticPort"
             };
 
-        private static CliOption<FileInfo> ConfigurationFilePathOption =
-            new CliOption<FileInfo>("--configuration-file-path")
+        private static Option<FileInfo> ConfigurationFilePathOption =
+            new Option<FileInfo>("--configuration-file-path")
             {
                 Description = Strings.HelpDescription_OptionConfigurationFilePath,
                 HelpName = "configurationFilePath"
             };
 
-        private static CliOption<bool> NoAuthOption =
-            new CliOption<bool>("--no-auth")
+        private static Option<bool> NoAuthOption =
+            new Option<bool>("--no-auth")
             {
                 DefaultValueFactory = (_) => false,
                 Description = Strings.HelpDescription_OptionNoAuth,
                 HelpName = "noAuth"
             };
 
-        private static CliOption<bool> NoHttpEgressOption =
-            new CliOption<bool>("--no-http-egress")
+        private static Option<bool> NoHttpEgressOption =
+            new Option<bool>("--no-http-egress")
             {
                 DefaultValueFactory = (_) => false,
                 Description = Strings.HelpDescription_OptionNoHttpEgress,
                 HelpName = "noHttpEgress"
             };
 
-        private static CliOption<bool> TempApiKeyOption =
-            new CliOption<bool>("--temp-apikey")
+        private static Option<bool> TempApiKeyOption =
+            new Option<bool>("--temp-apikey")
             {
                 DefaultValueFactory = (_) => false,
                 Description = Strings.HelpDescription_OptionTempApiKey,
                 HelpName = "tempApiKey"
             };
 
-        private static CliOption<OutputFormat> OutputOption =
-            new CliOption<OutputFormat>("--output", "-o")
+        private static Option<OutputFormat> OutputOption =
+            new Option<OutputFormat>("--output", "-o")
             {
                 DefaultValueFactory = (_) => OutputFormat.Json,
                 Description = Strings.HelpDescription_OutputFormat,
                 HelpName = "output"
             };
 
-        private static CliOption<TimeSpan> ExpirationOption =
-            new CliOption<TimeSpan>("--expiration", "-e")
+        private static Option<TimeSpan> ExpirationOption =
+            new Option<TimeSpan>("--expiration", "-e")
             {
                 DefaultValueFactory = (_) => AuthConstants.ApiKeyJwtDefaultExpiration,
                 Description = Strings.HelpDescription_Expiration,
                 HelpName = "expiration"
             };
 
-        private static CliOption<ConfigDisplayLevel> ConfigLevelOption =
-            new CliOption<ConfigDisplayLevel>("--level")
+        private static Option<ConfigDisplayLevel> ConfigLevelOption =
+            new Option<ConfigDisplayLevel>("--level")
             {
                 DefaultValueFactory = (_) => ConfigDisplayLevel.Redacted,
                 Description = Strings.HelpDescription_OptionLevel,
                 HelpName = "level"
             };
 
-        private static CliOption<bool> ShowSourcesOption =
-            new CliOption<bool>("--show-sources")
+        private static Option<bool> ShowSourcesOption =
+            new Option<bool>("--show-sources")
             {
                 DefaultValueFactory = (_) => false,
                 Description = Strings.HelpDescription_OptionShowSources,
                 HelpName = "showSources"
             };
 
-        private static CliOption<bool> ExitOnStdinDisconnect =
-            new CliOption<bool>("--exit-on-stdin-disconnect")
+        private static Option<bool> ExitOnStdinDisconnect =
+            new Option<bool>("--exit-on-stdin-disconnect")
             {
                 DefaultValueFactory = (_) => false,
                 Description = Strings.HelpDescription_OptionExitOnStdinDisconnect
@@ -219,7 +219,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             TestAssemblies.SimulateStartupHook();
 
-            CliRootCommand root = new()
+            RootCommand root = new()
             {
                 CollectCommand(),
                 ConfigCommand(),

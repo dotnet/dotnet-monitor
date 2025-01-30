@@ -11,9 +11,9 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTestApp.Scenarios
     /// </summary>
     internal static class ExceptionThrowCatchScenario
     {
-        public static CliCommand Command()
+        public static Command Command()
         {
-            CliCommand command = new("ExceptionThrowCatch");
+            Command command = new("ExceptionThrowCatch");
             command.SetAction(Execute);
             return command;
         }

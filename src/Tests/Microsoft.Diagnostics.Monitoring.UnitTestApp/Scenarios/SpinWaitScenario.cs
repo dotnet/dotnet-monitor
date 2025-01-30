@@ -13,9 +13,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
     /// </summary>
     internal static class SpinWaitScenario
     {
-        public static CliCommand Command()
+        public static Command Command()
         {
-            CliCommand command = new(TestAppScenarios.SpinWait.Name);
+            Command command = new(TestAppScenarios.SpinWait.Name);
             command.SetAction(ExecuteAsync);
             return command;
         }

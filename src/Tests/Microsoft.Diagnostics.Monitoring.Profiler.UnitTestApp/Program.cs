@@ -11,7 +11,7 @@ namespace Microsoft.Diagnostics.Monitoring.Profiler.UnitTestApp
     {
         public static Task<int> Main(string[] args)
         {
-            CliRootCommand root = new()
+            RootCommand root = new()
             {
                 ExceptionThrowCatchScenario.Command(),
                 ExceptionThrowCrashScenario.Command()

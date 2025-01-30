@@ -15,60 +15,60 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 {
     internal static class ExceptionsScenario
     {
-        public static CliCommand Command()
+        public static Command Command()
         {
-            CliCommand singleExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.SingleException);
+            Command singleExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.SingleException);
             singleExceptionCommand.SetAction(SingleExceptionAsync);
 
-            CliCommand multipleExceptionsCommand = new(TestAppScenarios.Exceptions.SubScenarios.MultipleExceptions);
+            Command multipleExceptionsCommand = new(TestAppScenarios.Exceptions.SubScenarios.MultipleExceptions);
             multipleExceptionsCommand.SetAction(MultipleExceptionsAsync);
 
-            CliCommand repeatExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.RepeatException);
+            Command repeatExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.RepeatException);
             repeatExceptionCommand.SetAction(RepeatExceptionAsync);
 
-            CliCommand asyncExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.AsyncException);
+            Command asyncExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.AsyncException);
             asyncExceptionCommand.SetAction(AsyncExceptionAsync);
 
-            CliCommand frameworkExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.FrameworkException);
+            Command frameworkExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.FrameworkException);
             frameworkExceptionCommand.SetAction(FrameworkExceptionAsync);
 
-            CliCommand customExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.CustomException);
+            Command customExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.CustomException);
             customExceptionCommand.SetAction(CustomExceptionAsync);
 
-            CliCommand esotericStackFrameTypesCommand = new(TestAppScenarios.Exceptions.SubScenarios.EsotericStackFrameTypes);
+            Command esotericStackFrameTypesCommand = new(TestAppScenarios.Exceptions.SubScenarios.EsotericStackFrameTypes);
             esotericStackFrameTypesCommand.SetAction(EsotericStackFrameTypesAsync);
 
-            CliCommand reversePInvokeExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.ReversePInvokeException);
+            Command reversePInvokeExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.ReversePInvokeException);
             reversePInvokeExceptionCommand.SetAction(ReversePInvokeExceptionAsync);
 
-            CliCommand dynamicMethodExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.DynamicMethodException);
+            Command dynamicMethodExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.DynamicMethodException);
             dynamicMethodExceptionCommand.SetAction(DynamicMethodExceptionAsync);
 
-            CliCommand arrayExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.ArrayException);
+            Command arrayExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.ArrayException);
             arrayExceptionCommand.SetAction(ArrayExceptionAsync);
 
-            CliCommand innerUnthrownExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.InnerUnthrownException);
+            Command innerUnthrownExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.InnerUnthrownException);
             innerUnthrownExceptionCommand.SetAction(InnerUnthrownExceptionAsync);
 
-            CliCommand innerThrownExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.InnerThrownException);
+            Command innerThrownExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.InnerThrownException);
             innerThrownExceptionCommand.SetAction(InnerThrownExceptionAsync);
 
-            CliCommand eclipsingExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.EclipsingException);
+            Command eclipsingExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.EclipsingException);
             eclipsingExceptionCommand.SetAction(EclipsingExceptionAsync);
 
-            CliCommand eclipsingExceptionFromMethodCallCommand = new(TestAppScenarios.Exceptions.SubScenarios.EclipsingExceptionFromMethodCall);
+            Command eclipsingExceptionFromMethodCallCommand = new(TestAppScenarios.Exceptions.SubScenarios.EclipsingExceptionFromMethodCall);
             eclipsingExceptionFromMethodCallCommand.SetAction(EclipsingExceptionFromMethodCallAsync);
 
-            CliCommand aggregateExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.AggregateException);
+            Command aggregateExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.AggregateException);
             aggregateExceptionCommand.SetAction(AggregateExceptionAsync);
 
-            CliCommand reflectionTypeLoadExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.ReflectionTypeLoadException);
+            Command reflectionTypeLoadExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.ReflectionTypeLoadException);
             reflectionTypeLoadExceptionCommand.SetAction(ReflectionTypeLoadExceptionAsync);
 
-            CliCommand hiddenFramesExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.HiddenFramesExceptionCommand);
+            Command hiddenFramesExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.HiddenFramesExceptionCommand);
             hiddenFramesExceptionCommand.SetAction(HiddenFramesExceptionAsync);
 
-            CliCommand scenarioCommand = new(TestAppScenarios.Exceptions.Name);
+            Command scenarioCommand = new(TestAppScenarios.Exceptions.Name);
             scenarioCommand.Subcommands.Add(singleExceptionCommand);
             scenarioCommand.Subcommands.Add(multipleExceptionsCommand);
             scenarioCommand.Subcommands.Add(repeatExceptionCommand);
