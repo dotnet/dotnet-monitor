@@ -68,14 +68,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             AssemblyHelper.GetAssemblyArtifactBinPath(
                 Assembly.GetExecutingAssembly(),
                 "dotnet-monitor",
-                TargetFrameworkMoniker.Net80
+                TargetFrameworkMoniker.Net90
                 );
 
         private static string TestStartupHookPath =>
             AssemblyHelper.GetAssemblyArtifactBinPath(
                 Assembly.GetExecutingAssembly(),
                 TestStartupHookAssemblyName,
-                TargetFrameworkMoniker.Net80
+                TargetFrameworkMoniker.Net90
                 );
 
         private string SharedConfigDirectoryPath =>

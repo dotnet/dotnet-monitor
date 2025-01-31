@@ -435,7 +435,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                     }
                 }
 
-                throw new InvalidOperationException(null, innerException);
+                throw new InvalidOperationException("Operation is not valid due to the current state of the object.", innerException);
             }
             catch (Exception)
             {
@@ -453,7 +453,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                 }
                 catch (Exception innerException)
                 {
-                    throw new InvalidOperationException(null, innerException);
+                    throw new InvalidOperationException("Operation is not valid due to the current state of the object.", innerException);
                 }
             }
             catch (Exception)
@@ -483,7 +483,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void ThrowInvalidOperationExceptionWithInnerException(Exception innerException)
         {
-            throw new InvalidOperationException(null, innerException);
+            throw new InvalidOperationException("Operation is not valid due to the current state of the object.", innerException);
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]

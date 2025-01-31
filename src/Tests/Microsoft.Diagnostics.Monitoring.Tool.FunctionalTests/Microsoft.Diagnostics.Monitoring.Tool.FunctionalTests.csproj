@@ -103,7 +103,7 @@
     <ProjectReference Include="..\..\Tools\dotnet-monitor\dotnet-monitor.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>
-      <SetTargetFramework>TargetFramework=net8.0</SetTargetFramework>
+      <SetTargetFramework>TargetFramework=net9.0</SetTargetFramework>
     </ProjectReference>
     <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.TestCommon\Microsoft.Diagnostics.Monitoring.TestCommon.csproj" />
     <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.UnitTestApp\Microsoft.Diagnostics.Monitoring.UnitTestApp.csproj" />

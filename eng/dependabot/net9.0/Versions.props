@@ -1,0 +1,6 @@
+<Project>
+  <!-- Import references updated by Dependabot. -->
+  <PropertyGroup>
+    <SystemTextJson90Version>9.0.0</SystemTextJson90Version>
+  </PropertyGroup>
+</Project>

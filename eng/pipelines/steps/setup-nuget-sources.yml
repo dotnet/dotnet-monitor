@@ -8,7 +8,7 @@ steps:
     displayName: Setup Private Feeds Credentials
     inputs:
       filePath: $(Build.SourcesDirectory)/eng/common/SetupNugetSources.ps1
-      arguments: -ConfigFile $(Build.SourcesDirectory)/NuGet.config -Password $Env:Token
+      arguments: -ConfigFile $(Build.SourcesDirectory)/NuGet.config
     env:
       Token: $(dn-bot-dnceng-artifact-feeds-rw)
 - ${{ else }}:
@@ -19,3 +19,7 @@ steps:
       arguments: $(Build.SourcesDirectory)/NuGet.config $Token
     env:
       Token: $(dn-bot-dnceng-artifact-feeds-rw)
+# Run the NuGetAuthenticate task after the internal feeds are added to the nuget.config
+# This ensures that creds are set appropriately for all feeds in the config, and that the
+# credential provider is installed.
+- task: NuGetAuthenticate@1

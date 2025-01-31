@@ -33,7 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             _outputHelper = outputHelper;
         }
 
-        [Theory]
+        [Theory()]
         [InlineData(DiagnosticPortConnectionMode.Connect, DumpType.Full)]
         [InlineData(DiagnosticPortConnectionMode.Connect, DumpType.Mini)]
         [InlineData(DiagnosticPortConnectionMode.Connect, DumpType.Triage)]

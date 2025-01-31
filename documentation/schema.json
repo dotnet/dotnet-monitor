@@ -463,6 +463,7 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
+        "TenantId",
         "ClientId",
         "RequiredRole"
       ],
@@ -477,12 +478,9 @@
           "default": "https://login.microsoftonline.com"
         },
         "TenantId": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "description": "The tenant id of the Azure Active Directory tenant, or its tenant domain.",
-          "default": "organizations"
+          "type": "string",
+          "description": "The tenant id of the Azure Active Directory tenant.",
+          "minLength": 1
         },
         "ClientId": {
           "type": "string",
@@ -2718,12 +2716,22 @@
         "Indented": {
           "type": "boolean"
         },
+        "IndentCharacter": {
+          "type": "string"
+        },
+        "IndentSize": {
+          "type": "integer",
+          "format": "int32"
+        },
         "MaxDepth": {
           "type": "integer",
           "format": "int32"
         },
         "SkipValidation": {
           "type": "boolean"
+        },
+        "NewLine": {
+          "type": "string"
         }
       }
     },

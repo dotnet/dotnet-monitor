@@ -1,32 +1,36 @@
 {
   "tools": {
-    "dotnet": "8.0.112",
+    "dotnet": "9.0.102",
     "runtimes": {
       "aspnetcore": [
         "$(MicrosoftAspNetCoreApp60Version)",
         "$(MicrosoftAspNetCoreApp70Version)",
-        "$(MicrosoftAspNetCoreApp80Version)"
+        "$(MicrosoftAspNetCoreApp80Version)",
+        "$(VSRedistCommonAspNetCoreSharedFrameworkx6490Version)"
       ],
       "aspnetcore/x86": [
         "$(MicrosoftAspNetCoreApp60Version)",
         "$(MicrosoftAspNetCoreApp70Version)",
-        "$(MicrosoftAspNetCoreApp80Version)"
+        "$(MicrosoftAspNetCoreApp80Version)",
+        "$(VSRedistCommonAspNetCoreSharedFrameworkx6490Version)"
       ],
       "dotnet": [
         "$(MicrosoftNETCoreApp60Version)",
         "$(MicrosoftNETCoreApp70Version)",
-        "$(MicrosoftNETCoreApp80Version)"
+        "$(MicrosoftNETCoreApp80Version)",
+        "$(VSRedistCommonNetCoreSharedFrameworkx6490Version)"
       ],
       "dotnet/x86": [
         "$(MicrosoftNETCoreApp60Version)",
         "$(MicrosoftNETCoreApp70Version)",
-        "$(MicrosoftNETCoreApp80Version)"
+        "$(MicrosoftNETCoreApp80Version)",
+        "$(VSRedistCommonNetCoreSharedFrameworkx6490Version)"
       ]
     }
   },
   "msbuild-sdks": {
     "Microsoft.Build.NoTargets": "3.7.0",
-    "Microsoft.DotNet.Arcade.Sdk": "8.0.0-beta.25079.1",
-    "Microsoft.DotNet.Helix.Sdk": "8.0.0-beta.25079.1"
+    "Microsoft.DotNet.Arcade.Sdk": "9.0.0-beta.25077.4",
+    "Microsoft.DotNet.Helix.Sdk": "9.0.0-beta.25077.4"
   }
 }

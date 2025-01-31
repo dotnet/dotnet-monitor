@@ -39,7 +39,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         private const string UnitTestAppModule = "Microsoft.Diagnostics.Monitoring.UnitTestApp.dll";
         private const string CoreLibModuleName = "System.Private.CoreLib.dll";
         private const string SystemInvalidOperationException = "System.InvalidOperationException";
-        private const string ExceptionMessage = $"Exception of type '{SystemInvalidOperationException}' was thrown.";
+        private const string ExceptionMessage = $"Operation is not valid due to the current state of the object.";
         private const string FirstChanceExceptionMessage = "First chance exception at";
         private const string CustomGenericsException = "Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.ExceptionsScenario+CustomGenericsException`2[System.Int32,System.String]";
         private const string SystemArgumentNullException = "System.ArgumentNullException";

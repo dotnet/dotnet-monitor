@@ -33,7 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen.UnitTests
             Path.Combine(Path.GetDirectoryName(CurrentExecutingAssemblyPath), OpenApiBaselineName);
 
         private static readonly string OpenApiGenPath =
-            AssemblyHelper.GetAssemblyArtifactBinPath(Assembly.GetExecutingAssembly(), OpenApiGenName, TargetFrameworkMoniker.Net80);
+            AssemblyHelper.GetAssemblyArtifactBinPath(Assembly.GetExecutingAssembly(), OpenApiGenName, TargetFrameworkMoniker.Net90);
 
         private readonly ITestOutputHelper _outputHelper;
 

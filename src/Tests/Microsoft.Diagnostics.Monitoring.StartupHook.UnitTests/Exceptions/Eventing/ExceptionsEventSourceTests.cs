@@ -66,7 +66,10 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions.Eventing
         }
 
         [Theory]
+#pragma warning disable xUnit1012 //net9.0temporary Suppress false code analysis warnings
+
         [InlineData(0, 0, null, "0,0,0", "", null, ActivityIdFormat.Unknown)]
+#pragma warning restore xUnit1012 //net9.0temporary Suppress false code analysis warnings
         [InlineData(1, 5, "", "1,2", "1", NonEmptyGuidString, ActivityIdFormat.Hierarchical)]
         [InlineData(7, 13, InvalidOperationExceptionMessage, "", "3,5", NonEmptyGuidString, ActivityIdFormat.W3C)]
         [InlineData(ulong.MaxValue - 1, ulong.MaxValue - 1, OperationCancelledExceptionMessage, "3,5,7", "2", NonEmptyGuidString, ActivityIdFormat.W3C)]

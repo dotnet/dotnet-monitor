@@ -3,7 +3,7 @@
   <Import Project="dependabot/Versions.props" />
   <PropertyGroup Label="Versioning">
     <RepositoryUrl>https://github.com/dotnet/dotnet-monitor</RepositoryUrl>
-    <VersionPrefix>8.1.0</VersionPrefix>
+    <VersionPrefix>9.1.0</VersionPrefix>
     <PreReleaseVersionLabel>alpha</PreReleaseVersionLabel>
     <PreReleaseVersionIteration>1</PreReleaseVersionIteration>
     <!-- Disable final version kind until merged into release branch. -->
@@ -17,7 +17,7 @@
     <!--
       This should be set to true for official releases.
     -->
-    <UseMicrosoftDiagnosticsMonitoringShippedVersion>false</UseMicrosoftDiagnosticsMonitoringShippedVersion>
+    <UseMicrosoftDiagnosticsMonitoringShippedVersion>true</UseMicrosoftDiagnosticsMonitoringShippedVersion>
   </PropertyGroup>
   <PropertyGroup Label="Testing">
     <XUnitCoreSettingsFile>$(MSBuildThisFileDirectory)xunit.runner.json</XUnitCoreSettingsFile>
@@ -27,9 +27,9 @@
     <!-- The TFMs of the dotnet-monitor tool.  -->
     <ToolTargetFrameworks>$(LatestTargetFramework)</ToolTargetFrameworks>
     <!-- The TFMs of that the dotnet-monitor tool supports diagnosing. -->
-    <TestTargetFrameworks>net6.0;net7.0;$(LatestTargetFramework)</TestTargetFrameworks>
+    <TestTargetFrameworks>net6.0;net7.0;net8.0;$(LatestTargetFramework)</TestTargetFrameworks>
     <!-- The TFM for generating schema.json and OpenAPI docs. -->
-    <SchemaTargetFramework>net8.0</SchemaTargetFramework>
+    <SchemaTargetFramework>net9.0</SchemaTargetFramework>
   </PropertyGroup>
   <PropertyGroup Label="Arcade">
     <UsingToolXliff>false</UsingToolXliff>
@@ -48,34 +48,40 @@
   -->
   <PropertyGroup Label="Automated">
     <!-- dotnet/arcade references -->
-    <MicrosoftDotNetBuildTasksArchivesVersion>8.0.0-beta.25079.1</MicrosoftDotNetBuildTasksArchivesVersion>
-    <MicrosoftDotNetCodeAnalysisVersion>8.0.0-beta.25079.1</MicrosoftDotNetCodeAnalysisVersion>
-    <MicrosoftDotNetXUnitExtensionsVersion>8.0.0-beta.25079.1</MicrosoftDotNetXUnitExtensionsVersion>
+    <MicrosoftDotNetBuildTasksArchivesVersion>9.0.0-beta.25077.4</MicrosoftDotNetBuildTasksArchivesVersion>
+    <MicrosoftDotNetCodeAnalysisVersion>9.0.0-beta.25077.4</MicrosoftDotNetCodeAnalysisVersion>
+    <MicrosoftDotNetXUnitExtensionsVersion>9.0.0-beta.25077.4</MicrosoftDotNetXUnitExtensionsVersion>
     <!-- dotnet/aspnetcore references -->
-    <MicrosoftAspNetCoreAppRuntimewinx64Version>8.0.1</MicrosoftAspNetCoreAppRuntimewinx64Version>
-    <VSRedistCommonAspNetCoreSharedFrameworkx6480Version>8.0.1-servicing.23580.8</VSRedistCommonAspNetCoreSharedFrameworkx6480Version>
+    <MicrosoftAspNetCoreAppRuntimewinx64Version>9.0.1</MicrosoftAspNetCoreAppRuntimewinx64Version>
+    <VSRedistCommonAspNetCoreSharedFrameworkx6490Version>9.0.1-rtm.24610.9</VSRedistCommonAspNetCoreSharedFrameworkx6490Version>
     <!-- dotnet/command-line-api references -->
     <SystemCommandLineVersion>2.0.0-beta4.25072.1</SystemCommandLineVersion>
     <!-- dotnet/diagnostics references -->
     <MicrosoftDiagnosticsMonitoringVersion>9.0.0-preview.25077.1</MicrosoftDiagnosticsMonitoringVersion>
     <MicrosoftDiagnosticsMonitoringEventPipeVersion>9.0.0-preview.25077.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
-    <!-- dotnet/installer references -->
-    <MicrosoftDotnetSdkInternalVersion>8.0.103-servicing.24114.15</MicrosoftDotnetSdkInternalVersion>
     <!-- dotnet/roslyn-analyzers -->
-    <MicrosoftCodeAnalysisNetAnalyzersVersion>8.0.0-preview.23525.2</MicrosoftCodeAnalysisNetAnalyzersVersion>
+    <MicrosoftCodeAnalysisNetAnalyzersVersion>9.0.0-preview.25076.3</MicrosoftCodeAnalysisNetAnalyzersVersion>
     <!-- dotnet/runtime references -->
-    <MicrosoftNETCoreAppRuntimewinx64Version>8.0.1</MicrosoftNETCoreAppRuntimewinx64Version>
-    <VSRedistCommonNetCoreSharedFrameworkx6480Version>8.0.1-servicing.23580.1</VSRedistCommonNetCoreSharedFrameworkx6480Version>
+    <MicrosoftNETCoreAppRuntimewinx64Version>9.0.1</MicrosoftNETCoreAppRuntimewinx64Version>
+    <VSRedistCommonNetCoreSharedFrameworkx6490Version>9.0.1-servicing.24610.10</VSRedistCommonNetCoreSharedFrameworkx6490Version>
+    <!-- dotnet/sdk references -->
+    <VSRedistCommonNetCoreSdkPlaceholderx6490Version>9.0.103-servicing.25065.25</VSRedistCommonNetCoreSdkPlaceholderx6490Version>
     <!-- dotnet/symstore references -->
     <MicrosoftFileFormatsVersion>1.0.607701</MicrosoftFileFormatsVersion>
   </PropertyGroup>
   <PropertyGroup Label="Runtime Versions">
     <MicrosoftAspNetCoreApp31Version>$(MicrosoftNETCoreApp31Version)</MicrosoftAspNetCoreApp31Version>
     <MicrosoftNETCoreApp50Version>5.0.17</MicrosoftNETCoreApp50Version>
+    <MicrosoftNETCoreApp90Version>$(MicrosoftNETCoreAppRuntimewinx64Version)</MicrosoftNETCoreApp90Version>
     <MicrosoftAspNetCoreApp50Version>$(MicrosoftNETCoreApp50Version)</MicrosoftAspNetCoreApp50Version>
     <MicrosoftAspNetCoreApp60Version>$(MicrosoftNETCoreApp60Version)</MicrosoftAspNetCoreApp60Version>
     <MicrosoftAspNetCoreApp70Version>$(MicrosoftNETCoreApp70Version)</MicrosoftAspNetCoreApp70Version>
     <MicrosoftAspNetCoreApp80Version>$(MicrosoftNETCoreApp80Version)</MicrosoftAspNetCoreApp80Version>
+    <MicrosoftAspNetCoreApp90Version>$(MicrosoftAspNetCoreAppRuntimewinx64Version)</MicrosoftAspNetCoreApp90Version>
+  </PropertyGroup>
+  <PropertyGroup Label="SDK Versions">
+    <!-- Use a non-final versioned sentinel package for installation of specific SDK version. -->
+    <InstallableSdkVersion>$(VSRedistCommonNetCoreSdkPlaceholderx6490Version)</InstallableSdkVersion>
   </PropertyGroup>
   <PropertyGroup Label="Dev Workflow">
     <!-- These versions are not used directly. For Dev workflows, nuget requires these to properly follow
@@ -108,6 +114,15 @@
     <MicrosoftExtensionsLoggingAbstractionsVersion>$(MicrosoftExtensionsLoggingAbstractions80Version)</MicrosoftExtensionsLoggingAbstractionsVersion>
     <MicrosoftExtensionsLoggingConsoleVersion>$(MicrosoftExtensionsLoggingConsole80Version)</MicrosoftExtensionsLoggingConsoleVersion>
     <SystemTextJsonVersion>$(SystemTextJson80Version)</SystemTextJsonVersion>
+  </PropertyGroup>
+  <PropertyGroup Label=".NET 9 Dependent" Condition=" '$(TargetFramework)' == 'net9.0' ">
+    <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>$(MicrosoftAspNetCoreApp90Version)</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
+    <MicrosoftAspNetCoreAuthenticationNegotiateVersion>$(MicrosoftAspNetCoreApp90Version)</MicrosoftAspNetCoreAuthenticationNegotiateVersion>
+    <MicrosoftExtensionsConfigurationAbstractionsVersion>$(MicrosoftNETCoreApp90Version)</MicrosoftExtensionsConfigurationAbstractionsVersion>
+    <MicrosoftExtensionsLoggingVersion>$(MicrosoftNETCoreApp90Version)</MicrosoftExtensionsLoggingVersion>
+    <MicrosoftExtensionsLoggingAbstractionsVersion>$(MicrosoftNETCoreApp90Version)</MicrosoftExtensionsLoggingAbstractionsVersion>
+    <MicrosoftExtensionsLoggingConsoleVersion>$(MicrosoftNETCoreApp90Version)</MicrosoftExtensionsLoggingConsoleVersion>
+    <SystemTextJsonVersion>$(SystemTextJson90Version)</SystemTextJsonVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(UseMicrosoftDiagnosticsMonitoringShippedVersion)' == 'true'">
     <MicrosoftDiagnosticsMonitoringLibraryVersion>$(MicrosoftDiagnosticsMonitoringShippedVersion)</MicrosoftDiagnosticsMonitoringLibraryVersion>

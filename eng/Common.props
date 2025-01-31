@@ -1,7 +1,7 @@
 <Project>
   <!-- These properties are shared among the Arcade build infrastructure as well as individual project build. -->
   <PropertyGroup>
-    <LatestTargetFramework>net8.0</LatestTargetFramework>
+    <LatestTargetFramework>net9.0</LatestTargetFramework>
     <LatestToolTargetFramework>$(LatestTargetFramework)</LatestToolTargetFramework>
     <ArtifactsNonShippingBundlesDir>$(ArtifactsDir)bundles\$(Configuration)\NonShipping\</ArtifactsNonShippingBundlesDir>
   </PropertyGroup>

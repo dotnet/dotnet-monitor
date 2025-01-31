@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -39,7 +40,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Tests that Templates are correctly translated from JSON to CollectionRuleOptions.
         /// </summary>
         [Fact]
-        public async void TemplatesTranslationSuccessTest()
+        public async Task TemplatesTranslationSuccessTest()
         {
             using TemporaryDirectory userConfigDir = new(_outputHelper);
 
@@ -84,7 +85,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Tests that incorrectly referenced Templates error correctly.
         /// </summary>
         [Fact]
-        public async void TemplatesTranslationFailTest()
+        public async Task TemplatesTranslationFailTest()
         {
             using TemporaryDirectory userConfigDir = new(_outputHelper);
 

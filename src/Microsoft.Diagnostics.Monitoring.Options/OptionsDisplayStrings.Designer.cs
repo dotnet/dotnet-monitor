@@ -241,7 +241,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The tenant id of the Azure Active Directory tenant, or its tenant domain..
+        ///   Looks up a localized string similar to The tenant id of the Azure Active Directory tenant..
         /// </summary>
         public static string DisplayAttributeDescription_AzureAdOptions_TenantId {
             get {
