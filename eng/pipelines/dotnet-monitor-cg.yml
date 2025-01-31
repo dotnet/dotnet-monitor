@@ -33,7 +33,6 @@ extends:
       - template: /eng/pipelines/jobs/platform-matrix.yml@self
         parameters:
           jobTemplate: /eng/pipelines/jobs/build-binaries.yml@self
-          includeArm64: true
           jobParameters:
             disableComponentGovernance: false
             disableSbom: true

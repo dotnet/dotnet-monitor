@@ -2,7 +2,7 @@ variables:
 - template: /eng/common/templates-official/variables/pool-providers.yml@self
 - name: _TeamName
   value: DotNetCore
-    
+
 trigger: none
 
 schedules:
@@ -32,6 +32,5 @@ extends:
       - template: /eng/pipelines/jobs/platform-matrix.yml@self
         parameters:
           jobTemplate: /eng/pipelines/jobs/build-codeql.yml@self
-          includeArm64: true
           jobParameters:
             enableTsa: ${{ parameters.enableTsa }}
