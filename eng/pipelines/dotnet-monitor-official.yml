@@ -78,15 +78,15 @@ extends:
         # Generate a TPN for only the dotnet-monitor project
         - template: /eng/pipelines/jobs/tpn.yml@self
 
-      # Build and (optionally) test binaries
+      # Build binaries
       - template: /eng/pipelines/jobs/platform-matrix.yml@self
         parameters:
           jobTemplate: /eng/pipelines/jobs/build-binaries.yml@self
-          includeArm64: ${{ or(ne(variables['System.TeamProject'], 'public'), eq(parameters.useHelix, 'true')) }}
           jobParameters:
             publishBinaries: true
             publishArtifacts: ${{ and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}
 
+      # (Optionally) Test binaries
       - ${{ if ne(parameters.testGroup, 'None') }}:
         - template: /eng/pipelines/jobs/platform-matrix.yml@self
           parameters:
@@ -109,7 +109,6 @@ extends:
         - template: /eng/pipelines/jobs/platform-matrix.yml@self
           parameters:
             jobTemplate: /eng/pipelines/jobs/build-archive.yml@self
-            includeArm64: true
 # This stage creates NuGet packages and generates the BAR manifests
     - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
       - stage: PackSignPublish
