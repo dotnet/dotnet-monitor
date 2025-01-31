@@ -8,7 +8,9 @@ parameters:
   # Determines if debug configurations should be included
   includeDebug: false
   # Determines if ARM64 architectures should be included
-  includeArm64: false
+  includeArm64: true
+  # Determines if X86 architectures should be included
+  includeX86: true
 
 jobs:
 - ${{ if eq(parameters.includeDebug, 'true') }}:
@@ -24,13 +26,14 @@ jobs:
     configuration: Release
     targetRid: win-x64
     ${{ insert }}: ${{ parameters.jobParameters }}
-- template: ${{ parameters.jobTemplate }}
-  parameters:
-    osGroup: Windows
-    configuration: Release
-    architecture: x86
-    targetRid: win-x86
-    ${{ insert }}: ${{ parameters.jobParameters }}
+- ${{ if eq(parameters.includeX86, 'true') }}:
+  - template: ${{ parameters.jobTemplate }}
+    parameters:
+      osGroup: Windows
+      configuration: Release
+      architecture: x86
+      targetRid: win-x86
+      ${{ insert }}: ${{ parameters.jobParameters }}
 - ${{ if eq(parameters.includeArm64, 'true') }}:
   - template: ${{ parameters.jobTemplate }}
     parameters:
