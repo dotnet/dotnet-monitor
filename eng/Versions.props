@@ -16,7 +16,7 @@
     <!--
       This should be set to true for official releases.
     -->
-    <UseMicrosoftDiagnosticsMonitoringShippedVersion>false</UseMicrosoftDiagnosticsMonitoringShippedVersion>
+    <UseMicrosoftDiagnosticsMonitoringShippedVersion>true</UseMicrosoftDiagnosticsMonitoringShippedVersion>
   </PropertyGroup>
   <PropertyGroup Label="Testing">
     <XUnitCoreSettingsFile>$(MSBuildThisFileDirectory)xunit.runner.json</XUnitCoreSettingsFile>
