@@ -30,7 +30,7 @@ bool MessageCallbackManager::TryRegister(unsigned short commandSet, std::functio
         return false;
     }
 
-    m_callbacks[commandSet] = CallbackInfo{ untaintedOnly, callback };
+    m_callbacks[commandSet] = CallbackInfo(untaintedOnly, callback);
     return true;
 }
 

@@ -14,6 +14,12 @@ typedef HRESULT (STDMETHODCALLTYPE *ManagedMessageCallback)(UINT16, const BYTE*,
 
 struct CallbackInfo
 {
+    CallbackInfo() = default;
+    CallbackInfo(bool untaintedOnly, std::function<HRESULT (const IpcMessage& message)> callback) 
+        : UntaintedOnly(untaintedOnly), Callback(callback)
+    {
+    }
+
     bool UntaintedOnly = false;
     std::function<HRESULT (const IpcMessage& message)> Callback;
 };
