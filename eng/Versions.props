@@ -72,12 +72,11 @@
   <PropertyGroup Label="Runtime Versions">
     <MicrosoftAspNetCoreApp31Version>$(MicrosoftNETCoreApp31Version)</MicrosoftAspNetCoreApp31Version>
     <MicrosoftNETCoreApp50Version>5.0.17</MicrosoftNETCoreApp50Version>
-    <MicrosoftNETCoreApp90Version>$(MicrosoftNETCoreAppRuntimewinx64Version)</MicrosoftNETCoreApp90Version>
     <MicrosoftAspNetCoreApp50Version>$(MicrosoftNETCoreApp50Version)</MicrosoftAspNetCoreApp50Version>
     <MicrosoftAspNetCoreApp60Version>$(MicrosoftNETCoreApp60Version)</MicrosoftAspNetCoreApp60Version>
     <MicrosoftAspNetCoreApp70Version>$(MicrosoftNETCoreApp70Version)</MicrosoftAspNetCoreApp70Version>
     <MicrosoftAspNetCoreApp80Version>$(MicrosoftNETCoreApp80Version)</MicrosoftAspNetCoreApp80Version>
-    <MicrosoftAspNetCoreApp90Version>$(MicrosoftAspNetCoreAppRuntimewinx64Version)</MicrosoftAspNetCoreApp90Version>
+    <MicrosoftAspNetCoreApp90Version>$(MicrosoftNETCoreApp90Version)</MicrosoftAspNetCoreApp90Version>
   </PropertyGroup>
   <PropertyGroup Label="SDK Versions">
     <!-- Use a non-final versioned sentinel package for installation of specific SDK version. -->
@@ -118,10 +117,10 @@
   <PropertyGroup Label=".NET 9 Dependent" Condition=" '$(TargetFramework)' == 'net9.0' ">
     <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>$(MicrosoftAspNetCoreApp90Version)</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
     <MicrosoftAspNetCoreAuthenticationNegotiateVersion>$(MicrosoftAspNetCoreApp90Version)</MicrosoftAspNetCoreAuthenticationNegotiateVersion>
-    <MicrosoftExtensionsConfigurationAbstractionsVersion>$(MicrosoftNETCoreApp90Version)</MicrosoftExtensionsConfigurationAbstractionsVersion>
-    <MicrosoftExtensionsLoggingVersion>$(MicrosoftNETCoreApp90Version)</MicrosoftExtensionsLoggingVersion>
-    <MicrosoftExtensionsLoggingAbstractionsVersion>$(MicrosoftNETCoreApp90Version)</MicrosoftExtensionsLoggingAbstractionsVersion>
-    <MicrosoftExtensionsLoggingConsoleVersion>$(MicrosoftNETCoreApp90Version)</MicrosoftExtensionsLoggingConsoleVersion>
+    <MicrosoftExtensionsConfigurationAbstractionsVersion>$(MicrosoftExtensionsConfigurationAbstractions90Version)</MicrosoftExtensionsConfigurationAbstractionsVersion>
+    <MicrosoftExtensionsLoggingVersion>$(MicrosoftExtensionsLogging90Version)</MicrosoftExtensionsLoggingVersion>
+    <MicrosoftExtensionsLoggingAbstractionsVersion>$(MicrosoftExtensionsLoggingAbstractions90Version)</MicrosoftExtensionsLoggingAbstractionsVersion>
+    <MicrosoftExtensionsLoggingConsoleVersion>$(MicrosoftExtensionsLoggingConsole90Version)</MicrosoftExtensionsLoggingConsoleVersion>
     <SystemTextJsonVersion>$(SystemTextJson90Version)</SystemTextJsonVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(UseMicrosoftDiagnosticsMonitoringShippedVersion)' == 'true'">
