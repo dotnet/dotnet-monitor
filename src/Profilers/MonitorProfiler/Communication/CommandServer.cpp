@@ -116,7 +116,7 @@ void CommandServer::ListeningThread()
         if (doEnqueueMessage)
         {
             bool unmanagedOnly = false;
-            if (SUCCEEDED(_unmanagedOnlyCallback(message.Command, unmanagedOnly)) && unmanagedOnly)
+            if (SUCCEEDED(_unmanagedOnlyCallback(message.CommandSet, unmanagedOnly)) && unmanagedOnly)
             {
                 _unmanagedOnlyQueue.Enqueue(message);
             }
