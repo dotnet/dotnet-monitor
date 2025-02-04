@@ -16,7 +16,8 @@ CommandServer::CommandServer(const std::shared_ptr<ILogger>& logger, ICorProfile
 HRESULT CommandServer::Start(
     const std::string& path,
     std::function<HRESULT(const IpcMessage& message)> callback,
-    std::function<HRESULT(const IpcMessage& message)> validateMessageCallback)
+    std::function<HRESULT(const IpcMessage& message)> validateMessageCallback,
+    std::function<HRESULT(unsigned short commandSet, bool& unmanagedOnly)> unmanagedOnlyCallback)
 {
     if (_shutdown.load())
     {
@@ -35,10 +36,12 @@ HRESULT CommandServer::Start(
 
     _callback = callback;
     _validateMessageCallback = validateMessageCallback;
+    _unmanagedOnlyCallback = unmanagedOnlyCallback;
 
     IfFailLogRet_(_logger, _server.Bind(path));
     _listeningThread = std::thread(&CommandServer::ListeningThread, this);
     _clientThread = std::thread(&CommandServer::ClientProcessingThread, this);
+    _unmanagedOnlyThread = std::thread(&CommandServer::UnmanagedOnlyProcessingThread, this);
     return S_OK;
 }
 
@@ -48,10 +51,12 @@ void CommandServer::Shutdown()
     if (_shutdown.compare_exchange_strong(shutdown, true))
     {
         _clientQueue.Complete();
+        _unmanagedOnlyQueue.Complete();
         _server.Shutdown();
 
         _listeningThread.join();
         _clientThread.join();
+        _unmanagedOnlyThread.join();
     }
 }
 
@@ -110,7 +115,15 @@ void CommandServer::ListeningThread()
 
         if (doEnqueueMessage)
         {
-            _clientQueue.Enqueue(message);
+            bool unmanagedOnly = false;
+            if (SUCCEEDED(_unmanagedOnlyCallback(message.CommandSet, unmanagedOnly)) && unmanagedOnly)
+            {
+                _unmanagedOnlyQueue.Enqueue(message);
+            }
+            else
+            {
+                _clientQueue.Enqueue(message);
+            }
         }
     }
 }
@@ -134,6 +147,36 @@ void CommandServer::ClientProcessingThread()
             //We are complete, discard all messages
             break;
         }
+
+        // DispatchMessage in the callback serializes all callbacks.
+        hr = _callback(message);
+        if (hr != S_OK)
+        {
+            _logger->Log(LogLevel::Warning, _LS("IpcMessage callback failed: 0x%08x"), hr);
+        }
+    }
+}
+
+void CommandServer::UnmanagedOnlyProcessingThread()
+{
+    HRESULT hr = _profilerInfo->InitializeCurrentThread();
+
+    if (FAILED(hr))
+    {
+        _logger->Log(LogLevel::Error, _LS("Unable to initialize thread: 0x%08x"), hr);
+        return;
+    }
+
+    while (true)
+    {
+        IpcMessage message;
+        hr = _unmanagedOnlyQueue.BlockingDequeue(message);
+        if (hr != S_OK)
+        {
+            // We are complete, discard all messages
+            break;
+        }
+
         hr = _callback(message);
         if (hr != S_OK)
         {
