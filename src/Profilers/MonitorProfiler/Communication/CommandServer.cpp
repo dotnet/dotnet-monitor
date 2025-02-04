@@ -17,7 +17,7 @@ HRESULT CommandServer::Start(
     const std::string& path,
     std::function<HRESULT(const IpcMessage& message)> callback,
     std::function<HRESULT(const IpcMessage& message)> validateMessageCallback,
-    std::function<HRESULT(unsigned short commandSet, bool& untaintedOnly)> untaintedOnlyCallback)
+    std::function<HRESULT(unsigned short commandSet, bool& unmanagedOnly)> unmanagedOnlyCallback)
 {
     if (_shutdown.load())
     {
@@ -36,12 +36,12 @@ HRESULT CommandServer::Start(
 
     _callback = callback;
     _validateMessageCallback = validateMessageCallback;
-    _untaintedOnlyCallback = untaintedOnlyCallback;
+    _unmanagedOnlyCallback = unmanagedOnlyCallback;
 
     IfFailLogRet_(_logger, _server.Bind(path));
     _listeningThread = std::thread(&CommandServer::ListeningThread, this);
     _clientThread = std::thread(&CommandServer::ClientProcessingThread, this);
-    _untaintedOnlyThread = std::thread(&CommandServer::UntaintedOnlyProcessingThread, this);
+    _unmanagedOnlyThread = std::thread(&CommandServer::UnmanagedOnlyProcessingThread, this);
     return S_OK;
 }
 
@@ -51,12 +51,12 @@ void CommandServer::Shutdown()
     if (_shutdown.compare_exchange_strong(shutdown, true))
     {
         _clientQueue.Complete();
-        _untaintedOnlyQueue.Complete();
+        _unmanagedOnlyQueue.Complete();
         _server.Shutdown();
 
         _listeningThread.join();
         _clientThread.join();
-        _untaintedOnlyThread.join();
+        _unmanagedOnlyThread.join();
     }
 }
 
@@ -115,10 +115,10 @@ void CommandServer::ListeningThread()
 
         if (doEnqueueMessage)
         {
-            bool untaintedOnly = false;
-            if (SUCCEEDED(_untaintedOnlyCallback(message.Command, untaintedOnly)) && untaintedOnly)
+            bool unmanagedOnly = false;
+            if (SUCCEEDED(_unmanagedOnlyCallback(message.Command, unmanagedOnly)) && unmanagedOnly)
             {
-                _untaintedOnlyQueue.Enqueue(message);
+                _unmanagedOnlyQueue.Enqueue(message);
             }
             else
             {
@@ -157,7 +157,7 @@ void CommandServer::ClientProcessingThread()
     }
 }
 
-void CommandServer::UntaintedOnlyProcessingThread()
+void CommandServer::UnmanagedOnlyProcessingThread()
 {
     HRESULT hr = _profilerInfo->InitializeCurrentThread();
 
@@ -170,7 +170,7 @@ void CommandServer::UntaintedOnlyProcessingThread()
     while (true)
     {
         IpcMessage message;
-        hr = _untaintedOnlyQueue.BlockingDequeue(message);
+        hr = _unmanagedOnlyQueue.BlockingDequeue(message);
         if (hr != S_OK)
         {
             // We are complete, discard all messages

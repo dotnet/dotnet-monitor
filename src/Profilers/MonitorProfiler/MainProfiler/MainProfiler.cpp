@@ -251,7 +251,7 @@ HRESULT MainProfiler::InitializeCommandServer()
         to_string(socketPath),
         [this](const IpcMessage& message)-> HRESULT { return this->MessageCallback(message); },
         [this](const IpcMessage& message)-> HRESULT { return this->ValidateMessage(message); },
-        [](unsigned short commandSet, bool& untaintedOnly)-> HRESULT { return g_MessageCallbacks.UntaintedOnly(commandSet, untaintedOnly);});
+        [](unsigned short commandSet, bool& unmanagedOnly)-> HRESULT { return g_MessageCallbacks.UnmanagedOnly(commandSet, unmanagedOnly);});
     if (FAILED(hr))
     {
         g_MessageCallbacks.Unregister(static_cast<unsigned short>(CommandSet::Profiler));

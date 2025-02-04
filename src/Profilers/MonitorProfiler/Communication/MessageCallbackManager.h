@@ -15,12 +15,12 @@ typedef HRESULT (STDMETHODCALLTYPE *ManagedMessageCallback)(UINT16, const BYTE*,
 struct CallbackInfo
 {
     CallbackInfo() = default;
-    CallbackInfo(bool untaintedOnly, std::function<HRESULT (const IpcMessage& message)> callback) 
-        : UntaintedOnly(untaintedOnly), Callback(callback)
+    CallbackInfo(bool unmanagedOnly, std::function<HRESULT (const IpcMessage& message)> callback) 
+        : UnmanagedOnly(unmanagedOnly), Callback(callback)
     {
     }
 
-    bool UntaintedOnly = false;
+    bool UnmanagedOnly = false;
     std::function<HRESULT (const IpcMessage& message)> Callback;
 };
 
@@ -31,11 +31,11 @@ class MessageCallbackManager
         bool IsRegistered(unsigned short commandSet);
 
         // Some callbacks, such as the profiler, must run on their own thread due to ICorProfiler API restrictions.
-        // Setting untaintedOnly to true will queue the work from the command set to a separate thread.
-        bool TryRegister(unsigned short commandSet, std::function<HRESULT (const IpcMessage& message)> callback, bool untaintedOnly);
+        // Setting unmanagedOnly to true will queue the work from the command set to a separate thread.
+        bool TryRegister(unsigned short commandSet, std::function<HRESULT (const IpcMessage& message)> callback, bool unmanagedOnly);
         bool TryRegister(unsigned short commandSet, ManagedMessageCallback pCallback);
         void Unregister(unsigned short commandSet);
-        HRESULT UntaintedOnly(unsigned short commandSet, bool& untaintedOnly);
+        HRESULT UnmanagedOnly(unsigned short commandSet, bool& unmanagedOnly);
     private:
         bool TryGetCallback(unsigned short commandSet, std::function<HRESULT (const IpcMessage& message)>& callback);
         std::unordered_map<unsigned short, CallbackInfo> m_callbacks;
