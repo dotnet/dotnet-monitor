@@ -12,17 +12,33 @@
 
 typedef HRESULT (STDMETHODCALLTYPE *ManagedMessageCallback)(UINT16, const BYTE*, UINT64);
 
+struct CallbackInfo
+{
+    CallbackInfo() = default;
+    CallbackInfo(bool unmanagedOnly, std::function<HRESULT (const IpcMessage& message)> callback) 
+        : UnmanagedOnly(unmanagedOnly), Callback(callback)
+    {
+    }
+
+    bool UnmanagedOnly = false;
+    std::function<HRESULT (const IpcMessage& message)> Callback;
+};
+
 class MessageCallbackManager
 {
     public:
         HRESULT DispatchMessage(const IpcMessage& message);
         bool IsRegistered(unsigned short commandSet);
-        bool TryRegister(unsigned short commandSet, std::function<HRESULT (const IpcMessage& message)> callback);
+
+        // Some callbacks, such as the profiler, must run on their own thread due to ICorProfiler API restrictions.
+        // Setting unmanagedOnly to true will queue the work from the command set to a separate thread.
+        bool TryRegister(unsigned short commandSet, std::function<HRESULT (const IpcMessage& message)> callback, bool unmanagedOnly);
         bool TryRegister(unsigned short commandSet, ManagedMessageCallback pCallback);
         void Unregister(unsigned short commandSet);
+        HRESULT UnmanagedOnly(unsigned short commandSet, bool& unmanagedOnly);
     private:
         bool TryGetCallback(unsigned short commandSet, std::function<HRESULT (const IpcMessage& message)>& callback);
-        std::unordered_map<unsigned short, std::function<HRESULT (const IpcMessage& message)>> m_callbacks;
+        std::unordered_map<unsigned short, CallbackInfo> m_callbacks;
         //
         // Ideally we would use a single std::shared_mutex instead, but we are targeting C++11 without
         // an easy way to upgrade to C++17 at this time, so we use two separate mutexes instead to
