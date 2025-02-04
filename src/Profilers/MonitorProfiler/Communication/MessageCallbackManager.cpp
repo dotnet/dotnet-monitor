@@ -16,10 +16,10 @@ bool MessageCallbackManager::TryRegister(unsigned short commandSet, ManagedMessa
     return TryRegister(commandSet, [pCallback](const IpcMessage& message)-> HRESULT
     {
         return pCallback(message.Command, message.Payload.data(), message.Payload.size());
-    });
+    }, false);
 }
 
-bool MessageCallbackManager::TryRegister(unsigned short commandSet, std::function<HRESULT (const IpcMessage& message)> callback)
+bool MessageCallbackManager::TryRegister(unsigned short commandSet, std::function<HRESULT (const IpcMessage& message)> callback, bool unmanagedOnly)
 {
     std::lock_guard<std::mutex> dispatchLock(m_dispatchMutex);
     std::lock_guard<std::mutex> lookupLock(m_lookupMutex);
@@ -30,7 +30,7 @@ bool MessageCallbackManager::TryRegister(unsigned short commandSet, std::functio
         return false;
     }
 
-    m_callbacks[commandSet] = callback;
+    m_callbacks[commandSet] = CallbackInfo(unmanagedOnly, callback);
     return true;
 }
 
@@ -61,9 +61,22 @@ bool MessageCallbackManager::TryGetCallback(unsigned short commandSet, std::func
     auto const& it = m_callbacks.find(commandSet);
     if (it != m_callbacks.end())
     {
-        callback = it->second;
+        callback = it->second.Callback;
         return true;
     }
 
     return false;
+}
+
+HRESULT MessageCallbackManager::UnmanagedOnly(unsigned short commandSet, bool& unmanagedOnly)
+{
+    std::lock_guard<std::mutex> lookupLock(m_lookupMutex);
+
+    auto const& it = m_callbacks.find(commandSet);
+    if (it != m_callbacks.end())
+    {
+        unmanagedOnly = it->second.UnmanagedOnly;
+        return S_OK;
+    }
+    return E_FAIL;
 }
