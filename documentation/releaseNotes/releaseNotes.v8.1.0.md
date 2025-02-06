@@ -7,7 +7,6 @@ Changes since 8.0.8 release:
 - Adds support for overriding the artifact name for `Collect*` actions and adds new placeholders for `HostName` and `UnixTime`. ([#6675](https://github.com/dotnet/dotnet-monitor/pull/6675))
 - The S3 egress provider now provides the ability to use KMS encryption keys to encrypt artifacts placed in S3 buckets ([#6831](https://github.com/dotnet/dotnet-monitor/pull/6831))
 - CallStackFrame JSON results now include method token and module version ID. ([#6839](https://github.com/dotnet/dotnet-monitor/pull/6839))
-- Use the `DOTNET` prefix when detecting environment variables and prefer it over the `COMPlus` prefix. ([#7434](https://github.com/dotnet/dotnet-monitor/pull/7434))
 - Hide frames with [`StackTraceHiddenAttribute`](https://learn.microsoft.com/dotnet/api/system.diagnostics.stacktracehiddenattribute) from `/exceptions` and `/stacks`. When retrieving json data these frames are still included but are identified by a new `hidden` field. ([#7532](https://github.com/dotnet/dotnet-monitor/pull/7532))
 - Fix an issue where `/stacks` route can fail to collect call stacks after `/parameters` route is used ([#7917](https://github.com/dotnet/dotnet-monitor/pull/7917))
 - 🔬 Support capturing the following parameter types: generics, tuples, and nullable value types ([#5812](https://github.com/dotnet/dotnet-monitor/pull/5812))
