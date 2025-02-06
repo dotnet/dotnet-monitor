@@ -1,6 +1,6 @@
 Today we are releasing the 9.0.2 build of the `dotnet monitor` tool. This release includes:
 
-- Fix an issue where `/parameters` causes `/stacks` to return CORPROF_E_UNSUPPORTED_CALL_SEQUENCE ([#7918](https://github.com/dotnet/dotnet-monitor/pull/7918))
+- Fix an issue where `/stacks` route can fail to collect call stacks after `/parameters` route is used ([#7918](https://github.com/dotnet/dotnet-monitor/pull/7918))
 
 
 
