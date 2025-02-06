@@ -9,7 +9,7 @@ Changes since 8.0.8 release:
 - CallStackFrame JSON results now include method token and module version ID. ([#6839](https://github.com/dotnet/dotnet-monitor/pull/6839))
 - Use the `DOTNET` prefix when detecting environment variables and prefer it over the `COMPlus` prefix. ([#7434](https://github.com/dotnet/dotnet-monitor/pull/7434))
 - Hide frames with [`StackTraceHiddenAttribute`](https://learn.microsoft.com/dotnet/api/system.diagnostics.stacktracehiddenattribute) from `/exceptions` and `/stacks`. When retrieving json data these frames are still included but are identified by a new `hidden` field. ([#7532](https://github.com/dotnet/dotnet-monitor/pull/7532))
-- Fix an issue where `/parameters` causes `/stacks` to return CORPROF_E_UNSUPPORTED_CALL_SEQUENCE ([#7917](https://github.com/dotnet/dotnet-monitor/pull/7917))
+- Fix an issue where `/stacks` route can fail to collect call stacks after `/parameters` route is used ([#7917](https://github.com/dotnet/dotnet-monitor/pull/7917))
 - 🔬 Support capturing the following parameter types: generics, tuples, and nullable value types ([#5812](https://github.com/dotnet/dotnet-monitor/pull/5812))
 - 🔬 Update `POST /parameters` to support stopping after a certain number of times parameters are captured. ([#6060](https://github.com/dotnet/dotnet-monitor/pull/6060))
 - ⚠️ 🔬 Parameters can now be sent to an egress provider and are no longer logged inside the target application. ([#6272](https://github.com/dotnet/dotnet-monitor/pull/6272))
