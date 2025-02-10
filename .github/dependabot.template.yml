@@ -10,7 +10,6 @@
 #@   return {
 #@     "9": [ "net9.0", "net8.0", "net7.0", "net6.0" ],
 #@     "8": [ "net8.0", "net7.0", "net6.0" ],
-#@     "6": [ "net6.0", "netcoreapp3.1" ]
 #@   }
 #@ end
 
@@ -19,9 +18,9 @@
 #@ def getBranches():
 #@   return [
 #@     struct.encode({"name": "main", "majorVersion": "8"}),
-#@     struct.encode({"name": "feature/9.x", "majorVersion": "9"}),
+#@     struct.encode({"name": "release/9.x", "majorVersion": "9"}),
+#@     struct.encode({"name": "release/8.x", "majorVersion": "8"}),
 #@     struct.encode({"name": "release/8.0", "majorVersion": "8"}),
-#@     struct.encode({"name": "release/6.x", "majorVersion": "6"}),
 #@   ]
 #@ end
 

@@ -19,7 +19,7 @@ jobs:
           persist-credentials: false
 
       - name: Check markdown links
-        uses: gaurav-nelson/github-action-markdown-link-check@7d83e59a57f3c201c76eed3d33dff64ec4452d27
+        uses: gaurav-nelson/github-action-markdown-link-check@1b916f2cf6c36510a6059943104e3c42ce6c16bc
         with:
           config-file: .github/linters/check-markdown-links-config.json
           use-quiet-mode: 'yes'
