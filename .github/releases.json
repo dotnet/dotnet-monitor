@@ -6,6 +6,7 @@
   "preview": [],
   "supported": [
     "9.0",
+    "8.1",
     "8.0"
   ],
   "unsupported": [
@@ -29,7 +30,8 @@
       "patchReleaseDate": "2025-01-14T00:00:00.000Z",
       "supportedFrameworks": [
         "net8.0"
-      ]
+      ],
+      "outOfSupportDate": "2025-05-11T00:00:00.000Z"
     },
     "7.3": {
       "tag": "v7.3.4",
@@ -47,6 +49,14 @@
       "patchReleaseDate": "2025-01-14T00:00:00.000Z",
       "supportedFrameworks": [
         "net9.0"
+      ]
+    },
+    "8.1": {
+      "tag": "v8.1.0",
+      "minorReleaseDate": "2025-02-11T00:00:00.000Z",
+      "patchReleaseDate": "2025-02-11T00:00:00.000Z",
+      "supportedFrameworks": [
+        "net8.0"
       ]
     }
   }
