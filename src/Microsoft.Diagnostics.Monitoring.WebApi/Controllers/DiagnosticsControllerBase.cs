@@ -2,8 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Threading.Tasks;
 
@@ -12,14 +14,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
     public abstract class DiagnosticsControllerBase : ControllerBase
     {
         protected DiagnosticsControllerBase(IServiceProvider serviceProvider, ILogger logger) :
-            this(serviceProvider.GetRequiredService<IDiagnosticServices>(), serviceProvider.GetRequiredService<IEgressOperationStore>(), logger)
+            this(serviceProvider.GetRequiredService<IDiagnosticServices>(), serviceProvider.GetRequiredService<IEgressOperationStore>(), logger, serviceProvider.GetRequiredService<IOptions<DiagnosticPortOptions>>(), serviceProvider.GetRequiredService<InfoConfigurator>())
         { }
 
-        private protected DiagnosticsControllerBase(IDiagnosticServices diagnosticServices, IEgressOperationStore operationStore, ILogger logger)
+        private protected DiagnosticsControllerBase(IDiagnosticServices diagnosticServices, IEgressOperationStore operationStore, ILogger logger, IOptions<DiagnosticPortOptions> diagnosticPortOptions, InfoConfigurator infoConfigurator)
         {
             DiagnosticServices = diagnosticServices ?? throw new ArgumentNullException(nameof(diagnosticServices));
             OperationStore = operationStore ?? throw new ArgumentNullException(nameof(operationStore));
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            DiagnosticPortOptions = diagnosticPortOptions ?? throw new ArgumentNullException(nameof(diagnosticPortOptions));
         }
 
         protected Task<ActionResult> InvokeForProcess(Func<IProcessInfo, ActionResult> func, ProcessKey? processKey, string? artifactType = null)
@@ -133,5 +136,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private protected IEgressOperationStore OperationStore { get; }
 
         protected ILogger Logger { get; }
+
+        public IOptions<DiagnosticPortOptions> DiagnosticPortOptions { get; }
     }
 }

@@ -35,7 +35,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
     {
         private const TraceProfile DefaultTraceProfiles = TraceProfile.Cpu | TraceProfile.Http | TraceProfile.Metrics | TraceProfile.GcCollect;
 
-        private readonly IOptions<DiagnosticPortOptions> _diagnosticPortOptions;
         private readonly IOptions<CallStacksOptions> _callStacksOptions;
         private readonly IOptions<ParameterCapturingOptions> _parameterCapturingOptions;
         private readonly IOptionsMonitor<GlobalCounterOptions> _counterOptions;
@@ -48,11 +47,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private readonly ICaptureParametersOperationFactory _captureParametersFactory;
         private readonly IGCDumpOperationFactory _gcdumpOperationFactory;
         private readonly IStacksOperationFactory _stacksOperationFactory;
+        private readonly InfoConfigurator _infoConfigurator;
 
         public DiagController(IServiceProvider serviceProvider, ILogger<DiagController> logger)
-            : base(serviceProvider.GetRequiredService<IDiagnosticServices>(), serviceProvider.GetRequiredService<IEgressOperationStore>(), logger)
+            : base(serviceProvider.GetRequiredService<IDiagnosticServices>(), serviceProvider.GetRequiredService<IEgressOperationStore>(), logger, serviceProvider.GetRequiredService<IOptions<DiagnosticPortOptions>>(), serviceProvider.GetRequiredService<InfoConfigurator>())
         {
-            _diagnosticPortOptions = serviceProvider.GetRequiredService<IOptions<DiagnosticPortOptions>>();
             _callStacksOptions = serviceProvider.GetRequiredService<IOptions<CallStacksOptions>>();
             _parameterCapturingOptions = serviceProvider.GetRequiredService<IOptions<ParameterCapturingOptions>>();
             _counterOptions = serviceProvider.GetRequiredService<IOptionsMonitor<GlobalCounterOptions>>();
@@ -65,6 +64,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _captureParametersFactory = serviceProvider.GetRequiredService<ICaptureParametersOperationFactory>();
             _gcdumpOperationFactory = serviceProvider.GetRequiredService<IGCDumpOperationFactory>();
             _stacksOperationFactory = serviceProvider.GetRequiredService<IStacksOperationFactory>();
+            _infoConfigurator = serviceProvider.GetRequiredService<InfoConfigurator>();
         }
 
         /// <summary>
@@ -497,7 +497,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 string? version = Assembly.GetExecutingAssembly().GetInformationalVersionString();
                 string runtimeVersion = Environment.Version.ToString();
-                DiagnosticPortConnectionMode diagnosticPortMode = _diagnosticPortOptions.Value.GetConnectionMode();
+                DiagnosticPortConnectionMode diagnosticPortMode = DiagnosticPortOptions.Value.GetConnectionMode();
                 string? diagnosticPortName = GetDiagnosticPortName();
 
                 DotnetMonitorInfo dotnetMonitorInfo = new()
@@ -505,7 +505,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     Version = version,
                     RuntimeVersion = runtimeVersion,
                     DiagnosticPortMode = diagnosticPortMode,
-                    DiagnosticPortName = diagnosticPortName
+                    DiagnosticPortName = diagnosticPortName,
+                    EnabledFeatures = _infoConfigurator.GetFeatureAvailability().ToArray()
                 };
 
                 Logger.WrittenToHttpStream();
@@ -651,9 +652,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }, processKey, Utilities.ArtifactType_Stacks);
         }
 
-        private string? GetDiagnosticPortName()
+        public string? GetDiagnosticPortName()
         {
-            return _diagnosticPortOptions.Value.EndpointName;
+            return DiagnosticPortOptions.Value.EndpointName;
         }
 
         private Task<ActionResult> StartTrace(

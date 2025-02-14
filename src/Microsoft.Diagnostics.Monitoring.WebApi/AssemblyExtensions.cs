@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    internal static class AssemblyExtensions
+    public static class AssemblyExtensions
     {
         public static string? GetInformationalVersionString(this Assembly assembly)
         {

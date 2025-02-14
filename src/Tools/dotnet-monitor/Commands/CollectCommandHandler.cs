@@ -3,6 +3,7 @@
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Diagnostics.Monitoring;
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.Auth;
 using Microsoft.Diagnostics.Tools.Monitor.Stacks;
@@ -87,6 +88,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
             {
                 IAuthenticationConfigurator authConfigurator = AuthConfiguratorFactory.Create(startupAuthMode, context);
                 services.AddSingleton<IAuthenticationConfigurator>(authConfigurator);
+
+                services.AddSingleton<InfoConfigurator>();
 
                 //TODO Many of these service additions should be done through extension methods
                 services.AddSingleton(TimeProvider.System);
