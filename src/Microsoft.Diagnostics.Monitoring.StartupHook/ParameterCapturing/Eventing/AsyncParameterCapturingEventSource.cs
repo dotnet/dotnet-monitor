@@ -61,7 +61,9 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.ParameterCapturing.Eventi
             string methodName,
             string methodModuleName,
             string? methodDeclaringTypeName,
-            ResolvedParameterInfo[] parameters
+            ResolvedParameterInfo[] parameters,
+            uint methodToken,
+            Guid mvid
             )
         {
             Activity? currentActivity = Activity.Current;
@@ -81,7 +83,9 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.ParameterCapturing.Eventi
                     currentThreadId,
                     methodName,
                     methodModuleName,
-                    methodDeclaringTypeName ?? string.Empty);
+                    methodDeclaringTypeName ?? string.Empty,
+                    methodToken,
+                    mvid);
 
                 foreach (ResolvedParameterInfo param in parameters)
                 {

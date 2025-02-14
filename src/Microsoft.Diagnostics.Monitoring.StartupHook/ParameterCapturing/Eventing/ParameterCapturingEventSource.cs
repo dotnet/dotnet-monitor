@@ -123,10 +123,12 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.ParameterCapturing.Eventi
             int managedThreadId,
             string methodName,
             string methodModuleName,
-            string methodDeclaringTypeName
+            string methodDeclaringTypeName,
+            uint methodToken,
+            Guid mvid
             )
         {
-            Span<EventData> data = stackalloc EventData[8];
+            Span<EventData> data = stackalloc EventData[10];
 
             using PinnedData pinnedActivityId = PinnedData.Create(activityId);
             using PinnedData pinnedMethodName = PinnedData.Create(methodName);
@@ -141,6 +143,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.ParameterCapturing.Eventi
             SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.MethodName], pinnedMethodName);
             SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.MethodModuleName], pinnedMethodModuleName);
             SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.MethodDeclaringTypeName], pinnedMethodDeclaringTypeName);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.MethodToken], methodToken);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.Mvid], mvid);
 
             WriteEventWithFlushing(ParameterCapturingEvents.EventIds.ParametersCapturedStart, data);
         }

@@ -86,7 +86,10 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.ParameterCapturing.Functi
                 instrumentedMethod.MethodSignature.MethodName,
                 instrumentedMethod.MethodSignature.ModuleName,
                 instrumentedMethod.MethodSignature.TypeName,
-                resolvedArgs);
+                resolvedArgs,
+                Convert.ToUInt32(instrumentedMethod.Method.MetadataToken),
+                instrumentedMethod.Method.Module.ModuleVersionId
+            );
 
             return true;
         }

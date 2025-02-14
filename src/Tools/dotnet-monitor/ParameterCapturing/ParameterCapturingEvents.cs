@@ -73,6 +73,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             public const int MethodName = 5;
             public const int MethodModuleName = 6;
             public const int MethodDeclaringTypeName = 7;
+            public const int MethodToken = 8;
+            public const int Mvid = 9;
         }
 
         public static class CapturedParametersStopPayloads
