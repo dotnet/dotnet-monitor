@@ -4,7 +4,6 @@
 using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Options;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -21,7 +20,7 @@ namespace Microsoft.Diagnostics.Monitoring
 
         public void PostConfigure(string? name, CallStacksOptions options)
         {
-            var capability = _capabilities.FirstOrDefault(c => c.Name == MonitorCapabilityName.CallStacks);
+            IMonitorCapability? capability = _capabilities.FirstOrDefault(c => c.Name == MonitorCapability.CallStacks);
             if (capability != null)
             {
                 capability.Enabled = options.Enabled == true;
@@ -30,7 +29,7 @@ namespace Microsoft.Diagnostics.Monitoring
 
         public void PostConfigure(string? name, ExceptionsOptions options)
         {
-            var capability = _capabilities.FirstOrDefault(c => c.Name == MonitorCapabilityName.Exceptions);
+            IMonitorCapability? capability = _capabilities.FirstOrDefault(c => c.Name == MonitorCapability.Exceptions);
             if (capability != null)
             {
                 capability.Enabled = options.Enabled == true;
@@ -39,7 +38,7 @@ namespace Microsoft.Diagnostics.Monitoring
 
         public void PostConfigure(string? name, ParameterCapturingOptions options)
         {
-            var capability = _capabilities.FirstOrDefault(c => c.Name == MonitorCapabilityName.ParameterCapturing);
+            IMonitorCapability? capability = _capabilities.FirstOrDefault(c => c.Name == MonitorCapability.ParameterCapturing);
             if (capability != null)
             {
                 capability.Enabled = options.Enabled == true;
@@ -48,9 +47,7 @@ namespace Microsoft.Diagnostics.Monitoring
 
         public void PostConfigure(string? name, MetricsOptions options)
         {
-            Console.WriteLine("Hit PostConfigure for Metrics");
-
-            var capability = _capabilities.FirstOrDefault(c => c.Name == MonitorCapabilityName.Metrics);
+            IMonitorCapability? capability = _capabilities.FirstOrDefault(c => c.Name == MonitorCapability.Metrics);
             if (capability != null)
             {
                 capability.Enabled = options.Enabled == true;

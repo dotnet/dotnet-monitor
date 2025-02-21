@@ -33,9 +33,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         public string? DiagnosticPortName { get; set; }
 
         /// <summary>
-        /// The names of the features enabled by dotnet-monitor.
+        /// The names of the capabilities provided by dotnet-monitor.
         /// </summary>
-        [JsonPropertyName("enabledFeatures")]
-        public required IMonitorCapability[] EnabledFeatures { get; set; }
+        [JsonPropertyName("capabilities")]
+        public required IMonitorCapability[] Capabilities { get; set; }
     }
 }

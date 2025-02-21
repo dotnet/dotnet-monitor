@@ -243,25 +243,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureCapabilities(this IServiceCollection services, bool noHttpEgress)
         {
-            // for each MonitorConfigurationName, register a singleton
-
-            foreach (MonitorCapabilityName capabilityName in Enum.GetValues(typeof(MonitorCapabilityName)))
-            {
-                if (capabilityName == MonitorCapabilityName.Https)
-                {
-                    services.AddSingleton<IMonitorCapability>(new MonitorCapability(capabilityName, !noHttpEgress));
-                }
-                else
-                {
-                    services.AddSingleton<IMonitorCapability>(new MonitorCapability(capabilityName));
-                }
-            }
-
-            // post configure options for IMonitorCapability
-            services.AddSingleton<IPostConfigureOptions<CallStacksOptions>, CapabilityPostConfigureOptions>();
-            services.AddSingleton<IPostConfigureOptions<ExceptionsOptions>, CapabilityPostConfigureOptions>();
+            services.AddSingleton<IMonitorCapability>(new MonitorCapability(MonitorCapability.Metrics));
             services.AddSingleton<IPostConfigureOptions<MetricsOptions>, CapabilityPostConfigureOptions>();
+
+            services.AddSingleton<IMonitorCapability>(new MonitorCapability(MonitorCapability.Exceptions));
+            services.AddSingleton<IPostConfigureOptions<ExceptionsOptions>, CapabilityPostConfigureOptions>();
+
+            services.AddSingleton<IMonitorCapability>(new MonitorCapability(MonitorCapability.CallStacks));
+            services.AddSingleton<IPostConfigureOptions<CallStacksOptions>, CapabilityPostConfigureOptions>();
+
+            services.AddSingleton<IMonitorCapability>(new MonitorCapability(MonitorCapability.ParameterCapturing));
             services.AddSingleton<IPostConfigureOptions<ParameterCapturingOptions>, CapabilityPostConfigureOptions>();
+
+            services.AddSingleton<IMonitorCapability>(new MonitorCapability(MonitorCapability.Https, !noHttpEgress));
 
             return services;
         }

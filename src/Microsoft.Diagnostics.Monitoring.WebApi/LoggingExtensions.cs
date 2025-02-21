@@ -7,7 +7,7 @@ using System;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    public static class LoggingExtensions
+    internal static class LoggingExtensions
     {
         private static readonly Action<ILogger, Exception> _requestFailed =
             LoggerMessage.Define(

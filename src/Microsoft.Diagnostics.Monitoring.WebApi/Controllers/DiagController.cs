@@ -35,6 +35,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
     {
         private const TraceProfile DefaultTraceProfiles = TraceProfile.Cpu | TraceProfile.Http | TraceProfile.Metrics | TraceProfile.GcCollect;
 
+        private readonly IOptions<DiagnosticPortOptions> _diagnosticPortOptions;
         private readonly IOptions<CallStacksOptions> _callStacksOptions;
         private readonly IOptions<ParameterCapturingOptions> _parameterCapturingOptions;
         private readonly IOptionsMonitor<GlobalCounterOptions> _counterOptions;
@@ -47,11 +48,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private readonly ICaptureParametersOperationFactory _captureParametersFactory;
         private readonly IGCDumpOperationFactory _gcdumpOperationFactory;
         private readonly IStacksOperationFactory _stacksOperationFactory;
-        private readonly InfoConfigurator _infoConfigurator;
-
+        private readonly IEnumerable<IMonitorCapability> _monitorCapabilities;
         public DiagController(IServiceProvider serviceProvider, ILogger<DiagController> logger)
-            : base(serviceProvider.GetRequiredService<IDiagnosticServices>(), serviceProvider.GetRequiredService<IEgressOperationStore>(), logger, serviceProvider.GetRequiredService<IOptions<DiagnosticPortOptions>>(), serviceProvider.GetRequiredService<InfoConfigurator>())
+            : base(serviceProvider.GetRequiredService<IDiagnosticServices>(), serviceProvider.GetRequiredService<IEgressOperationStore>(), logger)
         {
+            _diagnosticPortOptions = serviceProvider.GetRequiredService<IOptions<DiagnosticPortOptions>>();
             _callStacksOptions = serviceProvider.GetRequiredService<IOptions<CallStacksOptions>>();
             _parameterCapturingOptions = serviceProvider.GetRequiredService<IOptions<ParameterCapturingOptions>>();
             _counterOptions = serviceProvider.GetRequiredService<IOptionsMonitor<GlobalCounterOptions>>();
@@ -64,7 +65,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _captureParametersFactory = serviceProvider.GetRequiredService<ICaptureParametersOperationFactory>();
             _gcdumpOperationFactory = serviceProvider.GetRequiredService<IGCDumpOperationFactory>();
             _stacksOperationFactory = serviceProvider.GetRequiredService<IStacksOperationFactory>();
-            _infoConfigurator = serviceProvider.GetRequiredService<InfoConfigurator>();
+            _monitorCapabilities = serviceProvider.GetRequiredService<IEnumerable<IMonitorCapability>>();
         }
 
         /// <summary>
@@ -497,7 +498,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 string? version = Assembly.GetExecutingAssembly().GetInformationalVersionString();
                 string runtimeVersion = Environment.Version.ToString();
-                DiagnosticPortConnectionMode diagnosticPortMode = DiagnosticPortOptions.Value.GetConnectionMode();
+                DiagnosticPortConnectionMode diagnosticPortMode = _diagnosticPortOptions.Value.GetConnectionMode();
                 string? diagnosticPortName = GetDiagnosticPortName();
 
                 DotnetMonitorInfo dotnetMonitorInfo = new()
@@ -506,7 +507,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     RuntimeVersion = runtimeVersion,
                     DiagnosticPortMode = diagnosticPortMode,
                     DiagnosticPortName = diagnosticPortName,
-                    EnabledFeatures = _infoConfigurator.GetFeatureAvailability().ToArray()
+                    Capabilities = _monitorCapabilities.ToArray()
                 };
 
                 Logger.WrittenToHttpStream();
@@ -652,9 +653,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }, processKey, Utilities.ArtifactType_Stacks);
         }
 
-        public string? GetDiagnosticPortName()
+        private string? GetDiagnosticPortName()
         {
-            return DiagnosticPortOptions.Value.EndpointName;
+            return _diagnosticPortOptions.Value.EndpointName;
         }
 
         private Task<ActionResult> StartTrace(

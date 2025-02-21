@@ -5,15 +5,21 @@ namespace Microsoft.Diagnostics.Monitoring.Options
 {
     public class MonitorCapability : IMonitorCapability
     {
-        public MonitorCapabilityName Name { get; }
+        public const string Exceptions = "Exceptions";
+        public const string ParameterCapturing = "ParameterCapturing";
+        public const string CallStacks = "CallStacks";
+        public const string Metrics = "Metrics";
+        public const string Https = "Https";
+
+        public string Name { get; }
 
         public bool Enabled { get; set; }
-        public MonitorCapability(MonitorCapabilityName name)
+        public MonitorCapability(string name)
         {
             Name = name;
         }
 
-        public MonitorCapability(MonitorCapabilityName name, bool enabled)
+        public MonitorCapability(string name, bool enabled)
         {
             Name = name;
             Enabled = enabled;
@@ -22,19 +28,10 @@ namespace Microsoft.Diagnostics.Monitoring.Options
 
     public interface IMonitorCapability
     {
-        MonitorCapabilityName Name { get; }
+        string Name { get; }
         bool Enabled
         {
             get; set;
         }
-    }
-
-    public enum MonitorCapabilityName
-    {
-        Exceptions,
-        ParameterCapturing,
-        CallStacks,
-        Metrics,
-        Https
     }
 }
