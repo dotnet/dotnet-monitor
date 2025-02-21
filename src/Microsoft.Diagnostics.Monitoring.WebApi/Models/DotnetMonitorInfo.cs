@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.Options;
 using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
@@ -35,6 +36,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         /// The names of the features enabled by dotnet-monitor.
         /// </summary>
         [JsonPropertyName("enabledFeatures")]
-        public required string[] EnabledFeatures { get; set; }
+        public required IMonitorCapability[] EnabledFeatures { get; set; }
     }
 }

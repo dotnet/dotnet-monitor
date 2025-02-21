@@ -2,54 +2,27 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using System;
-using Microsoft.Extensions.Options;
-using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Microsoft.Diagnostics.Monitoring.Options
 {
-
     public class InfoConfigurator
     {
-        private readonly IOptions<CallStacksOptions> _callStacksOptions;
-        private readonly IOptions<ParameterCapturingOptions> _parameterCapturingOptions;
-        private readonly IOptions<ExceptionsOptions> _exceptionsOptions;
-        private readonly IOptionsMonitor<MetricsOptions> _metricsOptions;
+        private readonly IEnumerable<IMonitorCapability> _monitorCapabilities;
+        private readonly IEgressOutputConfiguration _egressOutputConfiguration;
 
-        public InfoConfigurator(IServiceProvider serviceProvider)
+        public InfoConfigurator(IEnumerable<IMonitorCapability> monitorCapabilities, IEgressOutputConfiguration egressOutputConfiguration)
         {
-            _callStacksOptions = serviceProvider.GetRequiredService<IOptions<CallStacksOptions>>();
-            _parameterCapturingOptions = serviceProvider.GetRequiredService<IOptions<ParameterCapturingOptions>>();
-            _exceptionsOptions = serviceProvider.GetRequiredService<IOptions<ExceptionsOptions>>();
-            _metricsOptions = serviceProvider.GetRequiredService<IOptionsMonitor<MetricsOptions>>();
+            _monitorCapabilities = monitorCapabilities;
+            _egressOutputConfiguration = egressOutputConfiguration;
         }
-
-        public List<string> GetFeatureAvailability()
+        public List<IMonitorCapability> GetFeatureAvailability()
         {
-            List<string> enabledFeatures = [];
+            // Access the egress output configuration to trigger PostConfigure
+            bool _ = _egressOutputConfiguration.IsHttpEgressEnabled;
 
-            if (_callStacksOptions.Value.Enabled == true)
-            {
-                enabledFeatures.Add("CallStacks");
-            }
-
-            if (_parameterCapturingOptions.Value.Enabled == true)
-            {
-                enabledFeatures.Add("ParameterCapturing");
-            }
-
-            if (_exceptionsOptions.Value.Enabled == true)
-            {
-                enabledFeatures.Add("Exceptions");
-            }
-
-            if (_metricsOptions.CurrentValue.Enabled == true)
-            {
-                enabledFeatures.Add("Metrics");
-            }
-
-            return enabledFeatures;
+            return _monitorCapabilities.ToList();
         }
     }
 }
