@@ -3,7 +3,7 @@
   <Import Project="dependabot/Versions.props" />
   <PropertyGroup Label="Versioning">
     <RepositoryUrl>https://github.com/dotnet/dotnet-monitor</RepositoryUrl>
-    <VersionPrefix>9.0.2</VersionPrefix>
+    <VersionPrefix>9.0.3</VersionPrefix>
     <PreReleaseVersionLabel>servicing</PreReleaseVersionLabel>
     <DotnetFinalVersionKind>release</DotnetFinalVersionKind>
     <!-- Disable final version kind until merged into release branch. -->
