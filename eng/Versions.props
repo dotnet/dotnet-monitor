@@ -3,7 +3,7 @@
   <Import Project="dependabot/Versions.props" />
   <PropertyGroup Label="Versioning">
     <RepositoryUrl>https://github.com/dotnet/dotnet-monitor</RepositoryUrl>
-    <VersionPrefix>8.0.8</VersionPrefix>
+    <VersionPrefix>8.0.9</VersionPrefix>
     <PreReleaseVersionLabel>servicing</PreReleaseVersionLabel>
     <DotnetFinalVersionKind>release</DotnetFinalVersionKind>
     <DotNetUseShippingVersions>true</DotNetUseShippingVersions>
