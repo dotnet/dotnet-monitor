@@ -15,9 +15,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 {
     internal static class MetricsScenario
     {
-        public static CliCommand Command()
+        public static Command Command()
         {
-            CliCommand command = new(TestAppScenarios.Metrics.Name);
+            Command command = new(TestAppScenarios.Metrics.Name);
             command.SetAction(ExecuteAsync);
             return command;
         }
