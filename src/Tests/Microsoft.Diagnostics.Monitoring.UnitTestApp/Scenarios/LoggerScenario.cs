@@ -16,9 +16,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 {
     internal static class LoggerScenario
     {
-        public static CliCommand Command()
+        public static Command Command()
         {
-            CliCommand command = new(TestAppScenarios.Logger.Name);
+            Command command = new(TestAppScenarios.Logger.Name);
             command.SetAction(ExecuteAsync);
             return command;
         }
