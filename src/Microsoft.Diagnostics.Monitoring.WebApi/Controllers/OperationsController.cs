@@ -31,13 +31,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             // GetOperations
             builder.MapGet($"{ControllerName}/{nameof(GetOperations)}", (
-                [FromQuery]
                 int? pid,
-                [FromQuery]
                 Guid? uid,
-                [FromQuery]
                 string? name,
-                [FromQuery]
                 string? tags) =>
                     GetOperations(pid, uid, name, tags))
             .WithName(nameof(GetOperations))
@@ -60,7 +56,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             // CancelOperation
             builder.MapDelete($"{ControllerName}/{nameof(CancelOperation)}/{{operationId}}", (
                 Guid operationId,
-                [FromQuery]
                 bool stop = false) =>
                     CancelOperation(operationId, stop))
             .WithName(nameof(CancelOperation))

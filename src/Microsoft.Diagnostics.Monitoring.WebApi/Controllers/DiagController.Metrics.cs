@@ -16,18 +16,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
     {
         public DiagController MapMetricsActionMethods(IEndpointRouteBuilder builder)
         {
+            // CaptureMetrics
             builder.MapGet("livemetrics", (
-                [FromQuery]
                 int? pid,
-                [FromQuery]
                 Guid? uid,
-                [FromQuery]
                 string? name,
-                [FromQuery][Range(-1, int.MaxValue)]
+                [Range(-1, int.MaxValue)]
                 int durationSeconds = 30,
-                [FromQuery]
                 string? egressProvider = null,
-                [FromQuery]
                 string? tags = null) =>
                     CaptureMetrics(pid, uid, name, durationSeconds, egressProvider, tags))
                 .WithName(nameof(CaptureMetrics))
@@ -41,20 +37,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 .ProducesProblem(StatusCodes.Status400BadRequest)
                 .RequireEgressValidation();
 
+            // CaptureMetricsCustom
             builder.MapGet("livemetrics", (
                 [FromBody][Required]
                 Models.EventMetricsConfiguration configuration,
-                [FromQuery]
                 int? pid,
-                [FromQuery]
                 Guid? uid,
-                [FromQuery]
                 string? name,
-                [FromQuery][Range(-1, int.MaxValue)]
+                [Range(-1, int.MaxValue)]
                 int durationSeconds = 30,
-                [FromQuery]
                 string? egressProvider = null,
-                [FromQuery]
                 string? tags = null) =>
                     CaptureMetricsCustom(configuration, pid, uid, name, durationSeconds, egressProvider, tags))
                 .WithName(nameof(CaptureMetricsCustom))

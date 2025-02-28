@@ -35,15 +35,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             // GetExceptions
             builder.MapGet("exceptions", (
-                [FromQuery]
                 int? pid,
-                [FromQuery]
                 Guid? uid,
-                [FromQuery]
                 string? name,
-                [FromQuery]
                 string? egressProvider = null,
-                [FromQuery]
                 string? tags = null) =>
                     GetExceptions(pid, uid, name, egressProvider, tags))
                 .WithName(nameof(GetExceptions))
@@ -59,15 +54,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             builder.MapPost("exceptions", (
                 [FromBody]
                 ExceptionsConfiguration configuration,
-                [FromQuery]
                 int? pid,
-                [FromQuery]
                 Guid? uid,
-                [FromQuery]
                 string? name,
-                [FromQuery]
                 string? egressProvider = null,
-                [FromQuery]
                 string? tags = null) =>
                     CaptureExceptionsCustom(configuration, pid, uid, name, egressProvider, tags))
                 .WithName(nameof(CaptureExceptionsCustom))

@@ -26,7 +26,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
     public partial class DiagController : DiagnosticsControllerBase
     {
-        internal const TraceProfile DefaultTraceProfiles = TraceProfile.Cpu | TraceProfile.Http | TraceProfile.Metrics | TraceProfile.GcCollect;
+        private const TraceProfile DefaultTraceProfiles = TraceProfile.Cpu | TraceProfile.Http | TraceProfile.Metrics | TraceProfile.GcCollect;
 
         private readonly IOptions<DiagnosticPortOptions> _diagnosticPortOptions;
         private readonly IOptions<CallStacksOptions> _callStacksOptions;
@@ -74,11 +74,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             // GetProcessInfo
             builder.MapGet("process", (
-                [FromQuery]
                 int? pid,
-                [FromQuery]
                 Guid? uid,
-                [FromQuery]
                 string? name) =>
                     GetProcessInfo(pid, uid, name))
                 .WithName(nameof(GetProcessInfo))
@@ -91,11 +88,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             // GetProcessEnvironment
             builder.MapGet("env", (
-                [FromQuery]
                 int? pid,
-                [FromQuery]
                 Guid? uid,
-                [FromQuery]
                 string? name) =>
                     GetProcessEnvironment(pid, uid, name))
                 .WithName(nameof(GetProcessEnvironment))
@@ -108,17 +102,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             // CaptureDump
             builder.MapGet("dump", (
-                [FromQuery]
                 int? pid,
-                [FromQuery]
                 Guid? uid,
-                [FromQuery]
                 string? name,
-                [FromQuery]
                 Models.DumpType type = Models.DumpType.WithHeap,
-                [FromQuery]
                 string? egressProvider = null,
-                [FromQuery]
                 string? tags = null) =>
                     CaptureDump(pid, uid, name, type, egressProvider, tags))
                 .WithName(nameof(CaptureDump))
@@ -134,15 +122,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             // CapturGcDump
             builder.MapGet("gcdump", (
-                [FromQuery]
                 int? pid,
-                [FromQuery]
                 Guid? uid,
-                [FromQuery]
                 string? name,
-                [FromQuery]
                 string? egressProvider,
-                [FromQuery]
                 string? tags) =>
                     CaptureGcDump(pid, uid, name, egressProvider, tags))
                 .WithName(nameof(CaptureGcDump))
@@ -158,19 +141,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             // CaptureTrace
             builder.MapGet("trace", (
-                [FromQuery]
                 int? pid,
-                [FromQuery]
                 Guid? uid,
-                [FromQuery]
                 string? name,
-                [FromQuery]
                 TraceProfile profile = DefaultTraceProfiles,
-                [FromQuery][Range(-1, int.MaxValue)]
+                [Range(-1, int.MaxValue)]
                 int durationSeconds = 30,
-                [FromQuery]
                 string? egressProvider = null,
-                [FromQuery]
                 string? tags = null) =>
                     CaptureTrace(pid, uid, name, profile, durationSeconds, egressProvider, tags))
                 .WithName(nameof(CaptureTrace))
@@ -188,17 +165,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             builder.MapGet("trace", (
                 [FromBody][Required]
                 EventPipeConfiguration configuration,
-                [FromQuery]
                 int? pid,
-                [FromQuery]
                 Guid? uid,
-                [FromQuery]
                 string? name,
-                [FromQuery][Range(-1, int.MaxValue)]
+                [Range(-1, int.MaxValue)]
                 int durationSeconds = 30,
-                [FromQuery]
                 string? egressProvider = null,
-                [FromQuery]
                 string? tags = null) =>
                     CaptureTraceCustom(configuration, pid, uid, name, durationSeconds, egressProvider, tags))
                 .WithName(nameof(CaptureTraceCustom))
@@ -214,19 +186,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             // CaptureLogs
             builder.MapGet("logs", (
-                [FromQuery]
                 int? pid,
-                [FromQuery]
                 Guid? uid,
-                [FromQuery]
                 string? name,
-                [FromQuery][Range(-1, int.MaxValue)]
+                [Range(-1, int.MaxValue)]
                 int durationSeconds = 30,
-                [FromQuery]
                 LogLevel? level = null,
-                [FromQuery]
                 string? egressProvider = null,
-                [FromQuery]
                 string? tags = null) =>
                     CaptureLogs(pid, uid, name, durationSeconds, level, egressProvider, tags))
                 .WithName(nameof(CaptureLogs))
@@ -244,17 +210,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             builder.MapPost("logs", (
                 [FromBody]
                 LogsConfiguration configuration,
-                [FromQuery]
                 int? pid,
-                [FromQuery]
                 Guid? uid,
-                [FromQuery]
                 string? name,
-                [FromQuery][Range(-1, int.MaxValue)]
+                [Range(-1, int.MaxValue)]
                 int durationSeconds = 30,
-                [FromQuery]
                 string? egressProvider = null,
-                [FromQuery]
                 string? tags = null) =>
                     CaptureLogsCustom(configuration, pid, uid, name, durationSeconds, egressProvider, tags))
                 .WithName(nameof(CaptureLogs))
@@ -280,11 +241,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             // GetCollectionRulesDescription
             builder.MapGet("collectionrules", (
-                [FromQuery]
                 int pid,
-                [FromQuery]
                 Guid uid,
-                [FromQuery]
                 string name) =>
                     GetCollectionRulesDescription(pid, uid, name))
                 .WithName(nameof(GetCollectionRulesDescription))
@@ -298,11 +256,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             // GetCollectionRuleDetailedDescription
             builder.MapGet("collectionrules/{collectionRuleName}", (
                 string collectionRuleName,
-                [FromQuery]
                 int pid,
-                [FromQuery]
                 Guid uid,
-                [FromQuery]
                 string name) =>
                     GetCollectionRuleDetailedDescription(collectionRuleName, pid, uid, name))
                 .WithName(nameof(GetCollectionRuleDetailedDescription))
@@ -317,17 +272,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             builder.MapPost("parameters", (
                 [FromBody][Required]
                 CaptureParametersConfiguration configuration,
-                [FromQuery][Range(-1, int.MaxValue)]
+                [Range(-1, int.MaxValue)]
                 int durationSeconds = 30,
-                [FromQuery]
                 int? pid = null,
-                [FromQuery]
                 Guid? uid = null,
-                [FromQuery]
                 string? name = null,
-                [FromQuery]
                 string? egressProvider = null,
-                [FromQuery]
                 string? tags = null) =>
                     CaptureParameters(configuration, durationSeconds, pid, uid, name, egressProvider, tags))
                 .WithName(nameof(CaptureParameters))
@@ -343,15 +293,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             // CaptureStacks
             builder.MapGet("stacks", (
-                [FromQuery]
                 int? pid,
-                [FromQuery]
                 Guid? uid,
-                [FromQuery]
                 string? name,
-                [FromQuery]
                 string? egressProvider,
-                [FromQuery]
                 string? tags) =>
                     CaptureStacks(pid, uid, name, egressProvider, tags))
                 .WithName(nameof(CaptureStacks))
