@@ -14,6 +14,17 @@ using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
+    static partial class RouteHandlerBuilderExtensions
+    {
+        public static RouteHandlerBuilder RequireOperationsControllerCommon(this RouteHandlerBuilder builder)
+        {
+            return builder
+                .RequireHostRestriction()
+                .RequireAuthorization(AuthConstants.PolicyName)
+                .Produces(StatusCodes.Status401Unauthorized);
+        }
+    }
+
     public class OperationsController : ControllerBase
     {
         private readonly ILogger<OperationsController> _logger;
@@ -37,9 +48,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 string? tags) =>
                     GetOperations(pid, uid, name, tags))
             .WithName(nameof(GetOperations))
-            .RequireHostRestriction()
-            .RequireAuthorization(AuthConstants.PolicyName)
-            .Produces(StatusCodes.Status401Unauthorized)
+            .RequireOperationsControllerCommon()
             .Produces<IEnumerable<OperationSummary>>(StatusCodes.Status200OK);
 
             // GetOperationStatus
@@ -47,9 +56,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 Guid operationId) =>
                     GetOperationStatus(operationId))
             .WithName(nameof(GetOperationStatus))
-            .RequireHostRestriction()
-            .RequireAuthorization(AuthConstants.PolicyName)
-            .Produces(StatusCodes.Status401Unauthorized)
+            .RequireOperationsControllerCommon()
             .Produces<OperationStatus>(StatusCodes.Status200OK)
             .Produces<OperationStatus>(StatusCodes.Status201Created);
 
@@ -59,9 +66,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 bool stop = false) =>
                     CancelOperation(operationId, stop))
             .WithName(nameof(CancelOperation))
-            .RequireHostRestriction()
-            .RequireAuthorization(AuthConstants.PolicyName)
-            .Produces(StatusCodes.Status401Unauthorized)
+            .RequireOperationsControllerCommon()
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status202Accepted);
 

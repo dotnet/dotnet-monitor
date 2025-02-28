@@ -24,6 +24,18 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
+    static partial class RouteHandlerBuilderExtensions
+    {
+        public static RouteHandlerBuilder RequireDiagControllerCommon(this RouteHandlerBuilder builder)
+        {
+            return builder
+                .RequireHostRestriction()
+                .RequireAuthorization(AuthConstants.PolicyName)
+                .Produces(StatusCodes.Status401Unauthorized)
+                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson);
+        }
+    }
+
     public partial class DiagController : DiagnosticsControllerBase
     {
 #pragma warning disable CA1823 // Avoid unused field warning since this is used as default parameter of lambda
@@ -67,10 +79,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             // GetProcesses
             builder.MapGet("processes", () => this.GetProcesses())
                 .WithName(nameof(GetProcesses))
-                .RequireHostRestriction()
-                .RequireAuthorization(AuthConstants.PolicyName)
-                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
-                .Produces(StatusCodes.Status401Unauthorized)
+                .RequireDiagControllerCommon()
                 .Produces<IEnumerable<ProcessIdentifier>>(StatusCodes.Status200OK)
                 .ProducesProblem(StatusCodes.Status400BadRequest);
 
@@ -81,10 +90,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 string? name) =>
                     GetProcessInfo(pid, uid, name))
                 .WithName(nameof(GetProcessInfo))
-                .RequireHostRestriction()
-                .RequireAuthorization(AuthConstants.PolicyName)
-                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
-                .Produces(StatusCodes.Status401Unauthorized)
+                .RequireDiagControllerCommon()
                 .Produces<Models.ProcessInfo>(StatusCodes.Status200OK)
                 .ProducesProblem(StatusCodes.Status400BadRequest);
 
@@ -95,10 +101,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 string? name) =>
                     GetProcessEnvironment(pid, uid, name))
                 .WithName(nameof(GetProcessEnvironment))
-                .RequireHostRestriction()
-                .RequireAuthorization(AuthConstants.PolicyName)
-                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
-                .Produces(StatusCodes.Status401Unauthorized)
+                .RequireDiagControllerCommon()
                 .Produces<Dictionary<string, string>>(StatusCodes.Status200OK)
                 .ProducesProblem(StatusCodes.Status400BadRequest);
 
@@ -112,10 +115,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 string? tags = null) =>
                     CaptureDump(pid, uid, name, type, egressProvider, tags))
                 .WithName(nameof(CaptureDump))
-                .RequireHostRestriction()
-                .RequireAuthorization(AuthConstants.PolicyName)
-                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
-                .Produces(StatusCodes.Status401Unauthorized)
+                .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
                 .Produces<FileResult>(StatusCodes.Status200OK, ContentTypes.ApplicationOctetStream)
                 .Produces(StatusCodes.Status202Accepted)
@@ -131,10 +131,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 string? tags) =>
                     CaptureGcDump(pid, uid, name, egressProvider, tags))
                 .WithName(nameof(CaptureGcDump))
-                .RequireHostRestriction()
-                .RequireAuthorization(AuthConstants.PolicyName)
-                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
-                .Produces(StatusCodes.Status401Unauthorized)
+                .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
                 .Produces<FileResult>(StatusCodes.Status200OK, ContentTypes.ApplicationOctetStream)
                 .Produces(StatusCodes.Status202Accepted)
@@ -153,10 +150,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 string? tags = null) =>
                     CaptureTrace(pid, uid, name, profile, durationSeconds, egressProvider, tags))
                 .WithName(nameof(CaptureTrace))
-                .RequireHostRestriction()
-                .RequireAuthorization(AuthConstants.PolicyName)
-                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
-                .Produces(StatusCodes.Status401Unauthorized)
+                .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
                 .Produces<FileResult>(StatusCodes.Status200OK, ContentTypes.ApplicationOctetStream)
                 .Produces(StatusCodes.Status202Accepted)
@@ -176,10 +170,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 string? tags = null) =>
                     CaptureTraceCustom(configuration, pid, uid, name, durationSeconds, egressProvider, tags))
                 .WithName(nameof(CaptureTraceCustom))
-                .RequireHostRestriction()
-                .RequireAuthorization(AuthConstants.PolicyName)
-                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
-                .Produces(StatusCodes.Status401Unauthorized)
+                .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
                 .Produces<FileResult>(StatusCodes.Status200OK, ContentTypes.ApplicationOctetStream)
                 .Produces(StatusCodes.Status202Accepted)
@@ -198,10 +189,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 string? tags = null) =>
                     CaptureLogs(pid, uid, name, durationSeconds, level, egressProvider, tags))
                 .WithName(nameof(CaptureLogs))
-                .RequireHostRestriction()
-                .RequireAuthorization(AuthConstants.PolicyName)
-                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
-                .Produces(StatusCodes.Status401Unauthorized)
+                .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
                 .Produces<string>(StatusCodes.Status200OK, ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)
                 .Produces(StatusCodes.Status202Accepted)
@@ -221,10 +209,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 string? tags = null) =>
                     CaptureLogsCustom(configuration, pid, uid, name, durationSeconds, egressProvider, tags))
                 .WithName(nameof(CaptureLogs))
-                .RequireHostRestriction()
-                .RequireAuthorization(AuthConstants.PolicyName)
-                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
-                .Produces(StatusCodes.Status401Unauthorized)
+                .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
                 .Produces<string>(StatusCodes.Status200OK, ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)
                 .Produces(StatusCodes.Status202Accepted)
@@ -234,10 +219,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             // GetInfo
             builder.MapGet("info", () => GetInfo())
                 .WithName(nameof(GetInfo))
-                .RequireHostRestriction()
-                .RequireAuthorization(AuthConstants.PolicyName)
-                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest)
-                .Produces(StatusCodes.Status401Unauthorized)
+                .RequireDiagControllerCommon()
                 .Produces<DotnetMonitorInfo>(StatusCodes.Status200OK)
                 .ProducesProblem(StatusCodes.Status400BadRequest);
 
@@ -248,10 +230,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 string name) =>
                     GetCollectionRulesDescription(pid, uid, name))
                 .WithName(nameof(GetCollectionRulesDescription))
-                .RequireHostRestriction()
-                .RequireAuthorization(AuthConstants.PolicyName)
-                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
-                .Produces(StatusCodes.Status401Unauthorized)
+                .RequireDiagControllerCommon()
                 .Produces<Dictionary<string, CollectionRuleDescription>>(StatusCodes.Status200OK)
                 .ProducesProblem(StatusCodes.Status400BadRequest);
 
@@ -263,10 +242,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 string name) =>
                     GetCollectionRuleDetailedDescription(collectionRuleName, pid, uid, name))
                 .WithName(nameof(GetCollectionRuleDetailedDescription))
-                .RequireHostRestriction()
-                .RequireAuthorization(AuthConstants.PolicyName)
-                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
-                .Produces(StatusCodes.Status401Unauthorized)
+                .RequireDiagControllerCommon()
                 .Produces<CollectionRuleDetailedDescription>(StatusCodes.Status200OK)
                 .ProducesProblem(StatusCodes.Status400BadRequest);
 
@@ -283,10 +259,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 string? tags = null) =>
                     CaptureParameters(configuration, durationSeconds, pid, uid, name, egressProvider, tags))
                 .WithName(nameof(CaptureParameters))
-                .RequireHostRestriction()
-                .RequireAuthorization(AuthConstants.PolicyName)
-                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
-                .Produces(StatusCodes.Status401Unauthorized)
+                .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
                 .Produces<string>(StatusCodes.Status200OK, ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)
                 .Produces(StatusCodes.Status202Accepted)
@@ -302,10 +275,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 string? tags) =>
                     CaptureStacks(pid, uid, name, egressProvider, tags))
                 .WithName(nameof(CaptureStacks))
-                .RequireHostRestriction()
-                .RequireAuthorization(AuthConstants.PolicyName)
-                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
-                .Produces(StatusCodes.Status401Unauthorized)
+                .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
                 .Produces<string>(StatusCodes.Status200OK, ContentTypes.ApplicationJson, ContentTypes.TextPlain, ContentTypes.ApplicationSpeedscopeJson)
                 .Produces(StatusCodes.Status202Accepted)

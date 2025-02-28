@@ -18,6 +18,17 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
+    static partial class RouteHandlerBuilderExtensions
+    {
+        public static RouteHandlerBuilder RequireExceptionsControllerCommon(this RouteHandlerBuilder builder)
+        {
+            return builder
+                .RequireHostRestriction()
+                .RequireAuthorization(AuthConstants.PolicyName)
+                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson);
+        }
+    }
+
     public sealed class ExceptionsController :
         DiagnosticsControllerBase
     {
@@ -42,9 +53,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 string? tags = null) =>
                     GetExceptions(pid, uid, name, egressProvider, tags))
                 .WithName(nameof(GetExceptions))
-                .RequireHostRestriction()
-                .RequireAuthorization(AuthConstants.PolicyName)
-                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
+                .RequireExceptionsControllerCommon()
                 .Produces<string>(StatusCodes.Status200OK, ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)
                 .Produces(StatusCodes.Status202Accepted)
                 .ProducesProblem(StatusCodes.Status400BadRequest)
@@ -61,9 +70,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 string? tags = null) =>
                     CaptureExceptionsCustom(configuration, pid, uid, name, egressProvider, tags))
                 .WithName(nameof(CaptureExceptionsCustom))
-                .RequireHostRestriction()
-                .RequireAuthorization(AuthConstants.PolicyName)
-                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
+                .RequireExceptionsControllerCommon()
                 .Produces<string>(StatusCodes.Status200OK, ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)
                 .ProducesProblem(StatusCodes.Status400BadRequest)
                 .RequireEgressValidation();

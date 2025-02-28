@@ -27,10 +27,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 string? tags = null) =>
                     CaptureMetrics(pid, uid, name, durationSeconds, egressProvider, tags))
                 .WithName(nameof(CaptureMetrics))
-                .RequireHostRestriction()
-                .RequireAuthorization(AuthConstants.PolicyName)
-                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
-                .Produces(StatusCodes.Status401Unauthorized)
+                .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
                 .Produces<string>(StatusCodes.Status200OK, ContentTypes.ApplicationJsonSequence)
                 .Produces(StatusCodes.Status202Accepted)
@@ -50,10 +47,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 string? tags = null) =>
                     CaptureMetricsCustom(configuration, pid, uid, name, durationSeconds, egressProvider, tags))
                 .WithName(nameof(CaptureMetricsCustom))
-                .RequireHostRestriction()
-                .RequireAuthorization(AuthConstants.PolicyName)
-                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
-                .Produces(StatusCodes.Status401Unauthorized)
+                .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
                 .Produces<string>(StatusCodes.Status200OK, ContentTypes.ApplicationJsonSequence)
                 .Produces(StatusCodes.Status202Accepted)
