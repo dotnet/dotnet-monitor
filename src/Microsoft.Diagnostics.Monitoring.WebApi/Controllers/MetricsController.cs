@@ -1,8 +1,10 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -25,6 +27,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _logger = logger;
             _metricsStore = serviceProvider.GetRequiredService<MetricsStoreService>();
             _metricsOptions = metricsOptions.Value;
+        }
+
+        public MetricsController MapActionMethods(IEndpointRouteBuilder builder)
+        {
+            // GetMetrics
+            builder.MapGet("metrics", () => GetMetrics())
+                .WithName(nameof(GetMetrics))
+                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
+                .Produces<string>(StatusCodes.Status200OK, ContentTypes.TextPlain_v0_0_4)
+                .ProducesProblem(StatusCodes.Status400BadRequest);
+
+            return this;
         }
 
         /// <summary>

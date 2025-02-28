@@ -1,9 +1,11 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
@@ -56,6 +58,314 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _captureParametersFactory = serviceProvider.GetRequiredService<ICaptureParametersOperationFactory>();
             _gcdumpOperationFactory = serviceProvider.GetRequiredService<IGCDumpOperationFactory>();
             _stacksOperationFactory = serviceProvider.GetRequiredService<IStacksOperationFactory>();
+        }
+
+        public DiagController MapActionMethods(IEndpointRouteBuilder builder)
+        {
+            // GetProcesses
+            builder.MapGet("processes", () => this.GetProcesses())
+                .WithName(nameof(GetProcesses))
+                .RequireHostRestriction()
+                .RequireAuthorization(AuthConstants.PolicyName)
+                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
+                .Produces(StatusCodes.Status401Unauthorized)
+                .Produces<IEnumerable<ProcessIdentifier>>(StatusCodes.Status200OK)
+                .ProducesProblem(StatusCodes.Status400BadRequest);
+
+            // GetProcessInfo
+            builder.MapGet("process", (
+                [FromQuery]
+                int? pid,
+                [FromQuery]
+                Guid? uid,
+                [FromQuery]
+                string? name) =>
+                    GetProcessInfo(pid, uid, name))
+                .WithName(nameof(GetProcessInfo))
+                .RequireHostRestriction()
+                .RequireAuthorization(AuthConstants.PolicyName)
+                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
+                .Produces(StatusCodes.Status401Unauthorized)
+                .Produces<Models.ProcessInfo>(StatusCodes.Status200OK)
+                .ProducesProblem(StatusCodes.Status400BadRequest);
+
+            // GetProcessEnvironment
+            builder.MapGet("env", (
+                [FromQuery]
+                int? pid,
+                [FromQuery]
+                Guid? uid,
+                [FromQuery]
+                string? name) =>
+                    GetProcessEnvironment(pid, uid, name))
+                .WithName(nameof(GetProcessEnvironment))
+                .RequireHostRestriction()
+                .RequireAuthorization(AuthConstants.PolicyName)
+                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
+                .Produces(StatusCodes.Status401Unauthorized)
+                .Produces<Dictionary<string, string>>(StatusCodes.Status200OK)
+                .ProducesProblem(StatusCodes.Status400BadRequest);
+
+            // CaptureDump
+            builder.MapGet("dump", (
+                [FromQuery]
+                int? pid,
+                [FromQuery]
+                Guid? uid,
+                [FromQuery]
+                string? name,
+                [FromQuery]
+                Models.DumpType type = Models.DumpType.WithHeap,
+                [FromQuery]
+                string? egressProvider = null,
+                [FromQuery]
+                string? tags = null) =>
+                    CaptureDump(pid, uid, name, type, egressProvider, tags))
+                .WithName(nameof(CaptureDump))
+                .RequireHostRestriction()
+                .RequireAuthorization(AuthConstants.PolicyName)
+                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
+                .Produces(StatusCodes.Status401Unauthorized)
+                .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
+                .Produces<FileResult>(StatusCodes.Status200OK, ContentTypes.ApplicationOctetStream)
+                .Produces(StatusCodes.Status202Accepted)
+                .ProducesProblem(StatusCodes.Status400BadRequest)
+                .RequireEgressValidation();
+
+            // CapturGcDump
+            builder.MapGet("gcdump", (
+                [FromQuery]
+                int? pid,
+                [FromQuery]
+                Guid? uid,
+                [FromQuery]
+                string? name,
+                [FromQuery]
+                string? egressProvider,
+                [FromQuery]
+                string? tags) =>
+                    CaptureGcDump(pid, uid, name, egressProvider, tags))
+                .WithName(nameof(CaptureGcDump))
+                .RequireHostRestriction()
+                .RequireAuthorization(AuthConstants.PolicyName)
+                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
+                .Produces(StatusCodes.Status401Unauthorized)
+                .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
+                .Produces<FileResult>(StatusCodes.Status200OK, ContentTypes.ApplicationOctetStream)
+                .Produces(StatusCodes.Status202Accepted)
+                .ProducesProblem(StatusCodes.Status400BadRequest)
+                .RequireEgressValidation();
+
+            // CaptureTrace
+            builder.MapGet("trace", (
+                [FromQuery]
+                int? pid,
+                [FromQuery]
+                Guid? uid,
+                [FromQuery]
+                string? name,
+                [FromQuery]
+                TraceProfile profile = DefaultTraceProfiles,
+                [FromQuery][Range(-1, int.MaxValue)]
+                int durationSeconds = 30,
+                [FromQuery]
+                string? egressProvider = null,
+                [FromQuery]
+                string? tags = null) =>
+                    CaptureTrace(pid, uid, name, profile, durationSeconds, egressProvider, tags))
+                .WithName(nameof(CaptureTrace))
+                .RequireHostRestriction()
+                .RequireAuthorization(AuthConstants.PolicyName)
+                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
+                .Produces(StatusCodes.Status401Unauthorized)
+                .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
+                .Produces<FileResult>(StatusCodes.Status200OK, ContentTypes.ApplicationOctetStream)
+                .Produces(StatusCodes.Status202Accepted)
+                .ProducesProblem(StatusCodes.Status400BadRequest)
+                .RequireEgressValidation();
+
+            // CaptureTraceCustom
+            builder.MapGet("trace", (
+                [FromBody][Required]
+                EventPipeConfiguration configuration,
+                [FromQuery]
+                int? pid,
+                [FromQuery]
+                Guid? uid,
+                [FromQuery]
+                string? name,
+                [FromQuery][Range(-1, int.MaxValue)]
+                int durationSeconds = 30,
+                [FromQuery]
+                string? egressProvider = null,
+                [FromQuery]
+                string? tags = null) =>
+                    CaptureTraceCustom(configuration, pid, uid, name, durationSeconds, egressProvider, tags))
+                .WithName(nameof(CaptureTraceCustom))
+                .RequireHostRestriction()
+                .RequireAuthorization(AuthConstants.PolicyName)
+                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
+                .Produces(StatusCodes.Status401Unauthorized)
+                .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
+                .Produces<FileResult>(StatusCodes.Status200OK, ContentTypes.ApplicationOctetStream)
+                .Produces(StatusCodes.Status202Accepted)
+                .ProducesProblem(StatusCodes.Status400BadRequest)
+                .RequireEgressValidation();
+
+            // CaptureLogs
+            builder.MapGet("logs", (
+                [FromQuery]
+                int? pid,
+                [FromQuery]
+                Guid? uid,
+                [FromQuery]
+                string? name,
+                [FromQuery][Range(-1, int.MaxValue)]
+                int durationSeconds = 30,
+                [FromQuery]
+                LogLevel? level = null,
+                [FromQuery]
+                string? egressProvider = null,
+                [FromQuery]
+                string? tags = null) =>
+                    CaptureLogs(pid, uid, name, durationSeconds, level, egressProvider, tags))
+                .WithName(nameof(CaptureLogs))
+                .RequireHostRestriction()
+                .RequireAuthorization(AuthConstants.PolicyName)
+                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
+                .Produces(StatusCodes.Status401Unauthorized)
+                .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
+                .Produces<string>(StatusCodes.Status200OK, ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)
+                .Produces(StatusCodes.Status202Accepted)
+                .ProducesProblem(StatusCodes.Status400BadRequest)
+                .RequireEgressValidation();
+
+            // CaptureLogsCustom
+            builder.MapPost("logs", (
+                [FromBody]
+                LogsConfiguration configuration,
+                [FromQuery]
+                int? pid,
+                [FromQuery]
+                Guid? uid,
+                [FromQuery]
+                string? name,
+                [FromQuery][Range(-1, int.MaxValue)]
+                int durationSeconds = 30,
+                [FromQuery]
+                string? egressProvider = null,
+                [FromQuery]
+                string? tags = null) =>
+                    CaptureLogsCustom(configuration, pid, uid, name, durationSeconds, egressProvider, tags))
+                .WithName(nameof(CaptureLogs))
+                .RequireHostRestriction()
+                .RequireAuthorization(AuthConstants.PolicyName)
+                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
+                .Produces(StatusCodes.Status401Unauthorized)
+                .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
+                .Produces<string>(StatusCodes.Status200OK, ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)
+                .Produces(StatusCodes.Status202Accepted)
+                .ProducesProblem(StatusCodes.Status400BadRequest)
+                .RequireEgressValidation();
+
+            // GetInfo
+            builder.MapGet("info", () => GetInfo())
+                .WithName(nameof(GetInfo))
+                .RequireHostRestriction()
+                .RequireAuthorization(AuthConstants.PolicyName)
+                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest)
+                .Produces(StatusCodes.Status401Unauthorized)
+                .Produces<DotnetMonitorInfo>(StatusCodes.Status200OK)
+                .ProducesProblem(StatusCodes.Status400BadRequest);
+
+            // GetCollectionRulesDescription
+            builder.MapGet("collectionrules", (
+                [FromQuery]
+                int pid,
+                [FromQuery]
+                Guid uid,
+                [FromQuery]
+                string name) =>
+                    GetCollectionRulesDescription(pid, uid, name))
+                .WithName(nameof(GetCollectionRulesDescription))
+                .RequireHostRestriction()
+                .RequireAuthorization(AuthConstants.PolicyName)
+                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
+                .Produces(StatusCodes.Status401Unauthorized)
+                .Produces<Dictionary<string, CollectionRuleDescription>>(StatusCodes.Status200OK)
+                .ProducesProblem(StatusCodes.Status400BadRequest);
+
+            // GetCollectionRuleDetailedDescription
+            builder.MapGet("collectionrules/{collectionRuleName}", (
+                string collectionRuleName,
+                [FromQuery]
+                int pid,
+                [FromQuery]
+                Guid uid,
+                [FromQuery]
+                string name) =>
+                    GetCollectionRuleDetailedDescription(collectionRuleName, pid, uid, name))
+                .WithName(nameof(GetCollectionRuleDetailedDescription))
+                .RequireHostRestriction()
+                .RequireAuthorization(AuthConstants.PolicyName)
+                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
+                .Produces(StatusCodes.Status401Unauthorized)
+                .Produces<CollectionRuleDetailedDescription>(StatusCodes.Status200OK)
+                .ProducesProblem(StatusCodes.Status400BadRequest);
+
+            // CaptureParameters
+            builder.MapPost("parameters", (
+                [FromBody][Required]
+                CaptureParametersConfiguration configuration,
+                [FromQuery][Range(-1, int.MaxValue)]
+                int durationSeconds = 30,
+                [FromQuery]
+                int? pid = null,
+                [FromQuery]
+                Guid? uid = null,
+                [FromQuery]
+                string? name = null,
+                [FromQuery]
+                string? egressProvider = null,
+                [FromQuery]
+                string? tags = null) =>
+                    CaptureParameters(configuration, durationSeconds, pid, uid, name, egressProvider, tags))
+                .WithName(nameof(CaptureParameters))
+                .RequireHostRestriction()
+                .RequireAuthorization(AuthConstants.PolicyName)
+                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
+                .Produces(StatusCodes.Status401Unauthorized)
+                .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
+                .Produces<string>(StatusCodes.Status200OK, ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)
+                .Produces(StatusCodes.Status202Accepted)
+                .ProducesProblem(StatusCodes.Status400BadRequest)
+                .RequireEgressValidation();
+
+            // CaptureStacks
+            builder.MapGet("stacks", (
+                [FromQuery]
+                int? pid,
+                [FromQuery]
+                Guid? uid,
+                [FromQuery]
+                string? name,
+                [FromQuery]
+                string? egressProvider,
+                [FromQuery]
+                string? tags) =>
+                    CaptureStacks(pid, uid, name, egressProvider, tags))
+                .WithName(nameof(CaptureStacks))
+                .RequireHostRestriction()
+                .RequireAuthorization(AuthConstants.PolicyName)
+                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
+                .Produces(StatusCodes.Status401Unauthorized)
+                .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
+                .Produces<string>(StatusCodes.Status200OK, ContentTypes.ApplicationJson, ContentTypes.TextPlain, ContentTypes.ApplicationSpeedscopeJson)
+                .Produces(StatusCodes.Status202Accepted)
+                .ProducesProblem(StatusCodes.Status400BadRequest)
+                .RequireEgressValidation();
+
+            return this;
         }
 
         /// <summary>

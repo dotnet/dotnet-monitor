@@ -1,12 +1,16 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
@@ -21,6 +25,50 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             _logger = logger;
             _operationsStore = serviceProvider.GetRequiredService<IEgressOperationStore>();
+        }
+
+        public OperationsController MapActionMethods(IEndpointRouteBuilder builder)
+        {
+            // GetOperations
+            builder.MapGet($"{ControllerName}/{nameof(GetOperations)}", (
+                [FromQuery]
+                int? pid,
+                [FromQuery]
+                Guid? uid,
+                [FromQuery]
+                string? name,
+                [FromQuery]
+                string? tags) =>
+                    GetOperations(pid, uid, name, tags))
+            .WithName(nameof(GetOperations))
+            .RequireHostRestriction()
+            .RequireAuthorization(AuthConstants.PolicyName)
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces<IEnumerable<OperationSummary>>(StatusCodes.Status200OK);
+
+            // GetOperationStatus
+            builder.MapGet($"{ControllerName}/{nameof(GetOperationStatus)}/{{operationId}}", (
+                Guid operationId) =>
+                    GetOperationStatus(operationId))
+            .WithName(nameof(GetOperationStatus))
+            .RequireHostRestriction()
+            .RequireAuthorization(AuthConstants.PolicyName)
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces<OperationStatus>(StatusCodes.Status200OK)
+            .Produces<OperationStatus>(StatusCodes.Status201Created);
+
+            // CancelOperation
+            builder.MapDelete($"{ControllerName}/{nameof(CancelOperation)}/{{operationId}}", (
+                Guid operationId) =>
+                    CancelOperation(operationId))
+            .WithName(nameof(CancelOperation))
+            .RequireHostRestriction()
+            .RequireAuthorization(AuthConstants.PolicyName)
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status202Accepted);
+
+            return this;
         }
 
         /// <summary>

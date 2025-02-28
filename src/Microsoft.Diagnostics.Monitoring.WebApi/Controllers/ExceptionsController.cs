@@ -1,8 +1,10 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,6 +29,56 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             : base(serviceProvider, logger)
         {
             _options = serviceProvider.GetRequiredService<IOptions<ExceptionsOptions>>();
+        }
+
+        public ExceptionsController MapActionMethods(IEndpointRouteBuilder builder)
+        {
+            // GetExceptions
+            builder.MapGet("exceptions", (
+                [FromQuery]
+                int? pid,
+                [FromQuery]
+                Guid? uid,
+                [FromQuery]
+                string? name,
+                [FromQuery]
+                string? egressProvider = null,
+                [FromQuery]
+                string? tags = null) =>
+                    GetExceptions(pid, uid, name, egressProvider, tags))
+                .WithName(nameof(GetExceptions))
+                .RequireHostRestriction()
+                .RequireAuthorization(AuthConstants.PolicyName)
+                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
+                .Produces<string>(StatusCodes.Status200OK, ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)
+                .Produces(StatusCodes.Status202Accepted)
+                .ProducesProblem(StatusCodes.Status400BadRequest)
+                .RequireEgressValidation();
+            
+            // CaptureExceptionsCustom
+            builder.MapPost("exceptions", (
+                [FromBody]
+                ExceptionsConfiguration configuration,
+                [FromQuery]
+                int? pid,
+                [FromQuery]
+                Guid? uid,
+                [FromQuery]
+                string? name,
+                [FromQuery]
+                string? egressProvider = null,
+                [FromQuery]
+                string? tags = null) =>
+                    CaptureExceptionsCustom(configuration, pid, uid, name, egressProvider, tags))
+                .WithName(nameof(CaptureExceptionsCustom))
+                .RequireHostRestriction()
+                .RequireAuthorization(AuthConstants.PolicyName)
+                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
+                .Produces<string>(StatusCodes.Status200OK, ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)
+                .ProducesProblem(StatusCodes.Status400BadRequest)
+                .RequireEgressValidation();
+
+            return this;
         }
 
         /// <summary>

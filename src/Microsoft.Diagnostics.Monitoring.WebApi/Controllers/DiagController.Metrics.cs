@@ -1,8 +1,10 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -12,6 +14,63 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
     partial class DiagController
     {
+        public DiagController MapMetricsActionMethods(IEndpointRouteBuilder builder)
+        {
+            builder.MapGet("livemetrics", (
+                [FromQuery]
+                int? pid,
+                [FromQuery]
+                Guid? uid,
+                [FromQuery]
+                string? name,
+                [FromQuery][Range(-1, int.MaxValue)]
+                int durationSeconds = 30,
+                [FromQuery]
+                string? egressProvider = null,
+                [FromQuery]
+                string? tags = null) =>
+                    CaptureMetrics(pid, uid, name, durationSeconds, egressProvider, tags))
+                .WithName(nameof(CaptureMetrics))
+                .RequireHostRestriction()
+                .RequireAuthorization(AuthConstants.PolicyName)
+                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
+                .Produces(StatusCodes.Status401Unauthorized)
+                .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
+                .Produces<string>(StatusCodes.Status200OK, ContentTypes.ApplicationJsonSequence)
+                .Produces(StatusCodes.Status202Accepted)
+                .ProducesProblem(StatusCodes.Status400BadRequest)
+                .RequireEgressValidation();
+
+            builder.MapGet("livemetrics", (
+                [FromBody][Required]
+                Monitoring.WebApi.Models.EventMetricsConfiguration configuration,
+                [FromQuery]
+                int? pid,
+                [FromQuery]
+                Guid? uid,
+                [FromQuery]
+                string? name,
+                [FromQuery][Range(-1, int.MaxValue)]
+                int durationSeconds = 30,
+                [FromQuery]
+                string? egressProvider = null,
+                [FromQuery]
+                string? tags = null) =>
+                    CaptureMetricsCustom(configuration, pid, uid, name, durationSeconds, egressProvider, tags))
+                .WithName(nameof(CaptureMetricsCustom))
+                .RequireHostRestriction()
+                .RequireAuthorization(AuthConstants.PolicyName)
+                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
+                .Produces(StatusCodes.Status401Unauthorized)
+                .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
+                .Produces<string>(StatusCodes.Status200OK, ContentTypes.ApplicationJsonSequence)
+                .Produces(StatusCodes.Status202Accepted)
+                .ProducesProblem(StatusCodes.Status400BadRequest)
+                .RequireEgressValidation();
+
+            return this;
+        }
+
         /// <summary>
         /// Capture metrics for a process.
         /// </summary>
