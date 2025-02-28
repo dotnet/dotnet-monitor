@@ -1,7 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.Options;
@@ -17,12 +16,6 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
-    [Route("")]
-    [ApiController]
-    [HostRestriction]
-    [Authorize(Policy = AuthConstants.PolicyName)]
-    [ProducesErrorResponseType(typeof(ValidationProblemDetails))]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public sealed class ExceptionsController :
         DiagnosticsControllerBase
     {
@@ -44,12 +37,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="name">Process name used to identify the target process.</param>
         /// <param name="egressProvider">The egress provider to which the exceptions are saved.</param>
         /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
-        [HttpGet("exceptions", Name = nameof(GetExceptions))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
-        [EgressValidation]
-        public Task<ActionResult> GetExceptions(
+        public Task<IResult> GetExceptions(
             [FromQuery]
             int? pid = null,
             [FromQuery]
@@ -63,7 +51,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             if (!_options.Value.GetEnabled())
             {
-                return Task.FromResult<ActionResult>(this.FeatureNotEnabled(Strings.FeatureName_Exceptions));
+                return Task.FromResult<IResult>(this.FeatureNotEnabled(Strings.FeatureName_Exceptions));
             }
 
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
@@ -95,11 +83,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="egressProvider">The egress provider to which the exceptions are saved.</param>
         /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
         /// <param name="configuration">The exceptions configuration describing which exceptions to include in the response.</param>
-        [HttpPost("exceptions", Name = nameof(CaptureExceptionsCustom))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        [EgressValidation]
-        public Task<ActionResult> CaptureExceptionsCustom(
+        public Task<IResult> CaptureExceptionsCustom(
             [FromBody]
             ExceptionsConfiguration configuration,
             [FromQuery]
@@ -115,7 +99,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         {
             if (!_options.Value.GetEnabled())
             {
-                return Task.FromResult<ActionResult>(NotFound());
+                return Task.FromResult<IResult>(TypedResults.NotFound());
             }
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 

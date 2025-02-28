@@ -1,21 +1,15 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
-    [Route(ControllerName)]
-    [ApiController]
-    [HostRestriction]
-    [Authorize(Policy = AuthConstants.PolicyName)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     public class OperationsController : ControllerBase
     {
         private readonly ILogger<OperationsController> _logger;
@@ -36,10 +30,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
         /// <param name="name">Process name used to identify the target process.</param>
         /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
-        [HttpGet(Name = nameof(GetOperations))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
-        [ProducesResponseType(typeof(IEnumerable<Models.OperationSummary>), StatusCodes.Status200OK)]
-        public ActionResult<IEnumerable<Models.OperationSummary>> GetOperations(
+        public IResult GetOperations(
             [FromQuery]
             int? pid = null,
             [FromQuery]
@@ -53,34 +44,29 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             return this.InvokeService(() =>
             {
-                return new ActionResult<IEnumerable<Models.OperationSummary>>(_operationsStore.GetOperations(processKey, tags));
+                return Results.Ok(_operationsStore.GetOperations(processKey, tags));
             }, _logger);
         }
 
-        [HttpGet("{operationId}", Name = nameof(GetOperationStatus))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
-        [ProducesResponseType(typeof(Models.OperationStatus), StatusCodes.Status201Created)]
-        [ProducesResponseType(typeof(Models.OperationStatus), StatusCodes.Status200OK)]
-        public IActionResult GetOperationStatus(Guid operationId)
+        public IResult GetOperationStatus(Guid operationId)
         {
             return this.InvokeService(() =>
             {
                 Models.OperationStatus status = _operationsStore.GetOperationStatus(operationId);
-                int statusCode = (int)(status.Status == Models.OperationState.Succeeded ? StatusCodes.Status201Created : StatusCodes.Status200OK);
-                return this.StatusCode(statusCode, status);
+                return status.Status == Models.OperationState.Succeeded
+#pragma warning disable CS8625 // Implementation accexts null, but nullable annotation was added in .NET 9
+                    ? TypedResults.Created((string?)null, status)
+#pragma warning restore CS8625
+                    : Results.Ok(status);
             }, _logger);
         }
 
-        [HttpDelete("{operationId}", Name = nameof(CancelOperation))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
-        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
-        public IActionResult CancelOperation(
+        public IResult CancelOperation(
             Guid operationId,
             [FromQuery]
             bool stop = false)
         {
-            return this.InvokeService(() =>
+            return this.InvokeService<Results<Accepted, Ok>>(() =>
             {
                 //Note that if the operation is not found, it will throw an InvalidOperationException and
                 //return an error code.
@@ -92,12 +78,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     _operationsStore.StopOperation(operationId, (ex) => _logger.StopOperationFailed(operationId, ex));
 
                     // Stop operations are not instant, they are instead queued and can take an indeterminate amount of time.
-                    return Accepted();
+                    return TypedResults.Accepted((string?)null);
                 }
                 else
                 {
                     _operationsStore.CancelOperation(operationId);
-                    return Ok();
+                    return TypedResults.Ok();
                 }
             }, _logger);
         }
