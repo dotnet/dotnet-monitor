@@ -26,7 +26,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
     public partial class DiagController : DiagnosticsControllerBase
     {
+#pragma warning disable CA1823 // Avoid unused field warning since this is used as default parameter of lambda
         private const TraceProfile DefaultTraceProfiles = TraceProfile.Cpu | TraceProfile.Http | TraceProfile.Metrics | TraceProfile.GcCollect;
+#pragma warning restore CA1823
 
         private readonly IOptions<DiagnosticPortOptions> _diagnosticPortOptions;
         private readonly IOptions<CallStacksOptions> _callStacksOptions;
