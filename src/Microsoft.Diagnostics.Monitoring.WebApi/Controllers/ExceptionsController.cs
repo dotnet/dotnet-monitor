@@ -90,16 +90,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="egressProvider">The egress provider to which the exceptions are saved.</param>
         /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
         public Task<IResult> GetExceptions(
-            [FromQuery]
-            int? pid = null,
-            [FromQuery]
-            Guid? uid = null,
-            [FromQuery]
-            string? name = null,
-            [FromQuery]
-            string? egressProvider = null,
-            [FromQuery]
-            string? tags = null)
+            int? pid,
+            Guid? uid,
+            string? name,
+            string? egressProvider,
+            string? tags)
         {
             if (!_options.Value.GetEnabled())
             {
@@ -136,18 +131,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
         /// <param name="configuration">The exceptions configuration describing which exceptions to include in the response.</param>
         public Task<IResult> CaptureExceptionsCustom(
-            [FromBody]
             ExceptionsConfiguration configuration,
-            [FromQuery]
-            int? pid = null,
-            [FromQuery]
-            Guid? uid = null,
-            [FromQuery]
-            string? name = null,
-            [FromQuery]
-            string? egressProvider = null,
-            [FromQuery]
-            string? tags = null)
+            int? pid,
+            Guid? uid,
+            string? name,
+            string? egressProvider,
+            string? tags)
         {
             if (!_options.Value.GetEnabled())
             {

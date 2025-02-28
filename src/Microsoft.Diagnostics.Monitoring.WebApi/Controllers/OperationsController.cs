@@ -59,8 +59,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             // CancelOperation
             builder.MapDelete($"{ControllerName}/{nameof(CancelOperation)}/{{operationId}}", (
-                Guid operationId) =>
-                    CancelOperation(operationId))
+                Guid operationId,
+                [FromQuery]
+                bool stop = false) =>
+                    CancelOperation(operationId, stop))
             .WithName(nameof(CancelOperation))
             .RequireHostRestriction()
             .RequireAuthorization(AuthConstants.PolicyName)
@@ -79,14 +81,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="name">Process name used to identify the target process.</param>
         /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
         public IResult GetOperations(
-            [FromQuery]
-            int? pid = null,
-            [FromQuery]
-            Guid? uid = null,
-            [FromQuery]
-            string? name = null,
-            [FromQuery]
-            string? tags = null)
+            int? pid,
+            Guid? uid,
+            string? name,
+            string? tags)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
@@ -111,8 +109,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
         public IResult CancelOperation(
             Guid operationId,
-            [FromQuery]
-            bool stop = false)
+            bool stop)
         {
             return this.InvokeService<Results<Accepted, Ok>>(() =>
             {

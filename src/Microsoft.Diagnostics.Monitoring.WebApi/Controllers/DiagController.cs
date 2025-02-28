@@ -417,12 +417,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
         /// <param name="name">Process name used to identify the target process.</param>
         public Task<IResult> GetProcessInfo(
-            [FromQuery]
-            int? pid = null,
-            [FromQuery]
-            Guid? uid = null,
-            [FromQuery]
-            string? name = null)
+            int? pid,
+            Guid? uid,
+            string? name)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
@@ -452,12 +449,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
         /// <param name="name">Process name used to identify the target process.</param>
         public Task<IResult> GetProcessEnvironment(
-            [FromQuery]
-            int? pid = null,
-            [FromQuery]
-            Guid? uid = null,
-            [FromQuery]
-            string? name = null)
+            int? pid,
+            Guid? uid,
+            string? name)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
@@ -494,18 +488,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         // FileResult is the closest representation of the output so that the OpenAPI document correctly
         // describes the result as a binary file.
         public Task<IResult> CaptureDump(
-            [FromQuery]
-            int? pid = null,
-            [FromQuery]
-            Guid? uid = null,
-            [FromQuery]
-            string? name = null,
-            [FromQuery]
-            Models.DumpType type = Models.DumpType.WithHeap,
-            [FromQuery]
-            string? egressProvider = null,
-            [FromQuery]
-            string? tags = null)
+            int? pid,
+            Guid? uid,
+            string? name,
+            Models.DumpType type,
+            string? egressProvider,
+            string? tags)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
@@ -532,16 +520,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         // FileResult is the closest representation of the output so that the OpenAPI document correctly
         // describes the result as a binary file.
         public Task<IResult> CaptureGcDump(
-            [FromQuery]
-            int? pid = null,
-            [FromQuery]
-            Guid? uid = null,
-            [FromQuery]
-            string? name = null,
-            [FromQuery]
-            string? egressProvider = null,
-            [FromQuery]
-            string? tags = null)
+            int? pid,
+            Guid? uid,
+            string? name,
+            string? egressProvider,
+            string? tags)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
@@ -569,20 +552,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         // FileResult is the closest representation of the output so that the OpenAPI document correctly
         // describes the result as a binary file.
         public Task<IResult> CaptureTrace(
-            [FromQuery]
-            int? pid = null,
-            [FromQuery]
-            Guid? uid = null,
-            [FromQuery]
-            string? name = null,
-            [FromQuery]
-            TraceProfile profile = DefaultTraceProfiles,
-            [FromQuery][Range(-1, int.MaxValue)]
-            int durationSeconds = 30,
-            [FromQuery]
-            string? egressProvider = null,
-            [FromQuery]
-            string? tags = null)
+            int? pid,
+            Guid? uid,
+            string? name,
+            TraceProfile profile,
+            int durationSeconds,
+            string? egressProvider,
+            string? tags)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
@@ -609,20 +585,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         // FileResult is the closest representation of the output so that the OpenAPI document correctly
         // describes the result as a binary file.
         public Task<IResult> CaptureTraceCustom(
-            [FromBody][Required]
             EventPipeConfiguration configuration,
-            [FromQuery]
-            int? pid = null,
-            [FromQuery]
-            Guid? uid = null,
-            [FromQuery]
-            string? name = null,
-            [FromQuery][Range(-1, int.MaxValue)]
-            int durationSeconds = 30,
-            [FromQuery]
-            string? egressProvider = null,
-            [FromQuery]
-            string? tags = null)
+            int? pid,
+            Guid? uid,
+            string? name,
+            int durationSeconds,
+            string? egressProvider,
+            string? tags)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
@@ -656,20 +625,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="egressProvider">The egress provider to which the logs are saved.</param>
         /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
         public Task<IResult> CaptureLogs(
-            [FromQuery]
-            int? pid = null,
-            [FromQuery]
-            Guid? uid = null,
-            [FromQuery]
-            string? name = null,
-            [FromQuery][Range(-1, int.MaxValue)]
-            int durationSeconds = 30,
-            [FromQuery]
-            LogLevel? level = null,
-            [FromQuery]
-            string? egressProvider = null,
-            [FromQuery]
-            string? tags = null)
+            int? pid,
+            Guid? uid,
+            string? name,
+            int durationSeconds,
+            LogLevel? level,
+            string? egressProvider,
+            string? tags)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
@@ -708,20 +670,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="egressProvider">The egress provider to which the logs are saved.</param>
         /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
         public Task<IResult> CaptureLogsCustom(
-            [FromBody]
             LogsConfiguration configuration,
-            [FromQuery]
-            int? pid = null,
-            [FromQuery]
-            Guid? uid = null,
-            [FromQuery]
-            string? name = null,
-            [FromQuery][Range(-1, int.MaxValue)]
-            int durationSeconds = 30,
-            [FromQuery]
-            string? egressProvider = null,
-            [FromQuery]
-            string? tags = null)
+            int? pid,
+            Guid? uid,
+            string? name,
+            int durationSeconds,
+            string? egressProvider,
+            string? tags)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
@@ -773,12 +728,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
         /// <param name="name">Process name used to identify the target process.</param>
         public Task<IResult> GetCollectionRulesDescription(
-            [FromQuery]
-            int? pid = null,
-            [FromQuery]
-            Guid? uid = null,
-            [FromQuery]
-            string? name = null)
+            int? pid,
+            Guid? uid,
+            string? name)
         {
             return InvokeForProcess<Ok<Dictionary<string, CollectionRuleDescription>>>(processInfo =>
             {
@@ -796,12 +748,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="name">Process name used to identify the target process.</param>
         public Task<IResult> GetCollectionRuleDetailedDescription(
             string collectionRuleName,
-            [FromQuery]
-            int? pid = null,
-            [FromQuery]
-            Guid? uid = null,
-            [FromQuery]
-            string? name = null)
+            int? pid,
+            Guid? uid,
+            string? name)
         {
             return InvokeForProcess<Ok<CollectionRuleDetailedDescription?>>(processInfo =>
             {
@@ -811,20 +760,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         }
 
         public async Task<IResult> CaptureParameters(
-            [FromBody][Required]
             CaptureParametersConfiguration configuration,
-            [FromQuery][Range(-1, int.MaxValue)]
-            int durationSeconds = 30,
-            [FromQuery]
-            int? pid = null,
-            [FromQuery]
-            Guid? uid = null,
-            [FromQuery]
-            string? name = null,
-            [FromQuery]
-            string? egressProvider = null,
-            [FromQuery]
-            string? tags = null)
+            int durationSeconds,
+            int? pid,
+            Guid? uid,
+            string? name,
+            string? egressProvider,
+            string? tags)
         {
             if (!_parameterCapturingOptions.Value.GetEnabled())
             {
@@ -851,16 +793,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         }
 
         public Task<IResult> CaptureStacks(
-            [FromQuery]
-            int? pid = null,
-            [FromQuery]
-            Guid? uid = null,
-            [FromQuery]
-            string? name = null,
-            [FromQuery]
-            string? egressProvider = null,
-            [FromQuery]
-            string? tags = null)
+            int? pid,
+            Guid? uid,
+            string? name,
+            string? egressProvider,
+            string? tags)
         {
             if (!_callStacksOptions.Value.GetEnabled())
             {

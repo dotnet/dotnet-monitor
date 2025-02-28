@@ -43,7 +43,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             builder.MapGet("livemetrics", (
                 [FromBody][Required]
-                Monitoring.WebApi.Models.EventMetricsConfiguration configuration,
+                Models.EventMetricsConfiguration configuration,
                 [FromQuery]
                 int? pid,
                 [FromQuery]
@@ -81,18 +81,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="egressProvider">The egress provider to which the metrics are saved.</param>
         /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
         public Task<IResult> CaptureMetrics(
-            [FromQuery]
-            int? pid = null,
-            [FromQuery]
-            Guid? uid = null,
-            [FromQuery]
-            string? name = null,
-            [FromQuery][Range(-1, int.MaxValue)]
-            int durationSeconds = 30,
-            [FromQuery]
-            string? egressProvider = null,
-            [FromQuery]
-            string? tags = null)
+            int? pid,
+            Guid? uid,
+            string? name,
+            int durationSeconds,
+            string? egressProvider,
+            string? tags)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
@@ -123,20 +117,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="egressProvider">The egress provider to which the metrics are saved.</param>
         /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
         public Task<IResult> CaptureMetricsCustom(
-            [FromBody][Required]
             Models.EventMetricsConfiguration configuration,
-            [FromQuery]
-            int? pid = null,
-            [FromQuery]
-            Guid? uid = null,
-            [FromQuery]
-            string? name = null,
-            [FromQuery][Range(-1, int.MaxValue)]
-            int durationSeconds = 30,
-            [FromQuery]
-            string? egressProvider = null,
-            [FromQuery]
-            string? tags = null)
+            int? pid,
+            Guid? uid,
+            string? name,
+            int durationSeconds,
+            string? egressProvider,
+            string? tags)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
