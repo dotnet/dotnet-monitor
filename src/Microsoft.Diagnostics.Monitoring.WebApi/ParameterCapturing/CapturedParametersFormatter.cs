@@ -65,7 +65,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.ParameterCapturing
                 TypeModuleName = param.TypeModuleName,
                 Value = param.Value,
                 EvalFailReason = param.EvalFailReason
-            }).ToList()
+            }).ToList(),
+            MethodToken = capture.MethodToken,
+            ModuleVersionId = capture.ModuleVersionId
         };
     }
 }

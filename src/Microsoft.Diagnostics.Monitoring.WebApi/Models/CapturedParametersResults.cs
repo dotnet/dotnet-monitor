@@ -64,5 +64,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 
         [JsonPropertyName("parameters")]
         public IList<CapturedParameter> Parameters { get; init; } = [];
+
+        [JsonPropertyName("methodToken")]
+        public required uint MethodToken { get; init; }
+
+        [JsonPropertyName("moduleVersionId")]
+        public required Guid ModuleVersionId { get; init; }
     }
 }
