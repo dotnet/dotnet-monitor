@@ -67,14 +67,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
         {
             public const int RequestId = 0;
             public const int CaptureId = 1;
-            public const int ActivityId = 2;
-            public const int ActivityIdFormat = 3;
-            public const int ThreadId = 4;
-            public const int MethodName = 5;
-            public const int MethodModuleName = 6;
-            public const int MethodDeclaringTypeName = 7;
-            public const int MethodToken = 8;
-            public const int ModuleVersionId = 9;
+            public const int MethodToken = 2;
+            public const int ModuleVersionId = 3;
+            public const int ActivityId = 4;
+            public const int ActivityIdFormat = 5;
+            public const int ThreadId = 6;
+            public const int MethodName = 7;
+            public const int MethodModuleName = 8;
+            public const int MethodDeclaringTypeName = 9;
         }
 
         public static class CapturedParametersStopPayloads

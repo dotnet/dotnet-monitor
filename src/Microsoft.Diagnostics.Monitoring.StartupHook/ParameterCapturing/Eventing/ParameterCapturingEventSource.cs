@@ -118,14 +118,14 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.ParameterCapturing.Eventi
         public void CapturedParameterStart(
             Guid RequestId,
             Guid CaptureId,
+            uint methodToken,
+            Guid moduleVersionId,
             string activityId,
             ActivityIdFormat activityIdFormat,
             int managedThreadId,
             string methodName,
             string methodModuleName,
-            string methodDeclaringTypeName,
-            uint methodToken,
-            Guid moduleVersionId
+            string methodDeclaringTypeName
             )
         {
             Span<EventData> data = stackalloc EventData[10];
@@ -137,14 +137,14 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.ParameterCapturing.Eventi
 
             SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.RequestId], RequestId);
             SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.CaptureId], CaptureId);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.MethodToken], methodToken);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.ModuleVersionId], moduleVersionId);
             SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.ActivityId], pinnedActivityId);
             SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.ActivityIdFormat], activityIdFormat);
             SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.ThreadId], managedThreadId);
             SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.MethodName], pinnedMethodName);
             SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.MethodModuleName], pinnedMethodModuleName);
             SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.MethodDeclaringTypeName], pinnedMethodDeclaringTypeName);
-            SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.MethodToken], methodToken);
-            SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.ModuleVersionId], moduleVersionId);
 
             WriteEventWithFlushing(ParameterCapturingEvents.EventIds.ParametersCapturedStart, data);
         }

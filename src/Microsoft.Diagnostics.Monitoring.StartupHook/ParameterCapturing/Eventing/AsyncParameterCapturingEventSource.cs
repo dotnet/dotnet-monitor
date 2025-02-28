@@ -78,14 +78,14 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.ParameterCapturing.Eventi
                 _eventSource.CapturedParameterStart(
                     requestId,
                     captureId,
+                    methodToken,
+                    moduleVersionId,
                     currentActivity?.Id ?? string.Empty,
                     currentActivity?.IdFormat ?? ActivityIdFormat.Unknown,
                     currentThreadId,
                     methodName,
                     methodModuleName,
-                    methodDeclaringTypeName ?? string.Empty,
-                    methodToken,
-                    moduleVersionId);
+                    methodDeclaringTypeName ?? string.Empty);
 
                 foreach (ResolvedParameterInfo param in parameters)
                 {
