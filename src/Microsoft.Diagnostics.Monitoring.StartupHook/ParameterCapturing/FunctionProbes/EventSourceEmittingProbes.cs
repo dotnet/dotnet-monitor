@@ -87,8 +87,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.ParameterCapturing.Functi
                 instrumentedMethod.MethodSignature.ModuleName,
                 instrumentedMethod.MethodSignature.TypeName,
                 resolvedArgs,
-                Convert.ToUInt32(instrumentedMethod.Method.MetadataToken),
-                instrumentedMethod.Method.Module.ModuleVersionId
+                Convert.ToUInt32(instrumentedMethod.MethodSignature.MethodToken),
+                instrumentedMethod.MethodSignature.ModuleVersionId
             );
 
             return true;

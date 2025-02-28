@@ -46,9 +46,9 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.ParameterCapturing
 
         public string MethodName { get; } = GetMethodName(method);
 
-        public string? MethodDefToken { get; } = method.MetadataToken.ToString();
+        public int MethodToken { get; } = method.MetadataToken;
 
-        public Guid Mvid { get; } = method.Module.ModuleVersionId;
+        public Guid ModuleVersionId { get; } = method.Module.ModuleVersionId;
 
         public IReadOnlyList<ParameterSignature> Parameters { get; } = EmitParameters(method);
 

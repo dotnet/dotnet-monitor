@@ -116,7 +116,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                         string methodModuleName = traceEvent.GetPayload<string>(ParameterCapturingEvents.CapturedParametersStartPayloads.MethodModuleName);
                         string methodDeclaringTypeName = traceEvent.GetPayload<string>(ParameterCapturingEvents.CapturedParametersStartPayloads.MethodDeclaringTypeName);
                         uint methodToken = traceEvent.GetPayload<uint>(ParameterCapturingEvents.CapturedParametersStartPayloads.MethodToken);
-                        Guid moduleVersionId = traceEvent.GetPayload<Guid>(ParameterCapturingEvents.CapturedParametersStartPayloads.Mvid);
+                        Guid moduleVersionId = traceEvent.GetPayload<Guid>(ParameterCapturingEvents.CapturedParametersStartPayloads.ModuleVersionId);
 
                         _ = _parameterBuilder.TryStartNewCaptureResponse(
                                 captureId,

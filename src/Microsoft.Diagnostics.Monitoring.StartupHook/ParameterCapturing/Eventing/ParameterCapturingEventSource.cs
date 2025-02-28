@@ -125,7 +125,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.ParameterCapturing.Eventi
             string methodModuleName,
             string methodDeclaringTypeName,
             uint methodToken,
-            Guid mvid
+            Guid moduleVersionId
             )
         {
             Span<EventData> data = stackalloc EventData[10];
@@ -144,7 +144,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.ParameterCapturing.Eventi
             SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.MethodModuleName], pinnedMethodModuleName);
             SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.MethodDeclaringTypeName], pinnedMethodDeclaringTypeName);
             SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.MethodToken], methodToken);
-            SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.Mvid], mvid);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.ModuleVersionId], moduleVersionId);
 
             WriteEventWithFlushing(ParameterCapturingEvents.EventIds.ParametersCapturedStart, data);
         }
