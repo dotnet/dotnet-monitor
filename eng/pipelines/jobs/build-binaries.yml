@@ -107,6 +107,12 @@ jobs:
           inputs:
             SourceFolder: '$(Build.SourcesDirectory)/artifacts/obj'
             TargetFolder: '$(Build.ArtifactStagingDirectory)/unified/obj'
+        - task: DeleteFiles@1
+          displayName: Delete Native files (obj)
+          inputs:
+            SourceFolder: '$(Build.ArtifactStagingDirectory)/unified/obj/win-x64.Release'
+            Contents: '*'
+            RemoveSourceFolder: true
         - task: CopyFiles@2
           displayName: Gather Artifacts (pub)
           inputs:
