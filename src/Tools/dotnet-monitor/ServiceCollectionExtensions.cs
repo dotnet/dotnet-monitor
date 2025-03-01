@@ -255,7 +255,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<IMonitorCapability>(new MonitorCapability(MonitorCapability.ParameterCapturing));
             services.AddSingleton<IPostConfigureOptions<ParameterCapturingOptions>, CapabilityPostConfigureOptions>();
 
-            services.AddSingleton<IMonitorCapability>(new MonitorCapability(MonitorCapability.Https, !noHttpEgress));
+            services.AddSingleton<IMonitorCapability>(new MonitorCapability(MonitorCapability.HttpEgress, !noHttpEgress));
 
             return services;
         }

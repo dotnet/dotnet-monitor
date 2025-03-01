@@ -5,11 +5,11 @@ namespace Microsoft.Diagnostics.Monitoring.Options
 {
     public class MonitorCapability : IMonitorCapability
     {
-        public const string Exceptions = "Exceptions";
-        public const string ParameterCapturing = "ParameterCapturing";
-        public const string CallStacks = "CallStacks";
-        public const string Metrics = "Metrics";
-        public const string Https = "Https";
+        public const string Exceptions = "exceptions";
+        public const string ParameterCapturing = "parameters";
+        public const string CallStacks = "callstacks";
+        public const string Metrics = "metrics";
+        public const string HttpEgress = "http_egress";
 
         public string Name { get; }
 

@@ -1736,6 +1736,9 @@
         "type": "string"
       },
       "DotnetMonitorInfo": {
+        "required": [
+          "capabilities"
+        ],
         "type": "object",
         "properties": {
           "version": {
@@ -1754,6 +1757,14 @@
           "diagnosticPortName": {
             "type": "string",
             "description": "The name of the named pipe or unix domain socket to use for connecting to the diagnostic server.",
+            "nullable": true
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IMonitorCapability"
+            },
+            "description": "The capabilities provided by dotnet-monitor.",
             "nullable": true
           }
         },
@@ -1932,6 +1943,20 @@
               "$ref": "#/components/schemas/ExceptionFilter"
             },
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "IMonitorCapability": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "enabled": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
