@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
-    public static class ControllerExtensions
+    internal static class ControllerExtensions
     {
         public static ActionResult FeatureNotEnabled(this ControllerBase controller, string featureName)
         {

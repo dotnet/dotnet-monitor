@@ -3,7 +3,7 @@
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    public static class DiagnosticPortOptionsExtensions
+    internal static class DiagnosticPortOptionsExtensions
     {
         public static DiagnosticPortConnectionMode GetConnectionMode(this DiagnosticPortOptions options) =>
             options.ConnectionMode.GetValueOrDefault(DiagnosticPortOptionsDefaults.ConnectionMode);
