@@ -27,7 +27,7 @@
     <!-- The TFMs of the dotnet-monitor tool.  -->
     <ToolTargetFrameworks>$(LatestTargetFramework)</ToolTargetFrameworks>
     <!-- The TFMs of that the dotnet-monitor tool supports diagnosing. -->
-    <TestTargetFrameworks>net6.0;net7.0;net8.0;$(LatestTargetFramework)</TestTargetFrameworks>
+    <TestTargetFrameworks>net7.0;net8.0;$(LatestTargetFramework)</TestTargetFrameworks>
     <!-- The TFM for generating schema.json and OpenAPI docs. -->
     <SchemaTargetFramework>net9.0</SchemaTargetFramework>
   </PropertyGroup>
