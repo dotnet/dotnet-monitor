@@ -243,19 +243,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureCapabilities(this IServiceCollection services, bool noHttpEgress)
         {
-            services.AddSingleton<IMonitorCapability>(new MonitorCapability(MonitorCapability.Metrics));
-            services.AddSingleton<IPostConfigureOptions<MetricsOptions>, CapabilityPostConfigureOptions>();
+            services.AddSingleton(new MonitorCapability() { Name = MonitorCapability.Metrics });
+            services.AddSingleton<IPostConfigureOptions<MetricsOptions>, MetricsCapabilityPostConfigureOptions>();
 
-            services.AddSingleton<IMonitorCapability>(new MonitorCapability(MonitorCapability.Exceptions));
-            services.AddSingleton<IPostConfigureOptions<ExceptionsOptions>, CapabilityPostConfigureOptions>();
+            services.AddSingleton(new MonitorCapability() { Name = MonitorCapability.Exceptions });
+            services.AddSingleton<IPostConfigureOptions<ExceptionsOptions>, ExceptionsCapabilityPostConfigureOptions>();
 
-            services.AddSingleton<IMonitorCapability>(new MonitorCapability(MonitorCapability.CallStacks));
-            services.AddSingleton<IPostConfigureOptions<CallStacksOptions>, CapabilityPostConfigureOptions>();
+            services.AddSingleton(new MonitorCapability() { Name = MonitorCapability.CallStacks });
+            services.AddSingleton<IPostConfigureOptions<CallStacksOptions>, CallStacksCapabilityPostConfigureOptions>();
 
-            services.AddSingleton<IMonitorCapability>(new MonitorCapability(MonitorCapability.ParameterCapturing));
-            services.AddSingleton<IPostConfigureOptions<ParameterCapturingOptions>, CapabilityPostConfigureOptions>();
+            services.AddSingleton(new MonitorCapability() { Name = MonitorCapability.ParameterCapturing });
+            services.AddSingleton<IPostConfigureOptions<ParameterCapturingOptions>, ParametersCapabilityPostConfigureOptions>();
 
-            services.AddSingleton<IMonitorCapability>(new MonitorCapability(MonitorCapability.HttpEgress, !noHttpEgress));
+            services.AddSingleton(new MonitorCapability() { Name = MonitorCapability.HttpEgress, Enabled = !noHttpEgress });
 
             return services;
         }

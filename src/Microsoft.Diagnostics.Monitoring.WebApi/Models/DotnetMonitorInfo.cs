@@ -36,6 +36,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         /// The capabilities provided by dotnet-monitor.
         /// </summary>
         [JsonPropertyName("capabilities")]
-        public required IMonitorCapability[] Capabilities { get; set; }
+        public required MonitorCapability[] Capabilities { get; set; }
     }
 }

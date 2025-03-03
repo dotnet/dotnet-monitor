@@ -48,7 +48,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private readonly ICaptureParametersOperationFactory _captureParametersFactory;
         private readonly IGCDumpOperationFactory _gcdumpOperationFactory;
         private readonly IStacksOperationFactory _stacksOperationFactory;
-        private readonly IEnumerable<IMonitorCapability> _monitorCapabilities;
+        private readonly IEnumerable<MonitorCapability> _monitorCapabilities;
         public DiagController(IServiceProvider serviceProvider, ILogger<DiagController> logger)
             : base(serviceProvider.GetRequiredService<IDiagnosticServices>(), serviceProvider.GetRequiredService<IEgressOperationStore>(), logger)
         {
@@ -65,7 +65,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _captureParametersFactory = serviceProvider.GetRequiredService<ICaptureParametersOperationFactory>();
             _gcdumpOperationFactory = serviceProvider.GetRequiredService<IGCDumpOperationFactory>();
             _stacksOperationFactory = serviceProvider.GetRequiredService<IStacksOperationFactory>();
-            _monitorCapabilities = serviceProvider.GetRequiredService<IEnumerable<IMonitorCapability>>();
+            _monitorCapabilities = serviceProvider.GetRequiredService<IEnumerable<MonitorCapability>>();
         }
 
         /// <summary>
