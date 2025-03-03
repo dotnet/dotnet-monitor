@@ -51,6 +51,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 CommandLine = processInfo?.CommandLine,
                 OperatingSystem = processInfo?.OperatingSystem,
                 ProcessArchitecture = processInfo?.ProcessArchitecture,
+                ManagedEntryPointAssemblyName = processInfo?.ManagedEntrypointAssemblyName,
                 RuntimeVersion = runtimeVersion,
                 ServiceProvider = serviceProvider
             };
@@ -90,6 +91,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 CommandLine = processInfo?.CommandLine,
                 OperatingSystem = processInfo?.OperatingSystem,
                 ProcessArchitecture = processInfo?.ProcessArchitecture,
+                ManagedEntryPointAssemblyName = processInfo?.ManagedEntrypointAssemblyName,
                 RuntimeVersion = runtimeVersion,
                 ServiceProvider = serviceProvider
             };
@@ -136,6 +138,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public override string? OperatingSystem { get; protected set; }
 
         public override string? ProcessArchitecture { get; protected set; }
+
+        public override string? ManagedEntryPointAssemblyName { get; protected set; }
 
         public override Version? RuntimeVersion { get; protected set; }
 

@@ -99,6 +99,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     Value = processFilterDescriptor.CommandLine
                 };
             }
+            else if (!string.IsNullOrWhiteSpace(processFilterDescriptor.ManagedEntryPointAssemblyName))
+            {
+                return new DiagProcessFilterEntry
+                {
+                    Criteria = DiagProcessFilterCriteria.ManagedEntryPointAssemblyName,
+                    MatchType = (processFilterDescriptor.MatchType == ProcessFilterType.Exact) ? DiagProcessFilterMatchType.Exact : DiagProcessFilterMatchType.Contains,
+                    Value = processFilterDescriptor.ManagedEntryPointAssemblyName
+                };
+            }
 
             string filterValue = processFilterDescriptor.Value!; // Guaranteed not to be null by ProcessFilterDescriptor.Validate.
             switch (processFilterDescriptor.Key)
@@ -116,6 +125,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     return new DiagProcessFilterEntry
                     {
                         Criteria = DiagProcessFilterCriteria.CommandLine,
+                        MatchType = (processFilterDescriptor.MatchType == ProcessFilterType.Exact) ? DiagProcessFilterMatchType.Exact : DiagProcessFilterMatchType.Contains,
+                        Value = filterValue
+                    };
+                case ProcessFilterKey.ManagedEntryPointAssemblyName:
+                    return new DiagProcessFilterEntry
+                    {
+                        Criteria = DiagProcessFilterCriteria.ManagedEntryPointAssemblyName,
                         MatchType = (processFilterDescriptor.MatchType == ProcessFilterType.Exact) ? DiagProcessFilterMatchType.Exact : DiagProcessFilterMatchType.Contains,
                         Value = filterValue
                     };
@@ -151,6 +167,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     return Compare(processInfo.CommandLine);
                 case DiagProcessFilterCriteria.ProcessName:
                     return Compare(processInfo.ProcessName);
+                case DiagProcessFilterCriteria.ManagedEntryPointAssemblyName:
+                    return Compare(processInfo.ManagedEntryPointAssemblyName);
                 default:
                     Debug.Fail($"Unexpected {nameof(DiagProcessFilterCriteria)}: {this.Criteria}");
                     break;
@@ -190,7 +208,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         ProcessId,
         RuntimeId,
         CommandLine,
-        ProcessName
+        ProcessName,
+        ManagedEntryPointAssemblyName
     }
 
     internal enum DiagProcessFilterMatchType

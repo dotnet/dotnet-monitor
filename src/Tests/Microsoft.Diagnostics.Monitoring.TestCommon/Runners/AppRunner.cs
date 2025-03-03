@@ -22,6 +22,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
     [DebuggerDisplay(@"\{AppRunner:{_runner.StateForDebuggerDisplay,nq}\}")]
     public sealed class AppRunner : IAsyncDisposable
     {
+        public const string AssemblyNameWithoutExtension = "Microsoft.Diagnostics.Monitoring.UnitTestApp";
+
         private readonly LoggingRunnerAdapter _adapter;
 
         private readonly string _appPath;
@@ -105,7 +107,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
             _appPath = AssemblyHelper.GetAssemblyArtifactBinPath(
                 testAssembly,
-                "Microsoft.Diagnostics.Monitoring.UnitTestApp",
+                AssemblyNameWithoutExtension,
                 tfm);
 
             _startupHookPath = AssemblyHelper.GetAssemblyArtifactBinPath(

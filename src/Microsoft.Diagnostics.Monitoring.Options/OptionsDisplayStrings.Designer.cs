@@ -1316,6 +1316,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Performs a match based on the name of the managed entry point assembly of the process..
+        /// </summary>
+        public static string DisplayAttributeDescription_ProcessFilterDescriptor_ManagedEntryPointAssemblyName {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ProcessFilterDescriptor_ManagedEntryPointAssemblyName" +
+                        "", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Type of match to use against the process criteria..
         /// </summary>
         public static string DisplayAttributeDescription_ProcessFilterDescriptor_MatchType {
