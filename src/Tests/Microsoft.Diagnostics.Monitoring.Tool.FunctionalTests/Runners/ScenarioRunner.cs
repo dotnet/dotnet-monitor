@@ -5,6 +5,7 @@ using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Net.Http;
@@ -84,7 +85,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
                     // Wait for the process to be discovered.
                     int processId = await appRunner.ProcessIdTask;
-                    _ = await apiClient.GetProcessWithRetryAsync(outputHelper, pid: processId);
+                    ProcessInfo pi = await apiClient.GetProcessWithRetryAsync(outputHelper, pid: processId);
 
                     Assert.NotNull(apiClient);
 

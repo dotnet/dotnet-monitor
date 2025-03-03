@@ -21,6 +21,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterKey_CommandLine))]
         CommandLine,
+        ManagedEntryPointAssemblyName
     }
 
     public enum ProcessFilterType
@@ -76,6 +77,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterDescriptor_CommandLine))]
         public string? CommandLine { get; set; }
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterDescriptor_ManagedEntryPointAssemblyName))]
+        public string? ManagedEntryPointAssemblyName { get; set; }
     }
 
     partial class ProcessFilterDescriptor : IValidatableObject
@@ -84,7 +90,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             List<ValidationResult> results = new();
 
-            if (string.IsNullOrWhiteSpace(CommandLine) && string.IsNullOrWhiteSpace(ProcessId) && string.IsNullOrWhiteSpace(ProcessName))
+            if (string.IsNullOrWhiteSpace(CommandLine) && string.IsNullOrWhiteSpace(ProcessId) && string.IsNullOrWhiteSpace(ProcessName) && string.IsNullOrWhiteSpace(ManagedEntryPointAssemblyName))
             {
                 if (string.IsNullOrWhiteSpace(Value))
                 {

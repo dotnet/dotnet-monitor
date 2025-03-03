@@ -159,5 +159,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public string ProcessArchitecture => EndpointInfo.ProcessArchitecture ?? ProcessFieldUnknownValue;
 
         public string ProcessName { get; }
+
+        public string? ManagedEntryPointAssemblyName => EndpointInfo.ManagedEntryPointAssemblyName ?? ProcessFieldUnknownValue;
     }
 }
