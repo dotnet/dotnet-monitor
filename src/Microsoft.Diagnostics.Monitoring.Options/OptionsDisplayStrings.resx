@@ -776,4 +776,8 @@
   <data name="DisplayAttributeDescription_CollectArtifactOptions_ArtifactName" xml:space="preserve">
     <value>The name of the generated artifact.</value>
   </data>
+  <data name="DisplayAttributeDescription_ProcessFilterDescriptor_ManagedEntryPointAssemblyName" xml:space="preserve">
+    <value>Performs a match based on the name of the managed entry point assembly of the process.</value>
+    <comment>The description provided for the ManagedEntryPointAssemblyName parameter on ProcessFilterDescriptor.</comment>
+  </data>
 </root>

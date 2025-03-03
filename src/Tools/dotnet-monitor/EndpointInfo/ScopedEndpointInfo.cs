@@ -28,6 +28,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public string? ProcessArchitecture => _endpointInfo.ProcessArchitecture;
 
+        public string? ManagedEntryPointAssemblyName => _endpointInfo.ManagedEntryPointAssemblyName;
+
         public Version? RuntimeVersion => _endpointInfo.RuntimeVersion;
 
         IpcEndpoint IEndpointInfo.Endpoint => _endpointInfo.Endpoint;

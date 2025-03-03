@@ -43,6 +43,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             public string ProcessArchitecture => EndpointInfo.ProcessArchitecture;
 
             public string ProcessName => ProcessInfoImpl.GetProcessName(CommandLine, OperatingSystem);
+
+            public string ManagedEntryPointAssemblyName => EndpointInfo.ManagedEntryPointAssemblyName;
         }
 
         private sealed class TestEndpointInfo : EndpointInfoBase
@@ -62,7 +64,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             public override string CommandLine { get; protected set; }
             public override string OperatingSystem { get; protected set; }
             public override string ProcessArchitecture { get; protected set; }
-
+            public override string ManagedEntryPointAssemblyName { get; protected set; }
             public override Version RuntimeVersion { get; protected set; }
             public override IServiceProvider ServiceProvider { get; protected set; }
         }
