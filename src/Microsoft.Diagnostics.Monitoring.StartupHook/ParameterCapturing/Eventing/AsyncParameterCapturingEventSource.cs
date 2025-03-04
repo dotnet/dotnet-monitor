@@ -61,7 +61,9 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.ParameterCapturing.Eventi
             string methodName,
             string methodModuleName,
             string? methodDeclaringTypeName,
-            ResolvedParameterInfo[] parameters
+            ResolvedParameterInfo[] parameters,
+            uint methodToken,
+            Guid moduleVersionId
             )
         {
             Activity? currentActivity = Activity.Current;
@@ -76,6 +78,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.ParameterCapturing.Eventi
                 _eventSource.CapturedParameterStart(
                     requestId,
                     captureId,
+                    methodToken,
+                    moduleVersionId,
                     currentActivity?.Id ?? string.Empty,
                     currentActivity?.IdFormat ?? ActivityIdFormat.Unknown,
                     currentThreadId,

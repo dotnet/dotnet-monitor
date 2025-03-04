@@ -14,7 +14,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
     {
         private readonly List<ParameterInfo> _parameters = [];
 
-        public CapturedParameters(string? activityId, ActivityIdFormat activityIdFormat, int threadId, DateTime capturedDateTime, string methodName, string methodTypeName, string methodModuleName)
+        public CapturedParameters(string? activityId, ActivityIdFormat activityIdFormat, int threadId, DateTime capturedDateTime, string methodName, string methodTypeName, string methodModuleName, uint methodToken, Guid moduleVersionId)
         {
             ActivityId = activityId;
             ActivityIdFormat = activityIdFormat;
@@ -23,6 +23,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
             TypeName = methodTypeName;
             ModuleName = methodModuleName;
             CapturedDateTime = capturedDateTime;
+            MethodToken = methodToken;
+            ModuleVersionId = moduleVersionId;
         }
 
         public void AddParameter(ParameterInfo parameter)
@@ -45,5 +47,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
         public IReadOnlyList<ParameterInfo> Parameters => _parameters;
 
         public DateTime CapturedDateTime { get; }
+
+        public uint MethodToken { get; }
+
+        public Guid ModuleVersionId { get; }
     }
 }
