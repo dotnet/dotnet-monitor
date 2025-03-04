@@ -10,7 +10,7 @@ namespace Microsoft.Diagnostics.Monitoring
     public class ExceptionsCapabilityPostConfigureOptions : CapabilityPostConfigureOptions<ExceptionsOptions>
     {
         public ExceptionsCapabilityPostConfigureOptions(IEnumerable<MonitorCapability> capabilities)
-            : base(capabilities.First(c => c.Name == MonitorCapability.Exceptions))
+            : base(capabilities.First(c => c.Name == MonitorCapabilityConstants.Exceptions))
         {
         }
 

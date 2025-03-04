@@ -243,19 +243,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureCapabilities(this IServiceCollection services, bool noHttpEgress)
         {
-            services.AddSingleton(new MonitorCapability() { Name = MonitorCapability.Metrics });
+            services.AddSingleton(new MonitorCapability() { Name = MonitorCapabilityConstants.Metrics });
             services.AddSingleton<IPostConfigureOptions<MetricsOptions>, MetricsCapabilityPostConfigureOptions>();
 
-            services.AddSingleton(new MonitorCapability() { Name = MonitorCapability.Exceptions });
+            services.AddSingleton(new MonitorCapability() { Name = MonitorCapabilityConstants.Exceptions });
             services.AddSingleton<IPostConfigureOptions<ExceptionsOptions>, ExceptionsCapabilityPostConfigureOptions>();
 
-            services.AddSingleton(new MonitorCapability() { Name = MonitorCapability.CallStacks });
+            services.AddSingleton(new MonitorCapability() { Name = MonitorCapabilityConstants.CallStacks });
             services.AddSingleton<IPostConfigureOptions<CallStacksOptions>, CallStacksCapabilityPostConfigureOptions>();
 
-            services.AddSingleton(new MonitorCapability() { Name = MonitorCapability.ParameterCapturing });
+            services.AddSingleton(new MonitorCapability() { Name = MonitorCapabilityConstants.ParameterCapturing });
             services.AddSingleton<IPostConfigureOptions<ParameterCapturingOptions>, ParametersCapabilityPostConfigureOptions>();
 
-            services.AddSingleton(new MonitorCapability() { Name = MonitorCapability.HttpEgress, Enabled = !noHttpEgress });
+            services.AddSingleton(new MonitorCapability() { Name = MonitorCapabilityConstants.HttpEgress, Enabled = !noHttpEgress });
 
             return services;
         }

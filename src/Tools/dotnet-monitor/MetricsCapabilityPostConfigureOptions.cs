@@ -11,7 +11,7 @@ namespace Microsoft.Diagnostics.Monitoring
     public class MetricsCapabilityPostConfigureOptions : CapabilityPostConfigureOptions<MetricsOptions>
     {
         public MetricsCapabilityPostConfigureOptions(IEnumerable<MonitorCapability> capabilities)
-            : base(capabilities.First(c => c.Name == MonitorCapability.Metrics))
+            : base(capabilities.First(c => c.Name == MonitorCapabilityConstants.Metrics))
         {
         }
 

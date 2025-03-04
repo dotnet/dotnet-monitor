@@ -10,7 +10,7 @@ namespace Microsoft.Diagnostics.Monitoring
     public class CallStacksCapabilityPostConfigureOptions : CapabilityPostConfigureOptions<CallStacksOptions>
     {
         public CallStacksCapabilityPostConfigureOptions(IEnumerable<MonitorCapability> capabilities)
-            : base(capabilities.First(c => c.Name == MonitorCapability.CallStacks))
+            : base(capabilities.First(c => c.Name == MonitorCapabilityConstants.CallStacks))
         {
         }
 

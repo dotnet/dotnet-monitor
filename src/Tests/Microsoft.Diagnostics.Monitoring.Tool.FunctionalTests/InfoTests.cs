@@ -71,16 +71,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     }
 
                     Assert.Equal(5, info.Capabilities.Length); // Update if capabilities change
-                    Assert.Contains(info.Capabilities, capability => capability.Name == MonitorCapability.Exceptions);
-                    Assert.Contains(info.Capabilities, capability => capability.Name == MonitorCapability.ParameterCapturing);
-                    Assert.Contains(info.Capabilities, capability => capability.Name == MonitorCapability.Metrics);
-                    Assert.Contains(info.Capabilities, capability => capability.Name == MonitorCapability.CallStacks);
-                    Assert.Contains(info.Capabilities, capability => capability.Name == MonitorCapability.HttpEgress);
-                    Assert.True(info.Capabilities.First(c => c.Name == MonitorCapability.HttpEgress).Enabled);
-                    Assert.True(info.Capabilities.First(c => c.Name == MonitorCapability.Metrics).Enabled);
-                    Assert.Equal(enableInProcessFeatures, info.Capabilities.First(c => c.Name == MonitorCapability.Exceptions).Enabled);
-                    Assert.Equal(enableInProcessFeatures, info.Capabilities.First(c => c.Name == MonitorCapability.ParameterCapturing).Enabled);
-                    Assert.Equal(enableInProcessFeatures, info.Capabilities.First(c => c.Name == MonitorCapability.CallStacks).Enabled);
+                    Assert.Contains(info.Capabilities, capability => capability.Name == MonitorCapabilityConstants.Exceptions);
+                    Assert.Contains(info.Capabilities, capability => capability.Name == MonitorCapabilityConstants.ParameterCapturing);
+                    Assert.Contains(info.Capabilities, capability => capability.Name == MonitorCapabilityConstants.Metrics);
+                    Assert.Contains(info.Capabilities, capability => capability.Name == MonitorCapabilityConstants.CallStacks);
+                    Assert.Contains(info.Capabilities, capability => capability.Name == MonitorCapabilityConstants.HttpEgress);
+                    Assert.True(info.Capabilities.First(c => c.Name == MonitorCapabilityConstants.HttpEgress).Enabled);
+                    Assert.True(info.Capabilities.First(c => c.Name == MonitorCapabilityConstants.Metrics).Enabled);
+                    Assert.Equal(enableInProcessFeatures, info.Capabilities.First(c => c.Name == MonitorCapabilityConstants.Exceptions).Enabled);
+                    Assert.Equal(enableInProcessFeatures, info.Capabilities.First(c => c.Name == MonitorCapabilityConstants.ParameterCapturing).Enabled);
+                    Assert.Equal(enableInProcessFeatures, info.Capabilities.First(c => c.Name == MonitorCapabilityConstants.CallStacks).Enabled);
 
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 },

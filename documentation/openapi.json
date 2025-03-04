@@ -1762,7 +1762,7 @@
           "capabilities": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/IMonitorCapability"
+              "$ref": "#/components/schemas/MonitorCapability"
             },
             "description": "The capabilities provided by dotnet-monitor.",
             "nullable": true
@@ -1947,20 +1947,6 @@
         },
         "additionalProperties": false
       },
-      "IMonitorCapability": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "nullable": true,
-            "readOnly": true
-          },
-          "enabled": {
-            "type": "boolean"
-          }
-        },
-        "additionalProperties": false
-      },
       "LogLevel": {
         "enum": [
           "Trace",
@@ -2016,6 +2002,22 @@
           "methodName": {
             "minLength": 1,
             "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "MonitorCapability": {
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "enabled": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false

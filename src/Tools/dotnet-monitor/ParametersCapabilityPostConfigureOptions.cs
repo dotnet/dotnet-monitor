@@ -10,7 +10,7 @@ namespace Microsoft.Diagnostics.Monitoring
     public class ParametersCapabilityPostConfigureOptions : CapabilityPostConfigureOptions<ParameterCapturingOptions>
     {
         public ParametersCapabilityPostConfigureOptions(IEnumerable<MonitorCapability> capabilities)
-            : base(capabilities.First(c => c.Name == MonitorCapability.ParameterCapturing))
+            : base(capabilities.First(c => c.Name == MonitorCapabilityConstants.ParameterCapturing))
         {
         }
 

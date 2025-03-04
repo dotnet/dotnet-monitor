@@ -8,12 +8,6 @@ namespace Microsoft.Diagnostics.Monitoring.Options
 {
     public class MonitorCapability
     {
-        public const string Exceptions = "exceptions";
-        public const string ParameterCapturing = "parameters";
-        public const string CallStacks = "callstacks";
-        public const string Metrics = "metrics";
-        public const string HttpEgress = "http_egress";
-
         [Required]
         [JsonPropertyName("name")]
         public string Name { get; set; } = string.Empty;
