@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -22,27 +23,29 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        protected Task<ActionResult> InvokeForProcess(Func<IProcessInfo, ActionResult> func, ProcessKey? processKey, string? artifactType = null)
+        protected Task<IResult> InvokeForProcess(Func<IProcessInfo, IResult> func, ProcessKey? processKey, string? artifactType = null)
         {
-            Func<IProcessInfo, Task<ActionResult>> asyncFunc =
+            Func<IProcessInfo, Task<IResult>> asyncFunc =
                 processInfo => Task.FromResult(func(processInfo));
 
             return InvokeForProcess(asyncFunc, processKey, artifactType);
         }
 
-        protected async Task<ActionResult> InvokeForProcess(Func<IProcessInfo, Task<ActionResult>> func, ProcessKey? processKey, string? artifactType)
+        protected async Task<IResult> InvokeForProcess(Func<IProcessInfo, Task<IResult>> func, ProcessKey? processKey, string? artifactType)
         {
-            ActionResult<object> result = await InvokeForProcess<object>(async processInfo => await func(processInfo), processKey, artifactType);
+            IResult result = await InvokeForProcess<IResult>(async processInfo => await func(processInfo), processKey, artifactType);
 
-            return result.Result!;
+            return result;
         }
 
-        protected Task<ActionResult<T>> InvokeForProcess<T>(Func<IProcessInfo, ActionResult<T>> func, ProcessKey? processKey, string? artifactType = null)
+        protected Task<IResult> InvokeForProcess<T>(Func<IProcessInfo, T> func, ProcessKey? processKey, string? artifactType = null)
+            where T : IResult
         {
             return InvokeForProcess(processInfo => Task.FromResult(func(processInfo)), processKey, artifactType);
         }
 
-        protected async Task<ActionResult<T>> InvokeForProcess<T>(Func<IProcessInfo, Task<ActionResult<T>>> func, ProcessKey? processKey, string? artifactType = null)
+        protected async Task<IResult> InvokeForProcess<T>(Func<IProcessInfo, Task<T>> func, ProcessKey? processKey, string? artifactType = null)
+            where T : IResult
         {
             IDisposable? artifactTypeRegistration = null;
             if (!string.IsNullOrEmpty(artifactType))
@@ -73,7 +76,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }
         }
 
-        protected async Task<ActionResult> Result(
+        protected async Task<IResult> Result(
             string artifactType,
             string? providerName,
             IArtifactOperation operation,
@@ -122,10 +125,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 protocol: this.HttpContext.Request.Scheme, this.HttpContext.Request.Host.ToString());
         }
 
-        private async Task<ActionResult> SendToEgress(IEgressOperation egressOperation, string limitKey)
+        private async Task<IResult> SendToEgress(IEgressOperation egressOperation, string limitKey)
         {
             string? operationUrl = await RegisterOperation(egressOperation, limitKey);
-            return Accepted(operationUrl);
+            return TypedResults.Accepted(operationUrl);
         }
 
         private protected IDiagnosticServices DiagnosticServices { get; }
