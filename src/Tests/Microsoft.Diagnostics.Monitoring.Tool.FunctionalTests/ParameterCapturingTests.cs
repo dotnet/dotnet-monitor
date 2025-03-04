@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -155,11 +156,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 Assert.NotNull(capturedMethods);
                 CapturedMethod actualMethod = Assert.Single(capturedMethods);
 
+                // This corresponds with the type used in expectedCapturedMethod
+                MethodInfo methodInfo = typeof(SampleMethods.StaticTestMethodSignatures).GetMethod(
+                    expectedCapturedMethod.MethodName);
+                Assert.NotNull(methodInfo);
+
                 Assert.Equal(expectedCapturedMethod.TypeName, actualMethod.TypeName);
                 Assert.Equal(expectedCapturedMethod.MethodName, actualMethod.MethodName);
                 Assert.Equal(expectedCapturedMethod.ModuleName, actualMethod.ModuleName);
-                Assert.NotEqual(Guid.Empty, actualMethod.ModuleVersionId);
-                Assert.NotEqual(0, (int)actualMethod.MethodToken);
+                Assert.Equal(methodInfo.Module.ModuleVersionId, actualMethod.ModuleVersionId);
+                Assert.Equal(methodInfo.MetadataToken, (int)actualMethod.MethodToken);
             });
         }
 
