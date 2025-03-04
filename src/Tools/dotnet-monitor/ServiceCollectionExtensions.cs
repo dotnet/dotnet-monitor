@@ -243,19 +243,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureCapabilities(this IServiceCollection services, bool noHttpEgress)
         {
-            services.AddSingleton(new MonitorCapability() { Name = MonitorCapabilityConstants.Metrics });
-            services.AddSingleton<IPostConfigureOptions<MetricsOptions>, MetricsCapabilityPostConfigureOptions>();
-
-            services.AddSingleton(new MonitorCapability() { Name = MonitorCapabilityConstants.Exceptions });
-            services.AddSingleton<IPostConfigureOptions<ExceptionsOptions>, ExceptionsCapabilityPostConfigureOptions>();
-
-            services.AddSingleton(new MonitorCapability() { Name = MonitorCapabilityConstants.CallStacks });
-            services.AddSingleton<IPostConfigureOptions<CallStacksOptions>, CallStacksCapabilityPostConfigureOptions>();
-
-            services.AddSingleton(new MonitorCapability() { Name = MonitorCapabilityConstants.ParameterCapturing });
-            services.AddSingleton<IPostConfigureOptions<ParameterCapturingOptions>, ParametersCapabilityPostConfigureOptions>();
+            ConfigureCapability<MetricsOptions, MetricsCapabilityPostConfigureOptions>(services, MonitorCapabilityConstants.Metrics);
+            ConfigureCapability<ExceptionsOptions, ExceptionsCapabilityPostConfigureOptions>(services, MonitorCapabilityConstants.Exceptions);
+            ConfigureCapability<CallStacksOptions, CallStacksCapabilityPostConfigureOptions>(services, MonitorCapabilityConstants.CallStacks);
+            ConfigureCapability<ParameterCapturingOptions, ParametersCapabilityPostConfigureOptions>(services, MonitorCapabilityConstants.ParameterCapturing);
 
             services.AddSingleton(new MonitorCapability() { Name = MonitorCapabilityConstants.HttpEgress, Enabled = !noHttpEgress });
+
+            return services;
+        }
+
+        private static IServiceCollection ConfigureCapability<TOptions, TPostOptions>(this IServiceCollection services, string capabilityName)
+            where TOptions : class
+            where TPostOptions : class, IPostConfigureOptions<TOptions>
+        {
+            services.AddSingleton(new MonitorCapability() { Name = capabilityName });
+            services.AddSingleton<IPostConfigureOptions<TOptions>, TPostOptions>();
 
             return services;
         }
