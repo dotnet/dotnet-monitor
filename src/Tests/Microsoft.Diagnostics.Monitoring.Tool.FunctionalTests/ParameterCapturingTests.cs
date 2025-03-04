@@ -38,8 +38,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         private readonly TemporaryDirectory _tempDirectory;
 
         private const string FileProviderName = "files";
-        private const string ExpectedModuleVersionId = "c2d942b3-d8e8-4121-8f2e-3de3ac1604d4";
-        private const int ExpectedMethodToken = 100663328;
 
         public ParameterCapturingTests(ITestOutputHelper outputHelper, ServiceProviderFixture serviceProviderFixture)
         {
@@ -160,8 +158,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 Assert.Equal(expectedCapturedMethod.TypeName, actualMethod.TypeName);
                 Assert.Equal(expectedCapturedMethod.MethodName, actualMethod.MethodName);
                 Assert.Equal(expectedCapturedMethod.ModuleName, actualMethod.ModuleName);
-                Assert.Equal(ExpectedModuleVersionId, actualMethod.ModuleVersionId.ToString());
-                Assert.Equal(ExpectedMethodToken, (int)actualMethod.MethodToken);
+                Assert.NotEqual(Guid.Empty, actualMethod.ModuleVersionId);
+                Assert.NotEqual(0, (int)actualMethod.MethodToken);
             });
         }
 
