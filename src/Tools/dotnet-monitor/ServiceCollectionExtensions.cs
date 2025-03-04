@@ -3,6 +3,7 @@
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Diagnostics.Monitoring;
 using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers;
 using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers.AspNet;
 using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers.EventCounter;
@@ -237,6 +238,25 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             ConfigureOptions<StorageOptions>(services, configuration, ConfigurationKeys.Storage);
             services.AddSingleton<IPostConfigureOptions<StorageOptions>, StoragePostConfigureOptions>();
+            return services;
+        }
+
+        public static IServiceCollection ConfigureCapabilities(this IServiceCollection services, bool noHttpEgress)
+        {
+            services.AddSingleton(new MonitorCapability() { Name = MonitorCapabilityConstants.Metrics });
+            services.AddSingleton<IPostConfigureOptions<MetricsOptions>, MetricsCapabilityPostConfigureOptions>();
+
+            services.AddSingleton(new MonitorCapability() { Name = MonitorCapabilityConstants.Exceptions });
+            services.AddSingleton<IPostConfigureOptions<ExceptionsOptions>, ExceptionsCapabilityPostConfigureOptions>();
+
+            services.AddSingleton(new MonitorCapability() { Name = MonitorCapabilityConstants.CallStacks });
+            services.AddSingleton<IPostConfigureOptions<CallStacksOptions>, CallStacksCapabilityPostConfigureOptions>();
+
+            services.AddSingleton(new MonitorCapability() { Name = MonitorCapabilityConstants.ParameterCapturing });
+            services.AddSingleton<IPostConfigureOptions<ParameterCapturingOptions>, ParametersCapabilityPostConfigureOptions>();
+
+            services.AddSingleton(new MonitorCapability() { Name = MonitorCapabilityConstants.HttpEgress, Enabled = !noHttpEgress });
+
             return services;
         }
 
