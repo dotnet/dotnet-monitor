@@ -12,7 +12,6 @@ using Microsoft.Diagnostics.Tools.Monitor.Swagger;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Swagger;
 using System.Collections.Generic;
@@ -94,22 +93,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             app.UseEndpoints(builder =>
             {
-                builder.MapControllers();
-
                 var serviceProvider = builder.ServiceProvider;
 
-                new OperationsController(serviceProvider.GetRequiredService<ILogger<OperationsController>>(), serviceProvider)
-                    .MapActionMethods(builder);
+                OperationsController.MapActionMethods(builder);
 
-                new DiagController(serviceProvider, serviceProvider.GetRequiredService<ILogger<DiagController>>())
-                    .MapActionMethods(builder)
-                    .MapMetricsActionMethods(builder);
+                DiagController.MapActionMethods(builder);
+                DiagController.MapMetricsActionMethods(builder);
 
-                new ExceptionsController(serviceProvider, serviceProvider.GetRequiredService<ILogger<ExceptionsController>>())
-                    .MapActionMethods(builder);
+                ExceptionsController.MapActionMethods(builder);
 
-                new MetricsController(serviceProvider.GetRequiredService<ILogger<MetricsController>>(), serviceProvider, serviceProvider.GetRequiredService<IOptions<MetricsOptions>>())
-                    .MapActionMethods(builder);
+                MetricsController.MapActionMethods(builder);
 
                 builder.MapGet("/", (HttpResponse response, ISwaggerProvider provider) =>
                 {

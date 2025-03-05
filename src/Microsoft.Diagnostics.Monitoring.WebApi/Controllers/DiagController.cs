@@ -74,10 +74,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _stacksOperationFactory = serviceProvider.GetRequiredService<IStacksOperationFactory>();
         }
 
-        public DiagController MapActionMethods(IEndpointRouteBuilder builder)
+        public static void MapActionMethods(IEndpointRouteBuilder builder)
         {
             // GetProcesses
-            builder.MapGet("processes", () => this.GetProcesses())
+            builder.MapGet("processes", (
+                IServiceProvider serviceProvider,
+                ILogger<DiagController> logger) =>
+                    new DiagController(serviceProvider, logger).GetProcesses())
                 .WithName(nameof(GetProcesses))
                 .RequireDiagControllerCommon()
                 .Produces<IEnumerable<ProcessIdentifier>>(StatusCodes.Status200OK)
@@ -85,10 +88,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             // GetProcessInfo
             builder.MapGet("process", (
+                IServiceProvider serviceProvider,
+                ILogger<DiagController> logger,
                 int? pid,
                 Guid? uid,
                 string? name) =>
-                    GetProcessInfo(pid, uid, name))
+                    new DiagController(serviceProvider, logger).GetProcessInfo(pid, uid, name))
                 .WithName(nameof(GetProcessInfo))
                 .RequireDiagControllerCommon()
                 .Produces<Models.ProcessInfo>(StatusCodes.Status200OK)
@@ -96,10 +101,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             // GetProcessEnvironment
             builder.MapGet("env", (
+                IServiceProvider serviceProvider,
+                ILogger<DiagController> logger,
                 int? pid,
                 Guid? uid,
                 string? name) =>
-                    GetProcessEnvironment(pid, uid, name))
+                    new DiagController(serviceProvider, logger).GetProcessEnvironment(pid, uid, name))
                 .WithName(nameof(GetProcessEnvironment))
                 .RequireDiagControllerCommon()
                 .Produces<Dictionary<string, string>>(StatusCodes.Status200OK)
@@ -107,13 +114,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             // CaptureDump
             builder.MapGet("dump", (
+                IServiceProvider serviceProvider,
+                ILogger<DiagController> logger,
                 int? pid,
                 Guid? uid,
                 string? name,
                 Models.DumpType type = Models.DumpType.WithHeap,
                 string? egressProvider = null,
                 string? tags = null) =>
-                    CaptureDump(pid, uid, name, type, egressProvider, tags))
+                    new DiagController(serviceProvider, logger).CaptureDump(pid, uid, name, type, egressProvider, tags))
                 .WithName(nameof(CaptureDump))
                 .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
@@ -124,12 +133,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             // CapturGcDump
             builder.MapGet("gcdump", (
+                IServiceProvider serviceProvider,
+                ILogger<DiagController> logger,
                 int? pid,
                 Guid? uid,
                 string? name,
                 string? egressProvider,
                 string? tags) =>
-                    CaptureGcDump(pid, uid, name, egressProvider, tags))
+                    new DiagController(serviceProvider, logger).CaptureGcDump(pid, uid, name, egressProvider, tags))
                 .WithName(nameof(CaptureGcDump))
                 .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
@@ -140,6 +151,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             // CaptureTrace
             builder.MapGet("trace", (
+                IServiceProvider serviceProvider,
+                ILogger<DiagController> logger,
                 int? pid,
                 Guid? uid,
                 string? name,
@@ -148,7 +161,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 int durationSeconds = 30,
                 string? egressProvider = null,
                 string? tags = null) =>
-                    CaptureTrace(pid, uid, name, profile, durationSeconds, egressProvider, tags))
+                    new DiagController(serviceProvider, logger).CaptureTrace(pid, uid, name, profile, durationSeconds, egressProvider, tags))
                 .WithName(nameof(CaptureTrace))
                 .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
@@ -159,6 +172,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             // CaptureTraceCustom
             builder.MapGet("trace", (
+                IServiceProvider serviceProvider,
+                ILogger<DiagController> logger,
                 [FromBody][Required]
                 EventPipeConfiguration configuration,
                 int? pid,
@@ -168,7 +183,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 int durationSeconds = 30,
                 string? egressProvider = null,
                 string? tags = null) =>
-                    CaptureTraceCustom(configuration, pid, uid, name, durationSeconds, egressProvider, tags))
+                    new DiagController(serviceProvider, logger).CaptureTraceCustom(configuration, pid, uid, name, durationSeconds, egressProvider, tags))
                 .WithName(nameof(CaptureTraceCustom))
                 .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
@@ -179,6 +194,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             // CaptureLogs
             builder.MapGet("logs", (
+                IServiceProvider serviceProvider,
+                ILogger<DiagController> logger,
                 int? pid,
                 Guid? uid,
                 string? name,
@@ -187,7 +204,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 LogLevel? level = null,
                 string? egressProvider = null,
                 string? tags = null) =>
-                    CaptureLogs(pid, uid, name, durationSeconds, level, egressProvider, tags))
+                    new DiagController(serviceProvider, logger).CaptureLogs(pid, uid, name, durationSeconds, level, egressProvider, tags))
                 .WithName(nameof(CaptureLogs))
                 .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
@@ -198,6 +215,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             // CaptureLogsCustom
             builder.MapPost("logs", (
+                IServiceProvider serviceProvider,
+                ILogger<DiagController> logger,
                 [FromBody]
                 LogsConfiguration configuration,
                 int? pid,
@@ -207,7 +226,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 int durationSeconds = 30,
                 string? egressProvider = null,
                 string? tags = null) =>
-                    CaptureLogsCustom(configuration, pid, uid, name, durationSeconds, egressProvider, tags))
+                    new DiagController(serviceProvider, logger).CaptureLogsCustom(configuration, pid, uid, name, durationSeconds, egressProvider, tags))
                 .WithName(nameof(CaptureLogs))
                 .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
@@ -217,7 +236,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 .RequireEgressValidation();
 
             // GetInfo
-            builder.MapGet("info", () => GetInfo())
+            builder.MapGet("info", (
+                IServiceProvider serviceProvider,
+                ILogger<DiagController> logger) =>
+                    new DiagController(serviceProvider, logger).GetInfo())
                 .WithName(nameof(GetInfo))
                 .RequireDiagControllerCommon()
                 .Produces<DotnetMonitorInfo>(StatusCodes.Status200OK)
@@ -225,10 +247,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             // GetCollectionRulesDescription
             builder.MapGet("collectionrules", (
+                IServiceProvider serviceProvider,
+                ILogger<DiagController> logger,
                 int pid,
                 Guid uid,
                 string name) =>
-                    GetCollectionRulesDescription(pid, uid, name))
+                    new DiagController(serviceProvider, logger).GetCollectionRulesDescription(pid, uid, name))
                 .WithName(nameof(GetCollectionRulesDescription))
                 .RequireDiagControllerCommon()
                 .Produces<Dictionary<string, CollectionRuleDescription>>(StatusCodes.Status200OK)
@@ -236,11 +260,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             // GetCollectionRuleDetailedDescription
             builder.MapGet("collectionrules/{collectionRuleName}", (
+                IServiceProvider serviceProvider,
+                ILogger<DiagController> logger,
                 string collectionRuleName,
                 int pid,
                 Guid uid,
                 string name) =>
-                    GetCollectionRuleDetailedDescription(collectionRuleName, pid, uid, name))
+                    new DiagController(serviceProvider, logger).GetCollectionRuleDetailedDescription(collectionRuleName, pid, uid, name))
                 .WithName(nameof(GetCollectionRuleDetailedDescription))
                 .RequireDiagControllerCommon()
                 .Produces<CollectionRuleDetailedDescription>(StatusCodes.Status200OK)
@@ -248,6 +274,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             // CaptureParameters
             builder.MapPost("parameters", (
+                IServiceProvider serviceProvider,
+                ILogger<DiagController> logger,
                 [FromBody][Required]
                 CaptureParametersConfiguration configuration,
                 [Range(-1, int.MaxValue)]
@@ -257,7 +285,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 string? name = null,
                 string? egressProvider = null,
                 string? tags = null) =>
-                    CaptureParameters(configuration, durationSeconds, pid, uid, name, egressProvider, tags))
+                    new DiagController(serviceProvider, logger).CaptureParameters(configuration, durationSeconds, pid, uid, name, egressProvider, tags))
                 .WithName(nameof(CaptureParameters))
                 .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
@@ -268,12 +296,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             // CaptureStacks
             builder.MapGet("stacks", (
+                IServiceProvider serviceProvider,
+                ILogger<DiagController> logger,
                 int? pid,
                 Guid? uid,
                 string? name,
                 string? egressProvider,
                 string? tags) =>
-                    CaptureStacks(pid, uid, name, egressProvider, tags))
+                    new DiagController(serviceProvider, logger).CaptureStacks(pid, uid, name, egressProvider, tags))
                 .WithName(nameof(CaptureStacks))
                 .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
@@ -281,8 +311,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 .Produces(StatusCodes.Status202Accepted)
                 .ProducesProblem(StatusCodes.Status400BadRequest)
                 .RequireEgressValidation();
-
-            return this;
         }
 
         /// <summary>

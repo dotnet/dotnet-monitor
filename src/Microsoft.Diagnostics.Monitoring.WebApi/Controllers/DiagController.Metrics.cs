@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
+using Microsoft.Extensions.Logging;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
@@ -14,10 +15,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
     partial class DiagController
     {
-        public DiagController MapMetricsActionMethods(IEndpointRouteBuilder builder)
+        public static void MapMetricsActionMethods(IEndpointRouteBuilder builder)
         {
             // CaptureMetrics
             builder.MapGet("livemetrics", (
+                IServiceProvider serviceProvider,
+                ILogger<DiagController> logger,
                 int? pid,
                 Guid? uid,
                 string? name,
@@ -25,7 +28,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 int durationSeconds = 30,
                 string? egressProvider = null,
                 string? tags = null) =>
-                    CaptureMetrics(pid, uid, name, durationSeconds, egressProvider, tags))
+                    new DiagController(serviceProvider, logger).CaptureMetrics(pid, uid, name, durationSeconds, egressProvider, tags))
                 .WithName(nameof(CaptureMetrics))
                 .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
@@ -36,6 +39,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             // CaptureMetricsCustom
             builder.MapGet("livemetrics", (
+                IServiceProvider serviceProvider,
+                ILogger<DiagController> logger,
                 [FromBody][Required]
                 Models.EventMetricsConfiguration configuration,
                 int? pid,
@@ -45,7 +50,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 int durationSeconds = 30,
                 string? egressProvider = null,
                 string? tags = null) =>
-                    CaptureMetricsCustom(configuration, pid, uid, name, durationSeconds, egressProvider, tags))
+                    new DiagController(serviceProvider, logger).CaptureMetricsCustom(configuration, pid, uid, name, durationSeconds, egressProvider, tags))
                 .WithName(nameof(CaptureMetricsCustom))
                 .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
@@ -53,8 +58,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 .Produces(StatusCodes.Status202Accepted)
                 .ProducesProblem(StatusCodes.Status400BadRequest)
                 .RequireEgressValidation();
-
-            return this;
         }
 
         /// <summary>

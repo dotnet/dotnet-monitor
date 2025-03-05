@@ -42,16 +42,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _options = serviceProvider.GetRequiredService<IOptions<ExceptionsOptions>>();
         }
 
-        public ExceptionsController MapActionMethods(IEndpointRouteBuilder builder)
+        public static void MapActionMethods(IEndpointRouteBuilder builder)
         {
             // GetExceptions
             builder.MapGet("exceptions", (
+                IServiceProvider serviceProvider,
+                ILogger<ExceptionsController> logger,
                 int? pid,
                 Guid? uid,
                 string? name,
                 string? egressProvider = null,
                 string? tags = null) =>
-                    GetExceptions(pid, uid, name, egressProvider, tags))
+                    new ExceptionsController(serviceProvider, logger).GetExceptions(pid, uid, name, egressProvider, tags))
                 .WithName(nameof(GetExceptions))
                 .RequireExceptionsControllerCommon()
                 .Produces<string>(StatusCodes.Status200OK, ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)
@@ -61,6 +63,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             
             // CaptureExceptionsCustom
             builder.MapPost("exceptions", (
+                IServiceProvider serviceProvider,
+                ILogger<ExceptionsController> logger,
                 [FromBody]
                 ExceptionsConfiguration configuration,
                 int? pid,
@@ -68,14 +72,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 string? name,
                 string? egressProvider = null,
                 string? tags = null) =>
-                    CaptureExceptionsCustom(configuration, pid, uid, name, egressProvider, tags))
+                    new ExceptionsController(serviceProvider, logger).CaptureExceptionsCustom(configuration, pid, uid, name, egressProvider, tags))
                 .WithName(nameof(CaptureExceptionsCustom))
                 .RequireExceptionsControllerCommon()
                 .Produces<string>(StatusCodes.Status200OK, ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)
                 .ProducesProblem(StatusCodes.Status400BadRequest)
                 .RequireEgressValidation();
-
-            return this;
         }
 
         /// <summary>

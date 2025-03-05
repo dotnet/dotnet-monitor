@@ -38,23 +38,27 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _operationsStore = serviceProvider.GetRequiredService<IEgressOperationStore>();
         }
 
-        public OperationsController MapActionMethods(IEndpointRouteBuilder builder)
+        public static void MapActionMethods(IEndpointRouteBuilder builder)
         {
             // GetOperations
             builder.MapGet($"{ControllerName}/{nameof(GetOperations)}", (
+                ILogger<OperationsController> logger,
+                IServiceProvider serviceProvider,
                 int? pid,
                 Guid? uid,
                 string? name,
                 string? tags) =>
-                    GetOperations(pid, uid, name, tags))
+                    new OperationsController(logger, serviceProvider).GetOperations(pid, uid, name, tags))
             .WithName(nameof(GetOperations))
             .RequireOperationsControllerCommon()
             .Produces<IEnumerable<OperationSummary>>(StatusCodes.Status200OK);
 
             // GetOperationStatus
             builder.MapGet($"{ControllerName}/{nameof(GetOperationStatus)}/{{operationId}}", (
+                ILogger<OperationsController> logger,
+                IServiceProvider serviceProvider,
                 Guid operationId) =>
-                    GetOperationStatus(operationId))
+                    new OperationsController(logger, serviceProvider).GetOperationStatus(operationId))
             .WithName(nameof(GetOperationStatus))
             .RequireOperationsControllerCommon()
             .Produces<OperationStatus>(StatusCodes.Status200OK)
@@ -62,15 +66,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 
             // CancelOperation
             builder.MapDelete($"{ControllerName}/{nameof(CancelOperation)}/{{operationId}}", (
+                ILogger<OperationsController> logger,
+                IServiceProvider serviceProvider,
                 Guid operationId,
                 bool stop = false) =>
-                    CancelOperation(operationId, stop))
+                    new OperationsController(logger, serviceProvider).CancelOperation(operationId, stop))
             .WithName(nameof(CancelOperation))
             .RequireOperationsControllerCommon()
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status202Accepted);
-
-            return this;
         }
 
         /// <summary>

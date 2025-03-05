@@ -29,16 +29,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _metricsOptions = metricsOptions.Value;
         }
 
-        public MetricsController MapActionMethods(IEndpointRouteBuilder builder)
+        public static void MapActionMethods(IEndpointRouteBuilder builder)
         {
             // GetMetrics
-            builder.MapGet("metrics", () => GetMetrics())
+            builder.MapGet("metrics", (
+                ILogger<MetricsController> logger,
+                IServiceProvider serviceProvider,
+                IOptions<MetricsOptions> metricsOptions) =>
+                    new MetricsController(logger, serviceProvider, metricsOptions).GetMetrics())
                 .WithName(nameof(GetMetrics))
                 .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
                 .Produces<string>(StatusCodes.Status200OK, ContentTypes.TextPlain_v0_0_4)
                 .ProducesProblem(StatusCodes.Status400BadRequest);
-
-            return this;
         }
 
         /// <summary>
