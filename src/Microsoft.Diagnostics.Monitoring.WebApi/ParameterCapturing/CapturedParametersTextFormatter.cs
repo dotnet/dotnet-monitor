@@ -20,7 +20,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.ParameterCapturing
         {
             StringBuilder builder = new();
 
-            builder.AppendLine(FormattableString.Invariant($"[{capture.CapturedDateTime}][thread {capture.ThreadId}] {GetValueOrUnknown(capture.ActivityId)}[format: {capture.ActivityIdFormat}][methodToken: {capture.MethodToken}][moduleVersionId: {capture.ModuleVersionId}]"));
+            builder.AppendLine(FormattableString.Invariant($"[{capture.CapturedDateTime}][thread {capture.ThreadId}] {GetValueOrUnknown(capture.ActivityId)}[format: {capture.ActivityIdFormat}]"));
             builder.AppendLine(FormattableString.Invariant($"{Indent}{GetValueOrUnknown(capture.ModuleName)}!{GetValueOrUnknown(capture.TypeName)}.{GetValueOrUnknown(capture.MethodName)}("));
 
             foreach (CapturedParameter parameter in capture.Parameters)
