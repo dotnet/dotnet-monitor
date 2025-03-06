@@ -64,6 +64,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.ParameterCapturing
 
         private static int GetMethodToken(MethodInfo method)
         {
+            // There is a possibility that this property could throw on access; guarding to be safe
             try
             {
                 return method.MetadataToken;
@@ -76,6 +77,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.ParameterCapturing
 
         private static Guid GetModuleVersionId(MethodInfo method)
         {
+            // There is a possibility that this property could throw on access; guarding to be safe
             try
             {
                 return method.Module.ModuleVersionId;
