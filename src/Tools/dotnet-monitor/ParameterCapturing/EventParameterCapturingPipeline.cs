@@ -109,6 +109,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                     {
                         Guid requestId = traceEvent.GetPayload<Guid>(ParameterCapturingEvents.CapturedParametersStartPayloads.RequestId);
                         Guid captureId = traceEvent.GetPayload<Guid>(ParameterCapturingEvents.CapturedParametersStartPayloads.CaptureId);
+                        uint methodToken = traceEvent.GetPayload<uint>(ParameterCapturingEvents.CapturedParametersStartPayloads.MethodToken);
+                        Guid moduleVersionId = traceEvent.GetPayload<Guid>(ParameterCapturingEvents.CapturedParametersStartPayloads.ModuleVersionId);
                         string activityId = traceEvent.GetPayload<string>(ParameterCapturingEvents.CapturedParametersStartPayloads.ActivityId);
                         ActivityIdFormat activityIdFormat = traceEvent.GetPayload<ActivityIdFormat>(ParameterCapturingEvents.CapturedParametersStartPayloads.ActivityIdFormat);
                         int threadId = traceEvent.GetPayload<int>(ParameterCapturingEvents.CapturedParametersStartPayloads.ThreadId);
@@ -124,7 +126,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
                                 traceEvent.TimeStamp,
                                 methodName: methodName,
                                 methodTypeName: methodDeclaringTypeName,
-                                methodModuleName: methodModuleName);
+                                methodModuleName: methodModuleName,
+                                methodToken: methodToken,
+                                moduleVersionId: moduleVersionId);
 
                         break;
                     }

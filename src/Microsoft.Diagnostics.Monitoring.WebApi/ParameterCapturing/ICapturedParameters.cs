@@ -23,6 +23,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.ParameterCapturing
 
         string MethodName { get; }
 
+        public uint MethodToken { get; }
+
+        public Guid ModuleVersionId { get; }
+
         IReadOnlyList<ParameterInfo> Parameters { get; }
     }
 }

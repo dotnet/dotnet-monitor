@@ -118,6 +118,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.ParameterCapturing.Eventi
         public void CapturedParameterStart(
             Guid RequestId,
             Guid CaptureId,
+            uint methodToken,
+            Guid moduleVersionId,
             string activityId,
             ActivityIdFormat activityIdFormat,
             int managedThreadId,
@@ -126,7 +128,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.ParameterCapturing.Eventi
             string methodDeclaringTypeName
             )
         {
-            Span<EventData> data = stackalloc EventData[8];
+            Span<EventData> data = stackalloc EventData[10];
 
             using PinnedData pinnedActivityId = PinnedData.Create(activityId);
             using PinnedData pinnedMethodName = PinnedData.Create(methodName);
@@ -135,6 +137,8 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.ParameterCapturing.Eventi
 
             SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.RequestId], RequestId);
             SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.CaptureId], CaptureId);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.MethodToken], methodToken);
+            SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.ModuleVersionId], moduleVersionId);
             SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.ActivityId], pinnedActivityId);
             SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.ActivityIdFormat], activityIdFormat);
             SetValue(ref data[ParameterCapturingEvents.CapturedParametersStartPayloads.ThreadId], managedThreadId);

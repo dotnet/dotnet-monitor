@@ -104,6 +104,8 @@ Object describing a captured method and its parameters.
 | `typeName` | string | The method type name. |
 | `methodName` | string | The method name. |
 | `parameters` | [CapturedParameter](#capturedparameter)[] | Array of captured parameters. |
+| `methodToken` | int |(9.1+) TypeDef token for the method. |
+| `moduleVersionId` | guid |(9.1+) Unique identifier used to distinguish between two versions of the same module. An empty value: `00000000-0000-0000-0000-000000000000`. |
 
 ## CapturedParameter
 
