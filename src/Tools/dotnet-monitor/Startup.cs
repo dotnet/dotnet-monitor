@@ -12,6 +12,7 @@ using Microsoft.Diagnostics.Tools.Monitor.Swagger;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Swagger;
 using System.Collections.Generic;
@@ -34,17 +35,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public void ConfigureServices(IServiceCollection services)
         {
             // AddControllers is sufficient because the tool does not use Razor nor Views.
-            services.AddControllers()
-            .AddJsonOptions(options =>
-            {
-                // Allow serialization of enum values into strings rather than numbers.
-                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-            })
-            .AddApplicationPart(typeof(DiagController).Assembly);
-
-            services.AddControllers(options =>
-            {
-                options.Filters.Add(typeof(EgressValidationUnhandledExceptionFilter));
+            services.ConfigureHttpJsonOptions(options => {
+                options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
 
             services.Configure<ApiBehaviorOptions>(options =>
@@ -104,12 +96,29 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 builder.MapControllers();
 
+                var serviceProvider = builder.ServiceProvider;
+
+                new OperationsController(serviceProvider.GetRequiredService<ILogger<OperationsController>>(), serviceProvider)
+                    .MapActionMethods(builder);
+
+                new DiagController(serviceProvider, serviceProvider.GetRequiredService<ILogger<DiagController>>())
+                    .MapActionMethods(builder)
+                    .MapMetricsActionMethods(builder);
+
+                new ExceptionsController(serviceProvider, serviceProvider.GetRequiredService<ILogger<ExceptionsController>>())
+                    .MapActionMethods(builder);
+
+                new MetricsController(serviceProvider.GetRequiredService<ILogger<MetricsController>>(), serviceProvider, serviceProvider.GetRequiredService<IOptions<MetricsOptions>>())
+                    .MapActionMethods(builder);
+
                 builder.MapGet("/", (HttpResponse response, ISwaggerProvider provider) =>
                 {
                     using Stream stream = response.BodyWriter.AsStream(true);
 
                     provider.WriteTo(stream);
                 });
+
+                app.UseMiddleware<EgressValidationUnhandledExceptionMiddleware>();
             });
         }
     }
