@@ -40,5 +40,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public string? ProcessArchitecture { get; }
 
         string ProcessName { get; }
+
+        string? ManagedEntryPointAssemblyName { get; }
     }
 }
