@@ -2007,14 +2007,11 @@
         "additionalProperties": false
       },
       "MonitorCapability": {
-        "required": [
-          "name"
-        ],
         "type": "object",
         "properties": {
           "name": {
-            "minLength": 1,
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "enabled": {
             "type": "boolean"

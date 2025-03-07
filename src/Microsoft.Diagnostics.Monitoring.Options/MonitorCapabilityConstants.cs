@@ -7,7 +7,7 @@ namespace Microsoft.Diagnostics.Monitoring.Options
     {
         public const string Exceptions = "exceptions";
         public const string ParameterCapturing = "parameters";
-        public const string CallStacks = "callstacks";
+        public const string CallStacks = "call_stacks";
         public const string Metrics = "metrics";
         public const string HttpEgress = "http_egress";
     }
