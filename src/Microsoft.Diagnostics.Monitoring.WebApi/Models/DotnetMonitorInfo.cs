@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.Options;
 using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
@@ -30,5 +31,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         /// </summary>
         [JsonPropertyName("diagnosticPortName")]
         public string? DiagnosticPortName { get; set; }
+
+        /// <summary>
+        /// The capabilities provided by dotnet-monitor.
+        /// </summary>
+        [JsonPropertyName("capabilities")]
+        public required MonitorCapability[] Capabilities { get; set; }
     }
 }

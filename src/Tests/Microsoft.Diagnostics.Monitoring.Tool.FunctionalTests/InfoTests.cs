@@ -1,7 +1,9 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
+using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Fixtures;
 using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi;
@@ -10,6 +12,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
@@ -34,9 +37,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// Tests that the info endpoint provides the expected output.
         /// </summary>
         [Theory]
-        [InlineData(DiagnosticPortConnectionMode.Connect)]
-        [InlineData(DiagnosticPortConnectionMode.Listen)]
-        public Task InfoEndpointValidationTest(DiagnosticPortConnectionMode mode)
+        [InlineData(DiagnosticPortConnectionMode.Connect, false)]
+        [InlineData(DiagnosticPortConnectionMode.Listen, true)]
+        public Task InfoEndpointValidationTest(DiagnosticPortConnectionMode mode, bool enableInProcessFeatures)
         {
             return ScenarioRunner.SingleTarget(
                 _outputHelper,
@@ -67,8 +70,31 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                         Assert.Equal(runner.DiagnosticPortPath, info.DiagnosticPortName);
                     }
 
+                    Assert.Equal(5, info.Capabilities.Length); // Update if capabilities change
+
+                    AssertCapability(enableInProcessFeatures, MonitorCapabilityConstants.Exceptions, info.Capabilities);
+                    AssertCapability(enableInProcessFeatures, MonitorCapabilityConstants.ParameterCapturing, info.Capabilities);
+                    AssertCapability(enableInProcessFeatures, MonitorCapabilityConstants.CallStacks, info.Capabilities);
+                    AssertCapability(true, MonitorCapabilityConstants.Metrics, info.Capabilities);
+                    AssertCapability(true, MonitorCapabilityConstants.HttpEgress, info.Capabilities);
+
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                },
+                configureTool: runner =>
+                {
+                    if (enableInProcessFeatures)
+                    {
+                        runner.ConfigurationFromEnvironment.EnableInProcessFeatures();
+                        runner.ConfigurationFromEnvironment.EnableParameterCapturing();
+                    }
                 });
+        }
+
+        private static void AssertCapability(bool expectEnabled, string capabilityName, IMonitorCapability[] capabilities)
+        {
+            IMonitorCapability capability = capabilities.First(c => c.Name == capabilityName);
+            Assert.NotNull(capability);
+            Assert.Equal(expectEnabled, capability.Enabled);
         }
     }
 }

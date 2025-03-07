@@ -154,6 +154,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.AddSingleton<IGCDumpOperationFactory, GCDumpOperationFactory>();
                 services.AddSingleton<IStacksOperationFactory, StacksOperationFactory>();
 
+                services.ConfigureCapabilities(noHttpEgress);
+
                 // Per-process services must be scoped
                 services.AddScoped<ScopedEndpointInfo>();
                 services.AddScopedForwarder<IEndpointInfo, ScopedEndpointInfo>();
