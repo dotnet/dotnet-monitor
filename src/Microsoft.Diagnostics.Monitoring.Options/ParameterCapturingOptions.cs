@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Microsoft.Diagnostics.Monitoring.Options
 {
-    internal sealed class ParameterCapturingOptions :
+    public sealed class ParameterCapturingOptions :
         IInProcessFeatureOptions
     {
         [Display(
