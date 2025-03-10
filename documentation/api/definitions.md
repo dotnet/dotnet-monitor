@@ -141,6 +141,7 @@ Object describing diagnostic/automation information about the executing instance
 | RuntimeVersion | string | The version of the dotnet runtime. |
 | DiagnosticPortMode | DiagnosticPortConnectionMode | Indicates whether `dotnet monitor` is in `connect` mode or `listen` mode. |
 | DiagnosticPortName | string | The name of the named pipe or unix domain socket to use for connecting to the diagnostic server. |
+| Capabilities | [MonitorCapability](#monitorcapability)[] |(9.1+) The capabilities provided by `dotnet monitor`. |
 
 ## DumpType
 
@@ -374,6 +375,17 @@ Object describing a metric from the application.
 | `unit` | string | The unit for the metric. Can be null. |
 | `counterType` | string | The type of metric. This is typically `Rate` or `Metric`. |
 | `value` | double | The value of the metric. |
+
+## MonitorCapability
+
+First Available: 9.1
+
+The name and enablement of a `dotnet monitor` capability.
+
+| Name | Type | Description |
+|---|---|---|
+| `name`| string | The name of the capability. |
+| `enabled` | bool | The enablement status of the capability. |
 
 ## OperationError
 
