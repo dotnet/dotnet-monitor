@@ -378,6 +378,8 @@ Object describing a metric from the application.
 
 ## MonitorCapability
 
+First Available: 9.1
+
 The name and enablement of a `dotnet monitor` capability.
 
 | Name | Type | Description |
