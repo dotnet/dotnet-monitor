@@ -17,7 +17,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: streetsidesoftware/cspell-action@ef95dc49d631fc2a9e9ea089ae2b2127b7c4588e
+      - uses: streetsidesoftware/cspell-action@8485bb4b688c68384c2f6db7ad931f5e3e63f21c
         name: Documentation spellcheck
         if: ${{ !cancelled() }}
         with:
@@ -25,7 +25,7 @@ jobs:
             inline: error
             incremental_files_only: true
 
-      - uses: streetsidesoftware/cspell-action@ef95dc49d631fc2a9e9ea089ae2b2127b7c4588e
+      - uses: streetsidesoftware/cspell-action@8485bb4b688c68384c2f6db7ad931f5e3e63f21c
         name: Resx spellcheck
         if: ${{ !cancelled() }}
         with:
@@ -33,7 +33,7 @@ jobs:
             inline: error
             incremental_files_only: true
 
-      - uses: streetsidesoftware/cspell-action@ef95dc49d631fc2a9e9ea089ae2b2127b7c4588e
+      - uses: streetsidesoftware/cspell-action@8485bb4b688c68384c2f6db7ad931f5e3e63f21c
         name: Source code spellcheck
         if: ${{ !cancelled() }}
         with:
