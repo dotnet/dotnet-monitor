@@ -3,6 +3,7 @@
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Diagnostics.Monitoring;
 using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers;
 using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers.AspNet;
 using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers.EventCounter;
@@ -237,6 +238,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             ConfigureOptions<StorageOptions>(services, configuration, ConfigurationKeys.Storage);
             services.AddSingleton<IPostConfigureOptions<StorageOptions>, StoragePostConfigureOptions>();
+            return services;
+        }
+
+        public static IServiceCollection ConfigureCapabilities(this IServiceCollection services, bool noHttpEgress)
+        {
+            services.AddSingleton<IMonitorCapability, ExceptionsCapability>();
+            services.AddSingleton<IMonitorCapability, ParametersCapability>();
+            services.AddSingleton<IMonitorCapability, CallStacksCapability>();
+            services.AddSingleton<IMonitorCapability, MetricsCapability>();
+            services.AddSingleton<IMonitorCapability>(new HttpEgressCapability(!noHttpEgress));
+
             return services;
         }
 
