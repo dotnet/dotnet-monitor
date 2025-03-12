@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Controllers;
-using Microsoft.Diagnostics.Tools.Monitor.Swagger;
+using Microsoft.Diagnostics.Tools.Monitor.OpenApi;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Text.Json.Serialization;
+using System.Reflection;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -33,7 +34,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // AddControllers is sufficient because the tool does not use Razor nor Views.
             services.ConfigureHttpJsonOptions(options => {
                 options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
@@ -80,7 +80,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             app.UseRouting();
 
             app.UseAuthentication();
-            app.UseAuthorization();
+            if (Assembly.GetEntryAssembly()?.GetName().Name != "GetDocument.Insider")
+            {
+                app.UseAuthorization();
+            }
 
             if (!string.IsNullOrEmpty(corsOptions.Value.AllowedOrigins))
             {
@@ -95,8 +98,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 var serviceProvider = builder.ServiceProvider;
 
-                OperationsController.MapActionMethods(builder);
-
                 DiagController.MapActionMethods(builder);
                 DiagController.MapMetricsActionMethods(builder);
 
@@ -104,14 +105,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
                 MetricsController.MapActionMethods(builder);
 
-                builder.MapGet("/", (HttpResponse response, ISwaggerProvider provider) =>
-                {
-                    using Stream stream = response.BodyWriter.AsStream(true);
+                OperationsController.MapActionMethods(builder);
 
-                    provider.WriteTo(stream);
-                });
+                // AH! Here!!!
+                // builder.MapGet("/", (HttpResponse response, ISwaggerProvider provider) =>
+                // {
+                //     using Stream stream = response.BodyWriter.AsStream(true);
+
+                //     provider.WriteTo(stream);
+                // });
+                builder.MapOpenApi("/");
 
                 app.UseMiddleware<EgressValidationUnhandledExceptionMiddleware>();
+                System.Console.WriteLine("MapOpenApi");
             });
         }
     }

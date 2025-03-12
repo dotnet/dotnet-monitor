@@ -2,15 +2,17 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Swagger.Filters
+namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers
 {
-    internal sealed class TooManyRequestsResponseDocumentFilter : IDocumentFilter
+    internal sealed class TooManyRequestsResponseDocumentTransformer : IOpenApiDocumentTransformer
     {
-        public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
+        public async Task TransformAsync(OpenApiDocument swaggerDoc, OpenApiDocumentTransformerContext context, CancellationToken cancellationToken)
         {
             OpenApiResponse tooManyRequests = new();
             tooManyRequests.Description = "TooManyRequests";

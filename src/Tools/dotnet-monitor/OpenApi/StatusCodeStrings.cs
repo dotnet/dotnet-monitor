@@ -4,7 +4,7 @@
 using Microsoft.AspNetCore.Http;
 using System.Globalization;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Swagger
+namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
 {
     internal static class StatusCodeStrings
     {

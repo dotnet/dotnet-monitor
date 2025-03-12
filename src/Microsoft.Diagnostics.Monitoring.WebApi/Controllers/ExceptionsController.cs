@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -25,7 +26,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             return builder
                 .RequireHostRestriction()
                 .RequireAuthorization(AuthConstants.PolicyName)
-                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson);
+                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
+                .WithTags("Exceptions");
         }
     }
 
@@ -45,15 +47,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         public static void MapActionMethods(IEndpointRouteBuilder builder)
         {
             // GetExceptions
-            builder.MapGet("exceptions", (
-                IServiceProvider serviceProvider,
+            builder.MapGet("exceptions",
+                [EndpointSummary("Gets the exceptions from the target process.")] (
+                HttpContext context,
                 ILogger<ExceptionsController> logger,
-                int? pid,
-                Guid? uid,
-                string? name,
-                string? egressProvider = null,
-                string? tags = null) =>
-                    new ExceptionsController(serviceProvider, logger).GetExceptions(pid, uid, name, egressProvider, tags))
+                [Description("Process ID used to identify the target process.")] int? pid,
+                [Description("The Runtime instance cookie used to identify the target process.")] Guid? uid,
+                [Description("Process name used to identify the target process.")] string? name,
+                [Description("The egress provider to which the exceptions are saved.")] string? egressProvider = null,
+                [Description("An optional set of comma-separated identifiers users can include to make an operation easier to identify.")] string? tags = null) =>
+                    new ExceptionsController(context.RequestServices, logger).GetExceptions(pid, uid, name, egressProvider, tags))
                 .WithName(nameof(GetExceptions))
                 .RequireExceptionsControllerCommon()
                 .Produces<string>(StatusCodes.Status200OK, ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)
@@ -62,21 +65,23 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 .RequireEgressValidation();
             
             // CaptureExceptionsCustom
-            builder.MapPost("exceptions", (
-                IServiceProvider serviceProvider,
+            builder.MapPost("exceptions",
+                [EndpointSummary("Gets the exceptions from the target process.")] (
+                HttpContext context,
                 ILogger<ExceptionsController> logger,
-                [FromBody]
+                [FromBody, Description("The exceptions configuration describing which exceptions to include in the response.")]
                 ExceptionsConfiguration configuration,
-                int? pid,
-                Guid? uid,
-                string? name,
-                string? egressProvider = null,
-                string? tags = null) =>
-                    new ExceptionsController(serviceProvider, logger).CaptureExceptionsCustom(configuration, pid, uid, name, egressProvider, tags))
+                [Description("Process ID used to identify the target process.")] int? pid,
+                [Description("The Runtime instance cookie used to identify the target process.")] Guid? uid,
+                [Description("Process name used to identify the target process.")] string? name,
+                [Description("The egress provider to which the exceptions are saved.")] string? egressProvider = null,
+                [Description("An optional set of comma-separated identifiers users can include to make an operation easier to identify.")] string? tags = null) =>
+                    new ExceptionsController(context.RequestServices, logger).CaptureExceptionsCustom(configuration, pid, uid, name, egressProvider, tags))
                 .WithName(nameof(CaptureExceptionsCustom))
                 .RequireExceptionsControllerCommon()
                 .Produces<string>(StatusCodes.Status200OK, ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)
                 .ProducesProblem(StatusCodes.Status400BadRequest)
+                .Accepts<ExceptionsConfiguration>(ContentTypes.ApplicationJson, ContentTypes.TextJson, ContentTypes.ApplicationAnyJson)
                 .RequireEgressValidation();
         }
 

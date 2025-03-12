@@ -1,8 +1,8 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "dotnet-monitor",
-    "version": "1.0"
+    "title": "dotnet-monitor | v1",
+    "version": "1.0.0"
   },
   "paths": {
     "/processes": {
@@ -13,9 +13,6 @@
         "summary": "Get the list of accessible processes.",
         "operationId": "GetProcesses",
         "responses": {
-          "400": {
-            "$ref": "#/components/responses/BadRequestResponse"
-          },
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
@@ -31,6 +28,9 @@
                 }
               }
             }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
           }
         }
       }
@@ -71,9 +71,6 @@
           }
         ],
         "responses": {
-          "400": {
-            "$ref": "#/components/responses/BadRequestResponse"
-          },
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
@@ -86,6 +83,9 @@
                 }
               }
             }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
           }
         }
       }
@@ -126,9 +126,6 @@
           }
         ],
         "responses": {
-          "400": {
-            "$ref": "#/components/responses/BadRequestResponse"
-          },
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
@@ -144,6 +141,9 @@
                 }
               }
             }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
           }
         }
       }
@@ -187,7 +187,13 @@
             "in": "query",
             "description": "The type of dump to capture.",
             "schema": {
-              "$ref": "#/components/schemas/DumpType"
+              "enum": [
+                "Full",
+                "Mini",
+                "WithHeap",
+                "Triage"
+              ],
+              "default": "WithHeap"
             }
           },
           {
@@ -195,7 +201,8 @@
             "in": "query",
             "description": "The egress provider to which the dump is saved.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": null
             }
           },
           {
@@ -203,14 +210,12 @@
             "in": "query",
             "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": null
             }
           }
         ],
         "responses": {
-          "400": {
-            "$ref": "#/components/responses/BadRequestResponse"
-          },
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
@@ -230,6 +235,9 @@
           },
           "202": {
             "description": "Accepted"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
           }
         }
       }
@@ -286,9 +294,6 @@
           }
         ],
         "responses": {
-          "400": {
-            "$ref": "#/components/responses/BadRequestResponse"
-          },
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
@@ -308,6 +313,9 @@
           },
           "202": {
             "description": "Accepted"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
           }
         }
       }
@@ -351,7 +359,8 @@
             "in": "query",
             "description": "The profiles enabled for the trace session.",
             "schema": {
-              "$ref": "#/components/schemas/TraceProfile"
+              "type": "string",
+              "default": "Cpu, Http, Metrics, GcCollect"
             }
           },
           {
@@ -371,7 +380,8 @@
             "in": "query",
             "description": "The egress provider to which the trace is saved.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": null
             }
           },
           {
@@ -379,14 +389,12 @@
             "in": "query",
             "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": null
             }
           }
         ],
         "responses": {
-          "400": {
-            "$ref": "#/components/responses/BadRequestResponse"
-          },
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
@@ -406,6 +414,9 @@
           },
           "202": {
             "description": "Accepted"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
           }
         }
       },
@@ -459,7 +470,8 @@
             "in": "query",
             "description": "The egress provider to which the trace is saved.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": null
             }
           },
           {
@@ -467,7 +479,8 @@
             "in": "query",
             "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": null
             }
           }
         ],
@@ -493,9 +506,6 @@
           "required": true
         },
         "responses": {
-          "400": {
-            "$ref": "#/components/responses/BadRequestResponse"
-          },
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
@@ -515,6 +525,9 @@
           },
           "202": {
             "description": "Accepted"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
           }
         }
       }
@@ -570,7 +583,17 @@
             "in": "query",
             "description": "The level of the logs to capture.",
             "schema": {
-              "$ref": "#/components/schemas/LogLevel"
+              "enum": [
+                "Trace",
+                "Debug",
+                "Information",
+                "Warning",
+                "Error",
+                "Critical",
+                "None",
+                null
+              ],
+              "default": null
             }
           },
           {
@@ -578,7 +601,8 @@
             "in": "query",
             "description": "The egress provider to which the logs are saved.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": null
             }
           },
           {
@@ -586,14 +610,12 @@
             "in": "query",
             "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": null
             }
           }
         ],
         "responses": {
-          "400": {
-            "$ref": "#/components/responses/BadRequestResponse"
-          },
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
@@ -622,6 +644,9 @@
           },
           "202": {
             "description": "Accepted"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
           }
         }
       },
@@ -675,7 +700,8 @@
             "in": "query",
             "description": "The egress provider to which the logs are saved.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": null
             }
           },
           {
@@ -683,7 +709,8 @@
             "in": "query",
             "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": null
             }
           }
         ],
@@ -705,12 +732,10 @@
                 "$ref": "#/components/schemas/LogsConfiguration"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
-          "400": {
-            "$ref": "#/components/responses/BadRequestResponse"
-          },
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
@@ -739,6 +764,9 @@
           },
           "202": {
             "description": "Accepted"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
           }
         }
       }
@@ -751,9 +779,6 @@
         "summary": "Gets versioning and listening mode information about Dotnet-Monitor",
         "operationId": "GetInfo",
         "responses": {
-          "400": {
-            "$ref": "#/components/responses/BadRequestResponse"
-          },
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
@@ -766,6 +791,9 @@
                 }
               }
             }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
           }
         }
       }
@@ -806,9 +834,6 @@
           }
         ],
         "responses": {
-          "400": {
-            "$ref": "#/components/responses/BadRequestResponse"
-          },
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
@@ -824,6 +849,9 @@
                 }
               }
             }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
           }
         }
       }
@@ -873,9 +901,6 @@
           }
         ],
         "responses": {
-          "400": {
-            "$ref": "#/components/responses/BadRequestResponse"
-          },
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
@@ -888,6 +913,9 @@
                 }
               }
             }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
           }
         }
       }
@@ -915,7 +943,8 @@
             "in": "query",
             "schema": {
               "type": "integer",
-              "format": "int32"
+              "format": "int32",
+              "default": null
             }
           },
           {
@@ -923,28 +952,32 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "default": null
             }
           },
           {
             "name": "name",
             "in": "query",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": null
             }
           },
           {
             "name": "egressProvider",
             "in": "query",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": null
             }
           },
           {
             "name": "tags",
             "in": "query",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": null
             }
           }
         ],
@@ -969,9 +1002,6 @@
           "required": true
         },
         "responses": {
-          "400": {
-            "$ref": "#/components/responses/BadRequestResponse"
-          },
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
@@ -1000,6 +1030,9 @@
           },
           "202": {
             "description": "Accepted"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
           }
         }
       }
@@ -1050,9 +1083,6 @@
           }
         ],
         "responses": {
-          "400": {
-            "$ref": "#/components/responses/BadRequestResponse"
-          },
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
@@ -1081,6 +1111,9 @@
           },
           "202": {
             "description": "Accepted"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
           }
         }
       }
@@ -1136,7 +1169,8 @@
             "in": "query",
             "description": "The egress provider to which the metrics are saved.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": null
             }
           },
           {
@@ -1144,14 +1178,12 @@
             "in": "query",
             "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": null
             }
           }
         ],
         "responses": {
-          "400": {
-            "$ref": "#/components/responses/BadRequestResponse"
-          },
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
@@ -1170,6 +1202,9 @@
           },
           "202": {
             "description": "Accepted"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
           }
         }
       },
@@ -1223,7 +1258,8 @@
             "in": "query",
             "description": "The egress provider to which the metrics are saved.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": null
             }
           },
           {
@@ -1231,7 +1267,8 @@
             "in": "query",
             "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": null
             }
           }
         ],
@@ -1257,9 +1294,6 @@
           "required": true
         },
         "responses": {
-          "400": {
-            "$ref": "#/components/responses/BadRequestResponse"
-          },
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
@@ -1278,6 +1312,9 @@
           },
           "202": {
             "description": "Accepted"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
           }
         }
       }
@@ -1321,7 +1358,8 @@
             "in": "query",
             "description": "The egress provider to which the exceptions are saved.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": null
             }
           },
           {
@@ -1329,7 +1367,8 @@
             "in": "query",
             "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": null
             }
           }
         ],
@@ -1400,7 +1439,8 @@
             "in": "query",
             "description": "The egress provider to which the exceptions are saved.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": null
             }
           },
           {
@@ -1408,7 +1448,8 @@
             "in": "query",
             "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": null
             }
           }
         ],
@@ -1430,7 +1471,8 @@
                 "$ref": "#/components/schemas/ExceptionsConfiguration"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "400": {
@@ -1567,8 +1609,8 @@
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
-          "201": {
-            "description": "Created",
+          "200": {
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -1577,8 +1619,8 @@
               }
             }
           },
-          "200": {
-            "description": "OK",
+          "201": {
+            "description": "Created",
             "content": {
               "application/json": {
                 "schema": {
@@ -1652,8 +1694,7 @@
             "format": "int32",
             "nullable": true
           }
-        },
-        "additionalProperties": false
+        }
       },
       "CollectionRuleDescription": {
         "type": "object",
@@ -1666,20 +1707,11 @@
             "description": "Human-readable explanation for the current state of the collection rule.",
             "nullable": true
           }
-        },
-        "additionalProperties": false
+        }
       },
       "CollectionRuleDetailedDescription": {
         "type": "object",
         "properties": {
-          "state": {
-            "$ref": "#/components/schemas/CollectionRuleState"
-          },
-          "stateReason": {
-            "type": "string",
-            "description": "Human-readable explanation for the current state of the collection rule.",
-            "nullable": true
-          },
           "lifetimeOccurrences": {
             "type": "integer",
             "description": "The number of times the trigger has executed for a process in its lifetime.",
@@ -1696,28 +1728,32 @@
             "format": "int32"
           },
           "actionCountSlidingWindowDurationLimit": {
+            "pattern": "^-?(\\d+\\.)?\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,7})?$",
             "type": "string",
             "description": "The sliding window duration in which the actionCountLimit is the maximum number of occurrences (as defined by Limits).",
-            "format": "time-span",
-            "nullable": true,
-            "example": "00:00:30"
+            "nullable": true
           },
           "slidingWindowDurationCountdown": {
+            "pattern": "^-?(\\d+\\.)?\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,7})?$",
             "type": "string",
             "description": "The amount of time that needs to pass before the slidingWindowOccurrences drops below the actionCountLimit",
-            "format": "time-span",
-            "nullable": true,
-            "example": "00:00:30"
+            "nullable": true
           },
           "ruleFinishedCountdown": {
+            "pattern": "^-?(\\d+\\.)?\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,7})?$",
             "type": "string",
             "description": "The amount of time that needs to pass before the rule is finished",
-            "format": "time-span",
-            "nullable": true,
-            "example": "00:00:30"
+            "nullable": true
+          },
+          "state": {
+            "$ref": "#/components/schemas/CollectionRuleState"
+          },
+          "stateReason": {
+            "type": "string",
+            "description": "Human-readable explanation for the current state of the collection rule.",
+            "nullable": true
           }
-        },
-        "additionalProperties": false
+        }
       },
       "CollectionRuleState": {
         "enum": [
@@ -1725,27 +1761,23 @@
           "ActionExecuting",
           "Throttled",
           "Finished"
-        ],
-        "type": "string"
+        ]
       },
       "DiagnosticPortConnectionMode": {
         "enum": [
           "Connect",
           "Listen"
-        ],
-        "type": "string"
+        ]
       },
       "DotnetMonitorInfo": {
         "type": "object",
         "properties": {
           "version": {
             "type": "string",
-            "description": "The dotnet monitor version.",
             "nullable": true
           },
           "runtimeVersion": {
             "type": "string",
-            "description": "The dotnet runtime version.",
             "nullable": true
           },
           "diagnosticPortMode": {
@@ -1753,20 +1785,9 @@
           },
           "diagnosticPortName": {
             "type": "string",
-            "description": "The name of the named pipe or unix domain socket to use for connecting to the diagnostic server.",
             "nullable": true
           }
-        },
-        "additionalProperties": false
-      },
-      "DumpType": {
-        "enum": [
-          "Full",
-          "Mini",
-          "WithHeap",
-          "Triage"
-        ],
-        "type": "string"
+        }
       },
       "EventLevel": {
         "enum": [
@@ -1776,8 +1797,7 @@
           "Warning",
           "Informational",
           "Verbose"
-        ],
-        "type": "string"
+        ]
       },
       "EventMetricsConfiguration": {
         "type": "object",
@@ -1799,8 +1819,7 @@
             },
             "nullable": true
           }
-        },
-        "additionalProperties": false
+        }
       },
       "EventMetricsMeter": {
         "required": [
@@ -1809,7 +1828,6 @@
         "type": "object",
         "properties": {
           "meterName": {
-            "minLength": 1,
             "type": "string"
           },
           "instrumentNames": {
@@ -1819,8 +1837,7 @@
             },
             "nullable": true
           }
-        },
-        "additionalProperties": false
+        }
       },
       "EventMetricsProvider": {
         "required": [
@@ -1829,7 +1846,6 @@
         "type": "object",
         "properties": {
           "providerName": {
-            "minLength": 1,
             "type": "string"
           },
           "counterNames": {
@@ -1839,8 +1855,7 @@
             },
             "nullable": true
           }
-        },
-        "additionalProperties": false
+        }
       },
       "EventPipeConfiguration": {
         "required": [
@@ -1864,8 +1879,7 @@
             "type": "integer",
             "format": "int32"
           }
-        },
-        "additionalProperties": false
+        }
       },
       "EventPipeProvider": {
         "required": [
@@ -1874,7 +1888,6 @@
         "type": "object",
         "properties": {
           "name": {
-            "minLength": 1,
             "type": "string"
           },
           "keywords": {
@@ -1891,8 +1904,7 @@
             },
             "nullable": true
           }
-        },
-        "additionalProperties": false
+        }
       },
       "ExceptionFilter": {
         "type": "object",
@@ -1913,8 +1925,7 @@
             "type": "string",
             "nullable": true
           }
-        },
-        "additionalProperties": false
+        }
       },
       "ExceptionsConfiguration": {
         "type": "object",
@@ -1923,18 +1934,15 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ExceptionFilter"
-            },
-            "nullable": true
+            }
           },
           "exclude": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ExceptionFilter"
-            },
-            "nullable": true
+            }
           }
-        },
-        "additionalProperties": false
+        }
       },
       "LogLevel": {
         "enum": [
@@ -1945,8 +1953,7 @@
           "Error",
           "Critical",
           "None"
-        ],
-        "type": "string"
+        ]
       },
       "LogsConfiguration": {
         "required": [
@@ -1960,40 +1967,45 @@
           "filterSpecs": {
             "type": "object",
             "additionalProperties": {
-              "$ref": "#/components/schemas/LogLevel"
+              "$ref": "#/components/schemas/NullableOfLogLevel"
             },
-            "description": "The logger categories and levels at which logs are collected. Setting the log level to null will have logs collected from the corresponding category at the level set in the LogLevel property.",
             "nullable": true
           },
           "useAppFilters": {
-            "type": "boolean",
-            "description": "Set to true to collect logs at the application-defined categories and levels."
+            "type": "boolean"
           }
-        },
-        "additionalProperties": false
+        }
       },
       "MethodDescription": {
         "required": [
-          "methodName",
           "moduleName",
-          "typeName"
+          "typeName",
+          "methodName"
         ],
         "type": "object",
         "properties": {
           "moduleName": {
-            "minLength": 1,
             "type": "string"
           },
           "typeName": {
-            "minLength": 1,
             "type": "string"
           },
           "methodName": {
-            "minLength": 1,
             "type": "string"
           }
-        },
-        "additionalProperties": false
+        }
+      },
+      "NullableOfLogLevel": {
+        "enum": [
+          "Trace",
+          "Debug",
+          "Information",
+          "Warning",
+          "Error",
+          "Critical",
+          "None",
+          null
+        ]
       },
       "OperationError": {
         "type": "object",
@@ -2007,7 +2019,7 @@
             "nullable": true
           }
         },
-        "additionalProperties": false
+        "nullable": true
       },
       "OperationProcessInfo": {
         "type": "object",
@@ -2025,8 +2037,7 @@
             "nullable": true
           }
         },
-        "additionalProperties": false,
-        "description": "Represents the details of a given process used in an operation."
+        "nullable": true
       },
       "OperationState": {
         "enum": [
@@ -2036,12 +2047,18 @@
           "Failed",
           "Cancelled",
           "Stopping"
-        ],
-        "type": "string"
+        ]
       },
       "OperationStatus": {
         "type": "object",
         "properties": {
+          "resourceLocation": {
+            "type": "string",
+            "nullable": true
+          },
+          "error": {
+            "$ref": "#/components/schemas/OperationError"
+          },
           "operationId": {
             "type": "string",
             "format": "uuid"
@@ -2064,23 +2081,13 @@
             "type": "boolean"
           },
           "tags": {
-            "uniqueItems": true,
             "type": "array",
             "items": {
               "type": "string"
             },
             "nullable": true
-          },
-          "resourceLocation": {
-            "type": "string",
-            "nullable": true
-          },
-          "error": {
-            "$ref": "#/components/schemas/OperationError"
           }
-        },
-        "additionalProperties": false,
-        "description": "Represents the state of a long running operation. Used for all types of results, including successes and failures."
+        }
       },
       "OperationSummary": {
         "type": "object",
@@ -2107,16 +2114,13 @@
             "type": "boolean"
           },
           "tags": {
-            "uniqueItems": true,
             "type": "array",
             "items": {
               "type": "string"
             },
             "nullable": true
           }
-        },
-        "additionalProperties": false,
-        "description": "Represents a partial model when enumerating all operations."
+        }
       },
       "ProblemDetails": {
         "type": "object",
@@ -2142,8 +2146,7 @@
             "type": "string",
             "nullable": true
           }
-        },
-        "additionalProperties": { }
+        }
       },
       "ProcessIdentifier": {
         "type": "object",
@@ -2163,8 +2166,7 @@
           "isDefault": {
             "type": "boolean"
           }
-        },
-        "additionalProperties": false
+        }
       },
       "ProcessInfo": {
         "type": "object",
@@ -2193,55 +2195,7 @@
             "type": "string",
             "nullable": true
           }
-        },
-        "additionalProperties": false
-      },
-      "TraceProfile": {
-        "enum": [
-          "Cpu",
-          "Http",
-          "Logs",
-          "Metrics",
-          "GcCollect"
-        ],
-        "type": "string"
-      },
-      "ValidationProblemDetails": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "nullable": true
-          },
-          "title": {
-            "type": "string",
-            "nullable": true
-          },
-          "status": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "detail": {
-            "type": "string",
-            "nullable": true
-          },
-          "instance": {
-            "type": "string",
-            "nullable": true
-          },
-          "errors": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": { }
+        }
       }
     },
     "responses": {
@@ -2276,5 +2230,19 @@
         }
       }
     }
-  }
+  },
+  "tags": [
+    {
+      "name": "Diag"
+    },
+    {
+      "name": "Exceptions"
+    },
+    {
+      "name": "Metrics"
+    },
+    {
+      "name": "Operations"
+    }
+  ]
 }

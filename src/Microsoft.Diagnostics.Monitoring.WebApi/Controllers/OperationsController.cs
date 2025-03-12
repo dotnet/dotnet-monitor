@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
@@ -21,7 +22,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             return builder
                 .RequireHostRestriction()
                 .RequireAuthorization(AuthConstants.PolicyName)
-                .Produces(StatusCodes.Status401Unauthorized);
+                .Produces(StatusCodes.Status401Unauthorized)
+                .WithTags("Operations");
         }
     }
 
@@ -38,39 +40,41 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _operationsStore = serviceProvider.GetRequiredService<IEgressOperationStore>();
         }
 
+        // Todo: use MapGroup!
+        // Factor out.
         public static void MapActionMethods(IEndpointRouteBuilder builder)
         {
             // GetOperations
-            builder.MapGet($"{ControllerName}/{nameof(GetOperations)}", (
+            builder.MapGet($"{ControllerName}", [EndpointSummary("Gets the operations list for the specified process (or all processes if left unspecified).")] (
+                HttpContext context,
                 ILogger<OperationsController> logger,
-                IServiceProvider serviceProvider,
-                int? pid,
-                Guid? uid,
-                string? name,
-                string? tags) =>
-                    new OperationsController(logger, serviceProvider).GetOperations(pid, uid, name, tags))
+                [Description("Process ID used to identify the target process.")] int? pid,
+                [Description("The Runtime instance cookie used to identify the target process.")] Guid? uid,
+                [Description("Process name used to identify the target process.")] string? name,
+                [Description("An optional set of comma-separated identifiers users can include to make an operation easier to identify.")] string? tags) =>
+                    new OperationsController(logger, context.RequestServices).GetOperations(pid, uid, name, tags))
             .WithName(nameof(GetOperations))
             .RequireOperationsControllerCommon()
             .Produces<IEnumerable<OperationSummary>>(StatusCodes.Status200OK);
 
             // GetOperationStatus
-            builder.MapGet($"{ControllerName}/{nameof(GetOperationStatus)}/{{operationId}}", (
+            builder.MapGet($"{ControllerName}/{{operationId}}", (
+                HttpContext context,
                 ILogger<OperationsController> logger,
-                IServiceProvider serviceProvider,
                 Guid operationId) =>
-                    new OperationsController(logger, serviceProvider).GetOperationStatus(operationId))
+                    new OperationsController(logger, context.RequestServices).GetOperationStatus(operationId))
             .WithName(nameof(GetOperationStatus))
             .RequireOperationsControllerCommon()
             .Produces<OperationStatus>(StatusCodes.Status200OK)
             .Produces<OperationStatus>(StatusCodes.Status201Created);
 
             // CancelOperation
-            builder.MapDelete($"{ControllerName}/{nameof(CancelOperation)}/{{operationId}}", (
+            builder.MapDelete($"{ControllerName}/{{operationId}}", (
+                HttpContext context,
                 ILogger<OperationsController> logger,
-                IServiceProvider serviceProvider,
                 Guid operationId,
                 bool stop = false) =>
-                    new OperationsController(logger, serviceProvider).CancelOperation(operationId, stop))
+                    new OperationsController(logger, context.RequestServices).CancelOperation(operationId, stop))
             .WithName(nameof(CancelOperation))
             .RequireOperationsControllerCommon()
             .Produces(StatusCodes.Status200OK)

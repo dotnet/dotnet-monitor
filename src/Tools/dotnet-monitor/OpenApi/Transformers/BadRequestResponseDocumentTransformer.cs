@@ -2,18 +2,20 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Swagger.Filters
+namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers
 {
     /// <summary>
     /// Adds an BadRequestResponse response component to the document.
     /// </summary>
-    internal sealed class BadRequestResponseDocumentFilter : IDocumentFilter
+    internal sealed class BadRequestResponseDocumentTransformer : IOpenApiDocumentTransformer
     {
-        public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
+        public async Task TransformAsync(OpenApiDocument openApiDoc, OpenApiDocumentTransformerContext context, CancellationToken cancellationToken)
         {
             OpenApiResponse unauthorizedResponse = new();
             unauthorizedResponse.Description = "Bad Request";
@@ -31,7 +33,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Swagger.Filters
                     }
                 });
 
-            swaggerDoc.Components.Responses.Add(
+            (openApiDoc.Components ??= new OpenApiComponents()).Responses.Add(
                 ResponseNames.BadRequestResponse,
                 unauthorizedResponse);
         }

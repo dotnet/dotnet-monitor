@@ -6,7 +6,7 @@ using Microsoft.OpenApi.Writers;
 using Swashbuckle.AspNetCore.Swagger;
 using System.IO;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Swagger
+namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
 {
     internal static class SwaggerProviderExtensions
     {

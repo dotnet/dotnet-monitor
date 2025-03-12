@@ -1,17 +1,19 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.AspNetCore.OpenApi;
 using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Swagger.Filters
+namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers
 {
     /// <summary>
     /// Adds an UnauthorizedResponse response component to the document.
     /// </summary>
-    internal sealed class UnauthorizedResponseDocumentFilter : IDocumentFilter
+    internal sealed class UnauthorizedResponseDocumentTransformer : IOpenApiDocumentTransformer
     {
-        public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
+        public async Task TransformAsync(OpenApiDocument openApiDoc, OpenApiDocumentTransformerContext context, CancellationToken cancellationToken)
         {
             OpenApiHeader authenticateHeader = new();
             authenticateHeader.Schema = new OpenApiSchema() { Type = "string" };
@@ -20,7 +22,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Swagger.Filters
             unauthorizedResponse.Description = "Unauthorized";
             unauthorizedResponse.Headers.Add("WWW_Authenticate", authenticateHeader);
 
-            swaggerDoc.Components.Responses.Add(
+            openApiDoc.Components.Responses.Add(
                 ResponseNames.UnauthorizedResponse,
                 unauthorizedResponse);
         }

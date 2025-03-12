@@ -32,15 +32,17 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         public static void MapActionMethods(IEndpointRouteBuilder builder)
         {
             // GetMetrics
-            builder.MapGet("metrics", (
+            builder.MapGet("metrics",
+                [EndpointSummary("Get a list of the current backlog of metrics for a process in the Prometheus exposition format.")] (
                 ILogger<MetricsController> logger,
-                IServiceProvider serviceProvider,
+                HttpContext context,
                 IOptions<MetricsOptions> metricsOptions) =>
-                    new MetricsController(logger, serviceProvider, metricsOptions).GetMetrics())
+                    new MetricsController(logger, context.RequestServices, metricsOptions).GetMetrics())
                 .WithName(nameof(GetMetrics))
                 .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
                 .Produces<string>(StatusCodes.Status200OK, ContentTypes.TextPlain_v0_0_4)
-                .ProducesProblem(StatusCodes.Status400BadRequest);
+                .ProducesProblem(StatusCodes.Status400BadRequest)
+                .WithTags("Metrics");
         }
 
         /// <summary>

@@ -1,14 +1,16 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.AspNetCore.OpenApi;
 using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Swagger.Filters
+namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers
 {
-    internal sealed class TooManyRequestsResponseOperationFilter : IOperationFilter
+    internal sealed class TooManyRequestsResponseOperationTransformer : IOpenApiOperationTransformer
     {
-        public void Apply(OpenApiOperation operation, OperationFilterContext context)
+        public async Task TransformAsync(OpenApiOperation operation, OpenApiOperationTransformerContext context, CancellationToken cancellationToken)
         {
             if (operation.Responses.Remove(StatusCodeStrings.Status429TooManyRequests))
             {
