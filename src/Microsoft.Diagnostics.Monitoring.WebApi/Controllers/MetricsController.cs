@@ -1,8 +1,10 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -10,12 +12,6 @@ using System;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
-    [Route("")]
-    [ApiController]
-#if NETCOREAPP3_1_OR_GREATER
-    [ProducesErrorResponseType(typeof(ValidationProblemDetails))]
-#endif
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public class MetricsController : ControllerBase
     {
         private const string ArtifactType_Metrics = "metrics";
@@ -33,13 +29,22 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _metricsOptions = metricsOptions.Value;
         }
 
+        public MetricsController MapActionMethods(IEndpointRouteBuilder builder)
+        {
+            // GetMetrics
+            builder.MapGet("metrics", () => GetMetrics())
+                .WithName(nameof(GetMetrics))
+                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
+                .Produces<string>(StatusCodes.Status200OK, ContentTypes.TextPlain_v0_0_4)
+                .ProducesProblem(StatusCodes.Status400BadRequest);
+
+            return this;
+        }
+
         /// <summary>
         /// Get a list of the current backlog of metrics for a process in the Prometheus exposition format.
         /// </summary>
-        [HttpGet("metrics", Name = nameof(GetMetrics))]
-        [ProducesWithProblemDetails(ContentTypes.TextPlain_v0_0_4)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        public ActionResult GetMetrics()
+        public IResult GetMetrics()
         {
             return this.InvokeService(() =>
             {

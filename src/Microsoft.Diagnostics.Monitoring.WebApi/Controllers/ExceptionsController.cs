@@ -1,9 +1,10 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,12 +18,17 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
-    [Route("")]
-    [ApiController]
-    [HostRestriction]
-    [Authorize(Policy = AuthConstants.PolicyName)]
-    [ProducesErrorResponseType(typeof(ValidationProblemDetails))]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    static partial class RouteHandlerBuilderExtensions
+    {
+        public static RouteHandlerBuilder RequireExceptionsControllerCommon(this RouteHandlerBuilder builder)
+        {
+            return builder
+                .RequireHostRestriction()
+                .RequireAuthorization(AuthConstants.PolicyName)
+                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson);
+        }
+    }
+
     public sealed class ExceptionsController :
         DiagnosticsControllerBase
     {
@@ -36,6 +42,42 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _options = serviceProvider.GetRequiredService<IOptions<ExceptionsOptions>>();
         }
 
+        public ExceptionsController MapActionMethods(IEndpointRouteBuilder builder)
+        {
+            // GetExceptions
+            builder.MapGet("exceptions", (
+                int? pid,
+                Guid? uid,
+                string? name,
+                string? egressProvider = null,
+                string? tags = null) =>
+                    GetExceptions(pid, uid, name, egressProvider, tags))
+                .WithName(nameof(GetExceptions))
+                .RequireExceptionsControllerCommon()
+                .Produces<string>(StatusCodes.Status200OK, ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)
+                .Produces(StatusCodes.Status202Accepted)
+                .ProducesProblem(StatusCodes.Status400BadRequest)
+                .RequireEgressValidation();
+            
+            // CaptureExceptionsCustom
+            builder.MapPost("exceptions", (
+                [FromBody]
+                ExceptionsConfiguration configuration,
+                int? pid,
+                Guid? uid,
+                string? name,
+                string? egressProvider = null,
+                string? tags = null) =>
+                    CaptureExceptionsCustom(configuration, pid, uid, name, egressProvider, tags))
+                .WithName(nameof(CaptureExceptionsCustom))
+                .RequireExceptionsControllerCommon()
+                .Produces<string>(StatusCodes.Status200OK, ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)
+                .ProducesProblem(StatusCodes.Status400BadRequest)
+                .RequireEgressValidation();
+
+            return this;
+        }
+
         /// <summary>
         /// Gets the exceptions from the target process.
         /// </summary>
@@ -44,26 +86,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="name">Process name used to identify the target process.</param>
         /// <param name="egressProvider">The egress provider to which the exceptions are saved.</param>
         /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
-        [HttpGet("exceptions", Name = nameof(GetExceptions))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
-        [EgressValidation]
-        public Task<ActionResult> GetExceptions(
-            [FromQuery]
-            int? pid = null,
-            [FromQuery]
-            Guid? uid = null,
-            [FromQuery]
-            string? name = null,
-            [FromQuery]
-            string? egressProvider = null,
-            [FromQuery]
-            string? tags = null)
+        public Task<IResult> GetExceptions(
+            int? pid,
+            Guid? uid,
+            string? name,
+            string? egressProvider,
+            string? tags)
         {
             if (!_options.Value.GetEnabled())
             {
-                return Task.FromResult<ActionResult>(this.FeatureNotEnabled(Strings.FeatureName_Exceptions));
+                return Task.FromResult<IResult>(this.FeatureNotEnabled(Strings.FeatureName_Exceptions));
             }
 
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
@@ -95,27 +127,17 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="egressProvider">The egress provider to which the exceptions are saved.</param>
         /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
         /// <param name="configuration">The exceptions configuration describing which exceptions to include in the response.</param>
-        [HttpPost("exceptions", Name = nameof(CaptureExceptionsCustom))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        [EgressValidation]
-        public Task<ActionResult> CaptureExceptionsCustom(
-            [FromBody]
+        public Task<IResult> CaptureExceptionsCustom(
             ExceptionsConfiguration configuration,
-            [FromQuery]
-            int? pid = null,
-            [FromQuery]
-            Guid? uid = null,
-            [FromQuery]
-            string? name = null,
-            [FromQuery]
-            string? egressProvider = null,
-            [FromQuery]
-            string? tags = null)
+            int? pid,
+            Guid? uid,
+            string? name,
+            string? egressProvider,
+            string? tags)
         {
             if (!_options.Value.GetEnabled())
             {
-                return Task.FromResult<ActionResult>(NotFound());
+                return Task.FromResult<IResult>(TypedResults.NotFound());
             }
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
