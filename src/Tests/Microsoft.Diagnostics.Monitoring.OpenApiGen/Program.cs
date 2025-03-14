@@ -3,13 +3,9 @@
 
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.Auth;
-using Microsoft.Diagnostics.Tools.Monitor.Swagger;
+using Microsoft.Diagnostics.Tools.Monitor.OpenApi;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Swashbuckle.AspNetCore.Swagger;
-using System;
-using System.Globalization;
-using System.IO;
 
 namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
 {
@@ -17,14 +13,6 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
     {
         public static void Main(string[] args)
         {
-            if (args.Length != 1)
-            {
-                throw new InvalidOperationException("Expected single argument for the output path.");
-            }
-            string outputPath = args[0];
-
-            // Create directory if it does not exist
-            Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
 
             HostBuilderSettings settings = HostBuilderSettings.CreateMonitor(
                 urls: null,
@@ -41,18 +29,9 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
                 .CreateHostBuilder(settings)
                 .ConfigureServices(services =>
                 {
-                    services.AddSwaggerGen(options => options.ConfigureMonitorSwaggerGen());
+                    services.AddOpenApi(options => options.ConfigureMonitorOpenApiGen());
                 })
                 .Build();
-
-            // Serialize the OpenApi document
-            using StringWriter outputWriter = new(CultureInfo.InvariantCulture);
-            ISwaggerProvider provider = host.Services.GetRequiredService<ISwaggerProvider>();
-            provider.WriteTo(outputWriter);
-            outputWriter.Flush();
-
-            // Normalize line endings before writing
-            File.WriteAllText(outputPath, outputWriter.ToString().Replace("\r\n", "\n"));
         }
     }
 }

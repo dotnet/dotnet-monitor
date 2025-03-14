@@ -6,7 +6,7 @@ using Microsoft.Diagnostics.Monitoring;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.Auth;
 using Microsoft.Diagnostics.Tools.Monitor.Stacks;
-using Microsoft.Diagnostics.Tools.Monitor.Swagger;
+using Microsoft.Diagnostics.Tools.Monitor.OpenApi;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -95,10 +95,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
 
                 authConfigurator.ConfigureApiAuth(services, context);
 
-                services.AddSwaggerGen(options =>
-                {
-                    options.ConfigureMonitorSwaggerGen();
-                    authConfigurator.ConfigureSwaggerGenAuth(options);
+                services.AddOpenApi(options => {
+                    options.ConfigureMonitorOpenApiGen();
+                    authConfigurator.ConfigureOpenApiGenAuth(options);
                 });
 
                 services.ConfigureDiagnosticPort(context.Configuration);

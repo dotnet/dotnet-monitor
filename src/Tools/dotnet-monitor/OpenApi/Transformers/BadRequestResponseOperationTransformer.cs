@@ -1,18 +1,20 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.AspNetCore.OpenApi;
 using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace Microsoft.Diagnostics.Tools.Monitor.Swagger.Filters
+namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers
 {
     /// <summary>
     /// Clears all content of the 400 response and adds a reference to the
-    /// BadRequestResponse response component <see cref="BadRequestResponseDocumentFilter"/>.
+    /// BadRequestResponse response component <see cref="BadRequestResponseDocumentTransformer"/>.
     /// </summary>
-    internal sealed class BadRequestResponseOperationFilter : IOperationFilter
+    internal sealed class BadRequestResponseOperationTransformer : IOpenApiOperationTransformer
     {
-        public void Apply(OpenApiOperation operation, OperationFilterContext context)
+        public Task TransformAsync(OpenApiOperation operation, OpenApiOperationTransformerContext context, CancellationToken cancellationToken)
         {
             if (operation.Responses.Remove(StatusCodeStrings.Status400BadRequest))
             {
@@ -27,6 +29,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Swagger.Filters
                         }
                     });
             }
+
+            return Task.CompletedTask;
         }
     }
 }
