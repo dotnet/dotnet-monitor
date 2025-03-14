@@ -90,6 +90,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
                 return Task.CompletedTask;
             });
 
+            // The OpenApi generator doesn't make nullable properties nullable in the schema,
+            // but it does set the default value to null when the parameter had a default value of null.
+            // This produces an invalid schema. To fix this, avoid setting a default value of null for non-nullable schemas.
+            options.AddSchemaTransformer((schema, context, cancellationToken) => {
+                if (!schema.Nullable && schema.Default is OpenApiNull)
+                {
+                    schema.Default = null;
+                }
+                return Task.CompletedTask;
+            });
+
             // Fix up "additionalProperties"
             options.AddSchemaTransformer((schema, context, cancellationToken) => {
                 var type = context.JsonTypeInfo.Type;
