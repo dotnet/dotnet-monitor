@@ -69,6 +69,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
                 {
                     schema.Properties["include"].Nullable = true;
                     schema.Properties["exclude"].Nullable = true;
+
+                    // Work around an issue where the OpenApi generator outputs an incorrect ref for the
+                    // "exclude" ExceptionFilter when running on .NET 9.0.
+                    schema.Properties["exclude"].Items.Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.Schema,
+                        Id = nameof(ExceptionFilter)
+                    };
                 }
                 else if (type == typeof(ValidationProblemDetails))
                 {
