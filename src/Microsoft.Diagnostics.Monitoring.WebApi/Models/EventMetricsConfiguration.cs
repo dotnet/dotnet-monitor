@@ -25,6 +25,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
     public class EventMetricsProvider
     {
         [Required]
+        [MinLength(1)]
         [JsonPropertyName("providerName")]
         public string ProviderName { get; set; } = string.Empty;
 
@@ -35,6 +36,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
     public class EventMetricsMeter
     {
         [Required]
+        [MinLength(1)]
         [JsonPropertyName("meterName")]
         public string MeterName { get; set; } = string.Empty;
 

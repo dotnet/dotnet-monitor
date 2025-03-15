@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
@@ -29,24 +30,22 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _operationsStore = serviceProvider.GetRequiredService<IEgressOperationStore>();
         }
 
-        /// <summary>
-        /// Gets the operations list for the specified process (or all processes if left unspecified).
-        /// </summary>
-        /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
-        /// <param name="name">Process name used to identify the target process.</param>
-        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
         [HttpGet(Name = nameof(GetOperations))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
-        [ProducesResponseType(typeof(IEnumerable<Models.OperationSummary>), StatusCodes.Status200OK)]
+        [ProducesWithProblemDetails]
+        [ProducesResponseType(typeof(IEnumerable<Models.OperationSummary>), StatusCodes.Status200OK, ContentTypes.ApplicationJson)]
+        [EndpointSummary("Gets the operations list for the specified process (or all processes if left unspecified).")]
         public ActionResult<IEnumerable<Models.OperationSummary>> GetOperations(
             [FromQuery]
+            [Description("Process ID used to identify the target process.")]
             int? pid = null,
             [FromQuery]
+            [Description("The Runtime instance cookie used to identify the target process.")]
             Guid? uid = null,
             [FromQuery]
+            [Description("Process name used to identify the target process.")]
             string? name = null,
             [FromQuery]
+            [Description("An optional set of comma-separated identifiers users can include to make an operation easier to identify.")]
             string? tags = null)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
@@ -58,9 +57,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         }
 
         [HttpGet("{operationId}", Name = nameof(GetOperationStatus))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
-        [ProducesResponseType(typeof(Models.OperationStatus), StatusCodes.Status201Created)]
-        [ProducesResponseType(typeof(Models.OperationStatus), StatusCodes.Status200OK)]
+        [ProducesWithProblemDetails]
+        [ProducesResponseType(typeof(Models.OperationStatus), StatusCodes.Status201Created, ContentTypes.ApplicationJson)]
+        [ProducesResponseType(typeof(Models.OperationStatus), StatusCodes.Status200OK, ContentTypes.ApplicationJson)]
         public IActionResult GetOperationStatus(Guid operationId)
         {
             return this.InvokeService(() =>
@@ -72,7 +71,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         }
 
         [HttpDelete("{operationId}", Name = nameof(CancelOperation))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
+        [ProducesWithProblemDetails]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
         public IActionResult CancelOperation(

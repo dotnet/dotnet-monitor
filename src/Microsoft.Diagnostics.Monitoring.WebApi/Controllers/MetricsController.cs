@@ -33,12 +33,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _metricsOptions = metricsOptions.Value;
         }
 
-        /// <summary>
-        /// Get a list of the current backlog of metrics for a process in the Prometheus exposition format.
-        /// </summary>
+        [EndpointSummary("Get a list of the current backlog of metrics for a process in the Prometheus exposition format.")]
         [HttpGet("metrics", Name = nameof(GetMetrics))]
-        [ProducesWithProblemDetails(ContentTypes.TextPlain_v0_0_4)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesWithProblemDetails]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK, ContentTypes.TextPlain_v0_0_4)]
         public ActionResult GetMetrics()
         {
             return this.InvokeService(() =>

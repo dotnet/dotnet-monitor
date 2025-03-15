@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Text.Json.Serialization;
+using System.ComponentModel;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 {
@@ -13,9 +14,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         [JsonPropertyName("state")]
         public CollectionRuleState State { get; set; }
 
-        /// <summary>
-        /// Human-readable explanation for the current state of the collection rule.
-        /// </summary>
+        [Description("Human-readable explanation for the current state of the collection rule.")]
         [JsonPropertyName("stateReason")]
         public string? StateReason { get; set; }
     }

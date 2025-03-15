@@ -3,19 +3,15 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Controllers;
-using Microsoft.Diagnostics.Tools.Monitor.Swagger;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Swashbuckle.AspNetCore.Swagger;
 using System.Collections.Generic;
-using System.IO;
 using System.IO.Compression;
 using System.Text.Json.Serialization;
 
@@ -84,8 +80,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 app.UseHsts();
             }
 
-            app.UseSwagger();
-
             app.UseRouting();
 
             app.UseAuthentication();
@@ -104,12 +98,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 builder.MapControllers();
 
-                builder.MapGet("/", (HttpResponse response, ISwaggerProvider provider) =>
-                {
-                    using Stream stream = response.BodyWriter.AsStream(true);
-
-                    provider.WriteTo(stream);
-                });
+                builder.MapOpenApi("/");
             });
         }
     }

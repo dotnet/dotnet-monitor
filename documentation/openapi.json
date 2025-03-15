@@ -187,7 +187,13 @@
             "in": "query",
             "description": "The type of dump to capture.",
             "schema": {
-              "$ref": "#/components/schemas/DumpType"
+              "enum": [
+                "Full",
+                "Mini",
+                "WithHeap",
+                "Triage"
+              ],
+              "default": "WithHeap"
             }
           },
           {
@@ -351,7 +357,8 @@
             "in": "query",
             "description": "The profiles enabled for the trace session.",
             "schema": {
-              "$ref": "#/components/schemas/TraceProfile"
+              "type": "string",
+              "default": "Cpu, Http, Metrics, GcCollect"
             }
           },
           {
@@ -570,7 +577,7 @@
             "in": "query",
             "description": "The level of the logs to capture.",
             "schema": {
-              "$ref": "#/components/schemas/LogLevel"
+              "type": "string"
             }
           },
           {
@@ -705,7 +712,8 @@
                 "$ref": "#/components/schemas/LogsConfiguration"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "400": {
@@ -1430,7 +1438,8 @@
                 "$ref": "#/components/schemas/ExceptionsConfiguration"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "400": {
@@ -1666,20 +1675,11 @@
             "description": "Human-readable explanation for the current state of the collection rule.",
             "nullable": true
           }
-        },
-        "additionalProperties": false
+        }
       },
       "CollectionRuleDetailedDescription": {
         "type": "object",
         "properties": {
-          "state": {
-            "$ref": "#/components/schemas/CollectionRuleState"
-          },
-          "stateReason": {
-            "type": "string",
-            "description": "Human-readable explanation for the current state of the collection rule.",
-            "nullable": true
-          },
           "lifetimeOccurrences": {
             "type": "integer",
             "description": "The number of times the trigger has executed for a process in its lifetime.",
@@ -1715,6 +1715,14 @@
             "format": "time-span",
             "nullable": true,
             "example": "00:00:30"
+          },
+          "state": {
+            "$ref": "#/components/schemas/CollectionRuleState"
+          },
+          "stateReason": {
+            "type": "string",
+            "description": "Human-readable explanation for the current state of the collection rule.",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -1725,15 +1733,13 @@
           "ActionExecuting",
           "Throttled",
           "Finished"
-        ],
-        "type": "string"
+        ]
       },
       "DiagnosticPortConnectionMode": {
         "enum": [
           "Connect",
           "Listen"
-        ],
-        "type": "string"
+        ]
       },
       "DotnetMonitorInfo": {
         "required": [
@@ -1770,15 +1776,6 @@
         },
         "additionalProperties": false
       },
-      "DumpType": {
-        "enum": [
-          "Full",
-          "Mini",
-          "WithHeap",
-          "Triage"
-        ],
-        "type": "string"
-      },
       "EventLevel": {
         "enum": [
           "LogAlways",
@@ -1787,8 +1784,7 @@
           "Warning",
           "Informational",
           "Verbose"
-        ],
-        "type": "string"
+        ]
       },
       "EventMetricsConfiguration": {
         "type": "object",
@@ -1956,8 +1952,7 @@
           "Error",
           "Critical",
           "None"
-        ],
-        "type": "string"
+        ]
       },
       "LogsConfiguration": {
         "required": [
@@ -1985,9 +1980,9 @@
       },
       "MethodDescription": {
         "required": [
-          "methodName",
           "moduleName",
-          "typeName"
+          "typeName",
+          "methodName"
         ],
         "type": "object",
         "properties": {
@@ -2034,7 +2029,8 @@
             "nullable": true
           }
         },
-        "additionalProperties": false
+        "additionalProperties": false,
+        "nullable": true
       },
       "OperationProcessInfo": {
         "type": "object",
@@ -2053,7 +2049,8 @@
           }
         },
         "additionalProperties": false,
-        "description": "Represents the details of a given process used in an operation."
+        "description": "Represents the details of a given process used in an operation.",
+        "nullable": true
       },
       "OperationState": {
         "enum": [
@@ -2063,12 +2060,18 @@
           "Failed",
           "Cancelled",
           "Stopping"
-        ],
-        "type": "string"
+        ]
       },
       "OperationStatus": {
         "type": "object",
         "properties": {
+          "resourceLocation": {
+            "type": "string",
+            "nullable": true
+          },
+          "error": {
+            "$ref": "#/components/schemas/OperationError"
+          },
           "operationId": {
             "type": "string",
             "format": "uuid"
@@ -2097,13 +2100,6 @@
               "type": "string"
             },
             "nullable": true
-          },
-          "resourceLocation": {
-            "type": "string",
-            "nullable": true
-          },
-          "error": {
-            "$ref": "#/components/schemas/OperationError"
           }
         },
         "additionalProperties": false,
@@ -2223,16 +2219,6 @@
         },
         "additionalProperties": false
       },
-      "TraceProfile": {
-        "enum": [
-          "Cpu",
-          "Http",
-          "Logs",
-          "Metrics",
-          "GcCollect"
-        ],
-        "type": "string"
-      },
       "ValidationProblemDetails": {
         "type": "object",
         "properties": {
@@ -2303,5 +2289,19 @@
         }
       }
     }
-  }
+  },
+  "tags": [
+    {
+      "name": "Diag"
+    },
+    {
+      "name": "Exceptions"
+    },
+    {
+      "name": "Metrics"
+    },
+    {
+      "name": "Operations"
+    }
+  ]
 }

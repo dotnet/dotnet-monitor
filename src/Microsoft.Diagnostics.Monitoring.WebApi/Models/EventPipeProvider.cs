@@ -18,6 +18,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
     {
         [JsonPropertyName("name")]
         [Required]
+        [MinLength(1)]
         public string Name { get; set; } = string.Empty;
 
         [JsonPropertyName("keywords")]
@@ -28,6 +29,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 
         [JsonPropertyName("eventLevel")]
         [EnumDataType(typeof(EventLevel))]
+        [JsonConverter(typeof(JsonStringEnumConverter<EventLevel>))]
         public EventLevel EventLevel { get; set; } = EventLevel.Verbose;
 
         [JsonPropertyName("arguments")]

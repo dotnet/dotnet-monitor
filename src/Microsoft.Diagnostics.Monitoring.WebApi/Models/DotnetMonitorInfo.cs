@@ -2,21 +2,18 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.Options;
+using System.ComponentModel;
 using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 {
     public class DotnetMonitorInfo
     {
-        /// <summary>
-        /// The dotnet monitor version.
-        /// </summary>
+        [Description("The dotnet monitor version.")]
         [JsonPropertyName("version")]
         public string? Version { get; set; }
 
-        /// <summary>
-        /// The dotnet runtime version.
-        /// </summary>
+        [Description("The dotnet runtime version.")]
         [JsonPropertyName("runtimeVersion")]
         public string? RuntimeVersion { get; set; }
 
@@ -26,15 +23,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         [JsonPropertyName("diagnosticPortMode")]
         public DiagnosticPortConnectionMode DiagnosticPortMode { get; set; }
 
-        /// <summary>
-        /// The name of the named pipe or unix domain socket to use for connecting to the diagnostic server.
-        /// </summary>
+        [Description("The name of the named pipe or unix domain socket to use for connecting to the diagnostic server.")]
         [JsonPropertyName("diagnosticPortName")]
         public string? DiagnosticPortName { get; set; }
 
-        /// <summary>
-        /// The capabilities provided by dotnet-monitor.
-        /// </summary>
+        [Description("The capabilities provided by dotnet-monitor.")]
         [JsonPropertyName("capabilities")]
         public required MonitorCapability[] Capabilities { get; set; }
     }

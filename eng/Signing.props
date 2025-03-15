@@ -5,8 +5,6 @@
     <FileSignInfo Include="AWSSDK.SecurityToken.dll" CertificateName="3PartySHA2" />
     <FileSignInfo Include="Newtonsoft.Json.dll" CertificateName="3PartySHA2" />
     <FileSignInfo Include="Newtonsoft.Json.Bson.dll" CertificateName="3PartySHA2" />
-    <FileSignInfo Include="Swashbuckle.AspNetCore.Swagger.dll" CertificateName="3PartySHA2" />
-    <FileSignInfo Include="Swashbuckle.AspNetCore.SwaggerGen.dll" CertificateName="3PartySHA2" />
   </ItemGroup>
   <ItemGroup Condition="'$(SignAllBinaries)' != 'true'">
     <!--

@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.AspNetCore.OpenApi;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,8 +9,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Web;
 using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
+using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
 {
@@ -47,34 +48,39 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
             });
         }
 
-        public void ConfigureSwaggerGenAuth(SwaggerGenOptions options)
+        public void ConfigureOpenApiGenAuth(OpenApiOptions options)
         {
             const string OAuth2SecurityDefinitionName = "OAuth2";
-
+            
             Uri baseEndpoint = new Uri(_azureAdOptions.GetInstance(), FormattableString.Invariant($"{_azureAdOptions.TenantId}/oauth2/v2.0/"));
 
-            options.AddSecurityDefinition(OAuth2SecurityDefinitionName, new OpenApiSecurityScheme
+            options.AddDocumentTransformer((document, context, cancellationToken) =>
             {
-                Type = SecuritySchemeType.OAuth2,
-                Flows = new OpenApiOAuthFlows
+                document.Components.SecuritySchemes.Add(OAuth2SecurityDefinitionName, new OpenApiSecurityScheme
                 {
-                    AuthorizationCode = new OpenApiOAuthFlow
+                    Type = SecuritySchemeType.OAuth2,
+                    Flows = new OpenApiOAuthFlows
                     {
-                        AuthorizationUrl = new Uri(baseEndpoint, "authorize"),
-                        TokenUrl = new Uri(baseEndpoint, "token")
+                        AuthorizationCode = new OpenApiOAuthFlow
+                        {
+                            AuthorizationUrl = new Uri(baseEndpoint, "authorize"),
+                            TokenUrl = new Uri(baseEndpoint, "token")
+                        }
                     }
-                }
-            });
+                });
 
-            options.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
+                document.SecurityRequirements.Add(new OpenApiSecurityRequirement
                 {
-                    new OpenApiSecurityScheme
                     {
-                        Reference = new OpenApiReference { Type= ReferenceType.SecurityScheme, Id = OAuth2SecurityDefinitionName }
-                    },
-                    Array.Empty<string>()
-                }
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference { Type= ReferenceType.SecurityScheme, Id = OAuth2SecurityDefinitionName }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
+
+                return Task.CompletedTask;
             });
         }
 

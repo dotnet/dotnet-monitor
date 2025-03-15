@@ -15,6 +15,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
@@ -68,12 +69,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _monitorCapabilities = serviceProvider.GetRequiredService<IEnumerable<IMonitorCapability>>();
         }
 
-        /// <summary>
-        /// Get the list of accessible processes.
-        /// </summary>
+        [EndpointSummary("Get the list of accessible processes.")]
         [HttpGet("processes", Name = nameof(GetProcesses))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
-        [ProducesResponseType(typeof(IEnumerable<ProcessIdentifier>), StatusCodes.Status200OK)]
+        [ProducesWithProblemDetails]
+        [ProducesResponseType(typeof(IEnumerable<ProcessIdentifier>), StatusCodes.Status200OK, ContentTypes.ApplicationJson)]
         public Task<ActionResult<IEnumerable<ProcessIdentifier>>> GetProcesses()
         {
             return this.InvokeService(async () =>
@@ -113,21 +112,19 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }, Logger);
         }
 
-        /// <summary>
-        /// Get information about the specified process.
-        /// </summary>
-        /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
-        /// <param name="name">Process name used to identify the target process.</param>
+        [EndpointSummary("Get information about the specified process.")]
         [HttpGet("process", Name = nameof(GetProcessInfo))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
-        [ProducesResponseType(typeof(Models.ProcessInfo), StatusCodes.Status200OK)]
+        [ProducesWithProblemDetails]
+        [ProducesResponseType(typeof(Models.ProcessInfo), StatusCodes.Status200OK, ContentTypes.ApplicationJson)]
         public Task<ActionResult<Models.ProcessInfo>> GetProcessInfo(
             [FromQuery]
+            [Description("Process ID used to identify the target process.")]
             int? pid = null,
             [FromQuery]
+            [Description("The Runtime instance cookie used to identify the target process.")]
             Guid? uid = null,
             [FromQuery]
+            [Description("Process name used to identify the target process.")]
             string? name = null)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
@@ -151,21 +148,19 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             processKey);
         }
 
-        /// <summary>
-        /// Get the environment block of the specified process.
-        /// </summary>
-        /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
-        /// <param name="name">Process name used to identify the target process.</param>
+        [EndpointSummary("Get the environment block of the specified process.")]
         [HttpGet("env", Name = nameof(GetProcessEnvironment))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
-        [ProducesResponseType(typeof(Dictionary<string, string>), StatusCodes.Status200OK)]
+        [ProducesWithProblemDetails]
+        [ProducesResponseType(typeof(Dictionary<string, string>), StatusCodes.Status200OK, ContentTypes.ApplicationJson)]
         public Task<ActionResult<Dictionary<string, string>>> GetProcessEnvironment(
             [FromQuery]
+            [Description("Process ID used to identify the target process.")]
             int? pid = null,
             [FromQuery]
+            [Description("The Runtime instance cookie used to identify the target process.")]
             Guid? uid = null,
             [FromQuery]
+            [Description("Process name used to identify the target process.")]
             string? name = null)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
@@ -190,36 +185,33 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             processKey);
         }
 
-        /// <summary>
-        /// Capture a dump of a process.
-        /// </summary>
-        /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
-        /// <param name="name">Process name used to identify the target process.</param>
-        /// <param name="type">The type of dump to capture.</param>
-        /// <param name="egressProvider">The egress provider to which the dump is saved.</param>
-        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
-        /// <returns></returns>
+        [EndpointSummary("Capture a dump of a process.")]
         [HttpGet("dump", Name = nameof(CaptureDump))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationOctetStream)]
+        [ProducesWithProblemDetails]
         // FileResult is the closest representation of the output so that the OpenAPI document correctly
         // describes the result as a binary file.
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
-        [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK, ContentTypes.ApplicationOctetStream)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
         [EgressValidation]
         public Task<ActionResult> CaptureDump(
             [FromQuery]
+            [Description("Process ID used to identify the target process.")]
             int? pid = null,
             [FromQuery]
+            [Description("The Runtime instance cookie used to identify the target process.")]
             Guid? uid = null,
             [FromQuery]
+            [Description("Process name used to identify the target process.")]
             string? name = null,
             [FromQuery]
+            [Description("The type of dump to capture.")]
             Models.DumpType type = Models.DumpType.WithHeap,
             [FromQuery]
+            [Description("The egress provider to which the dump is saved.")]
             string? egressProvider = null,
             [FromQuery]
+            [Description("An optional set of comma-separated identifiers users can include to make an operation easier to identify.")]
             string? tags = null)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
@@ -235,33 +227,30 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 Utilities.ArtifactType_Dump);
         }
 
-        /// <summary>
-        /// Capture a GC dump of a process.
-        /// </summary>
-        /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
-        /// <param name="name">Process name used to identify the target process.</param>
-        /// <param name="egressProvider">The egress provider to which the GC dump is saved.</param>
-        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
-        /// <returns></returns>
+        [EndpointSummary("Capture a GC dump of a process.")]
         [HttpGet("gcdump", Name = nameof(CaptureGcDump))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationOctetStream)]
+        [ProducesWithProblemDetails]
         // FileResult is the closest representation of the output so that the OpenAPI document correctly
         // describes the result as a binary file.
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
-        [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK, ContentTypes.ApplicationOctetStream)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
         [EgressValidation]
         public Task<ActionResult> CaptureGcDump(
             [FromQuery]
+            [Description("Process ID used to identify the target process.")]
             int? pid = null,
             [FromQuery]
+            [Description("The Runtime instance cookie used to identify the target process.")]
             Guid? uid = null,
             [FromQuery]
+            [Description("Process name used to identify the target process.")]
             string? name = null,
             [FromQuery]
+            [Description("The egress provider to which the GC dump is saved.")]
             string? egressProvider = null,
             [FromQuery]
+            [Description("An optional set of comma-separated identifiers users can include to make an operation easier to identify.")]
             string? tags = null)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
@@ -277,38 +266,36 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 Utilities.ArtifactType_GCDump);
         }
 
-        /// <summary>
-        /// Capture a trace of a process.
-        /// </summary>
-        /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
-        /// <param name="name">Process name used to identify the target process.</param>
-        /// <param name="profile">The profiles enabled for the trace session.</param>
-        /// <param name="durationSeconds">The duration of the trace session (in seconds).</param>
-        /// <param name="egressProvider">The egress provider to which the trace is saved.</param>
-        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
+        [EndpointSummary("Capture a trace of a process.")]
         [HttpGet("trace", Name = nameof(CaptureTrace))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationOctetStream)]
+        [ProducesWithProblemDetails]
         // FileResult is the closest representation of the output so that the OpenAPI document correctly
         // describes the result as a binary file.
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
-        [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK, ContentTypes.ApplicationOctetStream)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
         [EgressValidation]
         public Task<ActionResult> CaptureTrace(
             [FromQuery]
+            [Description("Process ID used to identify the target process.")]
             int? pid = null,
             [FromQuery]
+            [Description("The Runtime instance cookie used to identify the target process.")]
             Guid? uid = null,
             [FromQuery]
+            [Description("Process name used to identify the target process.")]
             string? name = null,
             [FromQuery]
+            [Description("The profiles enabled for the trace session.")]
             TraceProfile profile = DefaultTraceProfiles,
             [FromQuery][Range(-1, int.MaxValue)]
+            [Description("The duration of the trace session (in seconds).")]
             int durationSeconds = 30,
             [FromQuery]
+            [Description("The egress provider to which the trace is saved.")]
             string? egressProvider = null,
             [FromQuery]
+            [Description("An optional set of comma-separated identifiers users can include to make an operation easier to identify.")]
             string? tags = null)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
@@ -323,38 +310,36 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }, processKey, Utilities.ArtifactType_Trace);
         }
 
-        /// <summary>
-        /// Capture a trace of a process.
-        /// </summary>
-        /// <param name="configuration">The trace configuration describing which events to capture.</param>
-        /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
-        /// <param name="name">Process name used to identify the target process.</param>
-        /// <param name="durationSeconds">The duration of the trace session (in seconds).</param>
-        /// <param name="egressProvider">The egress provider to which the trace is saved.</param>
-        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
+        [EndpointSummary("Capture a trace of a process.")]
         [HttpPost("trace", Name = nameof(CaptureTraceCustom))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationOctetStream)]
+        [ProducesWithProblemDetails]
         // FileResult is the closest representation of the output so that the OpenAPI document correctly
         // describes the result as a binary file.
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
-        [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK, ContentTypes.ApplicationOctetStream)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
         [EgressValidation]
         public Task<ActionResult> CaptureTraceCustom(
             [FromBody][Required]
+            [Description("The trace configuration describing which events to capture.")]
             EventPipeConfiguration configuration,
             [FromQuery]
+            [Description("Process ID used to identify the target process.")]
             int? pid = null,
             [FromQuery]
+            [Description("The Runtime instance cookie used to identify the target process.")]
             Guid? uid = null,
             [FromQuery]
+            [Description("Process name used to identify the target process.")]
             string? name = null,
             [FromQuery][Range(-1, int.MaxValue)]
+            [Description("The duration of the trace session (in seconds).")]
             int durationSeconds = 30,
             [FromQuery]
+            [Description("The egress provider to which the trace is saved.")]
             string? egressProvider = null,
             [FromQuery]
+            [Description("An optional set of comma-separated identifiers users can include to make an operation easier to identify.")]
             string? tags = null)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
@@ -378,36 +363,34 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }, processKey, Utilities.ArtifactType_Trace);
         }
 
-        /// <summary>
-        /// Capture a stream of logs from a process.
-        /// </summary>
-        /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
-        /// <param name="name">Process name used to identify the target process.</param>
-        /// <param name="durationSeconds">The duration of the logs session (in seconds).</param>
-        /// <param name="level">The level of the logs to capture.</param>
-        /// <param name="egressProvider">The egress provider to which the logs are saved.</param>
-        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
+        [EndpointSummary("Capture a stream of logs from a process.")]
         [HttpGet("logs", Name = nameof(CaptureLogs))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)]
+        [ProducesWithProblemDetails]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK, ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
         [EgressValidation]
         public Task<ActionResult> CaptureLogs(
             [FromQuery]
+            [Description("Process ID used to identify the target process.")]
             int? pid = null,
             [FromQuery]
+            [Description("The Runtime instance cookie used to identify the target process.")]
             Guid? uid = null,
             [FromQuery]
+            [Description("Process name used to identify the target process.")]
             string? name = null,
             [FromQuery][Range(-1, int.MaxValue)]
+            [Description("The duration of the logs session (in seconds).")]
             int durationSeconds = 30,
             [FromQuery]
+            [Description("The level of the logs to capture.")]
             LogLevel? level = null,
             [FromQuery]
+            [Description("The egress provider to which the logs are saved.")]
             string? egressProvider = null,
             [FromQuery]
+            [Description("An optional set of comma-separated identifiers users can include to make an operation easier to identify.")]
             string? tags = null)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
@@ -436,36 +419,34 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }, processKey, Utilities.ArtifactType_Logs);
         }
 
-        /// <summary>
-        /// Capture a stream of logs from a process.
-        /// </summary>
-        /// <param name="configuration">The logs configuration describing which logs to capture.</param>
-        /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
-        /// <param name="name">Process name used to identify the target process.</param>
-        /// <param name="durationSeconds">The duration of the logs session (in seconds).</param>
-        /// <param name="egressProvider">The egress provider to which the logs are saved.</param>
-        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
+        [EndpointSummary("Capture a stream of logs from a process.")]
         [HttpPost("logs", Name = nameof(CaptureLogsCustom))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)]
+        [ProducesWithProblemDetails]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK, ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
         [EgressValidation]
         public Task<ActionResult> CaptureLogsCustom(
             [FromBody]
+            [Description("The logs configuration describing which logs to capture.")]
             LogsConfiguration configuration,
             [FromQuery]
+            [Description("Process ID used to identify the target process.")]
             int? pid = null,
             [FromQuery]
+            [Description("The Runtime instance cookie used to identify the target process.")]
             Guid? uid = null,
             [FromQuery]
+            [Description("Process name used to identify the target process.")]
             string? name = null,
             [FromQuery][Range(-1, int.MaxValue)]
+            [Description("The duration of the logs session (in seconds).")]
             int durationSeconds = 30,
             [FromQuery]
+            [Description("The egress provider to which the logs are saved.")]
             string? egressProvider = null,
             [FromQuery]
+            [Description("An optional set of comma-separated identifiers users can include to make an operation easier to identify.")]
             string? tags = null)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
@@ -486,12 +467,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }, processKey, Utilities.ArtifactType_Logs);
         }
 
-        /// <summary>
-        /// Gets versioning and listening mode information about Dotnet-Monitor
-        /// </summary>
+        [EndpointSummary("Gets versioning and listening mode information about Dotnet-Monitor")]
         [HttpGet("info", Name = nameof(GetInfo))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
-        [ProducesResponseType(typeof(DotnetMonitorInfo), StatusCodes.Status200OK)]
+        [ProducesWithProblemDetails]
+        [ProducesResponseType(typeof(DotnetMonitorInfo), StatusCodes.Status200OK, ContentTypes.ApplicationJson)]
         public ActionResult<DotnetMonitorInfo> GetInfo()
         {
             return this.InvokeService(() =>
@@ -507,7 +486,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     RuntimeVersion = runtimeVersion,
                     DiagnosticPortMode = diagnosticPortMode,
                     DiagnosticPortName = diagnosticPortName,
-                    Capabilities = _monitorCapabilities.Select(c => new MonitorCapability(c.Name, c.Enabled)).ToArray()
+                    Capabilities = _monitorCapabilities.Select(c => new MonitorCapability(c.Name) {
+                        Enabled = c.Enabled
+                    }).ToArray()
                 };
 
                 Logger.WrittenToHttpStream();
@@ -515,21 +496,19 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }, Logger);
         }
 
-        /// <summary>
-        /// Gets a brief summary about the current state of the collection rules.
-        /// </summary>
-        /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
-        /// <param name="name">Process name used to identify the target process.</param>
+        [EndpointSummary("Gets a brief summary about the current state of the collection rules.")]
         [HttpGet("collectionrules", Name = nameof(GetCollectionRulesDescription))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
-        [ProducesResponseType(typeof(Dictionary<string, CollectionRuleDescription>), StatusCodes.Status200OK)]
+        [ProducesWithProblemDetails]
+        [ProducesResponseType(typeof(Dictionary<string, CollectionRuleDescription>), StatusCodes.Status200OK, ContentTypes.ApplicationJson)]
         public Task<ActionResult<Dictionary<string, CollectionRuleDescription>>> GetCollectionRulesDescription(
             [FromQuery]
+            [Description("Process ID used to identify the target process.")]
             int? pid = null,
             [FromQuery]
+            [Description("The Runtime instance cookie used to identify the target process.")]
             Guid? uid = null,
             [FromQuery]
+            [Description("Process name used to identify the target process.")]
             string? name = null)
         {
             return InvokeForProcess<Dictionary<string, CollectionRuleDescription>>(processInfo =>
@@ -539,23 +518,21 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             Utilities.GetProcessKey(pid, uid, name));
         }
 
-        /// <summary>
-        /// Gets detailed information about the current state of the specified collection rule.
-        /// </summary>
-        /// <param name="collectionRuleName">The name of the collection rule for which a detailed description should be provided.</param>
-        /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
-        /// <param name="name">Process name used to identify the target process.</param>
+        [EndpointSummary("Gets detailed information about the current state of the specified collection rule.")]
         [HttpGet("collectionrules/{collectionRuleName}", Name = nameof(GetCollectionRuleDetailedDescription))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationJson)]
-        [ProducesResponseType(typeof(CollectionRuleDetailedDescription), StatusCodes.Status200OK)]
+        [ProducesWithProblemDetails]
+        [ProducesResponseType(typeof(CollectionRuleDetailedDescription), StatusCodes.Status200OK, ContentTypes.ApplicationJson)]
         public Task<ActionResult<CollectionRuleDetailedDescription?>> GetCollectionRuleDetailedDescription(
+            [Description("The name of the collection rule for which a detailed description should be provided.")]
             string collectionRuleName,
             [FromQuery]
+            [Description("Process ID used to identify the target process.")]
             int? pid = null,
             [FromQuery]
+            [Description("The Runtime instance cookie used to identify the target process.")]
             Guid? uid = null,
             [FromQuery]
+            [Description("Process name used to identify the target process.")]
             string? name = null)
         {
             return InvokeForProcess<CollectionRuleDetailedDescription?>(processInfo =>
@@ -566,9 +543,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         }
 
         [HttpPost("parameters", Name = nameof(CaptureParameters))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)]
+        [ProducesWithProblemDetails]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK, ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
         [EgressValidation]
         public async Task<ActionResult> CaptureParameters(
@@ -612,9 +589,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         }
 
         [HttpGet("stacks", Name = nameof(CaptureStacks))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationJson, ContentTypes.TextPlain, ContentTypes.ApplicationSpeedscopeJson)]
+        [ProducesWithProblemDetails]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK, ContentTypes.ApplicationJson, ContentTypes.TextPlain, ContentTypes.ApplicationSpeedscopeJson)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
         [EgressValidation]
         public Task<ActionResult> CaptureStacks(

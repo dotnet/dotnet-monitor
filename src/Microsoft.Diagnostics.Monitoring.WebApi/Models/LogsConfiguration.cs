@@ -3,6 +3,7 @@
 
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
@@ -14,19 +15,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         /// The default level at which logs are collected.
         /// </summary>
         [JsonPropertyName("logLevel")]
+        [JsonConverter(typeof(JsonStringEnumConverter<LogLevel>))]
         [EnumDataType(typeof(LogLevel))]
         [Required]
         public LogLevel LogLevel { get; set; } = LogLevel.Warning;
 
-        /// <summary>
-        /// The logger categories and levels at which logs are collected. Setting the log level to null will have logs collected from the corresponding category at the level set in the LogLevel property.
-        /// </summary>
+        [Description("The logger categories and levels at which logs are collected. Setting the log level to null will have logs collected from the corresponding category at the level set in the LogLevel property.")]
         [JsonPropertyName("filterSpecs")]
         public Dictionary<string, LogLevel?>? FilterSpecs { get; set; }
 
-        /// <summary>
-        /// Set to true to collect logs at the application-defined categories and levels.
-        /// </summary>
+        [Description("Set to true to collect logs at the application-defined categories and levels.")]
         [JsonPropertyName("useAppFilters")]
         public bool UseAppFilters { get; set; } = true;
     }
