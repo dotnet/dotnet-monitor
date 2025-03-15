@@ -6,13 +6,28 @@ using Microsoft.Diagnostics.Tools.Monitor.Auth;
 using Microsoft.Diagnostics.Tools.Monitor.OpenApi;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi.Writers;
+using System;
+using System.IO;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
 {
     internal sealed class Program
     {
-        public static void Main(string[] args)
+        private static async Task Main(string[] args)
         {
+            if (args.Length != 1)
+            {
+                throw new InvalidOperationException("Expected single argument for the output path.");
+            }
+            string outputPath = args[0];
+
+            // Create directory if it does not exist
+            Directory.CreateDirectory(Path.GetDirectoryName(outputPath)!);
 
             HostBuilderSettings settings = HostBuilderSettings.CreateMonitor(
                 urls: null,
@@ -32,6 +47,31 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
                     services.AddOpenApi(options => options.ConfigureMonitorOpenApiGen());
                 })
                 .Build();
+
+            var openApiDocument = await GetOpenApiDocument(host);
+
+            // Serialize the OpenApi document
+            using FileStream stream = File.Create(outputPath);
+            using StreamWriter writer = new(stream);
+            var openApiWriter = new OpenApiJsonWriter(writer);
+            openApiDocument.SerializeAsV3(openApiWriter);
+        }
+
+        private static object GetDocumentService(IServiceProvider serviceProvider)
+        {
+            var serviceType = Type.GetType("Microsoft.AspNetCore.OpenApi.OpenApiDocumentService, Microsoft.AspNetCore.OpenApi", throwOnError: true)!;
+            return serviceProvider.GetRequiredKeyedService(serviceType, "v1")!;
+
+        }
+
+        private static async Task<OpenApiDocument> GetOpenApiDocument(IHost host)
+        {
+            var documentService = GetDocumentService(host.Services);
+            var methodInfo = documentService.GetType().GetMethod("GetOpenApiDocumentAsync", BindingFlags.Public | BindingFlags.Instance)!;
+
+            object result = methodInfo.Invoke(documentService, new object?[] { host.Services, default(CancellationToken) })!;
+
+            return await (Task<OpenApiDocument>)result;
         }
     }
 }
