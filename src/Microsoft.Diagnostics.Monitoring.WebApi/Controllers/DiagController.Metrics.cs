@@ -76,15 +76,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 .RequireEgressValidation();
         }
 
-        /// <summary>
-        /// Capture metrics for a process.
-        /// </summary>
-        /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
-        /// <param name="name">Process name used to identify the target process.</param>
-        /// <param name="durationSeconds">The duration of the metrics session (in seconds).</param>
-        /// <param name="egressProvider">The egress provider to which the metrics are saved.</param>
-        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
         public Task<IResult> CaptureMetrics(
             int? pid,
             Guid? uid,

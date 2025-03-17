@@ -81,13 +81,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             .Produces(StatusCodes.Status202Accepted);
         }
 
-        /// <summary>
-        /// Gets the operations list for the specified process (or all processes if left unspecified).
-        /// </summary>
-        /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
-        /// <param name="name">Process name used to identify the target process.</param>
-        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
         public IResult GetOperations(
             int? pid,
             Guid? uid,

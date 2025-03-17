@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.AspNetCore.Builder;
@@ -93,7 +93,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 var serviceProvider = builder.ServiceProvider;
 
-                 DiagController.MapActionMethods(builder);
+                DiagController.MapActionMethods(builder);
                 DiagController.MapMetricsActionMethods(builder);
                 ExceptionsController.MapActionMethods(builder);
                 MetricsController.MapActionMethods(builder);
