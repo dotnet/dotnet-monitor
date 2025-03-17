@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Diagnostics.Monitoring.Options;
+using Microsoft.Diagnostics.Monitoring.WebApi.Controllers;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers;
 using Microsoft.Extensions.Logging;
@@ -167,6 +168,25 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
             options.AddDocumentTransformer((document, context, cancellationToken) => {
                 document.Info.Title = "dotnet-monitor";
                 document.Info.Version = "1.0";
+                return Task.CompletedTask;
+            });
+
+            // Ensure LogLevel parameter is represented as a schema reference
+            options.AddOperationTransformer((operation, context, cancellationToken) => {
+                if (operation.OperationId == nameof(DiagController.CaptureLogs))
+                {
+                    foreach (var parameter in operation.Parameters)
+                    {
+                        if (parameter.Name == "level")
+                        {
+                            parameter.Schema.Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.Schema,
+                                Id = nameof(LogLevel)
+                            };
+                        }
+                    }
+                }
                 return Task.CompletedTask;
             });
         }

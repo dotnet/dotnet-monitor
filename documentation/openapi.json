@@ -577,7 +577,7 @@
             "in": "query",
             "description": "The level of the logs to capture.",
             "schema": {
-              "type": "string"
+              "$ref": "#/components/schemas/LogLevel"
             }
           },
           {
