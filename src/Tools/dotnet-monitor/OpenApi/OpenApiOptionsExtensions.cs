@@ -3,19 +3,19 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Diagnostics.Monitoring.WebApi.Controllers;
 using Microsoft.AspNetCore.OpenApi;
+using Microsoft.Diagnostics.Monitoring.Options;
+using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Monitoring.WebApi.Controllers;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading.Tasks;
-using System.Xml.XPath;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
 {
@@ -28,18 +28,26 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
             options.AddDocumentTransformer<TooManyRequestsResponseDocumentTransformer>();
 
             options.AddOperationTransformer<BadRequestResponseOperationTransformer>();
-//             options.OperationFilter<RemoveFailureContentTypesOperationFilter>();
+            options.AddOperationTransformer<RemoveFailureContentTypesOperationTransformer>();
             options.AddOperationTransformer<TooManyRequestsResponseOperationTransformer>();
             options.AddOperationTransformer<UnauthorizedResponseOperationTransformer>();
 
+            // Make sure TimeSpan is represented as a string instead of a full object type
             options.AddSchemaTransformer((schema, context, cancellationToken) => {
-                // FileResult should be represented as type: string, format: binary, not a ref.
-                // if (schema.Reference != null && schema.Reference.Id == nameof(FileResult))
+                if (context.JsonTypeInfo.Type == typeof(TimeSpan?))
+                {
+                    schema.Type = "string";
+                    schema.Format = "time-span";
+                    schema.Example = new OpenApiString("00:00:30");
+                    schema.Pattern = null;
+                }
+                return Task.CompletedTask;
+            });
+
+            // Make sure FileResult is represented as a string with binary format
+            options.AddSchemaTransformer((schema, context, cancellationToken) => {
                 if (context.JsonTypeInfo.Type == typeof(FileResult))
                 {
-                    // if (string.Empty.Length == 0) {
-                    //     throw new System.Exception("FileResuiLT!");
-                    // }
                     schema.Reference = null;
                     schema.Type = "string";
                     schema.Format = "binary";
@@ -48,85 +56,183 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
                 return Task.CompletedTask;
             });
 
-            options.CreateSchemaReferenceId = (type) => {
-                if (type.Type == typeof(FileResult)) {
-                    // always inline.
-                    return null;
+            // Make sure FileResult schema is inlined
+            options.CreateSchemaReferenceId = (type) => 
+                type.Type == typeof(FileResult) ? null : OpenApiOptions.CreateDefaultSchemaReferenceId(type);
+
+            // Fix up nullable and uniqueItems
+            options.AddSchemaTransformer((schema, context, cancellationToken) => {
+                var type = context.JsonTypeInfo.Type;
+                if (type == typeof(DotnetMonitorInfo))
+                {
+                    schema.Properties["capabilities"].Nullable = true;
                 }
-                return OpenApiOptions.CreateDefaultSchemaReferenceId(type);
-            };
+                else if (type == typeof(ExceptionsConfiguration))
+                {
+                    schema.Properties["include"].Nullable = true;
+                    schema.Properties["exclude"].Nullable = true;
 
-            // options.CreateSchemaReferenceId = (type) => {
-            //     Console.WriteLine("Create schema ref id for type " + type.ToString());
-            //     return type.Type.IsEnum ? null : OpenApiOptions.CreateDefaultSchemaReferenceId(type);
-            // };
-
-            // options.AddDocumentTransformer((document, context, cancellationToken) => {
-            //     // Get rid of any 400 Bad Request section, replacing it with a reference
-            //     // to components/responses/BadRequestResponse.
-            //     if (document.Paths != null)
-            //     {
-            //         foreach (var path in document.Paths)
-            //         {
-            //             foreach (var operation in path.Value.Operations)
-            //             {
-            //                 if (operation.Value.Responses.ContainsKey("400"))
-            //                 {
-            //                     operation.Value.Responses["400"] = new OpenApiResponse
-            //                     {
-            //                         Reference = new OpenApiReference
-            //                         {
-            //                             Type = ReferenceType.Response,
-            //                             Id = "BadRequestResponse"
-            //                         }
-            //                     };
-            //                 }
-            //             }
-            //         }
-            //     }
-            //     // Add the common response
-            //     document.Components.Responses.Add("BadRequestResponse", new OpenApiResponse
-            //     {
-            //         Description = "Bad Request",
-            //         Content = new Dictionary<string, OpenApiMediaType>
-            //         {
-            //             { ContentTypes.ApplicationProblemJson, new OpenApiMediaType() }
-            //         }
-            //     });
-            // });
-
-
-
-
-//             string documentationFile = $"{typeof(DiagController).Assembly.GetName().Name}.xml";
-// #nullable disable
-//             options.IncludeXmlComments(() => new XPathDocument(Assembly.GetExecutingAssembly().GetManifestResourceStream(documentationFile)));
-// #nullable restore
-//             // Make sure TimeSpan is represented as a string instead of a full object type
-//             options.MapType<TimeSpan>(() => new OpenApiSchema() { Type = "string", Format = "time-span", Example = new OpenApiString("00:00:30") });
-        }
-
-        public static void AddBearerTokenAuthOption(this SwaggerGenOptions options, string securityDefinitionName)
-        {
-            options.AddSecurityDefinition(securityDefinitionName, new OpenApiSecurityScheme
-            {
-                Name = HeaderNames.Authorization,
-                Type = SecuritySchemeType.ApiKey,
-                Scheme = JwtBearerDefaults.AuthenticationScheme,
-                BearerFormat = "JWT",
-                In = ParameterLocation.Header,
-                Description = Strings.HelpDescription_SecurityDefinitionDescription_ApiKey
+                    // Work around an issue where the OpenApi generator outputs an incorrect ref for the
+                    // "exclude" ExceptionFilter when running on .NET 9.0.
+                    schema.Properties["exclude"].Items.Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.Schema,
+                        Id = nameof(ExceptionFilter)
+                    };
+                }
+                else if (type == typeof(ValidationProblemDetails))
+                {
+                    schema.Properties["errors"].Nullable = true;
+                }
+                else if (type == typeof(OperationStatus) ||
+                         type == typeof(OperationSummary))
+                {
+                    schema.Properties["tags"].UniqueItems = true;
+                }
+                return Task.CompletedTask;
             });
 
-            options.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
+            // The OpenApi generator doesn't make nullable properties nullable in the schema,
+            // but it does set the default value to null when the parameter had a default value of null.
+            // This produces an invalid schema. To fix this, avoid setting a default value of null for non-nullable schemas.
+            options.AddSchemaTransformer((schema, context, cancellationToken) => {
+                if (!schema.Nullable && schema.Default is OpenApiNull)
                 {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = securityDefinitionName }
-                    },
-                    Array.Empty<string>()
+                    schema.Default = null;
                 }
+                return Task.CompletedTask;
+            });
+
+            // Fix up "additionalProperties"
+            options.AddSchemaTransformer((schema, context, cancellationToken) => {
+                var type = context.JsonTypeInfo.Type;
+                if (type == typeof(CaptureParametersConfiguration) || 
+                    type == typeof(CollectionRuleDetailedDescription) ||
+                    type == typeof(DotnetMonitorInfo) ||
+                    type == typeof(EventMetricsConfiguration) ||
+                    type == typeof(EventMetricsMeter) ||
+                    type == typeof(EventMetricsProvider) ||
+                    type == typeof(EventPipeConfiguration) ||
+                    type == typeof(EventPipeProvider) ||
+                    type == typeof(ExceptionFilter) ||
+                    type == typeof(ExceptionsConfiguration) || 
+                    type == typeof(MethodDescription) ||
+                    type == typeof(MonitorCapability) ||
+                    type == typeof(OperationError) ||
+                    type == typeof(OperationProcessInfo) ||
+                    type == typeof(OperationStatus) ||
+                    type == typeof(OperationSummary) ||
+                    type == typeof(ProcessIdentifier) ||
+                    type == typeof(ProcessInfo))
+                {
+                    schema.AdditionalPropertiesAllowed = false;
+                }
+                else if (type == typeof(ProblemDetails) ||
+                         type == typeof(ValidationProblemDetails))
+                {
+                    schema.AdditionalProperties = new OpenApiSchema();
+                }
+                else if (type == typeof(LogsConfiguration))
+                {
+                    schema.AdditionalPropertiesAllowed = false;
+                    schema.Properties["filterSpecs"].AdditionalProperties = new OpenApiSchema
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.Schema,
+                            Id = nameof(LogLevel)
+                        }
+                    };
+                }
+                return Task.CompletedTask;
+            });
+
+            // Fix up "additionalProperties" for the response type of GetCollectionRulesDescription
+            options.AddOperationTransformer((operation, context, cancellationToken) => {
+                if (operation.OperationId == nameof(DiagController.GetCollectionRulesDescription))
+                {
+                    foreach (var response in operation.Responses)
+                    {
+                        if (response.Key == StatusCodeStrings.Status200Ok)
+                        {
+                            var schema = response.Value.Content[ContentTypes.ApplicationJson].Schema;
+                            schema.AdditionalProperties.AdditionalPropertiesAllowed = false;
+                        }
+                    }
+                }
+                return Task.CompletedTask;
+            });
+
+            // Add missing descriptions on types
+            options.AddSchemaTransformer((schema, context, cancellationToken) => {
+                var type = context.JsonTypeInfo.Type;
+                if (type == typeof(OperationProcessInfo))
+                {
+                    schema.Description = "Represents the details of a given process used in an operation.";
+                }
+                else if (type == typeof(OperationStatus))
+                {
+                    schema.Description = "Represents the state of a long running operation. Used for all types of results, including successes and failures.";
+                }
+                else if (type == typeof(OperationSummary))
+                {
+                    schema.Description = "Represents a partial model when enumerating all operations.";
+                }
+                return Task.CompletedTask;
+            });
+
+            options.AddDocumentTransformer((document, context, cancellationToken) => {
+                document.Info.Title = "dotnet-monitor";
+                document.Info.Version = "1.0";
+                return Task.CompletedTask;
+            });
+
+            // Ensure LogLevel parameter is represented as a schema reference
+            options.AddOperationTransformer((operation, context, cancellationToken) => {
+                if (operation.OperationId == nameof(DiagController.CaptureLogs))
+                {
+                    foreach (var parameter in operation.Parameters)
+                    {
+                        if (parameter.Name == "level")
+                        {
+                            parameter.Schema.Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.Schema,
+                                Id = nameof(LogLevel)
+                            };
+                        }
+                    }
+                }
+                return Task.CompletedTask;
+            });
+        }
+
+        public static void AddBearerTokenAuthOption(this OpenApiOptions options, string securityDefinitionName)
+        {
+            options.AddDocumentTransformer((document, context, cancellationToken) =>
+            {
+                document.Components.SecuritySchemes.Add(securityDefinitionName, new OpenApiSecurityScheme
+                {
+                    Name = HeaderNames.Authorization,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = JwtBearerDefaults.AuthenticationScheme,
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = Strings.HelpDescription_SecurityDefinitionDescription_ApiKey
+                });
+
+                document.SecurityRequirements.Add(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = securityDefinitionName }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
+
+                return Task.CompletedTask;
             });
         }
     }

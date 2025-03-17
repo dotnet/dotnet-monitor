@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Microsoft.Diagnostics.Monitoring.Options
 {
-    internal sealed class ExceptionsOptions :
+    public sealed class ExceptionsOptions :
         IInProcessFeatureOptions
     {
         [Display(

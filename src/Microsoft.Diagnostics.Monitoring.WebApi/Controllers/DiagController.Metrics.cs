@@ -111,16 +111,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 Utilities.ArtifactType_Metrics);
         }
 
-        /// <summary>
-        /// Capture metrics for a process.
-        /// </summary>
-        /// <param name="configuration">The metrics configuration describing which metrics to capture.</param>
-        /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
-        /// <param name="name">Process name used to identify the target process.</param>
-        /// <param name="durationSeconds">The duration of the metrics session (in seconds).</param>
-        /// <param name="egressProvider">The egress provider to which the metrics are saved.</param>
-        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
         public Task<IResult> CaptureMetricsCustom(
             Models.EventMetricsConfiguration configuration,
             int? pid,

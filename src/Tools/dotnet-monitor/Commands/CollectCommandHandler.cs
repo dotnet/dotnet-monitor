@@ -95,14 +95,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
 
                 authConfigurator.ConfigureApiAuth(services, context);
 
-                // services.AddSwaggerGen(options =>
-                // {
-                //     options.ConfigureMonitorSwaggerGen();
-                //     authConfigurator.ConfigureSwaggerGenAuth(options);
-                // });
                 services.AddOpenApi(options => {
                     options.ConfigureMonitorOpenApiGen();
-                    // TODO: ConfigureOpenApiGenAuth(options);
+                    authConfigurator.ConfigureOpenApiGenAuth(options);
                 });
 
                 services.ConfigureDiagnosticPort(context.Configuration);
@@ -157,6 +152,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.AddSingleton<ITraceOperationFactory, TraceOperationFactory>();
                 services.AddSingleton<IGCDumpOperationFactory, GCDumpOperationFactory>();
                 services.AddSingleton<IStacksOperationFactory, StacksOperationFactory>();
+
+                services.ConfigureCapabilities(noHttpEgress);
 
                 // Per-process services must be scoped
                 services.AddScoped<ScopedEndpointInfo>();

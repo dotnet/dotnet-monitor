@@ -10,7 +10,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers
 {
     internal sealed class TooManyRequestsResponseOperationTransformer : IOpenApiOperationTransformer
     {
-        public async Task TransformAsync(OpenApiOperation operation, OpenApiOperationTransformerContext context, CancellationToken cancellationToken)
+        public Task TransformAsync(OpenApiOperation operation, OpenApiOperationTransformerContext context, CancellationToken cancellationToken)
         {
             if (operation.Responses.Remove(StatusCodeStrings.Status429TooManyRequests))
             {
@@ -25,6 +25,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers
                         }
                     });
             }
+
+            return Task.CompletedTask;
         }
     }
 }

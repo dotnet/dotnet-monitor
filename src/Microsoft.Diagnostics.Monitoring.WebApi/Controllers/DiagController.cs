@@ -17,9 +17,9 @@ using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.ComponentModel;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -57,7 +57,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private readonly ICaptureParametersOperationFactory _captureParametersFactory;
         private readonly IGCDumpOperationFactory _gcdumpOperationFactory;
         private readonly IStacksOperationFactory _stacksOperationFactory;
-
+        private readonly IEnumerable<IMonitorCapability> _monitorCapabilities;
         public DiagController(IServiceProvider serviceProvider, ILogger<DiagController> logger)
             : base(serviceProvider.GetRequiredService<IDiagnosticServices>(), serviceProvider.GetRequiredService<IEgressOperationStore>(), logger)
         {
@@ -74,6 +74,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _captureParametersFactory = serviceProvider.GetRequiredService<ICaptureParametersOperationFactory>();
             _gcdumpOperationFactory = serviceProvider.GetRequiredService<IGCDumpOperationFactory>();
             _stacksOperationFactory = serviceProvider.GetRequiredService<IStacksOperationFactory>();
+            _monitorCapabilities = serviceProvider.GetRequiredService<IEnumerable<IMonitorCapability>>();
         }
 
         public static void MapActionMethods(IEndpointRouteBuilder builder)
@@ -400,12 +401,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             processKey);
         }
 
-        /// <summary>
-        /// Get the environment block of the specified process.
-        /// </summary>
-        /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
-        /// <param name="name">Process name used to identify the target process.</param>
         public Task<IResult> GetProcessEnvironment(
             int? pid,
             Guid? uid,
@@ -433,16 +428,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             processKey);
         }
 
-        /// <summary>
-        /// Capture a dump of a process.
-        /// </summary>
-        /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
-        /// <param name="name">Process name used to identify the target process.</param>
-        /// <param name="type">The type of dump to capture.</param>
-        /// <param name="egressProvider">The egress provider to which the dump is saved.</param>
-        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
-        /// <returns></returns>
         // FileResult is the closest representation of the output so that the OpenAPI document correctly
         // describes the result as a binary file.
         public Task<IResult> CaptureDump(
@@ -466,15 +451,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 Utilities.ArtifactType_Dump);
         }
 
-        /// <summary>
-        /// Capture a GC dump of a process.
-        /// </summary>
-        /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
-        /// <param name="name">Process name used to identify the target process.</param>
-        /// <param name="egressProvider">The egress provider to which the GC dump is saved.</param>
-        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
-        /// <returns></returns>
         // FileResult is the closest representation of the output so that the OpenAPI document correctly
         // describes the result as a binary file.
         public Task<IResult> CaptureGcDump(
@@ -497,16 +473,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 Utilities.ArtifactType_GCDump);
         }
 
-        /// <summary>
-        /// Capture a trace of a process.
-        /// </summary>
-        /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
-        /// <param name="name">Process name used to identify the target process.</param>
-        /// <param name="profile">The profiles enabled for the trace session.</param>
-        /// <param name="durationSeconds">The duration of the trace session (in seconds).</param>
-        /// <param name="egressProvider">The egress provider to which the trace is saved.</param>
-        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
         // FileResult is the closest representation of the output so that the OpenAPI document correctly
         // describes the result as a binary file.
         public Task<IResult> CaptureTrace(
@@ -530,16 +496,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }, processKey, Utilities.ArtifactType_Trace);
         }
 
-        /// <summary>
-        /// Capture a trace of a process.
-        /// </summary>
-        /// <param name="configuration">The trace configuration describing which events to capture.</param>
-        /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
-        /// <param name="name">Process name used to identify the target process.</param>
-        /// <param name="durationSeconds">The duration of the trace session (in seconds).</param>
-        /// <param name="egressProvider">The egress provider to which the trace is saved.</param>
-        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
         // FileResult is the closest representation of the output so that the OpenAPI document correctly
         // describes the result as a binary file.
         public Task<IResult> CaptureTraceCustom(
@@ -572,16 +528,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }, processKey, Utilities.ArtifactType_Trace);
         }
 
-        /// <summary>
-        /// Capture a stream of logs from a process.
-        /// </summary>
-        /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
-        /// <param name="name">Process name used to identify the target process.</param>
-        /// <param name="durationSeconds">The duration of the logs session (in seconds).</param>
-        /// <param name="level">The level of the logs to capture.</param>
-        /// <param name="egressProvider">The egress provider to which the logs are saved.</param>
-        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
         public Task<IResult> CaptureLogs(
             int? pid,
             Guid? uid,
@@ -617,16 +563,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }, processKey, Utilities.ArtifactType_Logs);
         }
 
-        /// <summary>
-        /// Capture a stream of logs from a process.
-        /// </summary>
-        /// <param name="configuration">The logs configuration describing which logs to capture.</param>
-        /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
-        /// <param name="name">Process name used to identify the target process.</param>
-        /// <param name="durationSeconds">The duration of the logs session (in seconds).</param>
-        /// <param name="egressProvider">The egress provider to which the logs are saved.</param>
-        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
         public Task<IResult> CaptureLogsCustom(
             LogsConfiguration configuration,
             int? pid,
@@ -654,9 +590,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }, processKey, Utilities.ArtifactType_Logs);
         }
 
-        /// <summary>
-        /// Gets versioning and listening mode information about Dotnet-Monitor
-        /// </summary>
         public IResult GetInfo()
         {
             return this.InvokeService(() =>
@@ -671,7 +604,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     Version = version,
                     RuntimeVersion = runtimeVersion,
                     DiagnosticPortMode = diagnosticPortMode,
-                    DiagnosticPortName = diagnosticPortName
+                    DiagnosticPortName = diagnosticPortName,
+                    Capabilities = _monitorCapabilities.Select(c => new MonitorCapability(c.Name) {
+                        Enabled = c.Enabled
+                    }).ToArray()
                 };
 
                 Logger.WrittenToHttpStream();
@@ -679,12 +615,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }, Logger);
         }
 
-        /// <summary>
-        /// Gets a brief summary about the current state of the collection rules.
-        /// </summary>
-        /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
-        /// <param name="name">Process name used to identify the target process.</param>
         public Task<IResult> GetCollectionRulesDescription(
             int? pid,
             Guid? uid,
@@ -697,13 +627,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             Utilities.GetProcessKey(pid, uid, name));
         }
 
-        /// <summary>
-        /// Gets detailed information about the current state of the specified collection rule.
-        /// </summary>
-        /// <param name="collectionRuleName">The name of the collection rule for which a detailed description should be provided.</param>
-        /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
-        /// <param name="name">Process name used to identify the target process.</param>
         public Task<IResult> GetCollectionRuleDetailedDescription(
             string collectionRuleName,
             int? pid,

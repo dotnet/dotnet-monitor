@@ -13,7 +13,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers
     /// </summary>
     internal sealed class UnauthorizedResponseDocumentTransformer : IOpenApiDocumentTransformer
     {
-        public async Task TransformAsync(OpenApiDocument openApiDoc, OpenApiDocumentTransformerContext context, CancellationToken cancellationToken)
+        public Task TransformAsync(OpenApiDocument openApiDoc, OpenApiDocumentTransformerContext context, CancellationToken cancellationToken)
         {
             OpenApiHeader authenticateHeader = new();
             authenticateHeader.Schema = new OpenApiSchema() { Type = "string" };
@@ -25,6 +25,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers
             openApiDoc.Components.Responses.Add(
                 ResponseNames.UnauthorizedResponse,
                 unauthorizedResponse);
+
+            return Task.CompletedTask;
         }
     }
 }

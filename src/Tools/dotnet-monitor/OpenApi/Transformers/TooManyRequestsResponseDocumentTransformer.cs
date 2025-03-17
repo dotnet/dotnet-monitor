@@ -12,7 +12,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers
 {
     internal sealed class TooManyRequestsResponseDocumentTransformer : IOpenApiDocumentTransformer
     {
-        public async Task TransformAsync(OpenApiDocument swaggerDoc, OpenApiDocumentTransformerContext context, CancellationToken cancellationToken)
+        public Task TransformAsync(OpenApiDocument openApiDoc, OpenApiDocumentTransformerContext context, CancellationToken cancellationToken)
         {
             OpenApiResponse tooManyRequests = new();
             tooManyRequests.Description = "TooManyRequests";
@@ -31,9 +31,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers
                      }
                  });
 
-            swaggerDoc.Components.Responses.Add(
+            openApiDoc.Components.Responses.Add(
                 ResponseNames.TooManyRequestsResponse,
                 tooManyRequests);
+            
+            return Task.CompletedTask;
         }
     }
 }

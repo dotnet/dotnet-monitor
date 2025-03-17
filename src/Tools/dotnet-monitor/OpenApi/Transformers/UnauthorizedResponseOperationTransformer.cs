@@ -10,11 +10,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers
 {
     /// <summary>
     /// Clears all content of the 401 response and adds a reference to the
-    /// UnauthorizedResponse response component <see cref="UnauthorizedResponseDocumentFilter"/>.
+    /// UnauthorizedResponse response component <see cref="UnauthorizedResponseDocumentTransformer"/>.
     /// </summary>
     internal sealed class UnauthorizedResponseOperationTransformer : IOpenApiOperationTransformer
     {
-        public async Task TransformAsync(OpenApiOperation operation, OpenApiOperationTransformerContext context, CancellationToken cancellationToken)
+        public Task TransformAsync(OpenApiOperation operation, OpenApiOperationTransformerContext context, CancellationToken cancellationToken)
         {
             if (operation.Responses.TryGetValue(StatusCodeStrings.Status401Unauthorized, out OpenApiResponse? unauthorizedResponse))
             {
@@ -25,6 +25,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers
                     Type = ReferenceType.Response
                 };
             }
+
+            return Task.CompletedTask;
         }
     }
 }

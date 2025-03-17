@@ -10,11 +10,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers
 {
     /// <summary>
     /// Clears all content of the 400 response and adds a reference to the
-    /// BadRequestResponse response component <see cref="BadRequestResponseDocumentFilter"/>.
+    /// BadRequestResponse response component <see cref="BadRequestResponseDocumentTransformer"/>.
     /// </summary>
     internal sealed class BadRequestResponseOperationTransformer : IOpenApiOperationTransformer
     {
-        public async Task TransformAsync(OpenApiOperation operation, OpenApiOperationTransformerContext context, CancellationToken cancellationToken)
+        public Task TransformAsync(OpenApiOperation operation, OpenApiOperationTransformerContext context, CancellationToken cancellationToken)
         {
             if (operation.Responses.Remove(StatusCodeStrings.Status400BadRequest))
             {
@@ -29,6 +29,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers
                         }
                     });
             }
+
+            return Task.CompletedTask;
         }
     }
 }

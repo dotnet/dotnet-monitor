@@ -15,7 +15,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers
     /// </summary>
     internal sealed class BadRequestResponseDocumentTransformer : IOpenApiDocumentTransformer
     {
-        public async Task TransformAsync(OpenApiDocument openApiDoc, OpenApiDocumentTransformerContext context, CancellationToken cancellationToken)
+        public Task TransformAsync(OpenApiDocument openApiDoc, OpenApiDocumentTransformerContext context, CancellationToken cancellationToken)
         {
             OpenApiResponse unauthorizedResponse = new();
             unauthorizedResponse.Description = "Bad Request";
@@ -36,6 +36,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers
             (openApiDoc.Components ??= new OpenApiComponents()).Responses.Add(
                 ResponseNames.BadRequestResponse,
                 unauthorizedResponse);
+
+            return Task.CompletedTask;
         }
     }
 }

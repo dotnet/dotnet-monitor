@@ -4,12 +4,12 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.OpenApi;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Collections.Generic;
 
@@ -60,7 +60,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
             services.AddSingleton<IAuthorizationHandler, UserAuthorizationHandler>();
         }
 
-        public void ConfigureSwaggerGenAuth(SwaggerGenOptions options)
+        public void ConfigureOpenApiGenAuth(OpenApiOptions options)
         {
             const string ApiKeySecurityDefinitionName = "ApiKeyAuth";
             options.AddBearerTokenAuthOption(ApiKeySecurityDefinitionName);

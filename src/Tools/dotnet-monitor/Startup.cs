@@ -3,7 +3,6 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Diagnostics.Monitoring.WebApi;
@@ -13,9 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Swashbuckle.AspNetCore.Swagger;
 using System.Collections.Generic;
-using System.IO;
 using System.IO.Compression;
 using System.Text.Json.Serialization;
 using System.Reflection;
@@ -75,8 +72,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 app.UseHsts();
             }
 
-            app.UseSwagger();
-
             app.UseRouting();
 
             app.UseAuthentication();
@@ -98,26 +93,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 var serviceProvider = builder.ServiceProvider;
 
-                DiagController.MapActionMethods(builder);
+                 DiagController.MapActionMethods(builder);
                 DiagController.MapMetricsActionMethods(builder);
-
                 ExceptionsController.MapActionMethods(builder);
-
                 MetricsController.MapActionMethods(builder);
-
                 OperationsController.MapActionMethods(builder);
 
-                // AH! Here!!!
-                // builder.MapGet("/", (HttpResponse response, ISwaggerProvider provider) =>
-                // {
-                //     using Stream stream = response.BodyWriter.AsStream(true);
-
-                //     provider.WriteTo(stream);
-                // });
                 builder.MapOpenApi("/");
 
                 app.UseMiddleware<EgressValidationUnhandledExceptionMiddleware>();
-                System.Console.WriteLine("MapOpenApi");
             });
         }
     }

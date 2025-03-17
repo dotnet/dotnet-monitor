@@ -90,6 +90,13 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
+        public static RootOptions EnableParameterCapturing(this RootOptions options)
+        {
+            options.GetOrCreateInProcessFeaturesOptions().GetOrCreateParameterCapturingOptions().Enabled = true;
+
+            return options;
+        }
+
         private static ExceptionsOptions GetOrCreateExceptionsOptions(this InProcessFeaturesOptions options)
         {
             ExceptionsOptions exceptionsOptions = options.Exceptions;
@@ -99,6 +106,17 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
                 options.Exceptions = exceptionsOptions;
             }
             return exceptionsOptions;
+        }
+
+        private static ParameterCapturingOptions GetOrCreateParameterCapturingOptions(this InProcessFeaturesOptions options)
+        {
+            ParameterCapturingOptions parameterOptions = options.ParameterCapturing;
+            if (null == parameterOptions)
+            {
+                parameterOptions = new ParameterCapturingOptions();
+                options.ParameterCapturing = parameterOptions;
+            }
+            return parameterOptions;
         }
 
         public static RootOptions SetExceptionFiltering(this RootOptions options, ExceptionsConfiguration configuration)

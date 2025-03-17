@@ -43,7 +43,8 @@ Content-Type: application/json
     "version": "6.0.0",
     "runtimeVersion": "6.0.0",
     "diagnosticPortMode": "Connect",
-    "diagnosticPortName": null
+    "diagnosticPortName": null,
+    "capabilities": [{"name":"exceptions","enabled":true},{"name":"parameters","enabled":true},{"name":"call_stacks","enabled":true},{"name":"metrics","enabled":true},{"name":"http_egress","enabled":true}]
 }
 ```
 

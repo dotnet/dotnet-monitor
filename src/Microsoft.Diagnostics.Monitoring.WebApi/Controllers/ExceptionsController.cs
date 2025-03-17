@@ -85,14 +85,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 .RequireEgressValidation();
         }
 
-        /// <summary>
-        /// Gets the exceptions from the target process.
-        /// </summary>
-        /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
-        /// <param name="name">Process name used to identify the target process.</param>
-        /// <param name="egressProvider">The egress provider to which the exceptions are saved.</param>
-        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
         public Task<IResult> GetExceptions(
             int? pid,
             Guid? uid,
@@ -125,15 +117,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }, processKey, Utilities.ArtifactType_Exceptions);
         }
 
-        /// <summary>
-        /// Gets the exceptions from the target process.
-        /// </summary>
-        /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
-        /// <param name="name">Process name used to identify the target process.</param>
-        /// <param name="egressProvider">The egress provider to which the exceptions are saved.</param>
-        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
-        /// <param name="configuration">The exceptions configuration describing which exceptions to include in the response.</param>
         public Task<IResult> CaptureExceptionsCustom(
             ExceptionsConfiguration configuration,
             int? pid,

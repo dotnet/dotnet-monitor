@@ -8,6 +8,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
 {
     internal static class StatusCodeStrings
     {
+        public static readonly string Status200Ok = StatusCodes.Status200OK.ToString(CultureInfo.InvariantCulture);
+        public static readonly string Status202Accepted = StatusCodes.Status202Accepted.ToString(CultureInfo.InvariantCulture);
         public static readonly string Status400BadRequest = StatusCodes.Status400BadRequest.ToString(CultureInfo.InvariantCulture);
         public static readonly string Status401Unauthorized = StatusCodes.Status401Unauthorized.ToString(CultureInfo.InvariantCulture);
         public static readonly string Status429TooManyRequests = StatusCodes.Status429TooManyRequests.ToString(CultureInfo.InvariantCulture);

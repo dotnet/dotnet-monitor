@@ -14,11 +14,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         [JsonPropertyName("state")]
         public CollectionRuleState State { get; set; }
 
-        /// <summary>
-        /// Human-readable explanation for the current state of the collection rule.
-        /// </summary>
-        [JsonPropertyName("stateReason")]
         [Description("Human-readable explanation for the current state of the collection rule.")]
+        [JsonPropertyName("stateReason")]
         public string? StateReason { get; set; }
     }
 }
