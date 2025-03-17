@@ -1,10 +1,11 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Diagnostics.Monitoring.Options;
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Controllers;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers;
@@ -106,7 +107,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
             options.AddSchemaTransformer((schema, context, cancellationToken) => {
                 var type = context.JsonTypeInfo.Type;
                 if (type == typeof(CaptureParametersConfiguration) || 
-                    type == typeof(CollectionRuleDescription) ||
                     type == typeof(CollectionRuleDetailedDescription) ||
                     type == typeof(DotnetMonitorInfo) ||
                     type == typeof(EventMetricsConfiguration) ||
@@ -143,6 +143,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
                             Id = nameof(LogLevel)
                         }
                     };
+                }
+                return Task.CompletedTask;
+            });
+
+            // Fix up "additionalProperties" for the response type of GetCollectionRulesDescription
+            options.AddOperationTransformer((operation, context, cancellationToken) => {
+                if (operation.OperationId == nameof(DiagController.GetCollectionRulesDescription))
+                {
+                    foreach (var response in operation.Responses)
+                    {
+                        if (response.Key == StatusCodeStrings.Status200Ok)
+                        {
+                            var schema = response.Value.Content[ContentTypes.ApplicationJson].Schema;
+                            schema.AdditionalProperties.AdditionalPropertiesAllowed = false;
+                        }
+                    }
                 }
                 return Task.CompletedTask;
             });
