@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.AspNetCore.Builder;
@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Controllers;
-using Microsoft.Diagnostics.Tools.Monitor.OpenApi;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -75,7 +74,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             app.UseRouting();
 
             app.UseAuthentication();
-            if (Assembly.GetEntryAssembly()?.GetName().Name != "GetDocument.Insider")
+            if (Assembly.GetEntryAssembly()?.GetName().Name != "Microsoft.Diagnostics.Monitoring.OpenApiGen")
             {
                 app.UseAuthorization();
             }

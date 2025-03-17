@@ -1,8 +1,8 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "dotnet-monitor | v1",
-    "version": "1.0.0"
+    "title": "dotnet-monitor",
+    "version": "1.0"
   },
   "paths": {
     "/processes": {
@@ -201,8 +201,7 @@
             "in": "query",
             "description": "The egress provider to which the dump is saved.",
             "schema": {
-              "type": "string",
-              "default": null
+              "type": "string"
             }
           },
           {
@@ -210,8 +209,7 @@
             "in": "query",
             "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify.",
             "schema": {
-              "type": "string",
-              "default": null
+              "type": "string"
             }
           }
         ],
@@ -380,8 +378,7 @@
             "in": "query",
             "description": "The egress provider to which the trace is saved.",
             "schema": {
-              "type": "string",
-              "default": null
+              "type": "string"
             }
           },
           {
@@ -389,8 +386,7 @@
             "in": "query",
             "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify.",
             "schema": {
-              "type": "string",
-              "default": null
+              "type": "string"
             }
           }
         ],
@@ -470,8 +466,7 @@
             "in": "query",
             "description": "The egress provider to which the trace is saved.",
             "schema": {
-              "type": "string",
-              "default": null
+              "type": "string"
             }
           },
           {
@@ -479,8 +474,7 @@
             "in": "query",
             "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify.",
             "schema": {
-              "type": "string",
-              "default": null
+              "type": "string"
             }
           }
         ],
@@ -583,17 +577,7 @@
             "in": "query",
             "description": "The level of the logs to capture.",
             "schema": {
-              "enum": [
-                "Trace",
-                "Debug",
-                "Information",
-                "Warning",
-                "Error",
-                "Critical",
-                "None",
-                null
-              ],
-              "default": null
+              "$ref": "#/components/schemas/LogLevel"
             }
           },
           {
@@ -601,8 +585,7 @@
             "in": "query",
             "description": "The egress provider to which the logs are saved.",
             "schema": {
-              "type": "string",
-              "default": null
+              "type": "string"
             }
           },
           {
@@ -610,8 +593,7 @@
             "in": "query",
             "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify.",
             "schema": {
-              "type": "string",
-              "default": null
+              "type": "string"
             }
           }
         ],
@@ -700,8 +682,7 @@
             "in": "query",
             "description": "The egress provider to which the logs are saved.",
             "schema": {
-              "type": "string",
-              "default": null
+              "type": "string"
             }
           },
           {
@@ -709,8 +690,7 @@
             "in": "query",
             "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify.",
             "schema": {
-              "type": "string",
-              "default": null
+              "type": "string"
             }
           }
         ],
@@ -954,8 +934,7 @@
             "in": "query",
             "schema": {
               "type": "integer",
-              "format": "int32",
-              "default": null
+              "format": "int32"
             }
           },
           {
@@ -963,32 +942,28 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "format": "uuid",
-              "default": null
+              "format": "uuid"
             }
           },
           {
             "name": "name",
             "in": "query",
             "schema": {
-              "type": "string",
-              "default": null
+              "type": "string"
             }
           },
           {
             "name": "egressProvider",
             "in": "query",
             "schema": {
-              "type": "string",
-              "default": null
+              "type": "string"
             }
           },
           {
             "name": "tags",
             "in": "query",
             "schema": {
-              "type": "string",
-              "default": null
+              "type": "string"
             }
           }
         ],
@@ -1180,8 +1155,7 @@
             "in": "query",
             "description": "The egress provider to which the metrics are saved.",
             "schema": {
-              "type": "string",
-              "default": null
+              "type": "string"
             }
           },
           {
@@ -1189,8 +1163,7 @@
             "in": "query",
             "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify.",
             "schema": {
-              "type": "string",
-              "default": null
+              "type": "string"
             }
           }
         ],
@@ -1269,8 +1242,7 @@
             "in": "query",
             "description": "The egress provider to which the metrics are saved.",
             "schema": {
-              "type": "string",
-              "default": null
+              "type": "string"
             }
           },
           {
@@ -1278,8 +1250,7 @@
             "in": "query",
             "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify.",
             "schema": {
-              "type": "string",
-              "default": null
+              "type": "string"
             }
           }
         ],
@@ -1369,8 +1340,7 @@
             "in": "query",
             "description": "The egress provider to which the exceptions are saved.",
             "schema": {
-              "type": "string",
-              "default": null
+              "type": "string"
             }
           },
           {
@@ -1378,8 +1348,7 @@
             "in": "query",
             "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify.",
             "schema": {
-              "type": "string",
-              "default": null
+              "type": "string"
             }
           }
         ],
@@ -1450,8 +1419,7 @@
             "in": "query",
             "description": "The egress provider to which the exceptions are saved.",
             "schema": {
-              "type": "string",
-              "default": null
+              "type": "string"
             }
           },
           {
@@ -1459,8 +1427,7 @@
             "in": "query",
             "description": "An optional set of comma-separated identifiers users can include to make an operation easier to identify.",
             "schema": {
-              "type": "string",
-              "default": null
+              "type": "string"
             }
           }
         ],
@@ -1705,7 +1672,8 @@
             "format": "int32",
             "nullable": true
           }
-        }
+        },
+        "additionalProperties": false
       },
       "CollectionRuleDescription": {
         "type": "object",
@@ -1718,7 +1686,8 @@
             "description": "Human-readable explanation for the current state of the collection rule.",
             "nullable": true
           }
-        }
+        },
+        "additionalProperties": false
       },
       "CollectionRuleDetailedDescription": {
         "type": "object",
@@ -1739,19 +1708,20 @@
             "format": "int32"
           },
           "actionCountSlidingWindowDurationLimit": {
-            "pattern": "^-?(\\d+\\.)?\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,7})?$",
             "type": "string",
             "description": "The sliding window duration in which the actionCountLimit is the maximum number of occurrences (as defined by Limits).",
-            "nullable": true
+            "format": "time-span",
+            "nullable": true,
+            "example": "00:00:30"
           },
           "slidingWindowDurationCountdown": {
-            "pattern": "^-?(\\d+\\.)?\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,7})?$",
             "type": "string",
             "description": "The amount of time that needs to pass before the slidingWindowOccurrences drops below the actionCountLimit",
-            "nullable": true
+            "format": "time-span",
+            "nullable": true,
+            "example": "00:00:30"
           },
           "ruleFinishedCountdown": {
-            "pattern": "^-?(\\d+\\.)?\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,7})?$",
             "type": "string",
             "description": "The amount of time that needs to pass before the rule is finished",
             "format": "time-span",
@@ -1766,7 +1736,8 @@
             "description": "Human-readable explanation for the current state of the collection rule.",
             "nullable": true
           }
-        }
+        },
+        "additionalProperties": false
       },
       "CollectionRuleState": {
         "enum": [
@@ -1790,10 +1761,12 @@
         "properties": {
           "version": {
             "type": "string",
+            "description": "The dotnet monitor version.",
             "nullable": true
           },
           "runtimeVersion": {
             "type": "string",
+            "description": "The dotnet runtime version.",
             "nullable": true
           },
           "diagnosticPortMode": {
@@ -1801,6 +1774,7 @@
           },
           "diagnosticPortName": {
             "type": "string",
+            "description": "The name of the named pipe or unix domain socket to use for connecting to the diagnostic server.",
             "nullable": true
           },
           "capabilities": {
@@ -1844,7 +1818,8 @@
             },
             "nullable": true
           }
-        }
+        },
+        "additionalProperties": false
       },
       "EventMetricsMeter": {
         "required": [
@@ -1853,6 +1828,7 @@
         "type": "object",
         "properties": {
           "meterName": {
+            "minLength": 1,
             "type": "string"
           },
           "instrumentNames": {
@@ -1862,7 +1838,8 @@
             },
             "nullable": true
           }
-        }
+        },
+        "additionalProperties": false
       },
       "EventMetricsProvider": {
         "required": [
@@ -1871,6 +1848,7 @@
         "type": "object",
         "properties": {
           "providerName": {
+            "minLength": 1,
             "type": "string"
           },
           "counterNames": {
@@ -1880,7 +1858,8 @@
             },
             "nullable": true
           }
-        }
+        },
+        "additionalProperties": false
       },
       "EventPipeConfiguration": {
         "required": [
@@ -1904,7 +1883,8 @@
             "type": "integer",
             "format": "int32"
           }
-        }
+        },
+        "additionalProperties": false
       },
       "EventPipeProvider": {
         "required": [
@@ -1913,6 +1893,7 @@
         "type": "object",
         "properties": {
           "name": {
+            "minLength": 1,
             "type": "string"
           },
           "keywords": {
@@ -1929,7 +1910,8 @@
             },
             "nullable": true
           }
-        }
+        },
+        "additionalProperties": false
       },
       "ExceptionFilter": {
         "type": "object",
@@ -1950,7 +1932,8 @@
             "type": "string",
             "nullable": true
           }
-        }
+        },
+        "additionalProperties": false
       },
       "ExceptionsConfiguration": {
         "type": "object",
@@ -1959,15 +1942,18 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ExceptionFilter"
-            }
+            },
+            "nullable": true
           },
           "exclude": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ExceptionFilter"
-            }
+            },
+            "nullable": true
           }
-        }
+        },
+        "additionalProperties": false
       },
       "LogLevel": {
         "enum": [
@@ -1992,14 +1978,17 @@
           "filterSpecs": {
             "type": "object",
             "additionalProperties": {
-              "$ref": "#/components/schemas/NullableOfLogLevel"
+              "$ref": "#/components/schemas/LogLevel"
             },
+            "description": "The logger categories and levels at which logs are collected. Setting the log level to null will have logs collected from the corresponding category at the level set in the LogLevel property.",
             "nullable": true
           },
           "useAppFilters": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Set to true to collect logs at the application-defined categories and levels."
           }
-        }
+        },
+        "additionalProperties": false
       },
       "MethodDescription": {
         "required": [
@@ -2010,27 +1999,19 @@
         "type": "object",
         "properties": {
           "moduleName": {
+            "minLength": 1,
             "type": "string"
           },
           "typeName": {
+            "minLength": 1,
             "type": "string"
           },
           "methodName": {
+            "minLength": 1,
             "type": "string"
           }
-        }
-      },
-      "NullableOfLogLevel": {
-        "enum": [
-          "Trace",
-          "Debug",
-          "Information",
-          "Warning",
-          "Error",
-          "Critical",
-          "None",
-          null
-        ]
+        },
+        "additionalProperties": false
       },
       "MonitorCapability": {
         "required": [
@@ -2125,13 +2106,16 @@
             "type": "boolean"
           },
           "tags": {
+            "uniqueItems": true,
             "type": "array",
             "items": {
               "type": "string"
             },
             "nullable": true
           }
-        }
+        },
+        "additionalProperties": false,
+        "description": "Represents the state of a long running operation. Used for all types of results, including successes and failures."
       },
       "OperationSummary": {
         "type": "object",
@@ -2158,13 +2142,16 @@
             "type": "boolean"
           },
           "tags": {
+            "uniqueItems": true,
             "type": "array",
             "items": {
               "type": "string"
             },
             "nullable": true
           }
-        }
+        },
+        "additionalProperties": false,
+        "description": "Represents a partial model when enumerating all operations."
       },
       "ProblemDetails": {
         "type": "object",
@@ -2190,7 +2177,8 @@
             "type": "string",
             "nullable": true
           }
-        }
+        },
+        "additionalProperties": { }
       },
       "ProcessIdentifier": {
         "type": "object",
@@ -2210,7 +2198,8 @@
           "isDefault": {
             "type": "boolean"
           }
-        }
+        },
+        "additionalProperties": false
       },
       "ProcessInfo": {
         "type": "object",
@@ -2241,43 +2230,6 @@
           }
         },
         "additionalProperties": false
-      },
-      "ValidationProblemDetails": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "nullable": true
-          },
-          "title": {
-            "type": "string",
-            "nullable": true
-          },
-          "status": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "detail": {
-            "type": "string",
-            "nullable": true
-          },
-          "instance": {
-            "type": "string",
-            "nullable": true
-          },
-          "errors": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": { }
       }
     },
     "responses": {
