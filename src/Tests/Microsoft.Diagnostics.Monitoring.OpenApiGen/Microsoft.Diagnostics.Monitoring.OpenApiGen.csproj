@@ -12,8 +12,4 @@
     <ProjectReference Include="..\..\Tools\dotnet-monitor\dotnet-monitor.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
-  </ItemGroup>
- 
 </Project>

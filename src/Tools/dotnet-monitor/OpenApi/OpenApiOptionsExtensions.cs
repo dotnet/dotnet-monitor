@@ -15,7 +15,10 @@ using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
 {
@@ -163,20 +166,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
                 return Task.CompletedTask;
             });
 
-            // Add missing descriptions on types
+            // Add missing descriptions on types that have DescriptionAttribute
             options.AddSchemaTransformer((schema, context, cancellationToken) => {
-                var type = context.JsonTypeInfo.Type;
-                if (type == typeof(OperationProcessInfo))
+                var descriptionAttribute = context.JsonTypeInfo.Type.GetCustomAttributes<DescriptionAttribute>().ToArray();
+                if (descriptionAttribute.Length > 0)
                 {
-                    schema.Description = "Represents the details of a given process used in an operation.";
-                }
-                else if (type == typeof(OperationStatus))
-                {
-                    schema.Description = "Represents the state of a long running operation. Used for all types of results, including successes and failures.";
-                }
-                else if (type == typeof(OperationSummary))
-                {
-                    schema.Description = "Represents a partial model when enumerating all operations.";
+                    schema.Description = descriptionAttribute[0].Description;
                 }
                 return Task.CompletedTask;
             });
