@@ -827,18 +827,7 @@
                 "schema": {
                   "type": "object",
                   "additionalProperties": {
-                    "type": "object",
-                    "properties": {
-                      "state": {
-                        "$ref": "#/components/schemas/CollectionRuleState"
-                      },
-                      "stateReason": {
-                        "type": "string",
-                        "description": "Human-readable explanation for the current state of the collection rule.",
-                        "nullable": true
-                      }
-                    },
-                    "additionalProperties": false
+                    "$ref": "#/components/schemas/CollectionRuleDescription"
                   }
                 }
               }

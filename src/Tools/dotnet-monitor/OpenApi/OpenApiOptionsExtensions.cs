@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Diagnostics.Monitoring.Options;
-using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Controllers;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers;
@@ -147,21 +146,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
                         }
                     };
                 }
-                return Task.CompletedTask;
-            });
-
-            // Fix up "additionalProperties" for the response type of GetCollectionRulesDescription
-            options.AddOperationTransformer((operation, context, cancellationToken) => {
-                if (operation.OperationId == nameof(DiagController.GetCollectionRulesDescription))
+                else if (type == typeof(Dictionary<string, CollectionRuleDescription>))
                 {
-                    foreach (var response in operation.Responses)
-                    {
-                        if (response.Key == StatusCodeStrings.Status200Ok)
-                        {
-                            var schema = response.Value.Content[ContentTypes.ApplicationJson].Schema;
-                            schema.AdditionalProperties.AdditionalPropertiesAllowed = false;
-                        }
-                    }
+                    schema.AdditionalProperties.AdditionalPropertiesAllowed = false;
                 }
                 return Task.CompletedTask;
             });
