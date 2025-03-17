@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.AspNetCore.Authorization;
@@ -486,9 +486,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     RuntimeVersion = runtimeVersion,
                     DiagnosticPortMode = diagnosticPortMode,
                     DiagnosticPortName = diagnosticPortName,
-                    Capabilities = _monitorCapabilities.Select(c => new MonitorCapability(c.Name) {
-                        Enabled = c.Enabled
-                    }).ToArray()
+                    Capabilities = _monitorCapabilities.Select(c => new MonitorCapability(c.Name, c.Enabled)).ToArray()
                 };
 
                 Logger.WrittenToHttpStream();

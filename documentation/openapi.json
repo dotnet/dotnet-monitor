@@ -2004,7 +2004,8 @@
       },
       "MonitorCapability": {
         "required": [
-          "name"
+          "name",
+          "enabled"
         ],
         "type": "object",
         "properties": {

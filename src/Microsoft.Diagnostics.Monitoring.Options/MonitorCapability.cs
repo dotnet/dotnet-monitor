@@ -14,11 +14,12 @@ namespace Microsoft.Diagnostics.Monitoring.Options
         public string Name { get; set; }
 
         [JsonPropertyName("enabled")]
-        public bool Enabled { get; init; }
+        public bool Enabled { get; }
 
-        public MonitorCapability(string name)
+        public MonitorCapability(string name, bool enabled)
         {
             Name = name;
+            Enabled = enabled;
         }
     }
 }
