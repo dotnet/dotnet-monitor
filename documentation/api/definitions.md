@@ -530,6 +530,7 @@ Some properties will have non-null values for processes that are running on .NET
 | `commandLine` | string | The command line of the process (includes process path and arguments) |
 | `operatingSystem` | string | `.NET 5+` The operating system on which the process is running (e.g. `windows`, `linux`, `macos`).<br/>`.NET Core 3.1` A value of `null`. |
 | `processArchitecture` | string | `.NET 5+` The architecture of the process (e.g. `x64`, `x86`).<br/>`.NET Core 3.1` A value of `null`. |
+| `managedEntryPointAssemblyName` | string | `9.1+` The name of the managed entrypoint assembly. |
 
 The `uid` property is useful for uniquely identifying a process when it is running in an environment where the process ID may not be unique (e.g. multiple containers within a Kubernetes pod will have entrypoint processes with process ID 1).
 
