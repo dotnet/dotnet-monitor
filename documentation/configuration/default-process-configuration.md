@@ -160,7 +160,7 @@ Optionally, a shorthand format allows you to omit the `Key` and `Value` terms an
   ```
 </details>
 
-### Match MyApp.dll
+### Match MyApp.dll Entry Point
 
 <details>
   <summary>JSON</summary>
@@ -170,7 +170,7 @@ Optionally, a shorthand format allows you to omit the `Key` and `Value` terms an
     "DefaultProcess": {
       "Filters": [{
         "Key": "ManagedEntryPointAssemblyName",
-        "Value": "MyApp.dll"
+        "Value": "MyApp"
       }]
     },
   }
@@ -182,7 +182,7 @@ Optionally, a shorthand format allows you to omit the `Key` and `Value` terms an
 
   ```yaml
   DefaultProcess__Filters__0__Key: "ManagedEntryPointAssemblyName"
-  DefaultProcess__Filters__0__Value: "MyApp.dll"
+  DefaultProcess__Filters__0__Value: "MyApp"
   ```
 </details>
 
@@ -193,11 +193,11 @@ Optionally, a shorthand format allows you to omit the `Key` and `Value` terms an
   - name: DotnetMonitor_DefaultProcess__Filters__0__Key
     value: "ManagedEntryPointAssemblyName"
   - name: DotnetMonitor_DefaultProcess__Filters__0__Value
-    value: "MyApp.dll"
+    value: "MyApp"
   ```
 </details>
 
-### Match MyApp.dll (Shorthand)
+### Match MyApp.dll Entry Point (Shorthand)
 
 <details>
   <summary>JSON</summary>
@@ -206,7 +206,7 @@ Optionally, a shorthand format allows you to omit the `Key` and `Value` terms an
   {
     "DefaultProcess": {
       "Filters": [{
-        "ManagedEntryPointAssemblyName": "MyApp.dll"
+        "ManagedEntryPointAssemblyName": "MyApp"
       }]
     },
   }
@@ -217,7 +217,7 @@ Optionally, a shorthand format allows you to omit the `Key` and `Value` terms an
   <summary>Kubernetes ConfigMap</summary>
 
   ```yaml
-  DefaultProcess__Filters__0__ManagedEntryPointAssemblyName: "MyApp.dll"
+  DefaultProcess__Filters__0__ManagedEntryPointAssemblyName: "MyApp"
   ```
 </details>
 
@@ -226,6 +226,6 @@ Optionally, a shorthand format allows you to omit the `Key` and `Value` terms an
 
   ```yaml
   - name: DotnetMonitor_DefaultProcess__Filters__0__ManagedEntryPointAssemblyName
-    value: "MyApp.dll"
+    value: "MyApp"
   ```
 </details>
