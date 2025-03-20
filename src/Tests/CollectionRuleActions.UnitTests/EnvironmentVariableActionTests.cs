@@ -42,7 +42,7 @@ namespace CollectionRuleActions.UnitTests
         /// The required APIs only exist on .NET 6.0+
         /// </remarks>
         [Theory]
-        [MemberData(nameof(ActionTestsHelper.Get6PlusTfms), MemberType = typeof(ActionTestsHelper))]
+        [MemberData(nameof(ActionTestsHelper.Get7PlusTfms), MemberType = typeof(ActionTestsHelper))]
         public async Task TestSetEnvVar(TargetFrameworkMoniker tfm)
         {
             await TestHostHelper.CreateCollectionRulesHost(
@@ -89,7 +89,7 @@ namespace CollectionRuleActions.UnitTests
         /// The required APIs only exist on .NET 6.0+
         /// </remarks>
         [Theory]
-        [MemberData(nameof(ActionTestsHelper.Get6PlusTfms), MemberType = typeof(ActionTestsHelper))]
+        [MemberData(nameof(ActionTestsHelper.Get7PlusTfms), MemberType = typeof(ActionTestsHelper))]
         public async Task TestGetEnvVar(TargetFrameworkMoniker tfm)
         {
             const string VariableDoesNotExist = "SomeEnvVarThatIsNotSet";
@@ -156,7 +156,7 @@ namespace CollectionRuleActions.UnitTests
         /// The required APIs only exist on .NET 6.0+
         /// </remarks>
         [Theory]
-        [MemberData(nameof(ActionTestsHelper.Get6PlusTfms), MemberType = typeof(ActionTestsHelper))]
+        [MemberData(nameof(ActionTestsHelper.Get7PlusTfms), MemberType = typeof(ActionTestsHelper))]
         public async Task TestEnvVarRoundTrip(TargetFrameworkMoniker tfm)
         {
             await TestHostHelper.CreateCollectionRulesHost(

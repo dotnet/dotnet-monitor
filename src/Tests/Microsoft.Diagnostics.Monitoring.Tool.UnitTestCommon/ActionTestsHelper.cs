@@ -22,14 +22,12 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
     {
         private static TargetFrameworkMoniker[] tfmsToTest =
         [
-            TargetFrameworkMoniker.Net60,
             TargetFrameworkMoniker.Net70,
             TargetFrameworkMoniker.Net80
         ];
 
-        private static TargetFrameworkMoniker[] tfms6PlusToTest =
+        private static TargetFrameworkMoniker[] tfms7PlusToTest =
         [
-            TargetFrameworkMoniker.Net60,
             TargetFrameworkMoniker.Net70,
             TargetFrameworkMoniker.Net80
         ];
@@ -42,9 +40,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             }
         }
 
-        public static IEnumerable<object[]> Get6PlusTfms()
+        public static IEnumerable<object[]> Get7PlusTfms()
         {
-            foreach (TargetFrameworkMoniker tfm in tfms6PlusToTest)
+            foreach (TargetFrameworkMoniker tfm in tfms7PlusToTest)
             {
                 yield return new object[] { tfm };
             }
@@ -109,7 +107,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 string profilerPath = ProfilerHelper.GetPath(architecture);
                 if (File.Exists(profilerPath))
                 {
-                    foreach (TargetFrameworkMoniker tfm in ActionTestsHelper.tfms6PlusToTest)
+                    foreach (TargetFrameworkMoniker tfm in ActionTestsHelper.tfms7PlusToTest)
                     {
                         arguments.Add(new object[] { tfm, architecture, profilerPath });
                     }
