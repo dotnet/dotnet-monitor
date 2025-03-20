@@ -16,6 +16,9 @@
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
           "200": {
             "description": "OK",
             "content": {
@@ -28,9 +31,6 @@
                 }
               }
             }
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequestResponse"
           }
         }
       }
@@ -74,6 +74,9 @@
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
           "200": {
             "description": "OK",
             "content": {
@@ -83,9 +86,6 @@
                 }
               }
             }
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequestResponse"
           }
         }
       }
@@ -129,6 +129,9 @@
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
           "200": {
             "description": "OK",
             "content": {
@@ -141,9 +144,6 @@
                 }
               }
             }
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequestResponse"
           }
         }
       }
@@ -218,6 +218,9 @@
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
           "429": {
             "$ref": "#/components/responses/TooManyRequestsResponse"
           },
@@ -234,9 +237,6 @@
           },
           "202": {
             "description": "Accepted"
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequestResponse"
           }
         }
       }
@@ -296,6 +296,9 @@
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
           "429": {
             "$ref": "#/components/responses/TooManyRequestsResponse"
           },
@@ -312,9 +315,6 @@
           },
           "202": {
             "description": "Accepted"
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequestResponse"
           }
         }
       }
@@ -402,6 +402,9 @@
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
           "429": {
             "$ref": "#/components/responses/TooManyRequestsResponse"
           },
@@ -418,9 +421,6 @@
           },
           "202": {
             "description": "Accepted"
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequestResponse"
           }
         }
       },
@@ -511,6 +511,9 @@
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
           "429": {
             "$ref": "#/components/responses/TooManyRequestsResponse"
           },
@@ -527,9 +530,6 @@
           },
           "202": {
             "description": "Accepted"
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequestResponse"
           }
         }
       }
@@ -609,6 +609,9 @@
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
           "429": {
             "$ref": "#/components/responses/TooManyRequestsResponse"
           },
@@ -634,9 +637,6 @@
           },
           "202": {
             "description": "Accepted"
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequestResponse"
           }
         }
       },
@@ -727,6 +727,9 @@
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
           "429": {
             "$ref": "#/components/responses/TooManyRequestsResponse"
           },
@@ -752,9 +755,6 @@
           },
           "202": {
             "description": "Accepted"
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequestResponse"
           }
         }
       }
@@ -770,6 +770,9 @@
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
           "200": {
             "description": "OK",
             "content": {
@@ -779,9 +782,6 @@
                 }
               }
             }
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequestResponse"
           }
         }
       }
@@ -825,6 +825,9 @@
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
           "200": {
             "description": "OK",
             "content": {
@@ -837,9 +840,6 @@
                 }
               }
             }
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequestResponse"
           }
         }
       }
@@ -892,6 +892,9 @@
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
           "200": {
             "description": "OK",
             "content": {
@@ -901,9 +904,6 @@
                 }
               }
             }
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequestResponse"
           }
         }
       }
@@ -988,6 +988,9 @@
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
           "429": {
             "$ref": "#/components/responses/TooManyRequestsResponse"
           },
@@ -1013,9 +1016,6 @@
           },
           "202": {
             "description": "Accepted"
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequestResponse"
           }
         }
       }
@@ -1069,6 +1069,9 @@
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
           "429": {
             "$ref": "#/components/responses/TooManyRequestsResponse"
           },
@@ -1094,9 +1097,6 @@
           },
           "202": {
             "description": "Accepted"
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequestResponse"
           }
         }
       }
@@ -1168,6 +1168,9 @@
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
           "429": {
             "$ref": "#/components/responses/TooManyRequestsResponse"
           },
@@ -1183,9 +1186,6 @@
           },
           "202": {
             "description": "Accepted"
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequestResponse"
           }
         }
       },
@@ -1276,6 +1276,9 @@
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
           "429": {
             "$ref": "#/components/responses/TooManyRequestsResponse"
           },
@@ -1291,9 +1294,6 @@
           },
           "202": {
             "description": "Accepted"
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequestResponse"
           }
         }
       }

@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.AspNetCore.Builder;
@@ -33,7 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 .RequireHostRestriction()
                 .RequireAuthorization(AuthConstants.PolicyName)
                 .Produces(StatusCodes.Status401Unauthorized)
-                // .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
+                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
                 .WithTags("Diag");
         }
     }
