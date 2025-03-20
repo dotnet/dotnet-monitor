@@ -140,6 +140,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     Name = processInfo.ProcessName,
                     OperatingSystem = processInfo.OperatingSystem,
                     ProcessArchitecture = processInfo.ProcessArchitecture,
+                    ManagedEntryPointAssemblyName = processInfo.ManagedEntryPointAssemblyName,
                     Pid = processInfo.EndpointInfo.ProcessId,
                     Uid = processInfo.EndpointInfo.RuntimeInstanceCookie
                 };
