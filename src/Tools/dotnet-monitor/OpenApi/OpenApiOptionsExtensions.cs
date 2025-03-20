@@ -187,6 +187,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
                 }
                 return Task.CompletedTask;
             });
+
+            // Ensure enums have type: string
+            options.AddSchemaTransformer((schema, context, cancellationToken) => {
+                var type = context.JsonTypeInfo.Type;
+                if (type.IsEnum)
+                {
+                    schema.Type = "string";
+                }
+                else if (type == typeof(Dictionary<string, CollectionRuleDescription>))
+                {
+                    schema.AdditionalProperties.Properties["state"].Type = "string";
+                }
+                return Task.CompletedTask;
+            });
         }
 
         public static void AddBearerTokenAuthOption(this OpenApiOptions options, string securityDefinitionName)

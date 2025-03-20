@@ -193,6 +193,7 @@
                 "WithHeap",
                 "Triage"
               ],
+              "type": "string",
               "default": "WithHeap"
             }
           },
@@ -1734,13 +1735,15 @@
           "ActionExecuting",
           "Throttled",
           "Finished"
-        ]
+        ],
+        "type": "string"
       },
       "DiagnosticPortConnectionMode": {
         "enum": [
           "Connect",
           "Listen"
-        ]
+        ],
+        "type": "string"
       },
       "DotnetMonitorInfo": {
         "required": [
@@ -1785,7 +1788,8 @@
           "Warning",
           "Informational",
           "Verbose"
-        ]
+        ],
+        "type": "string"
       },
       "EventMetricsConfiguration": {
         "type": "object",
@@ -1953,7 +1957,8 @@
           "Error",
           "Critical",
           "None"
-        ]
+        ],
+        "type": "string"
       },
       "LogsConfiguration": {
         "required": [
@@ -2062,7 +2067,8 @@
           "Failed",
           "Cancelled",
           "Stopping"
-        ]
+        ],
+        "type": "string"
       },
       "OperationStatus": {
         "type": "object",
