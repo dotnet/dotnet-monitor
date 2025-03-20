@@ -42,7 +42,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
                 .Produces<string>(StatusCodes.Status200OK, ContentTypes.ApplicationJsonSequence)
                 .Produces(StatusCodes.Status202Accepted)
-                .ProducesProblem(StatusCodes.Status400BadRequest)
                 .RequireEgressValidation();
 
             // CaptureMetricsCustom
@@ -71,7 +70,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
                 .Produces<string>(StatusCodes.Status200OK, ContentTypes.ApplicationJsonSequence)
                 .Produces(StatusCodes.Status202Accepted)
-                .ProducesProblem(StatusCodes.Status400BadRequest)
                 .Accepts<Models.EventMetricsConfiguration>(ContentTypes.ApplicationJson, ContentTypes.TextJson, ContentTypes.ApplicationAnyJson)
                 .RequireEgressValidation();
         }

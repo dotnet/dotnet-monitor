@@ -87,8 +87,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     new DiagController(context.RequestServices, logger).GetProcesses())
                 .WithName(nameof(GetProcesses))
                 .RequireDiagControllerCommon()
-                .Produces<IEnumerable<ProcessIdentifier>>(StatusCodes.Status200OK)
-                .ProducesProblem(StatusCodes.Status400BadRequest);
+                .Produces<IEnumerable<ProcessIdentifier>>(StatusCodes.Status200OK);
 
             // GetProcessInfo
             builder.MapGet("process",
@@ -101,8 +100,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     new DiagController(context.RequestServices, logger).GetProcessInfo(pid, uid, name))
                 .WithName(nameof(GetProcessInfo))
                 .RequireDiagControllerCommon()
-                .Produces<Models.ProcessInfo>(StatusCodes.Status200OK)
-                .ProducesProblem(StatusCodes.Status400BadRequest);
+                .Produces<Models.ProcessInfo>(StatusCodes.Status200OK);
 
             // GetProcessEnvironment
             builder.MapGet("env",
@@ -115,8 +113,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     new DiagController(context.RequestServices, logger).GetProcessEnvironment(pid, uid, name))
                 .WithName(nameof(GetProcessEnvironment))
                 .RequireDiagControllerCommon()
-                .Produces<Dictionary<string, string>>(StatusCodes.Status200OK)
-                .ProducesProblem(StatusCodes.Status400BadRequest);
+                .Produces<Dictionary<string, string>>(StatusCodes.Status200OK);
 
             // CaptureDump
             builder.MapGet("dump",
@@ -138,7 +135,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 // .Produces<FileStreamHttpResult>(StatusCodes.Status200OK, ContentTypes.ApplicationOctetStream)
                 // .Produces<FileStreamHttpResult>(StatusCodes.Status200OK)
                 .Produces(StatusCodes.Status202Accepted)
-                .ProducesProblem(StatusCodes.Status400BadRequest)
                 .RequireEgressValidation();
 
             // CaptureGcDump
@@ -157,7 +153,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
                 .Produces<FileResult>(StatusCodes.Status200OK, ContentTypes.ApplicationOctetStream)
                 .Produces(StatusCodes.Status202Accepted)
-                .ProducesProblem(StatusCodes.Status400BadRequest)
                 .RequireEgressValidation();
 
             // CaptureTrace
@@ -178,7 +173,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
                 .Produces<FileResult>(StatusCodes.Status200OK, ContentTypes.ApplicationOctetStream)
                 .Produces(StatusCodes.Status202Accepted)
-                .ProducesProblem(StatusCodes.Status400BadRequest)
                 .RequireEgressValidation();
 
             // CaptureTraceCustom
@@ -199,7 +193,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
                 .Produces<FileResult>(StatusCodes.Status200OK, ContentTypes.ApplicationOctetStream)
                 .Produces(StatusCodes.Status202Accepted)
-                .ProducesProblem(StatusCodes.Status400BadRequest)
                 // TODO: does it actually accept these?
                 .Accepts<EventPipeConfiguration>(ContentTypes.ApplicationJson, ContentTypes.TextJson, ContentTypes.ApplicationAnyJson)
                 .RequireEgressValidation();
@@ -222,7 +215,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
                 .Produces<string>(StatusCodes.Status200OK, ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)
                 .Produces(StatusCodes.Status202Accepted)
-                .ProducesProblem(StatusCodes.Status400BadRequest)
                 .RequireEgressValidation();
 
             // CaptureLogsCustom
@@ -243,7 +235,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
                 .Produces<string>(StatusCodes.Status200OK, ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)
                 .Produces(StatusCodes.Status202Accepted)
-                .ProducesProblem(StatusCodes.Status400BadRequest)
                 .Accepts<LogsConfiguration>(ContentTypes.ApplicationJson, ContentTypes.TextJson, ContentTypes.ApplicationAnyJson)
                 .RequireEgressValidation();
 
@@ -255,8 +246,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     new DiagController(context.RequestServices, logger).GetInfo())
                 .WithName(nameof(GetInfo))
                 .RequireDiagControllerCommon()
-                .Produces<DotnetMonitorInfo>(StatusCodes.Status200OK)
-                .ProducesProblem(StatusCodes.Status400BadRequest);
+                .Produces<DotnetMonitorInfo>(StatusCodes.Status200OK);
 
             // GetCollectionRulesDescription
             builder.MapGet("collectionrules",
@@ -269,8 +259,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     new DiagController(context.RequestServices, logger).GetCollectionRulesDescription(pid, uid, name))
                 .WithName(nameof(GetCollectionRulesDescription))
                 .RequireDiagControllerCommon()
-                .Produces<Dictionary<string, CollectionRuleDescription>>(StatusCodes.Status200OK)
-                .ProducesProblem(StatusCodes.Status400BadRequest);
+                .Produces<Dictionary<string, CollectionRuleDescription>>(StatusCodes.Status200OK);
 
             // GetCollectionRuleDetailedDescription
             builder.MapGet("collectionrules/{collectionRuleName}",
@@ -284,8 +273,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     new DiagController(context.RequestServices, logger).GetCollectionRuleDetailedDescription(collectionRuleName, pid, uid, name))
                 .WithName(nameof(GetCollectionRuleDetailedDescription))
                 .RequireDiagControllerCommon()
-                .Produces<CollectionRuleDetailedDescription>(StatusCodes.Status200OK)
-                .ProducesProblem(StatusCodes.Status400BadRequest);
+                .Produces<CollectionRuleDetailedDescription>(StatusCodes.Status200OK);
 
             // CaptureParameters
             builder.MapPost("parameters", (
@@ -304,7 +292,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
                 .Produces<string>(StatusCodes.Status200OK, ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)
                 .Produces(StatusCodes.Status202Accepted)
-                .ProducesProblem(StatusCodes.Status400BadRequest)
                 .Accepts<CaptureParametersConfiguration>(ContentTypes.ApplicationJson, ContentTypes.TextJson, ContentTypes.ApplicationAnyJson)
                 .RequireEgressValidation();
 
@@ -323,7 +310,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
                 .Produces<string>(StatusCodes.Status200OK, ContentTypes.ApplicationJson, ContentTypes.TextPlain, ContentTypes.ApplicationSpeedscopeJson)
                 .Produces(StatusCodes.Status202Accepted)
-                .ProducesProblem(StatusCodes.Status400BadRequest)
                 .RequireEgressValidation();
         }
 

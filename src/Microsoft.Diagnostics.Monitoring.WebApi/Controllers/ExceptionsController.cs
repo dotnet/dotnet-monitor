@@ -61,9 +61,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 .RequireExceptionsControllerCommon()
                 .Produces<string>(StatusCodes.Status200OK, ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)
                 .Produces(StatusCodes.Status202Accepted)
-                .ProducesProblem(StatusCodes.Status400BadRequest)
                 .RequireEgressValidation();
-            
+
             // CaptureExceptionsCustom
             builder.MapPost("exceptions",
                 [EndpointSummary("Gets the exceptions from the target process.")] (
@@ -80,7 +79,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 .WithName(nameof(CaptureExceptionsCustom))
                 .RequireExceptionsControllerCommon()
                 .Produces<string>(StatusCodes.Status200OK, ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)
-                .ProducesProblem(StatusCodes.Status400BadRequest)
                 .Accepts<ExceptionsConfiguration>(ContentTypes.ApplicationJson, ContentTypes.TextJson, ContentTypes.ApplicationAnyJson)
                 .RequireEgressValidation();
         }

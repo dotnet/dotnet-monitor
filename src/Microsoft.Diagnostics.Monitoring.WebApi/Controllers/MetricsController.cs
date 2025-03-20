@@ -41,7 +41,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 .WithName(nameof(GetMetrics))
                 .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
                 .Produces<string>(StatusCodes.Status200OK, ContentTypes.TextPlain_v0_0_4)
-                .ProducesProblem(StatusCodes.Status400BadRequest)
                 .WithTags("Metrics");
         }
 
