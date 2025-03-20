@@ -193,6 +193,7 @@
                 "WithHeap",
                 "Triage"
               ],
+              "type": "string",
               "default": "WithHeap"
             }
           },
@@ -357,6 +358,13 @@
             "in": "query",
             "description": "The profiles enabled for the trace session.",
             "schema": {
+              "enum": [
+                "Cpu",
+                "Http",
+                "Logs",
+                "Metrics",
+                "GcCollect"
+              ],
               "type": "string",
               "default": "Cpu, Http, Metrics, GcCollect"
             }
@@ -1734,13 +1742,15 @@
           "ActionExecuting",
           "Throttled",
           "Finished"
-        ]
+        ],
+        "type": "string"
       },
       "DiagnosticPortConnectionMode": {
         "enum": [
           "Connect",
           "Listen"
-        ]
+        ],
+        "type": "string"
       },
       "DotnetMonitorInfo": {
         "required": [
@@ -1785,7 +1795,8 @@
           "Warning",
           "Informational",
           "Verbose"
-        ]
+        ],
+        "type": "string"
       },
       "EventMetricsConfiguration": {
         "type": "object",
@@ -1953,7 +1964,8 @@
           "Error",
           "Critical",
           "None"
-        ]
+        ],
+        "type": "string"
       },
       "LogsConfiguration": {
         "required": [
@@ -2004,7 +2016,8 @@
       },
       "MonitorCapability": {
         "required": [
-          "name"
+          "name",
+          "enabled"
         ],
         "type": "object",
         "properties": {
@@ -2061,7 +2074,8 @@
           "Failed",
           "Cancelled",
           "Stopping"
-        ]
+        ],
+        "type": "string"
       },
       "OperationStatus": {
         "type": "object",
