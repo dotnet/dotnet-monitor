@@ -358,6 +358,13 @@
             "in": "query",
             "description": "The profiles enabled for the trace session.",
             "schema": {
+              "enum": [
+                "Cpu",
+                "Http",
+                "Logs",
+                "Metrics",
+                "GcCollect"
+              ],
               "type": "string",
               "default": "Cpu, Http, Metrics, GcCollect"
             }

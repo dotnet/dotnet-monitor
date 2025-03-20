@@ -194,6 +194,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
                 if (type.IsEnum)
                 {
                     schema.Type = "string";
+
+                    // Also treat enums with [Flags] as enums in the schema
+                    if (type.GetCustomAttribute<FlagsAttribute>() != null)
+                    {
+                        schema.Enum = Enum.GetNames(type)
+                            .Select(name => new OpenApiString(name))
+                            .ToList<IOpenApiAny>();
+                    }
                 }
                 else if (type == typeof(Dictionary<string, CollectionRuleDescription>))
                 {
