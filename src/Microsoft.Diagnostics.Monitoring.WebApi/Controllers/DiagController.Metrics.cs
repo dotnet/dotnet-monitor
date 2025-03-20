@@ -1,8 +1,10 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -12,6 +14,49 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
     partial class DiagController
     {
+        public DiagController MapMetricsActionMethods(IEndpointRouteBuilder builder)
+        {
+            // CaptureMetrics
+            builder.MapGet("livemetrics", (
+                int? pid,
+                Guid? uid,
+                string? name,
+                [Range(-1, int.MaxValue)]
+                int durationSeconds = 30,
+                string? egressProvider = null,
+                string? tags = null) =>
+                    CaptureMetrics(pid, uid, name, durationSeconds, egressProvider, tags))
+                .WithName(nameof(CaptureMetrics))
+                .RequireDiagControllerCommon()
+                .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
+                .Produces<string>(StatusCodes.Status200OK, ContentTypes.ApplicationJsonSequence)
+                .Produces(StatusCodes.Status202Accepted)
+                .ProducesProblem(StatusCodes.Status400BadRequest)
+                .RequireEgressValidation();
+
+            // CaptureMetricsCustom
+            builder.MapGet("livemetrics", (
+                [FromBody][Required]
+                Models.EventMetricsConfiguration configuration,
+                int? pid,
+                Guid? uid,
+                string? name,
+                [Range(-1, int.MaxValue)]
+                int durationSeconds = 30,
+                string? egressProvider = null,
+                string? tags = null) =>
+                    CaptureMetricsCustom(configuration, pid, uid, name, durationSeconds, egressProvider, tags))
+                .WithName(nameof(CaptureMetricsCustom))
+                .RequireDiagControllerCommon()
+                .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
+                .Produces<string>(StatusCodes.Status200OK, ContentTypes.ApplicationJsonSequence)
+                .Produces(StatusCodes.Status202Accepted)
+                .ProducesProblem(StatusCodes.Status400BadRequest)
+                .RequireEgressValidation();
+
+            return this;
+        }
+
         /// <summary>
         /// Capture metrics for a process.
         /// </summary>
@@ -21,25 +66,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="durationSeconds">The duration of the metrics session (in seconds).</param>
         /// <param name="egressProvider">The egress provider to which the metrics are saved.</param>
         /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
-        [HttpGet("livemetrics", Name = nameof(CaptureMetrics))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationJsonSequence)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
-        [EgressValidation]
-        public Task<ActionResult> CaptureMetrics(
-            [FromQuery]
-            int? pid = null,
-            [FromQuery]
-            Guid? uid = null,
-            [FromQuery]
-            string? name = null,
-            [FromQuery][Range(-1, int.MaxValue)]
-            int durationSeconds = 30,
-            [FromQuery]
-            string? egressProvider = null,
-            [FromQuery]
-            string? tags = null)
+        public Task<IResult> CaptureMetrics(
+            int? pid,
+            Guid? uid,
+            string? name,
+            int durationSeconds,
+            string? egressProvider,
+            string? tags)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
@@ -69,27 +102,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         /// <param name="durationSeconds">The duration of the metrics session (in seconds).</param>
         /// <param name="egressProvider">The egress provider to which the metrics are saved.</param>
         /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
-        [HttpPost("livemetrics", Name = nameof(CaptureMetricsCustom))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationJsonSequence)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
-        [EgressValidation]
-        public Task<ActionResult> CaptureMetricsCustom(
-            [FromBody][Required]
+        public Task<IResult> CaptureMetricsCustom(
             Models.EventMetricsConfiguration configuration,
-            [FromQuery]
-            int? pid = null,
-            [FromQuery]
-            Guid? uid = null,
-            [FromQuery]
-            string? name = null,
-            [FromQuery][Range(-1, int.MaxValue)]
-            int durationSeconds = 30,
-            [FromQuery]
-            string? egressProvider = null,
-            [FromQuery]
-            string? tags = null)
+            int? pid,
+            Guid? uid,
+            string? name,
+            int durationSeconds,
+            string? egressProvider,
+            string? tags)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 

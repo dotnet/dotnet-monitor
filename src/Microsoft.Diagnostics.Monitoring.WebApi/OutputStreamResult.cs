@@ -1,7 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    internal sealed class OutputStreamResult : ActionResult
+    internal sealed class OutputStreamResult : IResult
     {
         private readonly Func<Stream, CancellationToken, Task> _action;
         private readonly string _contentType;
@@ -32,9 +32,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
         }
 
-        public override async Task ExecuteResultAsync(ActionContext context)
+        public async Task ExecuteAsync(HttpContext context)
         {
-            ILogger<OutputStreamResult> logger = context.HttpContext.RequestServices
+            ILogger<OutputStreamResult> logger = context.RequestServices
                 .GetRequiredService<ILoggerFactory>()
                 .CreateLogger<OutputStreamResult>();
 
@@ -46,13 +46,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                 {
                     ContentDispositionHeaderValue contentDispositionHeaderValue = new ContentDispositionHeaderValue("attachment");
                     contentDispositionHeaderValue.FileName = _fileDownloadName;
-                    context.HttpContext.Response.Headers["Content-Disposition"] = contentDispositionHeaderValue.ToString();
+                    context.Response.Headers["Content-Disposition"] = contentDispositionHeaderValue.ToString();
                 }
-                context.HttpContext.Response.Headers["Content-Type"] = _contentType;
+                context.Response.Headers["Content-Type"] = _contentType;
 
-                context.HttpContext.Features.Get<AspNetCore.Http.Features.IHttpResponseBodyFeature>()?.DisableBuffering();
+                context.Features.Get<AspNetCore.Http.Features.IHttpResponseBodyFeature>()?.DisableBuffering();
 
-                await _action(context.HttpContext.Response.Body, token);
+                await _action(context.Response.Body, token);
 
                 logger.WrittenToHttpStream();
             }, logger);
