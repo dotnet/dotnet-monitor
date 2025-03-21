@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -10,13 +10,14 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
-    public abstract class DiagnosticsControllerBase : ControllerBase
+    public abstract class DiagnosticsControllerBase : MinimalControllerBase
     {
-        protected DiagnosticsControllerBase(IServiceProvider serviceProvider, ILogger logger) :
-            this(serviceProvider.GetRequiredService<IDiagnosticServices>(), serviceProvider.GetRequiredService<IEgressOperationStore>(), logger)
+        protected DiagnosticsControllerBase(HttpContext httpContext, IServiceProvider serviceProvider, ILogger logger) :
+            this(httpContext, serviceProvider.GetRequiredService<IDiagnosticServices>(), serviceProvider.GetRequiredService<IEgressOperationStore>(), logger)
         { }
 
-        private protected DiagnosticsControllerBase(IDiagnosticServices diagnosticServices, IEgressOperationStore operationStore, ILogger logger)
+        private protected DiagnosticsControllerBase(HttpContext httpContext, IDiagnosticServices diagnosticServices, IEgressOperationStore operationStore, ILogger logger) :
+            base(httpContext)
         {
             DiagnosticServices = diagnosticServices ?? throw new ArgumentNullException(nameof(diagnosticServices));
             OperationStore = operationStore ?? throw new ArgumentNullException(nameof(operationStore));
@@ -118,11 +119,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private async Task<string?> RegisterOperation(IEgressOperation egressOperation, string limitKey)
         {
             // Will throw TooManyRequestsException if there are too many concurrent operations.
+            var linkGenerator = HttpContext.RequestServices.GetRequiredService<LinkGenerator>();
             Guid operationId = await OperationStore.AddOperation(egressOperation, limitKey);
-            return this.Url.Action(
-                action: nameof(OperationsController.GetOperationStatus),
-                controller: OperationsController.ControllerName, new { operationId = operationId },
-                protocol: this.HttpContext.Request.Scheme, this.HttpContext.Request.Host.ToString());
+            return linkGenerator.GetUriByName(
+                endpointName: nameof(OperationsController.GetOperationStatus),
+                values: new { operationId },
+                scheme: HttpContext.Request.Scheme,
+                host: HttpContext.Request.Host);
         }
 
         private async Task<IResult> SendToEgress(IEgressOperation egressOperation, string limitKey)

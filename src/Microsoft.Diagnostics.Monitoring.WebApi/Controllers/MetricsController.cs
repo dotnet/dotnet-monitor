@@ -12,7 +12,7 @@ using System;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
-    public class MetricsController : ControllerBase
+    public class MetricsController : MinimalControllerBase
     {
         private const string ArtifactType_Metrics = "metrics";
 
@@ -20,12 +20,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private readonly MetricsStoreService _metricsStore;
         private readonly MetricsOptions _metricsOptions;
 
-        public MetricsController(ILogger<MetricsController> logger,
-            IServiceProvider serviceProvider,
-            IOptions<MetricsOptions> metricsOptions)
+        public MetricsController(ILogger<MetricsController> logger, HttpContext httpContext, IOptions<MetricsOptions> metricsOptions) :
+            base(httpContext)
         {
             _logger = logger;
-            _metricsStore = serviceProvider.GetRequiredService<MetricsStoreService>();
+            _metricsStore = httpContext.RequestServices.GetRequiredService<MetricsStoreService>();
             _metricsOptions = metricsOptions.Value;
         }
 
@@ -37,7 +36,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 ILogger<MetricsController> logger,
                 HttpContext context,
                 IOptions<MetricsOptions> metricsOptions) =>
-                    new MetricsController(logger, context.RequestServices, metricsOptions).GetMetrics())
+                    new MetricsController(logger, context, metricsOptions).GetMetrics())
                 .WithName(nameof(GetMetrics))
                 .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
                 .Produces<string>(StatusCodes.Status200OK, ContentTypes.TextPlain_v0_0_4)

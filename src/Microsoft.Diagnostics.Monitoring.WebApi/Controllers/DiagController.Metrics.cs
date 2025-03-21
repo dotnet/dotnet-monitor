@@ -36,7 +36,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 string? egressProvider = null,
                 [Description("An optional set of comma-separated identifiers users can include to make an operation easier to identify.")]
                 string? tags = null) =>
-                    new DiagController(context.RequestServices, logger).CaptureMetrics(pid, uid, name, durationSeconds, egressProvider, tags))
+                    new DiagController(context, logger).CaptureMetrics(pid, uid, name, durationSeconds, egressProvider, tags))
                 .WithName(nameof(CaptureMetrics))
                 .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
@@ -64,7 +64,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 string? egressProvider = null,
                 [Description("An optional set of comma-separated identifiers users can include to make an operation easier to identify.")]
                 string? tags = null) =>
-                    new DiagController(context.RequestServices, logger).CaptureMetricsCustom(configuration, pid, uid, name, durationSeconds, egressProvider, tags))
+                    new DiagController(context, logger).CaptureMetricsCustom(configuration, pid, uid, name, durationSeconds, egressProvider, tags))
                 .WithName(nameof(CaptureMetricsCustom))
                 .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)

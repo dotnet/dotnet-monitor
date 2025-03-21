@@ -16,9 +16,21 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
+    public class MinimalControllerBase
+    {
+        internal HttpContext HttpContext { get; }
+
+        internal HttpRequest Request => HttpContext.Request;
+
+        public MinimalControllerBase(HttpContext httpContext)
+        {
+            HttpContext = httpContext;
+        }
+    }
+
     internal static class ControllerExtensions
     {
-        public static ProblemHttpResult FeatureNotEnabled(this ControllerBase controller, string featureName)
+        public static ProblemHttpResult FeatureNotEnabled(this MinimalControllerBase controller, string featureName)
         {
             return TypedResults.Problem(new ProblemDetails()
             {
@@ -27,12 +39,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             });
         }
 
-        public static IResult NotAcceptable(this ControllerBase controller)
+        public static IResult NotAcceptable(this MinimalControllerBase controller)
         {
             return TypedResults.StatusCode((int)HttpStatusCode.NotAcceptable);
         }
 
-        public static IResult InvokeService<T>(this ControllerBase controller, Func<T> serviceCall, ILogger logger)
+        public static IResult InvokeService<T>(this MinimalControllerBase controller, Func<T> serviceCall, ILogger logger)
             where T : IResult
         {
             //Convert from IResult to Task<IResult>
@@ -40,7 +52,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             return controller.InvokeService(() => Task.FromResult(serviceCall()), logger).Result;
         }
 
-        public static async Task<IResult> InvokeService<T>(this ControllerBase controller, Func<Task<T>> serviceCall, ILogger logger)
+        public static async Task<IResult> InvokeService<T>(this MinimalControllerBase controller, Func<Task<T>> serviceCall, ILogger logger)
             where T : IResult
         {
             CancellationToken token = controller.HttpContext.RequestAborted;
@@ -86,7 +98,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }
         }
 
-        public static ProblemHttpResult Problem(this ControllerBase controller, Exception ex, int statusCode = StatusCodes.Status400BadRequest)
+        public static ProblemHttpResult Problem(this MinimalControllerBase controller, Exception ex, int statusCode = StatusCodes.Status400BadRequest)
         {
             return TypedResults.Problem(ex.ToProblemDetails(statusCode));
         }

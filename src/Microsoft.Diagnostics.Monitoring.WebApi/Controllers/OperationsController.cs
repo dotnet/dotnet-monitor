@@ -4,7 +4,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,17 +26,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         }
     }
 
-    public class OperationsController : ControllerBase
+    public class OperationsController : MinimalControllerBase
     {
         private readonly ILogger<OperationsController> _logger;
         private readonly IEgressOperationStore _operationsStore;
 
         public const string ControllerName = "operations";
 
-        public OperationsController(ILogger<OperationsController> logger, IServiceProvider serviceProvider)
+        public OperationsController(ILogger<OperationsController> logger, HttpContext httpContext) :
+            base(httpContext)
         {
             _logger = logger;
-            _operationsStore = serviceProvider.GetRequiredService<IEgressOperationStore>();
+            _operationsStore = httpContext.RequestServices.GetRequiredService<IEgressOperationStore>();
         }
 
         // Todo: use MapGroup!
@@ -52,7 +52,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 [Description("The Runtime instance cookie used to identify the target process.")] Guid? uid,
                 [Description("Process name used to identify the target process.")] string? name,
                 [Description("An optional set of comma-separated identifiers users can include to make an operation easier to identify.")] string? tags) =>
-                    new OperationsController(logger, context.RequestServices).GetOperations(pid, uid, name, tags))
+                    new OperationsController(logger, context).GetOperations(pid, uid, name, tags))
             .WithName(nameof(GetOperations))
             .RequireOperationsControllerCommon()
             .Produces<IEnumerable<OperationSummary>>(StatusCodes.Status200OK);
@@ -62,7 +62,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 HttpContext context,
                 ILogger<OperationsController> logger,
                 Guid operationId) =>
-                    new OperationsController(logger, context.RequestServices).GetOperationStatus(operationId))
+                    new OperationsController(logger, context).GetOperationStatus(operationId))
             .WithName(nameof(GetOperationStatus))
             .RequireOperationsControllerCommon()
             .Produces<OperationStatus>(StatusCodes.Status200OK)
@@ -74,7 +74,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 ILogger<OperationsController> logger,
                 Guid operationId,
                 bool stop = false) =>
-                    new OperationsController(logger, context.RequestServices).CancelOperation(operationId, stop))
+                    new OperationsController(logger, context).CancelOperation(operationId, stop))
             .WithName(nameof(CancelOperation))
             .RequireOperationsControllerCommon()
             .Produces(StatusCodes.Status200OK)

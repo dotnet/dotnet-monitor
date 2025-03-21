@@ -58,9 +58,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private readonly IGCDumpOperationFactory _gcdumpOperationFactory;
         private readonly IStacksOperationFactory _stacksOperationFactory;
         private readonly IEnumerable<IMonitorCapability> _monitorCapabilities;
-        public DiagController(IServiceProvider serviceProvider, ILogger<DiagController> logger)
-            : base(serviceProvider.GetRequiredService<IDiagnosticServices>(), serviceProvider.GetRequiredService<IEgressOperationStore>(), logger)
+        public DiagController(HttpContext httpContext, ILogger<DiagController> logger) :
+            base(httpContext, httpContext.RequestServices, logger)
         {
+            var serviceProvider = httpContext.RequestServices;
             _diagnosticPortOptions = serviceProvider.GetRequiredService<IOptions<DiagnosticPortOptions>>();
             _callStacksOptions = serviceProvider.GetRequiredService<IOptions<CallStacksOptions>>();
             _parameterCapturingOptions = serviceProvider.GetRequiredService<IOptions<ParameterCapturingOptions>>();
@@ -84,7 +85,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 [EndpointSummary("Get the list of accessible processes.")] (
                 HttpContext context,
                 ILogger<DiagController> logger) =>
-                    new DiagController(context.RequestServices, logger).GetProcesses())
+                    new DiagController(context, logger).GetProcesses())
                 .WithName(nameof(GetProcesses))
                 .RequireDiagControllerCommon()
                 .Produces<IEnumerable<ProcessIdentifier>>(StatusCodes.Status200OK);
@@ -97,7 +98,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 [FromQuery, Description("Process ID used to identify the target process.")] int? pid,
                 [FromQuery, Description("The Runtime instance cookie used to identify the target process.")] Guid? uid,
                 [FromQuery, Description("Process name used to identify the target process.")] string? name) =>
-                    new DiagController(context.RequestServices, logger).GetProcessInfo(pid, uid, name))
+                    new DiagController(context, logger).GetProcessInfo(pid, uid, name))
                 .WithName(nameof(GetProcessInfo))
                 .RequireDiagControllerCommon()
                 .Produces<Models.ProcessInfo>(StatusCodes.Status200OK);
@@ -110,7 +111,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 [FromQuery, Description("Process ID used to identify the target process.")] int? pid,
                 [FromQuery, Description("The Runtime instance cookie used to identify the target process.")] Guid? uid,
                 [FromQuery, Description("Process name used to identify the target process.")] string? name) =>
-                    new DiagController(context.RequestServices, logger).GetProcessEnvironment(pid, uid, name))
+                    new DiagController(context, logger).GetProcessEnvironment(pid, uid, name))
                 .WithName(nameof(GetProcessEnvironment))
                 .RequireDiagControllerCommon()
                 .Produces<Dictionary<string, string>>(StatusCodes.Status200OK);
@@ -126,7 +127,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 [FromQuery, Description("The type of dump to capture.")] Models.DumpType type = Models.DumpType.WithHeap,
                 [FromQuery, Description("The egress provider to which the dump is saved.")] string? egressProvider = null,
                 [FromQuery, Description("An optional set of comma-separated identifiers users can include to make an operation easier to identify.")] string? tags = null) =>
-                    new DiagController(context.RequestServices, logger).CaptureDump(pid, uid, name, type, egressProvider, tags))
+                    new DiagController(context, logger).CaptureDump(pid, uid, name, type, egressProvider, tags))
                 .WithName(nameof(CaptureDump))
                 .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
@@ -147,7 +148,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 [FromQuery, Description("Process name used to identify the target process.")] string? name,
                 [FromQuery, Description("The egress provider to which the GC dump is saved.")] string? egressProvider,
                 [FromQuery, Description("An optional set of comma-separated identifiers users can include to make an operation easier to identify.")] string? tags) =>
-                    new DiagController(context.RequestServices, logger).CaptureGcDump(pid, uid, name, egressProvider, tags))
+                    new DiagController(context, logger).CaptureGcDump(pid, uid, name, egressProvider, tags))
                 .WithName(nameof(CaptureGcDump))
                 .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
@@ -167,7 +168,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 [FromQuery, Description("The duration of the trace session (in seconds)."), Range(-1, int.MaxValue)] int durationSeconds = 30,
                 [FromQuery, Description("The egress provider to which the trace is saved.")] string? egressProvider = null,
                 [FromQuery, Description("An optional set of comma-separated identifiers users can include to make an operation easier to identify.")] string? tags = null) =>
-                    new DiagController(context.RequestServices, logger).CaptureTrace(pid, uid, name, profile, durationSeconds, egressProvider, tags))
+                    new DiagController(context, logger).CaptureTrace(pid, uid, name, profile, durationSeconds, egressProvider, tags))
                 .WithName(nameof(CaptureTrace))
                 .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
@@ -187,7 +188,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 [FromQuery, Description("The duration of the trace session (in seconds)."), Range(-1, int.MaxValue)] int durationSeconds = 30,
                 [FromQuery, Description("The egress provider to which the trace is saved.")] string? egressProvider = null,
                 [FromQuery, Description("An optional set of comma-separated identifiers users can include to make an operation easier to identify.")] string? tags = null) =>
-                    new DiagController(context.RequestServices, logger).CaptureTraceCustom(configuration, pid, uid, name, durationSeconds, egressProvider, tags))
+                    new DiagController(context, logger).CaptureTraceCustom(configuration, pid, uid, name, durationSeconds, egressProvider, tags))
                 .WithName(nameof(CaptureTraceCustom))
                 .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
@@ -209,7 +210,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 [FromQuery, Description("The level of the logs to capture.")] LogLevel? level = null,
                 [FromQuery, Description("The egress provider to which the logs are saved.")] string? egressProvider = null,
                 [FromQuery, Description("An optional set of comma-separated identifiers users can include to make an operation easier to identify.")] string? tags = null) =>
-                    new DiagController(context.RequestServices, logger).CaptureLogs(pid, uid, name, durationSeconds, level, egressProvider, tags))
+                    new DiagController(context, logger).CaptureLogs(pid, uid, name, durationSeconds, level, egressProvider, tags))
                 .WithName(nameof(CaptureLogs))
                 .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
@@ -229,7 +230,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 [FromQuery, Description("The duration of the logs session (in seconds)."), Range(-1, int.MaxValue)] int durationSeconds = 30,
                 [FromQuery, Description("The egress provider to which the logs are saved.")] string? egressProvider = null,
                 [FromQuery, Description("An optional set of comma-separated identifiers users can include to make an operation easier to identify.")] string? tags = null) =>
-                    new DiagController(context.RequestServices, logger).CaptureLogsCustom(configuration, pid, uid, name, durationSeconds, egressProvider, tags))
+                    new DiagController(context, logger).CaptureLogsCustom(configuration, pid, uid, name, durationSeconds, egressProvider, tags))
                 .WithName(nameof(CaptureLogsCustom))
                 .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
@@ -243,7 +244,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 [EndpointSummary("Gets versioning and listening mode information about Dotnet-Monitor")] (
                 HttpContext context,
                 ILogger<DiagController> logger) =>
-                    new DiagController(context.RequestServices, logger).GetInfo())
+                    new DiagController(context, logger).GetInfo())
                 .WithName(nameof(GetInfo))
                 .RequireDiagControllerCommon()
                 .Produces<DotnetMonitorInfo>(StatusCodes.Status200OK);
@@ -256,7 +257,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 [FromQuery, Description("Process ID used to identify the target process.")] int? pid,
                 [FromQuery, Description("The Runtime instance cookie used to identify the target process.")] Guid? uid,
                 [FromQuery, Description("Process name used to identify the target process.")] string? name) =>
-                    new DiagController(context.RequestServices, logger).GetCollectionRulesDescription(pid, uid, name))
+                    new DiagController(context, logger).GetCollectionRulesDescription(pid, uid, name))
                 .WithName(nameof(GetCollectionRulesDescription))
                 .RequireDiagControllerCommon()
                 .Produces<Dictionary<string, CollectionRuleDescription>>(StatusCodes.Status200OK);
@@ -270,7 +271,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 [FromQuery, Description("Process ID used to identify the target process.")] int? pid,
                 [FromQuery, Description("The Runtime instance cookie used to identify the target process.")] Guid? uid,
                 [FromQuery, Description("Process name used to identify the target process.")] string? name) =>
-                    new DiagController(context.RequestServices, logger).GetCollectionRuleDetailedDescription(collectionRuleName, pid, uid, name))
+                    new DiagController(context, logger).GetCollectionRuleDetailedDescription(collectionRuleName, pid, uid, name))
                 .WithName(nameof(GetCollectionRuleDetailedDescription))
                 .RequireDiagControllerCommon()
                 .Produces<CollectionRuleDetailedDescription>(StatusCodes.Status200OK);
@@ -286,7 +287,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 [FromQuery] string? name = null,
                 [FromQuery] string? egressProvider = null,
                 [FromQuery] string? tags = null) =>
-                    new DiagController(context.RequestServices, logger).CaptureParameters(configuration, durationSeconds, pid, uid, name, egressProvider, tags))
+                    new DiagController(context, logger).CaptureParameters(configuration, durationSeconds, pid, uid, name, egressProvider, tags))
                 .WithName(nameof(CaptureParameters))
                 .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
@@ -304,7 +305,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 [FromQuery] string? name,
                 [FromQuery] string? egressProvider,
                 [FromQuery] string? tags) =>
-                    new DiagController(context.RequestServices, logger).CaptureStacks(pid, uid, name, egressProvider, tags))
+                    new DiagController(context, logger).CaptureStacks(pid, uid, name, egressProvider, tags))
                 .WithName(nameof(CaptureStacks))
                 .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
