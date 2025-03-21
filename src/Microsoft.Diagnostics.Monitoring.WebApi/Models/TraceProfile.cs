@@ -2,9 +2,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
+using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 {
+    [JsonConverter(typeof(JsonStringEnumConverter<TraceProfile>))]
     [Flags]
     public enum TraceProfile
     {

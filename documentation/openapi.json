@@ -187,7 +187,14 @@
             "in": "query",
             "description": "The type of dump to capture.",
             "schema": {
-              "$ref": "#/components/schemas/DumpType"
+              "enum": [
+                "Full",
+                "Mini",
+                "WithHeap",
+                "Triage"
+              ],
+              "type": "string",
+              "default": "WithHeap"
             }
           },
           {
@@ -351,7 +358,15 @@
             "in": "query",
             "description": "The profiles enabled for the trace session.",
             "schema": {
-              "$ref": "#/components/schemas/TraceProfile"
+              "enum": [
+                "Cpu",
+                "Http",
+                "Logs",
+                "Metrics",
+                "GcCollect"
+              ],
+              "type": "string",
+              "default": "Cpu, Http, Metrics, GcCollect"
             }
           },
           {
@@ -705,7 +720,8 @@
                 "$ref": "#/components/schemas/LogsConfiguration"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "400": {
@@ -1430,7 +1446,8 @@
                 "$ref": "#/components/schemas/ExceptionsConfiguration"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "400": {
@@ -1672,14 +1689,6 @@
       "CollectionRuleDetailedDescription": {
         "type": "object",
         "properties": {
-          "state": {
-            "$ref": "#/components/schemas/CollectionRuleState"
-          },
-          "stateReason": {
-            "type": "string",
-            "description": "Human-readable explanation for the current state of the collection rule.",
-            "nullable": true
-          },
           "lifetimeOccurrences": {
             "type": "integer",
             "description": "The number of times the trigger has executed for a process in its lifetime.",
@@ -1715,6 +1724,14 @@
             "format": "time-span",
             "nullable": true,
             "example": "00:00:30"
+          },
+          "state": {
+            "$ref": "#/components/schemas/CollectionRuleState"
+          },
+          "stateReason": {
+            "type": "string",
+            "description": "Human-readable explanation for the current state of the collection rule.",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -1769,15 +1786,6 @@
           }
         },
         "additionalProperties": false
-      },
-      "DumpType": {
-        "enum": [
-          "Full",
-          "Mini",
-          "WithHeap",
-          "Triage"
-        ],
-        "type": "string"
       },
       "EventLevel": {
         "enum": [
@@ -1985,9 +1993,9 @@
       },
       "MethodDescription": {
         "required": [
-          "methodName",
           "moduleName",
-          "typeName"
+          "typeName",
+          "methodName"
         ],
         "type": "object",
         "properties": {
@@ -2008,7 +2016,8 @@
       },
       "MonitorCapability": {
         "required": [
-          "name"
+          "name",
+          "enabled"
         ],
         "type": "object",
         "properties": {
@@ -2034,7 +2043,8 @@
             "nullable": true
           }
         },
-        "additionalProperties": false
+        "additionalProperties": false,
+        "nullable": true
       },
       "OperationProcessInfo": {
         "type": "object",
@@ -2053,7 +2063,8 @@
           }
         },
         "additionalProperties": false,
-        "description": "Represents the details of a given process used in an operation."
+        "description": "Represents the details of a given process used in an operation.",
+        "nullable": true
       },
       "OperationState": {
         "enum": [
@@ -2069,6 +2080,13 @@
       "OperationStatus": {
         "type": "object",
         "properties": {
+          "resourceLocation": {
+            "type": "string",
+            "nullable": true
+          },
+          "error": {
+            "$ref": "#/components/schemas/OperationError"
+          },
           "operationId": {
             "type": "string",
             "format": "uuid"
@@ -2097,13 +2115,6 @@
               "type": "string"
             },
             "nullable": true
-          },
-          "resourceLocation": {
-            "type": "string",
-            "nullable": true
-          },
-          "error": {
-            "$ref": "#/components/schemas/OperationError"
           }
         },
         "additionalProperties": false,
@@ -2227,16 +2238,6 @@
         },
         "additionalProperties": false
       },
-      "TraceProfile": {
-        "enum": [
-          "Cpu",
-          "Http",
-          "Logs",
-          "Metrics",
-          "GcCollect"
-        ],
-        "type": "string"
-      },
       "ValidationProblemDetails": {
         "type": "object",
         "properties": {
@@ -2307,5 +2308,19 @@
         }
       }
     }
-  }
+  },
+  "tags": [
+    {
+      "name": "Diag"
+    },
+    {
+      "name": "Exceptions"
+    },
+    {
+      "name": "Metrics"
+    },
+    {
+      "name": "Operations"
+    }
+  ]
 }

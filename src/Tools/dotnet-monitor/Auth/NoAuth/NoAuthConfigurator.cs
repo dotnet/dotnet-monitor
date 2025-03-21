@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Auth.NoAuth
@@ -23,7 +23,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.NoAuth
             });
         }
 
-        public void ConfigureSwaggerGenAuth(SwaggerGenOptions options)
+        public void ConfigureOpenApiGenAuth(OpenApiOptions options)
         {
         }
 

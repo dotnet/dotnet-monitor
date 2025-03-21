@@ -14,12 +14,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
     public class MethodDescription : IMethodDescription
     {
         [Required]
+        [MinLength(1)]
         public string ModuleName { get; set; } = string.Empty;
 
         [Required]
+        [MinLength(1)]
         public string TypeName { get; set; } = string.Empty;
 
         [Required]
+        [MinLength(1)]
         public string MethodName { get; set; } = string.Empty;
 
         public override string ToString() => FormattableString.Invariant($"{ModuleName}!{TypeName}.{MethodName}");
