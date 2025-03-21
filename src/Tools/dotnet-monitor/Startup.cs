@@ -73,6 +73,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             app.UseRouting();
 
+            app.UseMiddleware<HostRestrictionMiddleware>();
+
             app.UseAuthentication();
             if (Assembly.GetEntryAssembly()?.GetName().Name != "Microsoft.Diagnostics.Monitoring.OpenApiGen")
             {
