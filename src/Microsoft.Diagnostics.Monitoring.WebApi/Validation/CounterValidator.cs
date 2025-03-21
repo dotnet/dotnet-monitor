@@ -10,7 +10,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Validation
     internal static class CounterValidator
     {
         public static bool ValidateProvider(GlobalCounterOptions counterOptions,
-            EventPipeProvider provider,
+            EventPipeProvider provider, // or here?
             [NotNullWhen(false)] out string? errorMessage)
         {
             errorMessage = null;

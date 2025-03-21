@@ -1,11 +1,16 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.Auth;
 using Microsoft.Diagnostics.Tools.Monitor.OpenApi;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Writers;
 using System;
@@ -47,6 +52,14 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
                     services.AddOpenApi(options => options.ConfigureMonitorOpenApiGen());
                 })
                 .Build();
+
+            // Ensure that Startup.Configure is called, to add endpoints
+            var config = host.Services.GetRequiredService<IConfiguration>();
+            var startup = new Startup(config);
+            var appBuilder = new ApplicationBuilder(host.Services);
+            var env = host.Services.GetRequiredService<IWebHostEnvironment>();
+            var corsOptions = host.Services.GetRequiredService<IOptions<CorsConfigurationOptions>>();
+            Startup.Configure(appBuilder, env, corsOptions);
 
             var openApiDocument = await GetOpenApiDocument(host);
 
