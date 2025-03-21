@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.AspNetCore.Builder;
@@ -356,12 +356,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }, Logger);
         }
 
-        /// <summary>
-        /// Get information about the specified process.
-        /// </summary>
-        /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
-        /// <param name="name">Process name used to identify the target process.</param>
         public Task<IResult> GetProcessInfo(
             int? pid,
             Guid? uid,
@@ -377,6 +371,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     Name = processInfo.ProcessName,
                     OperatingSystem = processInfo.OperatingSystem,
                     ProcessArchitecture = processInfo.ProcessArchitecture,
+                    ManagedEntryPointAssemblyName = processInfo.ManagedEntryPointAssemblyName,
                     Pid = processInfo.EndpointInfo.ProcessId,
                     Uid = processInfo.EndpointInfo.RuntimeInstanceCookie
                 };

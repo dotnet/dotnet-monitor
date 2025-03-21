@@ -12,9 +12,9 @@
       <Uri>https://github.com/dotnet/diagnostics</Uri>
       <Sha>b1037b7cc1ef0b00a9032f19a83b074a00c9a4b8</Sha>
     </Dependency>
-    <Dependency Name="System.CommandLine" Version="2.0.0-beta4.25153.1">
+    <Dependency Name="System.CommandLine" Version="2.0.0-beta5.25170.1">
       <Uri>https://github.com/dotnet/command-line-api</Uri>
-      <Sha>b7f0d1c4f0da129f7a115e32b21f0b773e60805b</Sha>
+      <Sha>931bc0d178882c11daf9e38ae88858691e2df2b9</Sha>
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
@@ -22,25 +22,25 @@
       <Uri>https://github.com/dotnet/roslyn-analyzers</Uri>
       <Sha>16865ea61910500f1022ad2b96c499e5df02c228</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="9.0.0-beta.25111.5">
+    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="9.0.0-beta.25164.2">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>5da211e1c42254cb35e7ef3d5a8428fb24853169</Sha>
+      <Sha>5ba9ca776c1d0bb72b2791591e54cf51fc52dfee</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.Build.Tasks.Archives" Version="9.0.0-beta.25111.5">
+    <Dependency Name="Microsoft.DotNet.Build.Tasks.Archives" Version="9.0.0-beta.25164.2">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>5da211e1c42254cb35e7ef3d5a8428fb24853169</Sha>
+      <Sha>5ba9ca776c1d0bb72b2791591e54cf51fc52dfee</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.CodeAnalysis" Version="9.0.0-beta.25111.5">
+    <Dependency Name="Microsoft.DotNet.CodeAnalysis" Version="9.0.0-beta.25164.2">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>5da211e1c42254cb35e7ef3d5a8428fb24853169</Sha>
+      <Sha>5ba9ca776c1d0bb72b2791591e54cf51fc52dfee</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.Helix.Sdk" Version="9.0.0-beta.25111.5">
+    <Dependency Name="Microsoft.DotNet.Helix.Sdk" Version="9.0.0-beta.25164.2">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>5da211e1c42254cb35e7ef3d5a8428fb24853169</Sha>
+      <Sha>5ba9ca776c1d0bb72b2791591e54cf51fc52dfee</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="9.0.0-beta.25111.5">
+    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="9.0.0-beta.25164.2">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>5da211e1c42254cb35e7ef3d5a8428fb24853169</Sha>
+      <Sha>5ba9ca776c1d0bb72b2791591e54cf51fc52dfee</Sha>
     </Dependency>
     <Dependency Name="Microsoft.FileFormats" Version="1.0.615501">
       <Uri>https://github.com/dotnet/diagnostics</Uri>

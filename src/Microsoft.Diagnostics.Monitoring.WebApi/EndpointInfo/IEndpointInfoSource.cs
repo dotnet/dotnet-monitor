@@ -23,6 +23,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         string? ProcessArchitecture { get; }
 
+        string? ManagedEntryPointAssemblyName { get; }
+
         Version? RuntimeVersion { get; }
 
         IServiceProvider ServiceProvider { get; }
@@ -45,7 +47,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public abstract string? CommandLine { get; protected set; }
         public abstract string? OperatingSystem { get; protected set; }
         public abstract string? ProcessArchitecture { get; protected set; }
-
+        public abstract string? ManagedEntryPointAssemblyName { get; protected set; }
         public abstract Version? RuntimeVersion { get; protected set; }
 
         public abstract IServiceProvider ServiceProvider { get; protected set; }

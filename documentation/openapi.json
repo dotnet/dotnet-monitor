@@ -2230,6 +2230,10 @@
           "processArchitecture": {
             "type": "string",
             "nullable": true
+          },
+          "managedEntryPointAssemblyName": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
