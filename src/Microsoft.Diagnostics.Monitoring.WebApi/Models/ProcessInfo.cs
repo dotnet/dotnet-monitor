@@ -25,5 +25,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 
         [JsonPropertyName("processArchitecture")]
         public string? ProcessArchitecture { get; set; }
+
+        [JsonPropertyName("managedEntryPointAssemblyName")]
+        public string? ManagedEntryPointAssemblyName { get; set; }
     }
 }

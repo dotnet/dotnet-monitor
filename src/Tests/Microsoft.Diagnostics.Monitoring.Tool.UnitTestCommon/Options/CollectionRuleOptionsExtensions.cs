@@ -30,6 +30,18 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Options
             return options;
         }
 
+        public static CollectionRuleOptions AddManagedEntryPointAssemblyNameFilter(this CollectionRuleOptions options, string name)
+        {
+            options.Filters.Add(new ProcessFilterDescriptor()
+            {
+                Key = ProcessFilterKey.ManagedEntryPointAssemblyName,
+                Value = name,
+                MatchType = ProcessFilterType.Exact
+            });
+
+            return options;
+        }
+
         public static CollectionRuleOptions AddProcessNameFilter(this CollectionRuleOptions options, string name)
         {
             options.Filters.Add(new ProcessFilterDescriptor()

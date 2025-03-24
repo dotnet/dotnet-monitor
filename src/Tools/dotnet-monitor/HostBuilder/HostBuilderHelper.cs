@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
@@ -133,6 +134,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     })
                     .ConfigureKestrel((context, options) =>
                     {
+                        // Avoid reading empty configuration values when running the openapi generator
+                        if (Assembly.GetEntryAssembly()?.GetName().Name == "Microsoft.Diagnostics.Monitoring.OpenApiGen")
+                        {
+                            return;
+                        }
                         //Note our priorities for hosting urls don't match the default behavior.
                         //Default Kestrel behavior priority
                         //1) ConfigureKestrel settings

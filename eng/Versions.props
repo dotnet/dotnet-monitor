@@ -5,7 +5,7 @@
     <RepositoryUrl>https://github.com/dotnet/dotnet-monitor</RepositoryUrl>
     <VersionPrefix>9.1.0</VersionPrefix>
     <PreReleaseVersionLabel>preview</PreReleaseVersionLabel>
-    <PreReleaseVersionIteration>1</PreReleaseVersionIteration>
+    <PreReleaseVersionIteration>2</PreReleaseVersionIteration>
     <!-- Disable final version kind until merged into release branch. -->
     <DotNetUseShippingVersions>true</DotNetUseShippingVersions>
     <!--
@@ -48,14 +48,14 @@
   -->
   <PropertyGroup Label="Automated">
     <!-- dotnet/arcade references -->
-    <MicrosoftDotNetBuildTasksArchivesVersion>9.0.0-beta.25111.5</MicrosoftDotNetBuildTasksArchivesVersion>
-    <MicrosoftDotNetCodeAnalysisVersion>9.0.0-beta.25111.5</MicrosoftDotNetCodeAnalysisVersion>
-    <MicrosoftDotNetXUnitExtensionsVersion>9.0.0-beta.25111.5</MicrosoftDotNetXUnitExtensionsVersion>
+    <MicrosoftDotNetBuildTasksArchivesVersion>9.0.0-beta.25164.2</MicrosoftDotNetBuildTasksArchivesVersion>
+    <MicrosoftDotNetCodeAnalysisVersion>9.0.0-beta.25164.2</MicrosoftDotNetCodeAnalysisVersion>
+    <MicrosoftDotNetXUnitExtensionsVersion>9.0.0-beta.25164.2</MicrosoftDotNetXUnitExtensionsVersion>
     <!-- dotnet/aspnetcore references -->
     <MicrosoftAspNetCoreAppRuntimewinx64Version>9.0.1</MicrosoftAspNetCoreAppRuntimewinx64Version>
     <VSRedistCommonAspNetCoreSharedFrameworkx6490Version>9.0.1-rtm.24610.9</VSRedistCommonAspNetCoreSharedFrameworkx6490Version>
     <!-- dotnet/command-line-api references -->
-    <SystemCommandLineVersion>2.0.0-beta4.25153.1</SystemCommandLineVersion>
+    <SystemCommandLineVersion>2.0.0-beta5.25170.1</SystemCommandLineVersion>
     <!-- dotnet/diagnostics references -->
     <MicrosoftDiagnosticsMonitoringVersion>9.0.0-preview.25173.1</MicrosoftDiagnosticsMonitoringVersion>
     <MicrosoftDiagnosticsMonitoringEventPipeVersion>9.0.0-preview.25173.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
@@ -122,6 +122,7 @@
     <MicrosoftExtensionsLoggingAbstractionsVersion>$(MicrosoftExtensionsLoggingAbstractions90Version)</MicrosoftExtensionsLoggingAbstractionsVersion>
     <MicrosoftExtensionsLoggingConsoleVersion>$(MicrosoftExtensionsLoggingConsole90Version)</MicrosoftExtensionsLoggingConsoleVersion>
     <SystemTextJsonVersion>$(SystemTextJson90Version)</SystemTextJsonVersion>
+    <MicrosoftAspNetCoreOpenApiVersion>$(MicrosoftAspNetCoreApp90Version)</MicrosoftAspNetCoreOpenApiVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(UseMicrosoftDiagnosticsMonitoringShippedVersion)' == 'true'">
     <MicrosoftDiagnosticsMonitoringLibraryVersion>$(MicrosoftDiagnosticsMonitoringShippedVersion)</MicrosoftDiagnosticsMonitoringLibraryVersion>

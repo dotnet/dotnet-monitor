@@ -10,7 +10,8 @@ namespace Microsoft.Diagnostics.Monitoring.Options
     {
         [JsonPropertyName("name")]
         [Required]
-        public string Name { get; }
+        [MinLength(1)]
+        public string Name { get; set; }
 
         [JsonPropertyName("enabled")]
         public bool Enabled { get; }
