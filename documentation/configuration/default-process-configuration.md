@@ -4,7 +4,7 @@ Default process configuration is used to determine which process is used for met
 
 | Name | Type | Description |
 |---|---|---|
-| Key | string | Specifies which criteria to match on the process. Can be `ProcessId`, `ProcessName`, `CommandLine`. |
+| Key | string | Specifies which criteria to match on the process. Can be `ProcessId`, `ProcessName`, `CommandLine`, `ManagedEntryPointAssemblyName`. |
 | Value | string | The value to match against the process. |
 | MatchType | string | The type of match to perform. Can be `Exact` or `Contains` for sub-string matching. Both are case-insensitive.|
 
@@ -16,6 +16,7 @@ Optionally, a shorthand format allows you to omit the `Key` and `Value` terms an
 | ProcessId | string | Specifies that the corresponding value is the expected `ProcessId`. |
 | ProcessName | string | Specifies that the corresponding value is the expected `ProcessName`. |
 | CommandLine | string | Specifies that the corresponding value is the expected `CommandLine`.|
+| ManagedEntryPointAssemblyName | string | Specifies that the corresponding value is the expected `ManagedEntryPointAssemblyName`. |
 
 ## Examples
 
@@ -156,5 +157,75 @@ Optionally, a shorthand format allows you to omit the `Key` and `Value` terms an
   ```yaml
   - name: DotnetMonitor_DefaultProcess__Filters__0__ProcessId
     value: "1"
+  ```
+</details>
+
+### Match MyApp.dll Entry Point
+
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "DefaultProcess": {
+      "Filters": [{
+        "Key": "ManagedEntryPointAssemblyName",
+        "Value": "MyApp"
+      }]
+    },
+  }
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes ConfigMap</summary>
+
+  ```yaml
+  DefaultProcess__Filters__0__Key: "ManagedEntryPointAssemblyName"
+  DefaultProcess__Filters__0__Value: "MyApp"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+
+  ```yaml
+  - name: DotnetMonitor_DefaultProcess__Filters__0__Key
+    value: "ManagedEntryPointAssemblyName"
+  - name: DotnetMonitor_DefaultProcess__Filters__0__Value
+    value: "MyApp"
+  ```
+</details>
+
+### Match MyApp.dll Entry Point (Shorthand)
+
+<details>
+  <summary>JSON</summary>
+
+  ```json
+  {
+    "DefaultProcess": {
+      "Filters": [{
+        "ManagedEntryPointAssemblyName": "MyApp"
+      }]
+    },
+  }
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes ConfigMap</summary>
+
+  ```yaml
+  DefaultProcess__Filters__0__ManagedEntryPointAssemblyName: "MyApp"
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Environment Variables</summary>
+
+  ```yaml
+  - name: DotnetMonitor_DefaultProcess__Filters__0__ManagedEntryPointAssemblyName
+    value: "MyApp"
   ```
 </details>
