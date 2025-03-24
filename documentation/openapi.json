@@ -13,11 +13,11 @@
         "summary": "Get the list of accessible processes.",
         "operationId": "GetProcesses",
         "responses": {
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedResponse"
-          },
           "400": {
             "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
           },
           "200": {
             "description": "OK",
@@ -71,11 +71,11 @@
           }
         ],
         "responses": {
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedResponse"
-          },
           "400": {
             "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
           },
           "200": {
             "description": "OK",
@@ -126,11 +126,11 @@
           }
         ],
         "responses": {
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedResponse"
-          },
           "400": {
             "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
           },
           "200": {
             "description": "OK",
@@ -215,11 +215,11 @@
           }
         ],
         "responses": {
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedResponse"
-          },
           "400": {
             "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
           },
           "429": {
             "$ref": "#/components/responses/TooManyRequestsResponse"
@@ -293,11 +293,11 @@
           }
         ],
         "responses": {
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedResponse"
-          },
           "400": {
             "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
           },
           "429": {
             "$ref": "#/components/responses/TooManyRequestsResponse"
@@ -399,11 +399,11 @@
           }
         ],
         "responses": {
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedResponse"
-          },
           "400": {
             "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
           },
           "429": {
             "$ref": "#/components/responses/TooManyRequestsResponse"
@@ -508,11 +508,11 @@
           "required": true
         },
         "responses": {
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedResponse"
-          },
           "400": {
             "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
           },
           "429": {
             "$ref": "#/components/responses/TooManyRequestsResponse"
@@ -606,11 +606,11 @@
           }
         ],
         "responses": {
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedResponse"
-          },
           "400": {
             "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
           },
           "429": {
             "$ref": "#/components/responses/TooManyRequestsResponse"
@@ -724,11 +724,11 @@
           "required": true
         },
         "responses": {
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedResponse"
-          },
           "400": {
             "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
           },
           "429": {
             "$ref": "#/components/responses/TooManyRequestsResponse"
@@ -767,11 +767,11 @@
         "summary": "Gets versioning and listening mode information about Dotnet-Monitor",
         "operationId": "GetInfo",
         "responses": {
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedResponse"
-          },
           "400": {
             "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
           },
           "200": {
             "description": "OK",
@@ -822,11 +822,11 @@
           }
         ],
         "responses": {
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedResponse"
-          },
           "400": {
             "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
           },
           "200": {
             "description": "OK",
@@ -889,11 +889,11 @@
           }
         ],
         "responses": {
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedResponse"
-          },
           "400": {
             "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
           },
           "200": {
             "description": "OK",
@@ -985,11 +985,11 @@
           "required": true
         },
         "responses": {
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedResponse"
-          },
           "400": {
             "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
           },
           "429": {
             "$ref": "#/components/responses/TooManyRequestsResponse"
@@ -1066,11 +1066,11 @@
           }
         ],
         "responses": {
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedResponse"
-          },
           "400": {
             "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
           },
           "429": {
             "$ref": "#/components/responses/TooManyRequestsResponse"
@@ -1165,11 +1165,11 @@
           }
         ],
         "responses": {
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedResponse"
-          },
           "400": {
             "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
           },
           "429": {
             "$ref": "#/components/responses/TooManyRequestsResponse"
@@ -1273,11 +1273,11 @@
           "required": true
         },
         "responses": {
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedResponse"
-          },
           "400": {
             "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
           },
           "429": {
             "$ref": "#/components/responses/TooManyRequestsResponse"

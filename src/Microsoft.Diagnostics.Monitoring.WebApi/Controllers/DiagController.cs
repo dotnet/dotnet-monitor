@@ -32,8 +32,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             return builder
                 .RequireHostRestriction()
                 .RequireAuthorization(AuthConstants.PolicyName)
-                .Produces(StatusCodes.Status401Unauthorized)
                 .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
+                .Produces(StatusCodes.Status401Unauthorized)
                 .WithTags("Diag");
         }
     }
