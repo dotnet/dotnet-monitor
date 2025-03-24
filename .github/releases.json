@@ -3,7 +3,9 @@
     "additionalMonthsOfSupportOnNewMinorRelease": 3,
     "cleanupUnsupportedReleasesAfterMonths": 12
   },
-  "preview": [],
+  "preview": [
+    "9.1"
+  ],
   "supported": [
     "9.0",
     "8.1",
@@ -57,6 +59,14 @@
       "patchReleaseDate": "2025-02-11T00:00:00.000Z",
       "supportedFrameworks": [
         "net8.0"
+      ]
+    },
+    "9.1": {
+      "tag": "v9.1.0-preview.1.25155.2",
+      "minorReleaseDate": "2025-03-11T00:00:00.000Z",
+      "patchReleaseDate": "2025-03-11T00:00:00.000Z",
+      "supportedFrameworks": [
+        "net9.0"
       ]
     }
   }
