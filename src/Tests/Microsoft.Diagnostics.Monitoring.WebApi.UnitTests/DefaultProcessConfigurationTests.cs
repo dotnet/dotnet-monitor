@@ -71,6 +71,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests
                 Value = "arg1"
             };
 
+            var filterDescriptorManagedEntryPointAssemblyName = new ProcessFilterDescriptor
+            {
+                Key = ProcessFilterKey.ManagedEntryPointAssemblyName,
+                MatchType = ProcessFilterType.Exact,
+                Value = "MyApp"
+            };
+
             var filter = CreateFilterEntry(filterDescriptorPid);
             ValidateProcessFilter(DiagProcessFilterCriteria.ProcessId, filterDescriptorPid.Value, filter);
 
@@ -90,14 +97,24 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests
             filter = CreateFilterEntry(filterDescriptorCommandContains);
             ValidateProcessFilter(DiagProcessFilterCriteria.CommandLine, filterDescriptorCommandContains.Value, DiagProcessFilterMatchType.Contains, filter);
 
+            filter = CreateFilterEntry(filterDescriptorManagedEntryPointAssemblyName);
+            ValidateProcessFilter(DiagProcessFilterCriteria.ManagedEntryPointAssemblyName, filterDescriptorManagedEntryPointAssemblyName.Value, filter);
+
             //This filter doesn't make any sense but we are just testing that we can combine multiple filters
-            var options = CreateOptions(filterDescriptorPid, filterDescriptorName, filterDescriptorNameContains, filterDescriptorCommand, filterDescriptorCommandContains);
+            var options = CreateOptions(
+                filterDescriptorPid,
+                filterDescriptorName,
+                filterDescriptorNameContains,
+                filterDescriptorCommand,
+                filterDescriptorCommandContains,
+                filterDescriptorManagedEntryPointAssemblyName);
 
             ValidateProcessFilter(DiagProcessFilterCriteria.ProcessId, filterDescriptorPid.Value, options.Filters[0]);
             ValidateProcessFilter(DiagProcessFilterCriteria.ProcessName, filterDescriptorName.Value, options.Filters[1]);
             ValidateProcessFilter(DiagProcessFilterCriteria.ProcessName, filterDescriptorNameContains.Value, DiagProcessFilterMatchType.Contains, options.Filters[2]);
             ValidateProcessFilter(DiagProcessFilterCriteria.CommandLine, filterDescriptorCommand.Value, options.Filters[3]);
             ValidateProcessFilter(DiagProcessFilterCriteria.CommandLine, filterDescriptorCommandContains.Value, DiagProcessFilterMatchType.Contains, options.Filters[4]);
+            ValidateProcessFilter(DiagProcessFilterCriteria.ManagedEntryPointAssemblyName, filterDescriptorManagedEntryPointAssemblyName.Value, options.Filters[5]);
         }
 
         [Fact]
@@ -115,6 +132,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.UnitTests
                 DiagProcessFilterCriteria.RuntimeId,
                 DiagProcessFilterCriteria.CommandLine,
                 DiagProcessFilterCriteria.ProcessName,
+                DiagProcessFilterCriteria.ManagedEntryPointAssemblyName
             };
 
             Assert.Equal(expectedValues.Length, actualValues.Length);
