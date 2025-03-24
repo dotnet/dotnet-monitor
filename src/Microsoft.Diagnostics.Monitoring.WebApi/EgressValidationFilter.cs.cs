@@ -3,7 +3,6 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
@@ -12,43 +11,6 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    public class EgressValidationFilter : IEndpointFilter
-    {
-        private readonly IEgressOutputConfiguration _egressOutputConfiguration;
-        private const string EgressQuery = "egressprovider";
-
-        public EgressValidationFilter(IEgressOutputConfiguration egressOutputConfiguration)
-        {
-            _egressOutputConfiguration = egressOutputConfiguration;
-        }
-
-        public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
-        {
-            var httpContext = context.HttpContext;
-            if (!httpContext.Request.Query.TryGetValue(EgressQuery, out StringValues value) || StringValues.IsNullOrEmpty(value))
-            {
-                if (!_egressOutputConfiguration.IsHttpEgressEnabled)
-                {
-                    var logger = httpContext.RequestServices.GetRequiredService<ILogger<EgressValidationFilter>>();
-                    var exception = new EgressDisabledException();
-                    logger.LogError(exception.Message);
-                    return Results.BadRequest(new ProblemDetails
-                    {
-                        Status = StatusCodes.Status400BadRequest,
-                        Title = "Egress Disabled",
-                        Detail = exception.Message
-                    });
-                }
-            }
-
-            return await next(context);
-        }
-
-        public class EgressDisabledException : Exception
-        {
-            public override string Message => "HTTP egress is disabled."; // Use appropriate error message
-        }
-    }
 
     public class EgressValidationUnhandledExceptionMiddleware
     {
@@ -71,8 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             {
                 var problemDetails = egressException.ToProblemDetails(StatusCodes.Status400BadRequest);
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                context.Response.ContentType = ContentTypes.ApplicationProblemJson;
-                await context.Response.WriteAsJsonAsync(problemDetails);
+                await context.Response.WriteAsJsonAsync(problemDetails, options: null, contentType: ContentTypes.ApplicationProblemJson);
 
                 _logger.LogError(egressException.Message);
             }
