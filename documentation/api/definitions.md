@@ -104,6 +104,8 @@ Object describing a captured method and its parameters.
 | `typeName` | string | The method type name. |
 | `methodName` | string | The method name. |
 | `parameters` | [CapturedParameter](#capturedparameter)[] | Array of captured parameters. |
+| `methodToken` | int |(9.1+) TypeDef token for the method. |
+| `moduleVersionId` | guid |(9.1+) Unique identifier used to distinguish between two versions of the same module. An empty value: `00000000-0000-0000-0000-000000000000`. |
 
 ## CapturedParameter
 
@@ -141,6 +143,7 @@ Object describing diagnostic/automation information about the executing instance
 | RuntimeVersion | string | The version of the dotnet runtime. |
 | DiagnosticPortMode | DiagnosticPortConnectionMode | Indicates whether `dotnet monitor` is in `connect` mode or `listen` mode. |
 | DiagnosticPortName | string | The name of the named pipe or unix domain socket to use for connecting to the diagnostic server. |
+| Capabilities | [MonitorCapability](#monitorcapability)[] |(9.1+) The capabilities provided by `dotnet monitor`. |
 
 ## DumpType
 
@@ -375,6 +378,17 @@ Object describing a metric from the application.
 | `counterType` | string | The type of metric. This is typically `Rate` or `Metric`. |
 | `value` | double | The value of the metric. |
 
+## MonitorCapability
+
+First Available: 9.1
+
+The name and enablement of a `dotnet monitor` capability.
+
+| Name | Type | Description |
+|---|---|---|
+| `name`| string | The name of the capability. |
+| `enabled` | bool | The enablement status of the capability. |
+
 ## OperationError
 
 | Name | Type | Description |
@@ -516,6 +530,7 @@ Some properties will have non-null values for processes that are running on .NET
 | `commandLine` | string | The command line of the process (includes process path and arguments) |
 | `operatingSystem` | string | `.NET 5+` The operating system on which the process is running (e.g. `windows`, `linux`, `macos`).<br/>`.NET Core 3.1` A value of `null`. |
 | `processArchitecture` | string | `.NET 5+` The architecture of the process (e.g. `x64`, `x86`).<br/>`.NET Core 3.1` A value of `null`. |
+| `managedEntryPointAssemblyName` | string | `9.1+` The name of the managed entry point assembly. The entry point assembly is typically the assembly that contains the `Program` class for the application. |
 
 The `uid` property is useful for uniquely identifying a process when it is running in an environment where the process ID may not be unique (e.g. multiple containers within a Kubernetes pod will have entrypoint processes with process ID 1).
 

@@ -73,7 +73,8 @@ Content-Type: application/json
     "name": "dotnet",
     "commandLine": "\"C:\\Program Files\\dotnet\\dotnet.exe\" ConsoleApp1.dll",
     "operatingSystem": "Windows",
-    "processArchitecture": "x64"
+    "processArchitecture": "x64",
+    "managedEntryPointAssemblyName": "ConsoleApp1"
 }
 ```
 

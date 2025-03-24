@@ -17,3 +17,10 @@
 | 6.3 | October 11, 2022 | [6.3.10](https://github.com/dotnet/dotnet-monitor/releases/tag/v6.3.10) | November 12, 2024 | November 12, 2024 | net6.0<br/>netcoreapp3.1 |
 
 
+## Preview versions
+
+| Version | Release Date | Latest Version | Runtime Frameworks |
+| --- | --- | --- | --- |
+| 9.1 | March 11, 2025 | [9.1.0 preview 1](https://github.com/dotnet/dotnet-monitor/releases/tag/v9.1.0-preview.1.25155.2) | net9.0 |
+
+
