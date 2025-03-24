@@ -49,7 +49,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 [EndpointSummary("Capture metrics for a process.")] (
                 HttpContext context,
                 ILogger<DiagController> logger,
-                [FromBody][Required][Description("The metrics configuration describing which metrics to capture.")]
+                [FromBody]
+                [Required]
+                [Description("The metrics configuration describing which metrics to capture.")]
                 Models.EventMetricsConfiguration configuration,
                 [Description("Process ID used to identify the target process.")]
                 int? pid,

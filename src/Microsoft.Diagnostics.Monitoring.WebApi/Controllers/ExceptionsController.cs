@@ -66,7 +66,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 [EndpointSummary("Gets the exceptions from the target process.")] (
                 HttpContext context,
                 ILogger<ExceptionsController> logger,
-                [FromBody, Description("The exceptions configuration describing which exceptions to include in the response.")]
+                [FromBody]
+                [Description("The exceptions configuration describing which exceptions to include in the response.")]
                 ExceptionsConfiguration configuration,
                 [Description("Process ID used to identify the target process.")] int? pid,
                 [Description("The Runtime instance cookie used to identify the target process.")] Guid? uid,
