@@ -69,8 +69,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     new OperationsController(logger, context).GetOperationStatus(operationId))
             .WithName(nameof(GetOperationStatus))
             .RequireOperationsControllerCommon()
-            .Produces<OperationStatus>(StatusCodes.Status200OK)
-            .Produces<OperationStatus>(StatusCodes.Status201Created);
+            .Produces<OperationStatus>(StatusCodes.Status201Created)
+            .Produces<OperationStatus>(StatusCodes.Status200OK);
 
             // CancelOperation
             builder.MapDelete($"{ControllerName}/{{operationId}}", (
