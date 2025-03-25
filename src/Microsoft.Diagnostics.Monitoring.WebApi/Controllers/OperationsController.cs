@@ -40,12 +40,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _operationsStore = httpContext.RequestServices.GetRequiredService<IEgressOperationStore>();
         }
 
-        // Todo: use MapGroup!
-        // Factor out.
         public static void MapActionMethods(IEndpointRouteBuilder builder)
         {
+            var groupBuilder = builder.MapGroup(ControllerName);
+
             // GetOperations
-            builder.MapGet($"{ControllerName}", [EndpointSummary("Gets the operations list for the specified process (or all processes if left unspecified).")] (
+            groupBuilder.MapGet("/",
+                [EndpointSummary("Gets the operations list for the specified process (or all processes if left unspecified).")] (
                 HttpContext context,
                 ILogger<OperationsController> logger,
                 [Description("Process ID used to identify the target process.")]
@@ -62,7 +63,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             .Produces<IEnumerable<OperationSummary>>(StatusCodes.Status200OK);
 
             // GetOperationStatus
-            builder.MapGet($"{ControllerName}/{{operationId}}", (
+            groupBuilder.MapGet("{operationId}", (
                 HttpContext context,
                 ILogger<OperationsController> logger,
                 Guid operationId) =>
@@ -73,7 +74,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             .Produces<OperationStatus>(StatusCodes.Status200OK);
 
             // CancelOperation
-            builder.MapDelete($"{ControllerName}/{{operationId}}", (
+            groupBuilder.MapDelete("{operationId}", (
                 HttpContext context,
                 ILogger<OperationsController> logger,
                 Guid operationId,
