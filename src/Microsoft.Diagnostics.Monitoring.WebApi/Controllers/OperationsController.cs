@@ -48,10 +48,14 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             builder.MapGet($"{ControllerName}", [EndpointSummary("Gets the operations list for the specified process (or all processes if left unspecified).")] (
                 HttpContext context,
                 ILogger<OperationsController> logger,
-                [Description("Process ID used to identify the target process.")] int? pid,
-                [Description("The Runtime instance cookie used to identify the target process.")] Guid? uid,
-                [Description("Process name used to identify the target process.")] string? name,
-                [Description("An optional set of comma-separated identifiers users can include to make an operation easier to identify.")] string? tags) =>
+                [Description("Process ID used to identify the target process.")]
+                int? pid,
+                [Description("The Runtime instance cookie used to identify the target process.")]
+                Guid? uid,
+                [Description("Process name used to identify the target process.")]
+                string? name,
+                [Description("An optional set of comma-separated identifiers users can include to make an operation easier to identify.")]
+                string? tags) =>
                     new OperationsController(logger, context).GetOperations(pid, uid, name, tags))
             .WithName(nameof(GetOperations))
             .RequireOperationsControllerCommon()
@@ -101,7 +105,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             {
                 Models.OperationStatus status = _operationsStore.GetOperationStatus(operationId);
                 return status.Status == Models.OperationState.Succeeded
-#pragma warning disable CS8625 // Implementation accexts null, but nullable annotation was added in .NET 9
+#pragma warning disable CS8625 // Implementation accepts null, but nullable annotation was added in .NET 9
                     ? TypedResults.Created((string?)null, status)
 #pragma warning restore CS8625
                     : Results.Ok(status);

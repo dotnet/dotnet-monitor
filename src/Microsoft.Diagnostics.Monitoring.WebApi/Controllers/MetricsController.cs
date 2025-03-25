@@ -43,9 +43,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 .WithTags("Metrics");
         }
 
-        /// <summary>
-        /// Get a list of the current backlog of metrics for a process in the Prometheus exposition format.
-        /// </summary>
         public IResult GetMetrics()
         {
             return this.InvokeService(() =>

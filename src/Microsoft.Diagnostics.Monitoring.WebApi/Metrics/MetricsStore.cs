@@ -50,7 +50,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private ILogger<MetricsStoreService> _logger;
 
         private HashSet<string> _observedErrorMessages = new();
-        private HashSet<(string provider, string counter)> _observedEndedCounters = new(); // maybe?
+        private HashSet<(string provider, string counter)> _observedEndedCounters = new();
 
         public MetricsStore(ILogger<MetricsStoreService> logger, int maxMetricCount)
         {

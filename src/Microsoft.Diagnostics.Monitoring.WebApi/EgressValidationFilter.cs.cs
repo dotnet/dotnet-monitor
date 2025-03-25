@@ -48,7 +48,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         {
             return builder.AddEndpointFilter(async (context, next) =>
             {
-                var services = context.HttpContext.RequestServices; // Resolve per request
+                var services = context.HttpContext.RequestServices;
                 var egressOutputConfiguration = services.GetRequiredService<IEgressOutputConfiguration>();
 
                 StringValues value;

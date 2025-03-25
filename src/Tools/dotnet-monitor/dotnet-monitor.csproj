@@ -9,7 +9,6 @@
     <ServerGarbageCollection>false</ServerGarbageCollection>
     <OpenApiGenerateDocuments>false</OpenApiGenerateDocuments>
     <Nullable>enable</Nullable>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>

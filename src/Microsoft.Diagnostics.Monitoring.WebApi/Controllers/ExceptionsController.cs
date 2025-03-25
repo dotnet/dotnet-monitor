@@ -49,11 +49,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 [EndpointSummary("Gets the exceptions from the target process.")] (
                 HttpContext context,
                 ILogger<ExceptionsController> logger,
-                [Description("Process ID used to identify the target process.")] int? pid,
-                [Description("The Runtime instance cookie used to identify the target process.")] Guid? uid,
-                [Description("Process name used to identify the target process.")] string? name,
-                [Description("The egress provider to which the exceptions are saved.")] string? egressProvider = null,
-                [Description("An optional set of comma-separated identifiers users can include to make an operation easier to identify.")] string? tags = null) =>
+                [Description("Process ID used to identify the target process.")]
+                int? pid,
+                [Description("The Runtime instance cookie used to identify the target process.")]
+                Guid? uid,
+                [Description("Process name used to identify the target process.")]
+                string? name,
+                [Description("The egress provider to which the exceptions are saved.")]
+                string? egressProvider = null,
+                [Description("An optional set of comma-separated identifiers users can include to make an operation easier to identify.")]
+                string? tags = null) =>
                     new ExceptionsController(context, logger).GetExceptions(pid, uid, name, egressProvider, tags))
                 .WithName(nameof(GetExceptions))
                 .RequireExceptionsControllerCommon()
@@ -69,11 +74,16 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 [FromBody]
                 [Description("The exceptions configuration describing which exceptions to include in the response.")]
                 ExceptionsConfiguration configuration,
-                [Description("Process ID used to identify the target process.")] int? pid,
-                [Description("The Runtime instance cookie used to identify the target process.")] Guid? uid,
-                [Description("Process name used to identify the target process.")] string? name,
-                [Description("The egress provider to which the exceptions are saved.")] string? egressProvider = null,
-                [Description("An optional set of comma-separated identifiers users can include to make an operation easier to identify.")] string? tags = null) =>
+                [Description("Process ID used to identify the target process.")]
+                int? pid,
+                [Description("The Runtime instance cookie used to identify the target process.")]
+                Guid? uid,
+                [Description("Process name used to identify the target process.")]
+                string? name,
+                [Description("The egress provider to which the exceptions are saved.")]
+                string? egressProvider = null,
+                [Description("An optional set of comma-separated identifiers users can include to make an operation easier to identify.")]
+                string? tags = null) =>
                     new ExceptionsController(context, logger).CaptureExceptionsCustom(configuration, pid, uid, name, egressProvider, tags))
                 .WithName(nameof(CaptureExceptionsCustom))
                 .RequireExceptionsControllerCommon()

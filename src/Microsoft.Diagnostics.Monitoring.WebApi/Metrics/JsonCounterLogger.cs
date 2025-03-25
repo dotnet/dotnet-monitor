@@ -109,7 +109,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private void SerializeCounterValues(
             DateTime timestamp,
-            string provider, // or here?
+            string provider,
             string name,
             string displayName,
             string unit,

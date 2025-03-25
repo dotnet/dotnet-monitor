@@ -143,6 +143,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 .WithName(nameof(CaptureDump))
                 .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
+                // FileResult is the closest representation of the output so that the OpenAPI document correctly
+                // describes the result as a binary file.
                 .Produces<FileResult>(StatusCodes.Status200OK, ContentTypes.ApplicationOctetStream)
                 .Produces(StatusCodes.Status202Accepted)
                 .RequireEgressValidation();
@@ -166,6 +168,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 .WithName(nameof(CaptureGcDump))
                 .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
+                // FileResult is the closest representation of the output so that the OpenAPI document correctly
+                // describes the result as a binary file.
                 .Produces<FileResult>(StatusCodes.Status200OK, ContentTypes.ApplicationOctetStream)
                 .Produces(StatusCodes.Status202Accepted)
                 .RequireEgressValidation();
@@ -194,6 +198,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 .WithName(nameof(CaptureTrace))
                 .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
+                // FileResult is the closest representation of the output so that the OpenAPI document correctly
+                 // describes the result as a binary file.
                 .Produces<FileResult>(StatusCodes.Status200OK, ContentTypes.ApplicationOctetStream)
                 .Produces(StatusCodes.Status202Accepted)
                 .RequireEgressValidation();
@@ -224,6 +230,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 .WithName(nameof(CaptureTraceCustom))
                 .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
+                // FileResult is the closest representation of the output so that the OpenAPI document correctly
+                // describes the result as a binary file.
                 .Produces<FileResult>(StatusCodes.Status200OK, ContentTypes.ApplicationOctetStream)
                 .Produces(StatusCodes.Status202Accepted)
                 .Accepts<EventPipeConfiguration>(ContentTypes.ApplicationJson, ContentTypes.TextJson, ContentTypes.ApplicationAnyJson)
@@ -469,8 +477,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             processKey);
         }
 
-        // FileResult is the closest representation of the output so that the OpenAPI document correctly
-        // describes the result as a binary file.
         public Task<IResult> CaptureDump(
             int? pid,
             Guid? uid,
@@ -492,8 +498,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 Utilities.ArtifactType_Dump);
         }
 
-        // FileResult is the closest representation of the output so that the OpenAPI document correctly
-        // describes the result as a binary file.
         public Task<IResult> CaptureGcDump(
             int? pid,
             Guid? uid,
@@ -514,8 +518,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 Utilities.ArtifactType_GCDump);
         }
 
-        // FileResult is the closest representation of the output so that the OpenAPI document correctly
-        // describes the result as a binary file.
         public Task<IResult> CaptureTrace(
             int? pid,
             Guid? uid,
@@ -537,8 +539,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }, processKey, Utilities.ArtifactType_Trace);
         }
 
-        // FileResult is the closest representation of the output so that the OpenAPI document correctly
-        // describes the result as a binary file.
         public Task<IResult> CaptureTraceCustom(
             EventPipeConfiguration configuration,
             int? pid,
