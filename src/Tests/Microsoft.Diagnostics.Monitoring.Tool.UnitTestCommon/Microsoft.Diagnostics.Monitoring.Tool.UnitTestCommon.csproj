@@ -17,6 +17,7 @@
     <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.Options\Microsoft.Diagnostics.Monitoring.Options.csproj" />
     <ProjectReference Include="..\..\Tools\dotnet-monitor\dotnet-monitor.csproj" />
     <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.TestCommon\Microsoft.Diagnostics.Monitoring.TestCommon.csproj" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" GeneratePathProperty="true" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,5 +26,13 @@
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests.UnitTests" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.S3StorageTests.UnitTests" />
   </ItemGroup>
+
+  <!-- Disable openapi generation based on XML comments, as this produces invalid
+       generated code for doc comments with quotes: https://github.com/dotnet/aspnetcore/issues/60783 -->
+  <Target Name="DisableCompileTimeOpenApiXmlGenerator" BeforeTargets="CoreCompile">
+    <ItemGroup>
+      <Analyzer Remove="$(PkgMicrosoft_AspNetCore_OpenApi)/analyzers/dotnet/cs/Microsoft.AspNetCore.OpenApi.SourceGenerators.dll" />
+    </ItemGroup>
+  </Target>
 
 </Project>

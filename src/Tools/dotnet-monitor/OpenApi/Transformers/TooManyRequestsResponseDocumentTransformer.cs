@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi.Models.References;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,17 +22,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers
                  ContentTypes.ApplicationProblemJson,
                  new OpenApiMediaType()
                  {
-                     Schema = new OpenApiSchema()
-                     {
-                         Reference = new OpenApiReference()
-                         {
-                             Id = nameof(ProblemDetails),
-                             Type = ReferenceType.Schema
-                         }
-                     }
+                     Schema = new OpenApiSchemaReference(nameof(ProblemDetails))
                  });
 
-            openApiDoc.Components.Responses.Add(
+            var components = openApiDoc.Components ??= new OpenApiComponents();
+            var responses = components.Responses ??= new OpenApiResponses();
+            responses.Add(
                 ResponseNames.TooManyRequestsResponse,
                 tooManyRequests);
             

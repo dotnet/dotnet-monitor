@@ -13,7 +13,7 @@
       - 'daily': sets the blob group release name to 'daily' so a release type does not have to be assigned.
       - 'release': sets the blob group release name to 'release'. Can be used for prereleases and full releases.
     -->
-    <BlobGroupBuildQuality>daily</BlobGroupBuildQuality>
+    <BlobGroupBuildQuality>release</BlobGroupBuildQuality>
     <!--
       This should be set to true for official releases.
     -->
@@ -29,7 +29,7 @@
     <!-- The TFMs of that the dotnet-monitor tool supports diagnosing. -->
     <TestTargetFrameworks>net7.0;net8.0;$(LatestTargetFramework)</TestTargetFrameworks>
     <!-- The TFM for generating schema.json and OpenAPI docs. -->
-    <SchemaTargetFramework>net9.0</SchemaTargetFramework>
+    <SchemaTargetFramework>net10.0</SchemaTargetFramework>
   </PropertyGroup>
   <PropertyGroup Label="Arcade">
     <UsingToolXliff>false</UsingToolXliff>
@@ -60,7 +60,7 @@
     <MicrosoftDiagnosticsMonitoringVersion>9.0.0-preview.25155.1</MicrosoftDiagnosticsMonitoringVersion>
     <MicrosoftDiagnosticsMonitoringEventPipeVersion>9.0.0-preview.25155.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <!-- dotnet/roslyn-analyzers -->
-    <MicrosoftCodeAnalysisNetAnalyzersVersion>9.0.0-preview.25076.3</MicrosoftCodeAnalysisNetAnalyzersVersion>
+    <MicrosoftCodeAnalysisNetAnalyzersVersion>10.0.0-preview.25076.4</MicrosoftCodeAnalysisNetAnalyzersVersion>
     <!-- dotnet/runtime references -->
     <MicrosoftNETCoreAppRuntimewinx64Version>9.0.1</MicrosoftNETCoreAppRuntimewinx64Version>
     <VSRedistCommonNetCoreSharedFrameworkx6490Version>9.0.1-servicing.24610.10</VSRedistCommonNetCoreSharedFrameworkx6490Version>
@@ -77,6 +77,7 @@
     <MicrosoftAspNetCoreApp70Version>$(MicrosoftNETCoreApp70Version)</MicrosoftAspNetCoreApp70Version>
     <MicrosoftAspNetCoreApp80Version>$(MicrosoftNETCoreApp80Version)</MicrosoftAspNetCoreApp80Version>
     <MicrosoftAspNetCoreApp90Version>$(MicrosoftNETCoreApp90Version)</MicrosoftAspNetCoreApp90Version>
+    <MicrosoftAspNetCoreApp100Version>10.0.0-preview.2.25164.1</MicrosoftAspNetCoreApp100Version>
   </PropertyGroup>
   <PropertyGroup Label="SDK Versions">
     <!-- Use a non-final versioned sentinel package for installation of specific SDK version. -->
@@ -102,7 +103,7 @@
     <MicrosoftExtensionsConfigurationAbstractionsVersion>$(MicrosoftExtensionsConfigurationAbstractions70Version)</MicrosoftExtensionsConfigurationAbstractionsVersion>
     <MicrosoftExtensionsLoggingVersion>$(MicrosoftExtensionsLogging70Version)</MicrosoftExtensionsLoggingVersion>
     <MicrosoftExtensionsLoggingAbstractionsVersion>$(MicrosoftExtensionsLoggingAbstractions70Version)</MicrosoftExtensionsLoggingAbstractionsVersion>
-    <MicrosoftExtensionsLoggingConsoleVersion>$(MicrosoftExtensionsLoggingConsole70Version)</MicrosoftExtensionsLoggingConsoleVersion>
+    <MicrosoftExtensionsLoggingConsoleVersion>$(MicrosoftExte nsionsLoggingConsole70Version)</MicrosoftExtensionsLoggingConsoleVersion>
     <SystemTextJsonVersion>$(SystemTextJson80Version)</SystemTextJsonVersion>
   </PropertyGroup>
   <PropertyGroup Label=".NET 8 Dependent" Condition=" '$(TargetFramework)' == 'net8.0' ">
@@ -123,6 +124,16 @@
     <MicrosoftExtensionsLoggingConsoleVersion>$(MicrosoftExtensionsLoggingConsole90Version)</MicrosoftExtensionsLoggingConsoleVersion>
     <SystemTextJsonVersion>$(SystemTextJson90Version)</SystemTextJsonVersion>
     <MicrosoftAspNetCoreOpenApiVersion>$(MicrosoftAspNetCoreApp90Version)</MicrosoftAspNetCoreOpenApiVersion>
+  </PropertyGroup>
+  <PropertyGroup Label=".NET 10 Dependent" Condition=" '$(TargetFramework)' == 'net10.0' ">
+    <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>$(MicrosoftAspNetCoreApp100Version)</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
+    <MicrosoftAspNetCoreAuthenticationNegotiateVersion>$(MicrosoftAspNetCoreApp100Version)</MicrosoftAspNetCoreAuthenticationNegotiateVersion>
+    <MicrosoftExtensionsConfigurationAbstractionsVersion>$(MicrosoftExtensionsConfigurationAbstractions100Version)</MicrosoftExtensionsConfigurationAbstractionsVersion>
+    <MicrosoftExtensionsLoggingVersion>$(MicrosoftExtensionsLogging100Version)</MicrosoftExtensionsLoggingVersion>
+    <MicrosoftExtensionsLoggingAbstractionsVersion>$(MicrosoftExtensionsLoggingAbstractions100Version)</MicrosoftExtensionsLoggingAbstractionsVersion>
+    <MicrosoftExtensionsLoggingConsoleVersion>$(MicrosoftExtensionsLoggingConsole100Version)</MicrosoftExtensionsLoggingConsoleVersion>
+    <SystemTextJsonVersion>$(SystemTextJson100Version)</SystemTextJsonVersion>
+    <MicrosoftAspNetCoreOpenApiVersion>$(MicrosoftAspNetCoreApp100Version)</MicrosoftAspNetCoreOpenApiVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(UseMicrosoftDiagnosticsMonitoringShippedVersion)' == 'true'">
     <MicrosoftDiagnosticsMonitoringLibraryVersion>$(MicrosoftDiagnosticsMonitoringShippedVersion)</MicrosoftDiagnosticsMonitoringLibraryVersion>

@@ -4,6 +4,7 @@
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi.Models.Interfaces;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,14 +18,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers
     {
         public Task TransformAsync(OpenApiOperation operation, OpenApiOperationTransformerContext context, CancellationToken cancellationToken)
         {
-            foreach (KeyValuePair<string, OpenApiResponse> response in operation.Responses)
+            if (operation.Responses is OpenApiResponses responses)
             {
-                if (response.Key.StartsWith("2"))
+                foreach (KeyValuePair<string, IOpenApiResponse> response in responses)
                 {
-                    response.Value.Content.Remove(ContentTypes.ApplicationProblemJson);
+                    if (response.Key.StartsWith("2"))
+                    {
+                        response.Value.Content.Remove(ContentTypes.ApplicationProblemJson);
+                    }
                 }
             }
-
             return Task.CompletedTask;
         }
     }

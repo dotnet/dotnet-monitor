@@ -1,0 +1,17 @@
+<Project>
+  <!-- Import references updated by Dependabot. -->
+  <PropertyGroup>
+    <!-- Microsoft.NETCore.App -->
+    <MicrosoftNETCoreApp100Version>10.0.0-alpha.1.25070.4</MicrosoftNETCoreApp100Version>
+    <!-- Microsoft.Extensions.Configuration.Abstractions -->
+    <MicrosoftExtensionsConfigurationAbstractions100Version>$(MicrosoftNETCoreApp100Version)</MicrosoftExtensionsConfigurationAbstractions100Version>
+    <!-- Microsoft.Extensions.Logging -->
+    <MicrosoftExtensionsLogging100Version>$(MicrosoftNETCoreApp100Version)</MicrosoftExtensionsLogging100Version>
+    <!-- Microsoft.Extensions.Logging.Abstractions -->
+    <MicrosoftExtensionsLoggingAbstractions100Version>$(MicrosoftNETCoreApp100Version)</MicrosoftExtensionsLoggingAbstractions100Version>
+    <!-- Microsoft.Extensions.Logging.Console -->
+    <MicrosoftExtensionsLoggingConsole100Version>$(MicrosoftNETCoreApp100Version)</MicrosoftExtensionsLoggingConsole100Version>
+    <!-- System.Text.Json -->
+    <SystemTextJson100Version>$(MicrosoftNETCoreApp100Version)</SystemTextJson100Version>
+  </PropertyGroup>
+</Project>

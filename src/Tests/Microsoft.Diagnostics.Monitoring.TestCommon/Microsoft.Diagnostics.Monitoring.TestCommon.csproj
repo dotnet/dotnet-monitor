@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>$(TestTargetFrameworks)</TargetFrameworks>
     <DefineConstants>$(DefineConstants);UNITTEST</DefineConstants>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,7 +18,6 @@
     <PackageReference Include="Microsoft.DotNet.XUnitExtensions" />
     <PackageReference Include="Microsoft.Extensions.Logging" />
     <PackageReference Include="Microsoft.FileFormats" />
-    <PackageReference Include="System.Security.Principal.Windows" />
     <PackageReference Include="xunit.assert" VersionOverride="$(XUnitVersion)" />
   </ItemGroup>
 

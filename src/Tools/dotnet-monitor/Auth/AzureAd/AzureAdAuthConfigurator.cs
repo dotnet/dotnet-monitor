@@ -9,8 +9,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Web;
 using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi.Models.Interfaces;
+using Microsoft.OpenApi.Models.References;
 using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
 {
@@ -56,7 +59,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
 
             options.AddDocumentTransformer((document, context, cancellationToken) =>
             {
-                document.Components.SecuritySchemes.Add(OAuth2SecurityDefinitionName, new OpenApiSecurityScheme
+                var components = document.Components ??= new OpenApiComponents();
+                var securitySchemes = components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
+                securitySchemes.Add(OAuth2SecurityDefinitionName, new OpenApiSecurityScheme
                 {
                     Type = SecuritySchemeType.OAuth2,
                     Flows = new OpenApiOAuthFlows
@@ -69,13 +74,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
                     }
                 });
 
-                document.SecurityRequirements.Add(new OpenApiSecurityRequirement
+                var securityRequirements = document.SecurityRequirements ??= new List<OpenApiSecurityRequirement>();
+                securityRequirements.Add(new OpenApiSecurityRequirement
                 {
                     {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference { Type= ReferenceType.SecurityScheme, Id = OAuth2SecurityDefinitionName }
-                        },
+                        new OpenApiSecuritySchemeReference(OAuth2SecurityDefinitionName),
                         Array.Empty<string>()
                     }
                 });
