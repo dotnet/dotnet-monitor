@@ -1694,21 +1694,21 @@
             "nullable": true,
             "description": "The sliding window duration in which the actionCountLimit is the maximum number of occurrences (as defined by Limits).",
             "format": "time-span",
-            "example": "2025-03-26T00:00:30.0000000+00:00"
+            "example": "00:00:30"
           },
           "slidingWindowDurationCountdown": {
             "type": "string",
             "nullable": true,
             "description": "The amount of time that needs to pass before the slidingWindowOccurrences drops below the actionCountLimit",
             "format": "time-span",
-            "example": "2025-03-26T00:00:30.0000000+00:00"
+            "example": "00:00:30"
           },
           "ruleFinishedCountdown": {
             "type": "string",
             "nullable": true,
             "description": "The amount of time that needs to pass before the rule is finished",
             "format": "time-span",
-            "example": "2025-03-26T00:00:30.0000000+00:00"
+            "example": "00:00:30"
           },
           "state": {
             "$ref": "#/components/schemas/CollectionRuleState"

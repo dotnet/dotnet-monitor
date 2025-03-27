@@ -41,8 +41,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
                 if (context.JsonTypeInfo.Type == typeof(TimeSpan?))
                 {
                     schema.Format = "time-span";
-                    // Updating to Microsoft.OpenApi 2.0.0-preview11 should fix the serialized Example:
-                    // https://github.com/microsoft/OpenAPI.NET/issues/2137
                     schema.Example = JsonValue.Create("00:00:30");
                     schema.Pattern = null;
                 }
@@ -254,7 +252,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
                     Description = Strings.HelpDescription_SecurityDefinitionDescription_ApiKey
                 });
 
-                var securityRequirements = document.SecurityRequirements ??= new List<OpenApiSecurityRequirement>();
+                var securityRequirements = document.Security ??= new List<OpenApiSecurityRequirement>();
                 securityRequirements.Add(new OpenApiSecurityRequirement
                 {
                     {

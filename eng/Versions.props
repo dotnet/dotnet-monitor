@@ -77,7 +77,7 @@
     <MicrosoftAspNetCoreApp70Version>$(MicrosoftNETCoreApp70Version)</MicrosoftAspNetCoreApp70Version>
     <MicrosoftAspNetCoreApp80Version>$(MicrosoftNETCoreApp80Version)</MicrosoftAspNetCoreApp80Version>
     <MicrosoftAspNetCoreApp90Version>$(MicrosoftNETCoreApp90Version)</MicrosoftAspNetCoreApp90Version>
-    <MicrosoftAspNetCoreApp100Version>10.0.0-preview.2.25164.1</MicrosoftAspNetCoreApp100Version>
+    <MicrosoftAspNetCoreApp100Version>10.0.0-preview.4.25176.5</MicrosoftAspNetCoreApp100Version>
   </PropertyGroup>
   <PropertyGroup Label="SDK Versions">
     <!-- Use a non-final versioned sentinel package for installation of specific SDK version. -->

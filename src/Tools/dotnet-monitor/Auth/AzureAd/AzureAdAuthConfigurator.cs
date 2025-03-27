@@ -74,7 +74,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
                     }
                 });
 
-                var securityRequirements = document.SecurityRequirements ??= new List<OpenApiSecurityRequirement>();
+                var securityRequirements = document.Security ??= new List<OpenApiSecurityRequirement>();
                 securityRequirements.Add(new OpenApiSecurityRequirement
                 {
                     {

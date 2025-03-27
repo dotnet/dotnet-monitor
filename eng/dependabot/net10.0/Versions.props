@@ -2,7 +2,7 @@
   <!-- Import references updated by Dependabot. -->
   <PropertyGroup>
     <!-- Microsoft.NETCore.App -->
-    <MicrosoftNETCoreApp100Version>10.0.0-alpha.1.25070.4</MicrosoftNETCoreApp100Version>
+    <MicrosoftNETCoreApp100Version>10.0.0-preview.4.25174.9</MicrosoftNETCoreApp100Version>
     <!-- Microsoft.Extensions.Configuration.Abstractions -->
     <MicrosoftExtensionsConfigurationAbstractions100Version>$(MicrosoftNETCoreApp100Version)</MicrosoftExtensionsConfigurationAbstractions100Version>
     <!-- Microsoft.Extensions.Logging -->
