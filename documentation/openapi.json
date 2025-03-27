@@ -1909,6 +1909,21 @@
         "additionalProperties": false
       },
       "ExceptionFilter": {
+        "type": "object",
+        "properties": {
+          "exceptionType": {
+            "type": "string"
+          },
+          "moduleName": {
+            "type": "string"
+          },
+          "typeName": {
+            "type": "string"
+          },
+          "methodName": {
+            "type": "string"
+          }
+        },
         "additionalProperties": false
       },
       "ExceptionsConfiguration": {

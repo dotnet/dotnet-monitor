@@ -73,8 +73,27 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
             });
 
             // Make sure FileResult schema is inlined
-            options.CreateSchemaReferenceId = (type) => 
+            options.CreateSchemaReferenceId = (type) =>
                 type.Type == typeof(FileResult) ? null : OpenApiOptions.CreateDefaultSchemaReferenceId(type);
+
+            // Fix ExceptionFilter schema to work around https://github.com/dotnet/aspnetcore/issues/61194
+            options.AddDocumentTransformer((document, context, cancellationToken) => {
+                var components = document.Components ??= new OpenApiComponents();
+                var schemas = components.Schemas ??= new Dictionary<string, IOpenApiSchema>();
+                schemas[nameof(ExceptionFilter)] = new OpenApiSchema
+                {
+                    Type = JsonSchemaType.Object,
+                    Properties = new Dictionary<string, IOpenApiSchema>
+                    {
+                        { "exceptionType", new OpenApiSchema { Type = JsonSchemaType.String } },
+                        { "moduleName", new OpenApiSchema { Type = JsonSchemaType.String } },
+                        { "typeName", new OpenApiSchema { Type = JsonSchemaType.String } },
+                        { "methodName", new OpenApiSchema { Type = JsonSchemaType.String } }
+                    },
+                    AdditionalPropertiesAllowed = false
+                };
+                return Task.CompletedTask;
+            });
 
             // Fix up nullable and uniqueItems
             options.AddSchemaTransformer((schema, context, cancellationToken) => {
@@ -144,7 +163,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
                     type == typeof(EventMetricsProvider) ||
                     type == typeof(EventPipeConfiguration) ||
                     type == typeof(EventPipeProvider) ||
-                    type == typeof(ExceptionFilter) ||
                     type == typeof(ExceptionsConfiguration) || 
                     type == typeof(MethodDescription) ||
                     type == typeof(MonitorCapability) ||
