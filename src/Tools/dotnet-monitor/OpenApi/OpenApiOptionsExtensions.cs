@@ -163,7 +163,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
                     type == typeof(EventMetricsProvider) ||
                     type == typeof(EventPipeConfiguration) ||
                     type == typeof(EventPipeProvider) ||
-                    type == typeof(ExceptionsConfiguration) || 
+                    type == typeof(ExceptionsConfiguration) ||
+                    type == typeof(LogsConfiguration) ||
                     type == typeof(MethodDescription) ||
                     type == typeof(MonitorCapability) ||
                     type == typeof(OperationError) ||
@@ -179,14 +180,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
                          type == typeof(ValidationProblemDetails))
                 {
                     schema.AdditionalProperties = new OpenApiSchema();
-                }
-                else if (type == typeof(LogsConfiguration))
-                {
-                    schema.AdditionalPropertiesAllowed = false;
-                    // if (schema.Properties["filterSpecs"] is OpenApiSchema filterSpecsSchema)
-                    // {
-                    //     filterSpecsSchema.AdditionalProperties = new OpenApiSchemaReference(nameof(LogLevel));
-                    // }
                 }
                 else if (type == typeof(Dictionary<string, CollectionRuleDescription>))
                 {
