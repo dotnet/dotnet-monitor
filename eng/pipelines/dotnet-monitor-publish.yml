@@ -25,7 +25,6 @@ variables:
 resources:
   pipelines:
   - pipeline: dotnet-monitor_build
-    project: internal
     source: 'dotnet\dotnet-monitor\dotnet-dotnet-monitor'
 
 extends:
