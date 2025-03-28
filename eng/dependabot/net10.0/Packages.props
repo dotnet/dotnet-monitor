@@ -1,0 +1,18 @@
+<Project>
+  <!--
+    Packages in this file have versions updated periodically by Dependabot specifically for .NET 10.
+  -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(MicrosoftExtensionsConfigurationAbstractions100Version)" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="$(MicrosoftExtensionsLogging100Version)" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(MicrosoftExtensionsLoggingAbstractions100Version)" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(MicrosoftExtensionsLoggingConsole100Version)" />
+    <!--
+      We want to update "Microsoft.NETCore.App.Runtime.*" but those packages are considered platform packages and cannot be added
+      as a package reference. Use Microsoft.NETCore.DotNetHost instead which is released in lockstep with the runtime packages and
+      with the same version number.
+    -->
+    <PackageReference Include="Microsoft.NETCore.DotNetHost" Version="$(MicrosoftNETCoreApp100Version)" />
+    <PackageReference Include="System.Text.Json" Version="$(SystemTextJson100Version)" />
+  </ItemGroup>
+</Project>

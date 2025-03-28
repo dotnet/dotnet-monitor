@@ -16,13 +16,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers
         public Task TransformAsync(OpenApiDocument openApiDoc, OpenApiDocumentTransformerContext context, CancellationToken cancellationToken)
         {
             OpenApiHeader authenticateHeader = new();
-            authenticateHeader.Schema = new OpenApiSchema() { Type = "string" };
+            authenticateHeader.Schema = new OpenApiSchema() { Type = JsonSchemaType.String };
 
             OpenApiResponse unauthorizedResponse = new();
             unauthorizedResponse.Description = "Unauthorized";
             unauthorizedResponse.Headers.Add("WWW_Authenticate", authenticateHeader);
 
-            openApiDoc.Components.Responses.Add(
+            var components = openApiDoc.Components ??= new OpenApiComponents();
+            var responses = components.Responses ??= new OpenApiResponses();
+            responses.Add(
                 ResponseNames.UnauthorizedResponse,
                 unauthorizedResponse);
 

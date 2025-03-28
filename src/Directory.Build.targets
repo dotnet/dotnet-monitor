@@ -119,6 +119,14 @@
         <Version>$(MicrosoftAspNetCoreApp90Version)</Version>
       </_TestRuntimeFramework>
     </ItemGroup>
+    <ItemGroup Condition=" '$(TargetFramework)' == 'net10.0' ">
+      <_TestRuntimeFramework Include="@(RuntimeFramework)" Condition=" '%(Identity)' == 'Microsoft.NETCore.App' ">
+        <Version>$(MicrosoftNETCoreApp100Version)</Version>
+      </_TestRuntimeFramework>
+      <_TestRuntimeFramework Include="@(RuntimeFramework)" Condition=" '%(Identity)' == 'Microsoft.AspNetCore.App' ">
+        <Version>$(MicrosoftAspNetCoreApp100Version)</Version>
+      </_TestRuntimeFramework>
+    </ItemGroup>
     <ItemGroup>
       <_TestRuntimeFramework Include="@(RuntimeFramework)" Condition=" '%(Identity)' != 'Microsoft.NETCore.App' and '%(Identity)' != 'Microsoft.AspNetCore.App' " />
     </ItemGroup>
