@@ -1,15 +1,18 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.AspNetCore.OpenApi;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Web;
 using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi.Models.Interfaces;
+using Microsoft.OpenApi.Models.References;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
@@ -56,7 +59,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
 
             options.AddDocumentTransformer((document, context, cancellationToken) =>
             {
-                document.Components.SecuritySchemes.Add(OAuth2SecurityDefinitionName, new OpenApiSecurityScheme
+                OpenApiComponents components = document.Components ??= new OpenApiComponents();
+
+                IDictionary<string, IOpenApiSecurityScheme> securitySchemes = components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
+                securitySchemes.Add(OAuth2SecurityDefinitionName, new OpenApiSecurityScheme
                 {
                     Type = SecuritySchemeType.OAuth2,
                     Flows = new OpenApiOAuthFlows
@@ -69,13 +75,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
                     }
                 });
 
-                document.SecurityRequirements.Add(new OpenApiSecurityRequirement
+                IList<OpenApiSecurityRequirement> securityRequirements = document.Security ??= new List<OpenApiSecurityRequirement>();
+                securityRequirements.Add(new OpenApiSecurityRequirement
                 {
                     {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference { Type= ReferenceType.SecurityScheme, Id = OAuth2SecurityDefinitionName }
-                        },
+                        new OpenApiSecuritySchemeReference(OAuth2SecurityDefinitionName),
                         Array.Empty<string>()
                     }
                 });

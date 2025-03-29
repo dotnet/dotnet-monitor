@@ -139,6 +139,9 @@
     <AdditionalDotNetPackage Include="$(MicrosoftAspNetCoreApp90Version)">
       <PackageType>aspnetcore-runtime</PackageType>
     </AdditionalDotNetPackage>
+    <AdditionalDotNetPackage Include="$(MicrosoftAspNetCoreApp100Version)">
+      <PackageType>aspnetcore-runtime</PackageType>
+    </AdditionalDotNetPackage>
   </ItemGroup>
 
   <!-- Correlation Paylod: Node -->

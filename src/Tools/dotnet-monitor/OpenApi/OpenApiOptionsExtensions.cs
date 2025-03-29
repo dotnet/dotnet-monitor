@@ -1,8 +1,8 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi.Controllers;
@@ -10,14 +10,16 @@ using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
-using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi.Models.Interfaces;
+using Microsoft.OpenApi.Models.References;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Reflection;
+using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
 {
@@ -38,9 +40,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
             options.AddSchemaTransformer((schema, context, cancellationToken) => {
                 if (context.JsonTypeInfo.Type == typeof(TimeSpan?))
                 {
-                    schema.Type = "string";
+                    schema.Type = JsonSchemaType.String | JsonSchemaType.Null;
                     schema.Format = "time-span";
-                    schema.Example = new OpenApiString("00:00:30");
+                    schema.Example = JsonValue.Create("00:00:30");
                     schema.Pattern = null;
                 }
                 return Task.CompletedTask;
@@ -50,57 +52,105 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
             options.AddSchemaTransformer((schema, context, cancellationToken) => {
                 if (context.JsonTypeInfo.Type == typeof(FileResult))
                 {
-                    schema.Reference = null;
-                    schema.Type = "string";
+                    schema.Type = JsonSchemaType.String;
                     schema.Format = "binary";
-                    schema.Properties = new Dictionary<string, OpenApiSchema>();
+                    schema.Properties = new Dictionary<string, IOpenApiSchema>();
+                }
+                return Task.CompletedTask;
+            });
+
+            // Make sure int is represented as type: integer
+            options.AddSchemaTransformer((schema, context, cancellationToken) => {
+                var type = context.JsonTypeInfo.Type;
+                if (type == typeof(int) || type == typeof(int?))
+                {
+                    if (!schema.Type?.HasFlag(JsonSchemaType.Integer) != true)
+                    {
+                        schema.Type = JsonSchemaType.Integer;
+                        schema.Pattern = null;
+                    }
                 }
                 return Task.CompletedTask;
             });
 
             // Make sure FileResult schema is inlined
-            options.CreateSchemaReferenceId = (type) => 
+            options.CreateSchemaReferenceId = (type) =>
                 type.Type == typeof(FileResult) ? null : OpenApiOptions.CreateDefaultSchemaReferenceId(type);
+
+            // Fix ExceptionFilter schema to work around https://github.com/dotnet/aspnetcore/issues/61194
+            options.AddDocumentTransformer((document, context, cancellationToken) => {
+                OpenApiComponents components = document.Components ??= new OpenApiComponents();
+                IDictionary<string, IOpenApiSchema> schemas = components.Schemas ??= new Dictionary<string, IOpenApiSchema>();
+                schemas[nameof(ExceptionFilter)] = new OpenApiSchema
+                {
+                    Type = JsonSchemaType.Object,
+                    Properties = new Dictionary<string, IOpenApiSchema>
+                    {
+                        { "exceptionType", new OpenApiSchema { Type = JsonSchemaType.String | JsonSchemaType.Null } },
+                        { "moduleName", new OpenApiSchema { Type = JsonSchemaType.String | JsonSchemaType.Null } },
+                        { "typeName", new OpenApiSchema { Type = JsonSchemaType.String | JsonSchemaType.Null } },
+                        { "methodName", new OpenApiSchema { Type = JsonSchemaType.String | JsonSchemaType.Null } }
+                    },
+                    AdditionalPropertiesAllowed = false
+                };
+                return Task.CompletedTask;
+            });
 
             // Fix up nullable and uniqueItems
             options.AddSchemaTransformer((schema, context, cancellationToken) => {
                 var type = context.JsonTypeInfo.Type;
-                if (type == typeof(DotnetMonitorInfo))
+                if (type == typeof(CaptureParametersConfiguration))
                 {
-                    schema.Properties["capabilities"].Nullable = true;
+                    if (schema.Properties["captureLimit"] is OpenApiSchema captureLimitSchema)
+                    {
+                        captureLimitSchema.Type |= JsonSchemaType.Null;
+                    }
+                }
+                else if (type == typeof(DotnetMonitorInfo))
+                {
+                    if (schema.Properties["capabilities"] is OpenApiSchema capabilitiesSchema)
+                    {
+                        capabilitiesSchema.Type |= JsonSchemaType.Null;
+                    }
                 }
                 else if (type == typeof(ExceptionsConfiguration))
                 {
-                    schema.Properties["include"].Nullable = true;
-                    schema.Properties["exclude"].Nullable = true;
-
-                    // Work around an issue where the OpenApi generator outputs an incorrect ref for the
-                    // "exclude" ExceptionFilter when running on .NET 9.0.
-                    schema.Properties["exclude"].Items.Reference = new OpenApiReference
+                    if (schema.Properties["include"] is OpenApiSchema includeSchema)
                     {
-                        Type = ReferenceType.Schema,
-                        Id = nameof(ExceptionFilter)
-                    };
-                }
-                else if (type == typeof(ValidationProblemDetails))
-                {
-                    schema.Properties["errors"].Nullable = true;
+                        includeSchema.Type |= JsonSchemaType.Null;
+                    }
+
+                    if (schema.Properties["exclude"] is OpenApiSchema excludeSchema)
+                    {
+                        excludeSchema.Type |= JsonSchemaType.Null;
+                    }
                 }
                 else if (type == typeof(OperationStatus) ||
                          type == typeof(OperationSummary))
                 {
-                    schema.Properties["tags"].UniqueItems = true;
+                    if (schema.Properties["tags"] is OpenApiSchema tagsSchema)
+                    {
+                        tagsSchema.UniqueItems = true;
+                    }
                 }
-                return Task.CompletedTask;
-            });
-
-            // The OpenApi generator doesn't make nullable properties nullable in the schema,
-            // but it does set the default value to null when the parameter had a default value of null.
-            // This produces an invalid schema. To fix this, avoid setting a default value of null for non-nullable schemas.
-            options.AddSchemaTransformer((schema, context, cancellationToken) => {
-                if (!schema.Nullable && schema.Default is OpenApiNull)
+                else if (type == typeof(ProblemDetails))
                 {
-                    schema.Default = null;
+                    if (schema.Properties["status"] is OpenApiSchema statusSchema)
+                    {
+                        statusSchema.Type |= JsonSchemaType.Null;
+                    }
+                }
+                else if (type == typeof(ValidationProblemDetails))
+                {
+                    if (schema.Properties["errors"] is OpenApiSchema errorsSchema)
+                    {
+                        errorsSchema.Type |= JsonSchemaType.Null;
+                    }
+
+                    if (schema.Properties["status"] is OpenApiSchema statusSchema)
+                    {
+                        statusSchema.Type |= JsonSchemaType.Null;
+                    }
                 }
                 return Task.CompletedTask;
             });
@@ -108,7 +158,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
             // Fix up "additionalProperties"
             options.AddSchemaTransformer((schema, context, cancellationToken) => {
                 var type = context.JsonTypeInfo.Type;
-                if (type == typeof(CaptureParametersConfiguration) || 
+                if (type == typeof(CaptureParametersConfiguration) ||
                     type == typeof(CollectionRuleDetailedDescription) ||
                     type == typeof(DotnetMonitorInfo) ||
                     type == typeof(EventMetricsConfiguration) ||
@@ -117,7 +167,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
                     type == typeof(EventPipeConfiguration) ||
                     type == typeof(EventPipeProvider) ||
                     type == typeof(ExceptionFilter) ||
-                    type == typeof(ExceptionsConfiguration) || 
+                    type == typeof(ExceptionsConfiguration) ||
+                    type == typeof(LogsConfiguration) ||
                     type == typeof(MethodDescription) ||
                     type == typeof(MonitorCapability) ||
                     type == typeof(OperationError) ||
@@ -134,21 +185,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
                 {
                     schema.AdditionalProperties = new OpenApiSchema();
                 }
-                else if (type == typeof(LogsConfiguration))
-                {
-                    schema.AdditionalPropertiesAllowed = false;
-                    schema.Properties["filterSpecs"].AdditionalProperties = new OpenApiSchema
-                    {
-                        Reference = new OpenApiReference
-                        {
-                            Type = ReferenceType.Schema,
-                            Id = nameof(LogLevel)
-                        }
-                    };
-                }
                 else if (type == typeof(Dictionary<string, CollectionRuleDescription>))
                 {
-                    schema.AdditionalProperties.AdditionalPropertiesAllowed = false;
+                    if (schema.AdditionalProperties is OpenApiSchema additionalProperties)
+                    {
+                        additionalProperties.AdditionalPropertiesAllowed = false;
+                    }
                 }
                 return Task.CompletedTask;
             });
@@ -173,15 +215,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
             options.AddOperationTransformer((operation, context, cancellationToken) => {
                 if (operation.OperationId == nameof(DiagController.CaptureLogs))
                 {
-                    foreach (var parameter in operation.Parameters)
+                    if (operation.Parameters is IList<IOpenApiParameter> parameters)
                     {
-                        if (parameter.Name == "level")
+                        foreach (var parameter in operation.Parameters)
                         {
-                            parameter.Schema.Reference = new OpenApiReference
+                            if (parameter.Name == "level")
                             {
-                                Type = ReferenceType.Schema,
-                                Id = nameof(LogLevel)
-                            };
+                                if (parameter is OpenApiParameter openApiParameter)
+                                {
+                                    openApiParameter.Schema = new OpenApiSchemaReference(nameof(LogLevel));
+                                }
+                            }
                         }
                     }
                 }
@@ -193,19 +237,34 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
                 var type = context.JsonTypeInfo.Type;
                 if (type.IsEnum)
                 {
-                    schema.Type = "string";
+                    schema.Type = JsonSchemaType.String;
 
                     // Also treat enums with [Flags] as enums in the schema
                     if (type.GetCustomAttribute<FlagsAttribute>() != null)
                     {
                         schema.Enum = Enum.GetNames(type)
-                            .Select(name => new OpenApiString(name))
-                            .ToList<IOpenApiAny>();
+                            .Select(name => JsonValue.Create(name))
+                            .ToList<JsonNode>();
                     }
                 }
-                else if (type == typeof(Dictionary<string, CollectionRuleDescription>))
+                return Task.CompletedTask;
+            });
+
+            // Ensure nullable enums have correct schema
+            options.AddSchemaTransformer((schema, context, cancellationToken) =>
+            {
+                var type = context.JsonTypeInfo.Type;
+                if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
                 {
-                    schema.AdditionalProperties.Properties["state"].Type = "string";
+                    Type typeArg = type.GetGenericArguments().First();
+                    if (typeArg.IsEnum)
+                    {
+                        schema.Type = JsonSchemaType.String | JsonSchemaType.Null;
+
+                        schema.Enum = Enum.GetNames(typeArg)
+                            .Select(name => JsonValue.Create(name))
+                            .ToList<JsonNode>();
+                    }
                 }
                 return Task.CompletedTask;
             });
@@ -215,7 +274,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
         {
             options.AddDocumentTransformer((document, context, cancellationToken) =>
             {
-                document.Components.SecuritySchemes.Add(securityDefinitionName, new OpenApiSecurityScheme
+                OpenApiComponents components = document.Components ??= new OpenApiComponents();
+
+                IDictionary<string, IOpenApiSecurityScheme> securitySchemes = components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
+                securitySchemes.Add(securityDefinitionName, new OpenApiSecurityScheme
                 {
                     Name = HeaderNames.Authorization,
                     Type = SecuritySchemeType.ApiKey,
@@ -225,13 +287,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
                     Description = Strings.HelpDescription_SecurityDefinitionDescription_ApiKey
                 });
 
-                document.SecurityRequirements.Add(new OpenApiSecurityRequirement
+                IList<OpenApiSecurityRequirement> securityRequirements = document.Security ??= new List<OpenApiSecurityRequirement>();
+                securityRequirements.Add(new OpenApiSecurityRequirement
                 {
                     {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = securityDefinitionName }
-                        },
+                        new OpenApiSecuritySchemeReference(securityDefinitionName),
                         Array.Empty<string>()
                     }
                 });
