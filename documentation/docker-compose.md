@@ -12,65 +12,7 @@ Starting with .NET 8.0, both the sample ASP.NET application and dotnet-monitor r
 
 ## Example Deployment
 
-The following examples demonstrate a deployment of the dotnet-monitor container image monitoring an application container as services.
-
-<details>
-  <summary>.NET Monitor 8+</summary>
-
-```yaml
-# Tell us about your experience using dotnet monitor: https://aka.ms/dotnet-monitor-survey
-services:
-  app:
-    image: mcr.microsoft.com/dotnet/samples:aspnetapp-chiseled
-    ports:
-      - "8080:8080"
-    environment:
-      - DOTNET_DiagnosticPorts=/diag/dotnet-monitor.sock
-    volumes:
-      - diagvol:/diag
-    deploy:
-      resources:
-        limits:
-          cpus: '0.250'
-          memory: 512M
-
-  monitor:
-    image: mcr.microsoft.com/dotnet/monitor:8
-    # DO NOT use the --no-auth argument for deployments in production; this argument is used for demonstration
-    # purposes only in this example. Please continue reading after this example for further details.
-    command: ["collect", "--no-auth"]
-    ports:
-      - "52323:52323"
-      - "52325:52325"
-    environment:
-      - DOTNETMONITOR_DiagnosticPort__ConnectionMode=Listen
-      - DOTNETMONITOR_Storage__DefaultSharedPath=/diag
-      # ALWAYS use the HTTPS form of the URL for deployments in production; the removal of HTTPS is done for
-      # demonstration purposes only in this example. Please continue reading after this example for further details.
-      - DOTNETMONITOR_Urls=http://+:52323
-      # The metrics URL is set in the CMD instruction of the image by default. However, this deployment overrides that with the args setting; manually set the URL to the same value using configuration.
-      - DOTNETMONITOR_Metrics__Endpoints=http://+:52325
-      # The image will output logging in a json format by default, which is great for ingestion by tools such as Azure Monitor Log Analytics.
-      # Switch the logging format to simple for this sample for easier reading.
-      - Logging__Console__FormatterName=simple
-    volumes:
-      - diagvol:/diag
-    deploy:
-      resources:
-        reservations:
-          cpus: '0.050'
-          memory: 50M
-        limits:
-          cpus: '0.250'
-          memory: 256M
-
-volumes:
-  diagvol:
-    driver_opts:
-      type: tmpfs
-      device: tmpfs
-```
-</details>
+The [Docker Compose](../samples/Docker/compose.yaml) example demonstrates a deployment of the .NET Monitor 8 container image monitoring an application container as services.
 
 ## Example Details
 
