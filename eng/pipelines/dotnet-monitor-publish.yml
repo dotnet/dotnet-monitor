@@ -8,6 +8,9 @@ parameters:
   default: true
 
 variables:
+- template: /eng/common/templates-official/variables/pool-providers.yml@self
+- name: _TeamName
+  value: DotNetCore
 - name: BAR_ID
   value: ''
 - name: DRP_DownloadPath
@@ -19,7 +22,7 @@ variables:
 - name: DRP_GithubRepo
   value: dotnet-monitor
 - name: DRP_MonitorRelease
-  value: $(System.DefaultWorkingDirectory)\dotnet-monitor_build\StagingToolAssetsLayout
+  value: $(Pipeline.Workspace)\dotnet-monitor_build\StagingToolAssetsLayout
 - name: DRP_NugetFeed
   value: https://api.nuget.org/v3/index.json
 - name: DRP_OutputManifestPath
@@ -27,11 +30,11 @@ variables:
 - name: DRP_PublishSharePath
   value: $(DRP_BaseShare)\dotnet-monitor-$(DRP_ReleaseId)
 - name: DRP_ReleaseId
-  value: $(Release.ReleaseName)
+  value: $(Build.BuildNumber)
 - name: DRP_ReleaseNotes
-  value: $(DRP_RepoRoot)documentation\releaseNotes\releaseNotes.$(ShortReleaseVersion).md
+  value: $(DRP_RepoRoot)\documentation\releaseNotes\releaseNotes.$(ShortReleaseVersion).md
 - name: DRP_RepoRoot
-  value: $(System.DefaultWorkingDirectory)\dotnet-monitor_source\
+  value: $(Build.SourcesDirectory)
 - name: DRP_Verbose
   value: false
 - name: Monitor_PublishedPackageCount
@@ -41,10 +44,6 @@ resources:
   pipelines:
   - pipeline: dotnet-monitor_build
     source: 'dotnet\dotnet-monitor\dotnet-dotnet-monitor'
-  repositories:
-  - repository: 'dotnet-monitor_source'
-    type: 'git'
-    name: internal/dotnet-dotnet-monitor
 
 extends:
   template: /eng/pipelines/templates/pipeline-template.yml@self
@@ -58,34 +57,27 @@ extends:
       variables:
       - group: Release-Pipeline
       jobs:
-      - job: Validate
-        variables:
-        # Allow for differentiation of runs of this pipeline
-        # when running it with the same build repeatedly.
-        - name: RunRevision
-          value: $[counter(format('{0}|{1}', variables['resources.pipeline.Build.runID'], variables['DRP_DraftRelease'], 1)]
-          readonly: true
-        workspace:
-          clean: all
-        steps:
-        - download: none
       - job: Job_1
         displayName: Release Verification
         condition: succeeded()
         timeoutInMinutes: 0
         steps:
-        - checkout: 'dotnet-monitor_source'
+        - checkout: self
+        - download: dotnet-monitor_build
+          artifact: StagingToolAssetsLayout
         - task: PowerShell@2
           displayName: Get BAR ID
           inputs:
-            filePath: $(DRP_RepoRoot)eng\release\Scripts\GetBarId.ps1
-            arguments: -BuildId "$(Release.Artifacts.dotnet-monitor_build.BuildId)" -TaskVariableName 'BarId'
+            filePath: $(DRP_RepoRoot)\eng\release\Scripts\GetBarId.ps1
+            arguments: -BuildId "$(resources.pipeline.dotnet-monitor_build.runID)" -TaskVariableName 'BarId'
+          env:
+            SYSTEM_ACCESSTOKEN: $(System.AccessToken)
         - task: AzureCLI@2
           displayName: Get Release Version
           inputs:
             connectedServiceNameARM: 'Darc: Maestro Production'
             scriptType: ps
-            scriptPath: $(DRP_RepoRoot)eng\release\Scripts\GetReleaseVersion.ps1
+            scriptPath: $(DRP_RepoRoot)\eng\release\Scripts\GetReleaseVersion.ps1
             scriptArguments: -BarId "$(BarId)" -TaskVariableName 'ReleaseVersion' -IncludeV
         - task: PowerShell@2
           displayName: Get Short Release Version
@@ -112,9 +104,12 @@ extends:
             targetType: inline
             script: |
               # Write your PowerShell commands here.
-              $newReleaseName = "${env:ReleaseVersion}-${env:RELEASE_RELEASENAME}";
+              $newReleaseName = "${env:ReleaseVersion}-${env:BUILD_BUILDNUMBER}";
+              if ($(DRP_DraftRelease) -eq "true") {
+                  $newReleaseName += "[Draft]";
+              }
               Write-Host "Setting release name to: $newReleaseName";
-              Write-Host "##vso[release.updatereleasename]$newReleaseName";
+              Write-Host "##vso[build.updatebuildnumber]$newReleaseName";
         - task: PowerShell@2
           displayName: Check for Nuget Assets
           inputs:
@@ -124,7 +119,7 @@ extends:
               Write-Host "Looking for nuget packages under $nugetPath";
               if (-not (Test-Path -path $nugetPath)) {
                   Write-Host "##vso[task.logissue type=error]Can't find file at $nugetPath";
-                  return 1;
+                  exit 1;
               }
               else {
                   $pkgs = Get-ChildItem -Path "$nugetPath" -Filter "*.nupkg" -Recurse;
@@ -145,7 +140,7 @@ extends:
               Write-Host "Looking for release notes at $notesPath";
               if (-not (Test-Path -path $notesPath)) {
                   Write-Host "##vso[task.logissue type=error]Can't find file at $notesPath";
-                  return 1;
+                  exit 1;
               }
               else {
                   $notesContent = Get-Content -Path $notesPath;
@@ -159,34 +154,40 @@ extends:
         pool: server
         steps:
         - task: ManualValidation@1
+          enabled: false
           inputs:
             notifyUsers: |-
               [TEAM FOUNDATION]\.NET Monitor Working Group
             approvers: |-
               [TEAM FOUNDATION]\.NET Monitor Working Group
-    - stage: Stage_2
+    - stage: Nuget
       displayName: Push To NuGet Feed
-      dependsOn: Stage_1
-      variables:
-      - group: .NET Core Nuget API Keys
+      dependsOn: Validation
+      #variables:
+      #- group: .NET Core Nuget API Keys
       jobs:
       - job: Job_1
         displayName: Push To NuGet
         condition: succeeded()
         timeoutInMinutes: 0
         steps:
-        - checkout: 'dotnet-monitor_source'
+        - checkout: self
+        - download: dotnet-monitor_build
+          artifact: StagingToolAssetsLayout
         - task: NuGetAuthenticate@0
+          enabled: false
           displayName: Authenticate to AzDO Feeds
         - task: PowerShell@2
           displayName: Push To NuGet
+          enabled: false
           inputs:
-            filePath: $(DRP_RepoRoot)/eng/release/Scripts/PublishToNuget.ps1
+            filePath: $(DRP_RepoRoot)\eng\release\Scripts\PublishToNuget.ps1
             arguments: -ManifestPath $(DRP_OutputManifestPath) -StagingPath $(DRP_MonitorRelease) -FeedEndpoint $(DRP_NugetFeed) -FeedPat $(DotNetNugetApiKey-A4)
             failOnStderr: true
-    - stage: Stage_3
+    - stage: Release
       displayName: Create GitHub Release
-      dependsOn: Stage_2
+      dependsOn: Nuget
+      condition: always()
       variables:
       - group: Release-Pipeline
       jobs:
@@ -195,18 +196,22 @@ extends:
         condition: succeeded()
         timeoutInMinutes: 0
         steps:
-        - checkout: 'dotnet-monitor_source'
+        - checkout: self
+        - download: dotnet-monitor_build
+          artifact: StagingToolAssetsLayout
         - task: PowerShell@2
           displayName: Get BAR ID
           inputs:
-            filePath: $(DRP_RepoRoot)eng\release\Scripts\GetBarId.ps1
-            arguments: -BuildId "$(Release.Artifacts.dotnet-monitor_build.BuildId)" -TaskVariableName 'BarId'
+            filePath: $(DRP_RepoRoot)\eng\release\Scripts\GetBarId.ps1
+            arguments: -BuildId "$(resources.pipeline.dotnet-monitor_build.runID)" -TaskVariableName 'BarId'
+          env:
+            SYSTEM_ACCESSTOKEN: $(System.AccessToken)
         - task: AzureCLI@2
           displayName: Get Release Version
           inputs:
             connectedServiceNameARM: 'Darc: Maestro Production'
             scriptType: ps
-            scriptPath: $(DRP_RepoRoot)eng\release\Scripts\GetReleaseVersion.ps1
+            scriptPath: $(DRP_RepoRoot)\eng\release\Scripts\GetReleaseVersion.ps1
             scriptArguments: -BarId "$(BarId)" -TaskVariableName 'ReleaseVersion' -IncludeV
         - task: PowerShell@2
           displayName: Get Short Release Version
@@ -230,21 +235,10 @@ extends:
         - task: PowerShell@2
           displayName: Generate Release
           inputs:
-            filePath: $(System.DefaultWorkingDirectory)/dotnet-monitor_source/eng/release/Scripts/GenerateGithubRelease.ps1
+            filePath: $(DRP_RepoRoot)\eng\release\Scripts\GenerateGithubRelease.ps1
             arguments: -ManifestPath $(DRP_OutputManifestPath) -ReleaseNotes $(DRP_ReleaseNotes) -GhRepository $(DRP_GithubRepo) -GhOrganization $(DRP_GithubOrg) -TagName $(ReleaseVersion) -DraftRelease $$(DRP_DraftRelease)
-            workingDirectory: $(System.DefaultWorkingDirectory)/dotnet-monitor_source
+            workingDirectory: $(DRP_RepoRoot)
           env:
             GITHUB_TOKEN: $(BotAccount-dotnet-bot-repo-PAT)
-    - stage: Stage_4
-      displayName: Update Shipped Branch
-      dependsOn: Stage_3
-      variables:
-      - group: Release-Pipeline
-      jobs:
-      - job: Job_1
-        displayName: Update Shipped Branch
-        condition: succeeded()
-        timeoutInMinutes: 0
-        steps:
-        - checkout: 'dotnet-monitor_source'
+
 
