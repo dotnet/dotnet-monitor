@@ -119,6 +119,14 @@
         <Version>$(MicrosoftAspNetCoreApp90Version)</Version>
       </_TestRuntimeFramework>
     </ItemGroup>
+    <ItemGroup Condition=" '$(TargetFramework)' == 'net10.0' ">
+      <_TestRuntimeFramework Include="@(RuntimeFramework)" Condition=" '%(Identity)' == 'Microsoft.NETCore.App' ">
+        <Version>$(MicrosoftNETCoreApp100Version)</Version>
+      </_TestRuntimeFramework>
+      <_TestRuntimeFramework Include="@(RuntimeFramework)" Condition=" '%(Identity)' == 'Microsoft.AspNetCore.App' ">
+        <Version>$(MicrosoftAspNetCoreApp100Version)</Version>
+      </_TestRuntimeFramework>
+    </ItemGroup>
     <ItemGroup>
       <_TestRuntimeFramework Include="@(RuntimeFramework)" Condition=" '%(Identity)' != 'Microsoft.NETCore.App' and '%(Identity)' != 'Microsoft.AspNetCore.App' " />
     </ItemGroup>
@@ -136,6 +144,18 @@
                                        IsSelfContained="$(SelfContained)"
                                        WriteIncludedFrameworks="$(_WriteIncludedFrameworks)"
                                        AlwaysIncludeCoreFramework="$(AlwaysIncludeCoreFrameworkInRuntimeConfig)" />
+  </Target>
+
+  <!-- Disable openapi generation based on XML comments, as this produces invalid
+       generated code for doc comments with quotes: https://github.com/dotnet/aspnetcore/issues/60783 -->
+  <Target Name="DisableCompileTimeOpenApiXmlGenerator"
+          BeforeTargets="CoreCompile"
+          Condition="'$(DisableCompileTimeOpenApiXmlGenerator)' == 'true'">
+    <Error Text="Set 'GeneratePathProperty=true' on the Microsoft.AspNetCore.OpenApi package reference."
+           Condition="'$(PkgMicrosoft_AspNetCore_OpenApi)' == ''" />
+    <ItemGroup>
+      <Analyzer Remove="$(PkgMicrosoft_AspNetCore_OpenApi)\analyzers\dotnet\cs\Microsoft.AspNetCore.OpenApi.SourceGenerators.dll" />
+    </ItemGroup>
   </Target>
 
 </Project>
