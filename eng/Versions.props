@@ -52,8 +52,8 @@
     <MicrosoftDotNetCodeAnalysisVersion>10.0.0-beta.25178.2</MicrosoftDotNetCodeAnalysisVersion>
     <MicrosoftDotNetXUnitExtensionsVersion>10.0.0-beta.25178.2</MicrosoftDotNetXUnitExtensionsVersion>
     <!-- dotnet/aspnetcore references -->
-    <MicrosoftAspNetCoreAppRuntimewinx64Version>10.0.0-preview.3.25172.1</MicrosoftAspNetCoreAppRuntimewinx64Version>
-    <VSRedistCommonAspNetCoreSharedFrameworkx64100Version>10.0.0-preview.3.25172.1</VSRedistCommonAspNetCoreSharedFrameworkx64100Version>
+    <MicrosoftAspNetCoreAppRuntimewinx64Version>10.0.0-preview.4.25178.6</MicrosoftAspNetCoreAppRuntimewinx64Version>
+    <VSRedistCommonAspNetCoreSharedFrameworkx64100Version>10.0.0-preview.4.25178.6</VSRedistCommonAspNetCoreSharedFrameworkx64100Version>
     <!-- dotnet/command-line-api references -->
     <SystemCommandLineVersion>2.0.0-beta5.25170.1</SystemCommandLineVersion>
     <!-- dotnet/diagnostics references -->
@@ -62,10 +62,10 @@
     <!-- dotnet/roslyn-analyzers -->
     <MicrosoftCodeAnalysisNetAnalyzersVersion>9.0.0-preview.25076.3</MicrosoftCodeAnalysisNetAnalyzersVersion>
     <!-- dotnet/runtime references -->
-    <MicrosoftNETCoreAppRuntimewinx64Version>10.0.0-preview.3.25171.5</MicrosoftNETCoreAppRuntimewinx64Version>
-    <VSRedistCommonNetCoreSharedFrameworkx64100Version>10.0.0-preview.3.25171.5</VSRedistCommonNetCoreSharedFrameworkx64100Version>
+    <MicrosoftNETCoreAppRuntimewinx64Version>10.0.0-preview.4.25174.9</MicrosoftNETCoreAppRuntimewinx64Version>
+    <VSRedistCommonNetCoreSharedFrameworkx64100Version>10.0.0-preview.4.25174.9</VSRedistCommonNetCoreSharedFrameworkx64100Version>
     <!-- dotnet/sdk references -->
-    <VSRedistCommonNetCoreSdkPlaceholderx64100Version>10.0.100-preview.2.25164.34</VSRedistCommonNetCoreSdkPlaceholderx64100Version>
+    <VSRedistCommonNetCoreSdkPlaceholderx64100Version>10.0.100-preview.4.25181.20</VSRedistCommonNetCoreSdkPlaceholderx64100Version>
     <!-- dotnet/symstore references -->
     <MicrosoftFileFormatsVersion>1.0.615501</MicrosoftFileFormatsVersion>
   </PropertyGroup>
