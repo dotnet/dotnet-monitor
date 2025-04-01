@@ -16,9 +16,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.ParameterCapturing
     {
         private readonly Dictionary<Guid, CapturedParameters> _capturedParameters = new();
 
-        public bool TryStartNewCaptureResponse(Guid captureId, string? activityId, ActivityIdFormat activityIdFormat, int threadId, DateTime capturedDateTime, string methodName, string methodTypeName, string methodModuleName)
+        public bool TryStartNewCaptureResponse(Guid captureId, string? activityId, ActivityIdFormat activityIdFormat, int threadId, DateTime capturedDateTime, string methodName, string methodTypeName, string methodModuleName, uint methodToken, Guid moduleVersionId)
         {
-            return _capturedParameters.TryAdd(captureId, new CapturedParameters(activityId, activityIdFormat, threadId, capturedDateTime, methodName, methodTypeName, methodModuleName));
+            return _capturedParameters.TryAdd(captureId, new CapturedParameters(activityId, activityIdFormat, threadId, capturedDateTime, methodName, methodTypeName, methodModuleName, methodToken, moduleVersionId));
         }
 
         public bool TryFinalizeParameters(Guid captureId, [NotNullWhen(true)] out ICapturedParameters? capturedParameters)

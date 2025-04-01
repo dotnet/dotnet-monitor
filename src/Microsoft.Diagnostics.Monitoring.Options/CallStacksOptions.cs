@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Microsoft.Diagnostics.Monitoring.Options
 {
-    internal sealed class CallStacksOptions :
+    public sealed class CallStacksOptions :
         IInProcessFeatureOptions
     {
         [Display(

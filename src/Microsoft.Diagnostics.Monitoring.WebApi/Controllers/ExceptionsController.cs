@@ -12,6 +12,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -36,29 +37,27 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             _options = serviceProvider.GetRequiredService<IOptions<ExceptionsOptions>>();
         }
 
-        /// <summary>
-        /// Gets the exceptions from the target process.
-        /// </summary>
-        /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
-        /// <param name="name">Process name used to identify the target process.</param>
-        /// <param name="egressProvider">The egress provider to which the exceptions are saved.</param>
-        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
+        [EndpointSummary("Gets the exceptions from the target process.")]
         [HttpGet("exceptions", Name = nameof(GetExceptions))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesWithProblemDetails]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK, ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)]
         [ProducesResponseType(typeof(void), StatusCodes.Status202Accepted)]
         [EgressValidation]
         public Task<ActionResult> GetExceptions(
             [FromQuery]
+            [Description("Process ID used to identify the target process.")]
             int? pid = null,
             [FromQuery]
+            [Description("The Runtime instance cookie used to identify the target process.")]
             Guid? uid = null,
             [FromQuery]
+            [Description("Process name used to identify the target process.")]
             string? name = null,
             [FromQuery]
+            [Description("The egress provider to which the exceptions are saved.")]
             string? egressProvider = null,
             [FromQuery]
+            [Description("An optional set of comma-separated identifiers users can include to make an operation easier to identify.")]
             string? tags = null)
         {
             if (!_options.Value.GetEnabled())
@@ -86,31 +85,29 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }, processKey, Utilities.ArtifactType_Exceptions);
         }
 
-        /// <summary>
-        /// Gets the exceptions from the target process.
-        /// </summary>
-        /// <param name="pid">Process ID used to identify the target process.</param>
-        /// <param name="uid">The Runtime instance cookie used to identify the target process.</param>
-        /// <param name="name">Process name used to identify the target process.</param>
-        /// <param name="egressProvider">The egress provider to which the exceptions are saved.</param>
-        /// <param name="tags">An optional set of comma-separated identifiers users can include to make an operation easier to identify.</param>
-        /// <param name="configuration">The exceptions configuration describing which exceptions to include in the response.</param>
+        [EndpointSummary("Gets the exceptions from the target process.")]
         [HttpPost("exceptions", Name = nameof(CaptureExceptionsCustom))]
-        [ProducesWithProblemDetails(ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesWithProblemDetails]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK, ContentTypes.ApplicationNdJson, ContentTypes.ApplicationJsonSequence, ContentTypes.TextPlain)]
         [EgressValidation]
         public Task<ActionResult> CaptureExceptionsCustom(
             [FromBody]
+            [Description("The exceptions configuration describing which exceptions to include in the response.")]
             ExceptionsConfiguration configuration,
             [FromQuery]
+            [Description("Process ID used to identify the target process.")]
             int? pid = null,
             [FromQuery]
+            [Description("The Runtime instance cookie used to identify the target process.")]
             Guid? uid = null,
             [FromQuery]
+            [Description("Process name used to identify the target process.")]
             string? name = null,
             [FromQuery]
+            [Description("The egress provider to which the exceptions are saved.")]
             string? egressProvider = null,
             [FromQuery]
+            [Description("An optional set of comma-separated identifiers users can include to make an operation easier to identify.")]
             string? tags = null)
         {
             if (!_options.Value.GetEnabled())
