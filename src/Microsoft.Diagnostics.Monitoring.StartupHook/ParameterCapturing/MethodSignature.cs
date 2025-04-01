@@ -46,6 +46,10 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.ParameterCapturing
 
         public string MethodName { get; } = GetMethodName(method);
 
+        public int MethodToken { get; } = GetMethodToken(method);
+
+        public Guid ModuleVersionId { get; } = GetModuleVersionId(method);
+
         public IReadOnlyList<ParameterSignature> Parameters { get; } = EmitParameters(method);
 
         private static string GetMethodName(MethodInfo method)
@@ -56,6 +60,32 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.ParameterCapturing
             EmitGenericArguments(builder, method.GetGenericArguments());
 
             return builder.ToString();
+        }
+
+        private static int GetMethodToken(MethodInfo method)
+        {
+            // There is a possibility that this property could throw on access; guarding to be safe
+            try
+            {
+                return method.MetadataToken;
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+
+        private static Guid GetModuleVersionId(MethodInfo method)
+        {
+            // There is a possibility that this property could throw on access; guarding to be safe
+            try
+            {
+                return method.Module.ModuleVersionId;
+            }
+            catch
+            {
+                return Guid.Empty;
+            }
         }
 
         private static string? EmitTypeName(Type? type)

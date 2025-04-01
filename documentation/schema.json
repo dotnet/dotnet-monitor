@@ -594,6 +594,13 @@
             "string"
           ],
           "description": "Performs a match based on the contents of the command passed to launch the process on the system; this typically includes the executable path and arguments to the process."
+        },
+        "ManagedEntryPointAssemblyName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "Performs a match based on the name of the managed entry point assembly of the process."
         }
       }
     },
@@ -603,12 +610,14 @@
       "x-enumNames": [
         "ProcessId",
         "ProcessName",
-        "CommandLine"
+        "CommandLine",
+        "ManagedEntryPointAssemblyName"
       ],
       "enum": [
         "ProcessId",
         "ProcessName",
-        "CommandLine"
+        "CommandLine",
+        "ManagedEntryPointAssemblyName"
       ]
     },
     "ProcessFilterType": {

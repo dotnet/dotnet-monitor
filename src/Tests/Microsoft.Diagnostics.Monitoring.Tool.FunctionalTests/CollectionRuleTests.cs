@@ -72,6 +72,47 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
+#if NET8_0_OR_GREATER
+        /// <summary>
+        /// Validates that a startup rule will execute and complete without action beyond
+        /// discovering the target process.
+        /// </summary>
+        [Theory]
+        [InlineData(DiagnosticPortConnectionMode.Listen)]
+        public async Task CollectionRule_StartupTriggerWithManagedEntryPointAssemblyNameFilter(DiagnosticPortConnectionMode mode)
+        {
+            using TemporaryDirectory tempDirectory = new(_outputHelper);
+            string ExpectedFilePath = Path.Combine(tempDirectory.FullName, "file.txt");
+            string ExpectedFileContent = Guid.NewGuid().ToString("N");
+
+            Task ruleCompletedTask = null;
+
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                mode,
+                TestAppScenarios.AsyncWait.Name,
+                appValidate: async (runner, client) =>
+                {
+                    await ruleCompletedTask;
+
+                    Assert.True(File.Exists(ExpectedFilePath));
+                    Assert.Equal(ExpectedFileContent, File.ReadAllText(ExpectedFilePath));
+
+                    await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                },
+                configureTool: runner =>
+                {
+                    runner.ConfigurationFromEnvironment.CreateCollectionRule(DefaultRuleName)
+                        .AddManagedEntryPointAssemblyNameFilter(AppRunner.AssemblyNameWithoutExtension)
+                        .SetStartupTrigger()
+                        .AddExecuteActionAppAction(Assembly.GetExecutingAssembly(), "TextFileOutput", ExpectedFilePath, ExpectedFileContent);
+
+                    ruleCompletedTask = runner.WaitForCollectionRuleCompleteAsync(DefaultRuleName);
+                });
+        }
+#endif
+
         /// <summary>
         /// Validates that a non-startup rule will complete when it has an action limit specified
         /// without a sliding window duration.
@@ -249,6 +290,70 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     filteredTask = runner.WaitForCollectionRuleUnmatchedFiltersAsync(DefaultRuleName);
                 });
         }
+
+#if NET8_0_OR_GREATER
+        /// <summary>
+        /// Validates that a collection rule with a managed entry point assembly name filter can be matched to the
+        /// target process.
+        /// </summary>
+        [Theory]
+        [InlineData(DiagnosticPortConnectionMode.Listen)]
+        public async Task CollectionRule_ManagedEntryPointAssemblyNameFilterMatchTest(DiagnosticPortConnectionMode mode)
+        {
+            Task startedTask = null;
+
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                mode,
+                TestAppScenarios.AsyncWait.Name,
+                appValidate: async (runner, client) =>
+                {
+                    await startedTask;
+
+                    await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                },
+                configureTool: runner =>
+                {
+                    runner.ConfigurationFromEnvironment.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddManagedEntryPointAssemblyNameFilter(AppRunner.AssemblyNameWithoutExtension);
+
+                    startedTask = runner.WaitForCollectionRuleStartedAsync(DefaultRuleName);
+                });
+        }
+
+        /// <summary>
+        /// Validates that a collection rule with a managed entry point assembly name filter can fail to match the
+        /// target process.
+        /// </summary>
+        [Theory]
+        [InlineData(DiagnosticPortConnectionMode.Listen)]
+        public async Task CollectionRule_ManagedEntryPointAssemblyNameFilterNoMatchTest(DiagnosticPortConnectionMode mode)
+        {
+            Task filteredTask = null;
+
+            await ScenarioRunner.SingleTarget(
+                _outputHelper,
+                _httpClientFactory,
+                mode,
+                TestAppScenarios.AsyncWait.Name,
+                appValidate: async (runner, client) =>
+                {
+                    await filteredTask;
+
+                    await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
+                },
+                configureTool: runner =>
+                {
+                    runner.ConfigurationFromEnvironment.CreateCollectionRule(DefaultRuleName)
+                        .SetStartupTrigger()
+                        .AddManagedEntryPointAssemblyNameFilter("UnmatchedName");
+
+                    filteredTask = runner.WaitForCollectionRuleUnmatchedFiltersAsync(DefaultRuleName);
+                });
+        }
+#endif
 
         /// <summary>
         /// Validates that a change in the collection rule configuration is detected and applied correctly.

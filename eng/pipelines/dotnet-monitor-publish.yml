@@ -1,0 +1,54 @@
+trigger: none
+pr: none
+
+parameters:
+- name: IsTestRun
+  type: boolean
+  default: true
+- name: IsDryRun
+  type: boolean
+  default: true
+
+variables:
+- template: /eng/common/templates-official/variables/pool-providers.yml@self
+- name: _TeamName
+  value: DotNetCore
+  readonly: true
+- group: Release-Pipeline
+- name: IsDryRun
+  value: ${{ parameters.IsDryRun }}
+  readonly: true
+- name: IsTestRun
+  value: ${{ parameters.IsTestRun }}
+  readonly: true
+
+resources:
+  pipelines:
+  - pipeline: dotnet-monitor_build
+    source: 'dotnet\dotnet-monitor\dotnet-dotnet-monitor'
+
+extends:
+  template: /eng/pipelines/templates/pipeline-template.yml@self
+  parameters:
+    sdl:
+      sbom:
+        enabled: false
+    stages:
+    - stage: Validation
+
+      jobs:
+      - job: Validate
+
+        variables:
+        # Allow for differentiation of runs of this pipeline
+        # when running it with the same build repeatedly.
+        - name: RunRevision
+          value: $[counter(format('{0}|{1}|{2}', variables['resources.pipeline.Build.runID'], variables['IsDryRun'], variables['IsTestRun']), 1)]
+          readonly: true
+
+        workspace:
+          clean: all
+
+        steps:
+        - download: none
+

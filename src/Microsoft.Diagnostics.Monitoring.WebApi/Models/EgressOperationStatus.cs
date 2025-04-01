@@ -3,13 +3,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
 {
-    /// <summary>
-    /// Represents a partial model when enumerating all operations.
-    /// </summary>
+    [Description("Represents a partial model when enumerating all operations.")]
     public class OperationSummary
     {
         [JsonPropertyName("operationId")]
@@ -34,9 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         public ISet<string>? Tags { get; set; }
     }
 
-    /// <summary>
-    /// Represents the details of a given process used in an operation.
-    /// </summary>
+    [Description("Represents the details of a given process used in an operation.")]
     public class OperationProcessInfo
     {
         [JsonPropertyName("pid")]
@@ -49,9 +46,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         public string? Name { get; set; }
     }
 
-    /// <summary>
-    /// Represents the state of a long running operation. Used for all types of results, including successes and failures.
-    /// </summary>
+    [Description("Represents the state of a long running operation. Used for all types of results, including successes and failures.")]
     public class OperationStatus : OperationSummary
     {
         //CONSIDER Should we also have a retry-after? Not sure we can produce meaningful values for this.
