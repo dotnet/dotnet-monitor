@@ -1,8 +1,8 @@
 <Dependencies>
   <ProductDependencies>
-    <Dependency Name="Microsoft.AspNetCore.App.Runtime.win-x64" Version="10.0.0-preview.4.25178.6" CoherentParentDependency="VS.Redist.Common.NetCore.SdkPlaceholder.x64.10.0">
+    <Dependency Name="Microsoft.AspNetCore.App.Runtime.win-x64" Version="10.0.0-preview.4.25181.4" CoherentParentDependency="VS.Redist.Common.NetCore.SdkPlaceholder.x64.10.0">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
-      <Sha>25a9b32254806c89859ea2dfd2f03881cf9a4312</Sha>
+      <Sha>d6cb325fd375d674cbce7c5c473712e0fa210db5</Sha>
     </Dependency>
     <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="9.0.0-preview.25155.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
@@ -50,13 +50,13 @@
       <Uri>https://github.com/dotnet/runtime</Uri>
       <Sha>659321ff5db13026f52aec70cf2a6692bd4be454</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.10.0" Version="10.0.0-preview.4.25178.6" CoherentParentDependency="VS.Redist.Common.NetCore.SdkPlaceholder.x64.10.0">
+    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.10.0" Version="10.0.0-preview.4.25181.4" CoherentParentDependency="VS.Redist.Common.NetCore.SdkPlaceholder.x64.10.0">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
-      <Sha>25a9b32254806c89859ea2dfd2f03881cf9a4312</Sha>
+      <Sha>d6cb325fd375d674cbce7c5c473712e0fa210db5</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.NetCore.SdkPlaceholder.x64.10.0" Version="10.0.100-preview.4.25181.20">
+    <Dependency Name="VS.Redist.Common.NetCore.SdkPlaceholder.x64.10.0" Version="10.0.100-preview.4.25201.23">
       <Uri>https://github.com/dotnet/sdk</Uri>
-      <Sha>a617143add675a14291e6923914bf9df0c0e140b</Sha>
+      <Sha>cbb8f75623c4357919418d34c53218ca9b57358c</Sha>
     </Dependency>
     <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.10.0" Version="10.0.0-preview.4.25174.9" CoherentParentDependency="VS.Redist.Common.NetCore.SdkPlaceholder.x64.10.0">
       <Uri>https://github.com/dotnet/runtime</Uri>
