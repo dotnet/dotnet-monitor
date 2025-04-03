@@ -1,5 +1,5 @@
 {
-  "openapi": "3.0.1",
+  "openapi": "3.0.4",
   "info": {
     "title": "dotnet-monitor",
     "version": "1.0"
@@ -187,14 +187,7 @@
             "in": "query",
             "description": "The type of dump to capture.",
             "schema": {
-              "enum": [
-                "Full",
-                "Mini",
-                "WithHeap",
-                "Triage"
-              ],
-              "type": "string",
-              "default": "WithHeap"
+              "$ref": "#/components/schemas/DumpType"
             }
           },
           {
@@ -358,15 +351,7 @@
             "in": "query",
             "description": "The profiles enabled for the trace session.",
             "schema": {
-              "enum": [
-                "Cpu",
-                "Http",
-                "Logs",
-                "Metrics",
-                "GcCollect"
-              ],
-              "type": "string",
-              "default": "Cpu, Http, Metrics, GcCollect"
+              "$ref": "#/components/schemas/TraceProfile"
             }
           },
           {
@@ -1666,8 +1651,8 @@
             "maximum": 2147483647,
             "minimum": 1,
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "nullable": true,
+            "format": "int32"
           }
         },
         "additionalProperties": false
@@ -1680,8 +1665,8 @@
           },
           "stateReason": {
             "type": "string",
-            "description": "Human-readable explanation for the current state of the collection rule.",
-            "nullable": true
+            "nullable": true,
+            "description": "Human-readable explanation for the current state of the collection rule."
           }
         },
         "additionalProperties": false
@@ -1706,23 +1691,23 @@
           },
           "actionCountSlidingWindowDurationLimit": {
             "type": "string",
+            "nullable": true,
             "description": "The sliding window duration in which the actionCountLimit is the maximum number of occurrences (as defined by Limits).",
             "format": "time-span",
-            "nullable": true,
             "example": "00:00:30"
           },
           "slidingWindowDurationCountdown": {
             "type": "string",
+            "nullable": true,
             "description": "The amount of time that needs to pass before the slidingWindowOccurrences drops below the actionCountLimit",
             "format": "time-span",
-            "nullable": true,
             "example": "00:00:30"
           },
           "ruleFinishedCountdown": {
             "type": "string",
+            "nullable": true,
             "description": "The amount of time that needs to pass before the rule is finished",
             "format": "time-span",
-            "nullable": true,
             "example": "00:00:30"
           },
           "state": {
@@ -1730,8 +1715,8 @@
           },
           "stateReason": {
             "type": "string",
-            "description": "Human-readable explanation for the current state of the collection rule.",
-            "nullable": true
+            "nullable": true,
+            "description": "Human-readable explanation for the current state of the collection rule."
           }
         },
         "additionalProperties": false
@@ -1760,32 +1745,42 @@
         "properties": {
           "version": {
             "type": "string",
-            "description": "The dotnet monitor version.",
-            "nullable": true
+            "nullable": true,
+            "description": "The dotnet monitor version."
           },
           "runtimeVersion": {
             "type": "string",
-            "description": "The dotnet runtime version.",
-            "nullable": true
+            "nullable": true,
+            "description": "The dotnet runtime version."
           },
           "diagnosticPortMode": {
             "$ref": "#/components/schemas/DiagnosticPortConnectionMode"
           },
           "diagnosticPortName": {
             "type": "string",
-            "description": "The name of the named pipe or unix domain socket to use for connecting to the diagnostic server.",
-            "nullable": true
+            "nullable": true,
+            "description": "The name of the named pipe or unix domain socket to use for connecting to the diagnostic server."
           },
           "capabilities": {
             "type": "array",
+            "nullable": true,
             "items": {
               "$ref": "#/components/schemas/MonitorCapability"
             },
-            "description": "The capabilities provided by dotnet-monitor.",
-            "nullable": true
+            "description": "The capabilities provided by dotnet-monitor."
           }
         },
         "additionalProperties": false
+      },
+      "DumpType": {
+        "enum": [
+          "Full",
+          "Mini",
+          "WithHeap",
+          "Triage"
+        ],
+        "type": "string",
+        "default": "WithHeap"
       },
       "EventLevel": {
         "enum": [
@@ -1806,17 +1801,17 @@
           },
           "providers": {
             "type": "array",
+            "nullable": true,
             "items": {
               "$ref": "#/components/schemas/EventMetricsProvider"
-            },
-            "nullable": true
+            }
           },
           "meters": {
             "type": "array",
+            "nullable": true,
             "items": {
               "$ref": "#/components/schemas/EventMetricsMeter"
-            },
-            "nullable": true
+            }
           }
         },
         "additionalProperties": false
@@ -1833,10 +1828,10 @@
           },
           "instrumentNames": {
             "type": "array",
+            "nullable": true,
             "items": {
               "type": "string"
-            },
-            "nullable": true
+            }
           }
         },
         "additionalProperties": false
@@ -1853,10 +1848,10 @@
           },
           "counterNames": {
             "type": "array",
+            "nullable": true,
             "items": {
               "type": "string"
-            },
-            "nullable": true
+            }
           }
         },
         "additionalProperties": false
@@ -1905,10 +1900,10 @@
           },
           "arguments": {
             "type": "object",
+            "nullable": true,
             "additionalProperties": {
               "type": "string"
-            },
-            "nullable": true
+            }
           }
         },
         "additionalProperties": false
@@ -1940,17 +1935,17 @@
         "properties": {
           "include": {
             "type": "array",
+            "nullable": true,
             "items": {
               "$ref": "#/components/schemas/ExceptionFilter"
-            },
-            "nullable": true
+            }
           },
           "exclude": {
             "type": "array",
+            "nullable": true,
             "items": {
               "$ref": "#/components/schemas/ExceptionFilter"
-            },
-            "nullable": true
+            }
           }
         },
         "additionalProperties": false
@@ -1978,11 +1973,11 @@
           },
           "filterSpecs": {
             "type": "object",
+            "nullable": true,
             "additionalProperties": {
-              "$ref": "#/components/schemas/LogLevel"
+              "$ref": "#/components/schemas/NullableOfLogLevel"
             },
-            "description": "The logger categories and levels at which logs are collected. Setting the log level to null will have logs collected from the corresponding category at the level set in the LogLevel property.",
-            "nullable": true
+            "description": "The logger categories and levels at which logs are collected. Setting the log level to null will have logs collected from the corresponding category at the level set in the LogLevel property."
           },
           "useAppFilters": {
             "type": "boolean",
@@ -2031,8 +2026,22 @@
         },
         "additionalProperties": false
       },
+      "NullableOfLogLevel": {
+        "enum": [
+          "Trace",
+          "Debug",
+          "Information",
+          "Warning",
+          "Error",
+          "Critical",
+          "None"
+        ],
+        "type": "string",
+        "nullable": true
+      },
       "OperationError": {
         "type": "object",
+        "nullable": true,
         "properties": {
           "code": {
             "type": "string",
@@ -2043,11 +2052,11 @@
             "nullable": true
           }
         },
-        "additionalProperties": false,
-        "nullable": true
+        "additionalProperties": false
       },
       "OperationProcessInfo": {
         "type": "object",
+        "nullable": true,
         "properties": {
           "pid": {
             "type": "integer",
@@ -2063,8 +2072,7 @@
           }
         },
         "additionalProperties": false,
-        "description": "Represents the details of a given process used in an operation.",
-        "nullable": true
+        "description": "Represents the details of a given process used in an operation."
       },
       "OperationState": {
         "enum": [
@@ -2111,10 +2119,10 @@
           "tags": {
             "uniqueItems": true,
             "type": "array",
+            "nullable": true,
             "items": {
               "type": "string"
-            },
-            "nullable": true
+            }
           }
         },
         "additionalProperties": false,
@@ -2147,10 +2155,10 @@
           "tags": {
             "uniqueItems": true,
             "type": "array",
+            "nullable": true,
             "items": {
               "type": "string"
-            },
-            "nullable": true
+            }
           }
         },
         "additionalProperties": false,
@@ -2169,8 +2177,8 @@
           },
           "status": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "nullable": true,
+            "format": "int32"
           },
           "detail": {
             "type": "string",
@@ -2238,6 +2246,17 @@
         },
         "additionalProperties": false
       },
+      "TraceProfile": {
+        "enum": [
+          "Cpu",
+          "Http",
+          "Logs",
+          "Metrics",
+          "GcCollect"
+        ],
+        "type": "string",
+        "default": "Cpu, Http, Metrics, GcCollect"
+      },
       "ValidationProblemDetails": {
         "type": "object",
         "properties": {
@@ -2251,8 +2270,8 @@
           },
           "status": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "nullable": true,
+            "format": "int32"
           },
           "detail": {
             "type": "string",
@@ -2264,13 +2283,13 @@
           },
           "errors": {
             "type": "object",
+            "nullable": true,
             "additionalProperties": {
               "type": "array",
               "items": {
                 "type": "string"
               }
-            },
-            "nullable": true
+            }
           }
         },
         "additionalProperties": { }

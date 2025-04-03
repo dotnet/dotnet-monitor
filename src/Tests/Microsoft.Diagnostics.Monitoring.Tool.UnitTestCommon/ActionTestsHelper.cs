@@ -72,7 +72,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                     || tfm == TargetFrameworkMoniker.Net60
                     || tfm == TargetFrameworkMoniker.Net70
                     || tfm == TargetFrameworkMoniker.Net80
-                    || tfm == TargetFrameworkMoniker.Net90)
+                    || tfm == TargetFrameworkMoniker.Net90
+                    || tfm == TargetFrameworkMoniker.Net100)
                 {
                     yield return new object[] { tfm, DumpType.WithHeap };
                     yield return new object[] { tfm, DumpType.Triage };

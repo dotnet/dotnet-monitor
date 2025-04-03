@@ -3,6 +3,7 @@
 
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi.Models.References;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,18 +17,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers
     {
         public Task TransformAsync(OpenApiOperation operation, OpenApiOperationTransformerContext context, CancellationToken cancellationToken)
         {
-            if (operation.Responses.Remove(StatusCodeStrings.Status400BadRequest))
+            if (null != operation.Responses)
             {
-                operation.Responses.Add(
-                    StatusCodeStrings.Status400BadRequest,
-                    new OpenApiResponse()
-                    {
-                        Reference = new OpenApiReference()
-                        {
-                            Id = ResponseNames.BadRequestResponse,
-                            Type = ReferenceType.Response
-                        }
-                    });
+                if (operation.Responses.Remove(StatusCodeStrings.Status400BadRequest))
+                {
+                    operation.Responses.Add(
+                        StatusCodeStrings.Status400BadRequest,
+                        new OpenApiResponseReference(ResponseNames.BadRequestResponse));
+                }
             }
 
             return Task.CompletedTask;

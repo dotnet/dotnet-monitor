@@ -577,11 +577,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             yield return new object[] { TargetFrameworkMoniker.Net70 };
             yield return new object[] { TargetFrameworkMoniker.Net80 };
             yield return new object[] { TargetFrameworkMoniker.Net90 };
+            yield return new object[] { TargetFrameworkMoniker.Net100 };
         }
 
         public static IEnumerable<object[]> GetCurrentTfm()
         {
-            yield return new object[] { TargetFrameworkMoniker.Net90 };
+            yield return new object[] { TargetFrameworkMoniker.Net100 };
         }
     }
 }
