@@ -5,19 +5,12 @@
     <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
     <Nullable>enable</Nullable>
     <InterceptorsNamespaces>$(InterceptorsNamespaces);Microsoft.AspNetCore.OpenApi.Generated</InterceptorsNamespaces>
+    <DisableCompileTimeOpenApiXmlGenerator>true</DisableCompileTimeOpenApiXmlGenerator>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Tools\dotnet-monitor\dotnet-monitor.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" GeneratePathProperty="true" />
   </ItemGroup>
-
-  <!-- Disable openapi generation based on XML comments, as this produces invalid
-       generated code for doc comments with quotes: https://github.com/dotnet/aspnetcore/issues/60783 -->
-  <Target Name="DisableCompileTimeOpenApiXmlGenerator" BeforeTargets="CoreCompile">
-    <ItemGroup>
-      <Analyzer Remove="$(PkgMicrosoft_AspNetCore_OpenApi)/analyzers/dotnet/cs/Microsoft.AspNetCore.OpenApi.SourceGenerators.dll" />
-    </ItemGroup>
-  </Target>
 
 </Project>

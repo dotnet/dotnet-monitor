@@ -104,7 +104,7 @@
     <MicrosoftExtensionsConfigurationAbstractionsVersion>$(MicrosoftExtensionsConfigurationAbstractions70Version)</MicrosoftExtensionsConfigurationAbstractionsVersion>
     <MicrosoftExtensionsLoggingVersion>$(MicrosoftExtensionsLogging70Version)</MicrosoftExtensionsLoggingVersion>
     <MicrosoftExtensionsLoggingAbstractionsVersion>$(MicrosoftExtensionsLoggingAbstractions70Version)</MicrosoftExtensionsLoggingAbstractionsVersion>
-    <MicrosoftExtensionsLoggingConsoleVersion>$(MicrosoftExte nsionsLoggingConsole70Version)</MicrosoftExtensionsLoggingConsoleVersion>
+    <MicrosoftExtensionsLoggingConsoleVersion>$(MicrosoftExtensionsLoggingConsole70Version)</MicrosoftExtensionsLoggingConsoleVersion>
     <SystemTextJsonVersion>$(SystemTextJson80Version)</SystemTextJsonVersion>
   </PropertyGroup>
   <PropertyGroup Label=".NET 8 Dependent" Condition=" '$(TargetFramework)' == 'net8.0' ">

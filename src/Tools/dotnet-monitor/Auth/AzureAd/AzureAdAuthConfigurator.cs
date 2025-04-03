@@ -14,7 +14,6 @@ using Microsoft.OpenApi.Models.References;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
 {

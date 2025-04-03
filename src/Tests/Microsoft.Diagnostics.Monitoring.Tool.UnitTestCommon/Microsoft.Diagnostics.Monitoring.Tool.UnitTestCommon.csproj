@@ -29,12 +29,4 @@
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.S3StorageTests.UnitTests" />
   </ItemGroup>
 
-  <!-- Disable openapi generation based on XML comments, as this produces invalid
-       generated code for doc comments with quotes: https://github.com/dotnet/aspnetcore/issues/60783 -->
-  <Target Name="DisableCompileTimeOpenApiXmlGenerator" BeforeTargets="CoreCompile">
-    <ItemGroup>
-      <Analyzer Remove="$(PkgMicrosoft_AspNetCore_OpenApi)/analyzers/dotnet/cs/Microsoft.AspNetCore.OpenApi.SourceGenerators.dll" />
-    </ItemGroup>
-  </Target>
-
 </Project>
