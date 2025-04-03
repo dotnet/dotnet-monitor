@@ -362,6 +362,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         }
 
 #if NET8_0_OR_GREATER
+        // See https://github.com/dotnet/dotnet-monitor/issues/8042
+#if !NET10_0
         [Fact]
         public async Task TestSystemDiagnosticsMetrics_MeterInstrumentTags()
         {
@@ -442,6 +444,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     });
                 });
         }
+#endif
 #endif
     }
 }
