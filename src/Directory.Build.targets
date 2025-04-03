@@ -146,4 +146,16 @@
                                        AlwaysIncludeCoreFramework="$(AlwaysIncludeCoreFrameworkInRuntimeConfig)" />
   </Target>
 
+  <!-- Disable openapi generation based on XML comments, as this produces invalid
+       generated code for doc comments with quotes: https://github.com/dotnet/aspnetcore/issues/60783 -->
+  <Target Name="DisableCompileTimeOpenApiXmlGenerator"
+          BeforeTargets="CoreCompile"
+          Condition="'$(DisableCompileTimeOpenApiXmlGenerator)' == 'true'">
+    <Error Text="Set 'GeneratePathProperty=true' on the Microsoft.AspNetCore.OpenApi package reference."
+           Condition="'$(PkgMicrosoft_AspNetCore_OpenApi)' == ''" />
+    <ItemGroup>
+      <Analyzer Remove="$(PkgMicrosoft_AspNetCore_OpenApi)\analyzers\dotnet\cs\Microsoft.AspNetCore.OpenApi.SourceGenerators.dll" />
+    </ItemGroup>
+  </Target>
+
 </Project>

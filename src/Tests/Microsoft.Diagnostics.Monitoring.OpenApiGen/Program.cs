@@ -74,7 +74,6 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
         {
             var serviceType = Type.GetType("Microsoft.AspNetCore.OpenApi.OpenApiDocumentService, Microsoft.AspNetCore.OpenApi", throwOnError: true)!;
             return serviceProvider.GetRequiredKeyedService(serviceType, "v1")!;
-
         }
 
         private static async Task<OpenApiDocument> GetOpenApiDocument(IHost host)
@@ -82,7 +81,7 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
             var documentService = GetDocumentService(host.Services);
             var methodInfo = documentService.GetType().GetMethod("GetOpenApiDocumentAsync", BindingFlags.Public | BindingFlags.Instance)!;
 
-            object result = methodInfo.Invoke(documentService, [host.Services, null, default(CancellationToken)])!;
+            object result = methodInfo.Invoke(documentService, new object?[] { host.Services, null, default(CancellationToken) })!;
 
             return await (Task<OpenApiDocument>)result;
         }

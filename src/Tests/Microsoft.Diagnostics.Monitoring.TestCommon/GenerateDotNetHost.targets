@@ -1,6 +1,6 @@
 ﻿<Project>
 
-  <!-- 
+  <!--
     DotNetHostGeneratedFileName, GenerateDotNetHostSourceFile, and InjectDotNetHostSourceFile are used for injecting the value of the
     Microsoft.NETCore.App version into csharp code so that it can be used by testing harnesses for running tests under a specific
     runtime version. This specifically allows tests to run on a version of the runtime besides whatever was included with Arcade's SDK.
@@ -42,6 +42,7 @@
       <TransformedContent>$(TransformedContent.Replace('$MicrosoftAspNetCoreApp70Version$', '$(MicrosoftAspNetCoreApp70Version)'))</TransformedContent>
       <TransformedContent>$(TransformedContent.Replace('$MicrosoftAspNetCoreApp80Version$', '$(MicrosoftAspNetCoreApp80Version)'))</TransformedContent>
       <TransformedContent>$(TransformedContent.Replace('$MicrosoftAspNetCoreApp90Version$', '$(MicrosoftAspNetCoreApp90Version)'))</TransformedContent>
+      <TransformedContent>$(TransformedContent.Replace('$MicrosoftAspNetCoreApp100Version$', '$(MicrosoftAspNetCoreApp100Version)'))</TransformedContent>
     </PropertyGroup>
     <WriteLinesToFile File="$(DotNetHostGeneratedFileName)" Overwrite="true" Lines="$(TransformedContent)" WriteOnlyWhenDifferent="true" />
   </Target>

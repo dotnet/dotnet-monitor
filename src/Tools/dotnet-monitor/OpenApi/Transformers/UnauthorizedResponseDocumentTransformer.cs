@@ -3,6 +3,8 @@
 
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi.Models.Interfaces;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,8 +24,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers
             unauthorizedResponse.Description = "Unauthorized";
             unauthorizedResponse.Headers.Add("WWW_Authenticate", authenticateHeader);
 
-            var components = openApiDoc.Components ??= new OpenApiComponents();
-            var responses = components.Responses ??= new OpenApiResponses();
+            OpenApiComponents components = openApiDoc.Components ??= new OpenApiComponents();
+            IDictionary<string, IOpenApiResponse> responses = components.Responses ??= new OpenApiResponses();
             responses.Add(
                 ResponseNames.UnauthorizedResponse,
                 unauthorizedResponse);

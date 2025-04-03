@@ -17,12 +17,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers
     {
         public Task TransformAsync(OpenApiOperation operation, OpenApiOperationTransformerContext context, CancellationToken cancellationToken)
         {
-            var responses = operation.Responses ??= new OpenApiResponses();
-            if (responses.Remove(StatusCodeStrings.Status401Unauthorized))
+            if (null != operation.Responses)
             {
-                responses.Add(
-                    StatusCodeStrings.Status401Unauthorized,
-                    new OpenApiResponseReference(ResponseNames.UnauthorizedResponse));
+                if (operation.Responses.Remove(StatusCodeStrings.Status401Unauthorized))
+                {
+                    operation.Responses.Add(
+                        StatusCodeStrings.Status401Unauthorized,
+                        new OpenApiResponseReference(ResponseNames.UnauthorizedResponse));
+                }
             }
 
             return Task.CompletedTask;

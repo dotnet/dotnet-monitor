@@ -1,8 +1,8 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi.Controllers;
@@ -16,10 +16,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using System.Reflection;
-using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
 {
@@ -40,6 +39,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
             options.AddSchemaTransformer((schema, context, cancellationToken) => {
                 if (context.JsonTypeInfo.Type == typeof(TimeSpan?))
                 {
+                    schema.Type = JsonSchemaType.String | JsonSchemaType.Null;
                     schema.Format = "time-span";
                     schema.Example = JsonValue.Create("00:00:30");
                     schema.Pattern = null;
@@ -78,17 +78,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
 
             // Fix ExceptionFilter schema to work around https://github.com/dotnet/aspnetcore/issues/61194
             options.AddDocumentTransformer((document, context, cancellationToken) => {
-                var components = document.Components ??= new OpenApiComponents();
-                var schemas = components.Schemas ??= new Dictionary<string, IOpenApiSchema>();
+                OpenApiComponents components = document.Components ??= new OpenApiComponents();
+                IDictionary<string, IOpenApiSchema> schemas = components.Schemas ??= new Dictionary<string, IOpenApiSchema>();
                 schemas[nameof(ExceptionFilter)] = new OpenApiSchema
                 {
                     Type = JsonSchemaType.Object,
                     Properties = new Dictionary<string, IOpenApiSchema>
                     {
-                        { "exceptionType", new OpenApiSchema { Type = JsonSchemaType.String } },
-                        { "moduleName", new OpenApiSchema { Type = JsonSchemaType.String } },
-                        { "typeName", new OpenApiSchema { Type = JsonSchemaType.String } },
-                        { "methodName", new OpenApiSchema { Type = JsonSchemaType.String } }
+                        { "exceptionType", new OpenApiSchema { Type = JsonSchemaType.String | JsonSchemaType.Null } },
+                        { "moduleName", new OpenApiSchema { Type = JsonSchemaType.String | JsonSchemaType.Null } },
+                        { "typeName", new OpenApiSchema { Type = JsonSchemaType.String | JsonSchemaType.Null } },
+                        { "methodName", new OpenApiSchema { Type = JsonSchemaType.String | JsonSchemaType.Null } }
                     },
                     AdditionalPropertiesAllowed = false
                 };
@@ -123,6 +123,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
                         excludeSchema.Type |= JsonSchemaType.Null;
                     }
                 }
+                else if (type == typeof(OperationStatus) ||
+                         type == typeof(OperationSummary))
+                {
+                    if (schema.Properties["tags"] is OpenApiSchema tagsSchema)
+                    {
+                        tagsSchema.UniqueItems = true;
+                    }
+                }
                 else if (type == typeof(ProblemDetails))
                 {
                     if (schema.Properties["status"] is OpenApiSchema statusSchema)
@@ -132,21 +140,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
                 }
                 else if (type == typeof(ValidationProblemDetails))
                 {
-                    if (schema.Properties["status"] is OpenApiSchema statusSchema)
-                    {
-                        statusSchema.Type |= JsonSchemaType.Null;
-                    }
                     if (schema.Properties["errors"] is OpenApiSchema errorsSchema)
                     {
                         errorsSchema.Type |= JsonSchemaType.Null;
                     }
-                }
-                else if (type == typeof(OperationStatus) ||
-                         type == typeof(OperationSummary))
-                {
-                    if (schema.Properties["tags"] is OpenApiSchema tagsSchema)
+
+                    if (schema.Properties["status"] is OpenApiSchema statusSchema)
                     {
-                        tagsSchema.UniqueItems = true;
+                        statusSchema.Type |= JsonSchemaType.Null;
                     }
                 }
                 return Task.CompletedTask;
@@ -155,7 +156,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
             // Fix up "additionalProperties"
             options.AddSchemaTransformer((schema, context, cancellationToken) => {
                 var type = context.JsonTypeInfo.Type;
-                if (type == typeof(CaptureParametersConfiguration) || 
+                if (type == typeof(CaptureParametersConfiguration) ||
                     type == typeof(CollectionRuleDetailedDescription) ||
                     type == typeof(DotnetMonitorInfo) ||
                     type == typeof(EventMetricsConfiguration) ||
@@ -163,6 +164,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
                     type == typeof(EventMetricsProvider) ||
                     type == typeof(EventPipeConfiguration) ||
                     type == typeof(EventPipeProvider) ||
+                    type == typeof(ExceptionFilter) ||
                     type == typeof(ExceptionsConfiguration) ||
                     type == typeof(LogsConfiguration) ||
                     type == typeof(MethodDescription) ||
@@ -245,14 +247,34 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
                 }
                 return Task.CompletedTask;
             });
+
+            // Ensure nullable enums have correct schema
+            options.AddSchemaTransformer((schema, context, cancellationToken) =>
+            {
+                var type = context.JsonTypeInfo.Type;
+                if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+                {
+                    Type typeArg = type.GetGenericArguments().First();
+                    if (typeArg.IsEnum)
+                    {
+                        schema.Type = JsonSchemaType.String | JsonSchemaType.Null;
+
+                        schema.Enum = Enum.GetNames(typeArg)
+                            .Select(name => JsonValue.Create(name))
+                            .ToList<JsonNode>();
+                    }
+                }
+                return Task.CompletedTask;
+            });
         }
 
         public static void AddBearerTokenAuthOption(this OpenApiOptions options, string securityDefinitionName)
         {
             options.AddDocumentTransformer((document, context, cancellationToken) =>
             {
-                var components = document.Components ??= new OpenApiComponents();
-                var securitySchemes = components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
+                OpenApiComponents components = document.Components ??= new OpenApiComponents();
+
+                IDictionary<string, IOpenApiSecurityScheme> securitySchemes = components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
                 securitySchemes.Add(securityDefinitionName, new OpenApiSecurityScheme
                 {
                     Name = HeaderNames.Authorization,
@@ -263,7 +285,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
                     Description = Strings.HelpDescription_SecurityDefinitionDescription_ApiKey
                 });
 
-                var securityRequirements = document.Security ??= new List<OpenApiSecurityRequirement>();
+                IList<OpenApiSecurityRequirement> securityRequirements = document.Security ??= new List<OpenApiSecurityRequirement>();
                 securityRequirements.Add(new OpenApiSecurityRequirement
                 {
                     {

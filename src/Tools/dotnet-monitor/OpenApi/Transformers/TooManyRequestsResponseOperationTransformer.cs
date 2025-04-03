@@ -13,12 +13,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers
     {
         public Task TransformAsync(OpenApiOperation operation, OpenApiOperationTransformerContext context, CancellationToken cancellationToken)
         {
-            var responses = operation.Responses ??= new OpenApiResponses();
-            if (responses.Remove(StatusCodeStrings.Status429TooManyRequests))
+            if (null != operation.Responses)
             {
-                responses.Add(
-                    StatusCodeStrings.Status429TooManyRequests,
-                    new OpenApiResponseReference(ResponseNames.TooManyRequestsResponse));
+                if (operation.Responses.Remove(StatusCodeStrings.Status429TooManyRequests))
+                {
+                    operation.Responses.Add(
+                        StatusCodeStrings.Status429TooManyRequests,
+                        new OpenApiResponseReference(ResponseNames.TooManyRequestsResponse));
+                }
             }
 
             return Task.CompletedTask;

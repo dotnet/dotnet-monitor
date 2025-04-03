@@ -17,12 +17,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers
     {
         public Task TransformAsync(OpenApiOperation operation, OpenApiOperationTransformerContext context, CancellationToken cancellationToken)
         {
-            var responses = operation.Responses ??= new OpenApiResponses();
-            if (responses.Remove(StatusCodeStrings.Status400BadRequest))
+            if (null != operation.Responses)
             {
-                responses.Add(
-                    StatusCodeStrings.Status400BadRequest,
-                    new OpenApiResponseReference(ResponseNames.BadRequestResponse));
+                if (operation.Responses.Remove(StatusCodeStrings.Status400BadRequest))
+                {
+                    operation.Responses.Add(
+                        StatusCodeStrings.Status400BadRequest,
+                        new OpenApiResponseReference(ResponseNames.BadRequestResponse));
+                }
             }
 
             return Task.CompletedTask;

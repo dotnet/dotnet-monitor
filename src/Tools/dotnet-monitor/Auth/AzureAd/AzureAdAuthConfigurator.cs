@@ -1,8 +1,8 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.AspNetCore.OpenApi;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -12,6 +12,7 @@ using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Models.Interfaces;
 using Microsoft.OpenApi.Models.References;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
@@ -59,8 +60,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
 
             options.AddDocumentTransformer((document, context, cancellationToken) =>
             {
-                var components = document.Components ??= new OpenApiComponents();
-                var securitySchemes = components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
+                OpenApiComponents components = document.Components ??= new OpenApiComponents();
+
+                IDictionary<string, IOpenApiSecurityScheme> securitySchemes = components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
                 securitySchemes.Add(OAuth2SecurityDefinitionName, new OpenApiSecurityScheme
                 {
                     Type = SecuritySchemeType.OAuth2,
@@ -74,7 +76,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
                     }
                 });
 
-                var securityRequirements = document.Security ??= new List<OpenApiSecurityRequirement>();
+                IList<OpenApiSecurityRequirement> securityRequirements = document.Security ??= new List<OpenApiSecurityRequirement>();
                 securityRequirements.Add(new OpenApiSecurityRequirement
                 {
                     {

@@ -18,9 +18,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers
     {
         public Task TransformAsync(OpenApiOperation operation, OpenApiOperationTransformerContext context, CancellationToken cancellationToken)
         {
-            if (operation.Responses is OpenApiResponses responses)
+            if (null != operation.Responses)
             {
-                foreach (KeyValuePair<string, IOpenApiResponse> response in responses)
+                foreach (KeyValuePair<string, IOpenApiResponse> response in operation.Responses)
                 {
                     if (response.Key.StartsWith("2"))
                     {

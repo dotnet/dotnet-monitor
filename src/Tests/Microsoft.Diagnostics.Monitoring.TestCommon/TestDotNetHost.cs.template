@@ -24,5 +24,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         public static readonly string AspNetCore70VersionString = "$MicrosoftAspNetCoreApp70Version$";
         public static readonly string AspNetCore80VersionString = "$MicrosoftAspNetCoreApp80Version$";
         public static readonly string AspNetCore90VersionString = "$MicrosoftAspNetCoreApp90Version$";
+        public static readonly string AspNetCore100VersionString = "$MicrosoftAspNetCoreApp100Version$";
     }
 }
