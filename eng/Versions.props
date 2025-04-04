@@ -65,7 +65,7 @@
     <MicrosoftNETCoreAppRuntimewinx64Version>10.0.0-preview.4.25174.9</MicrosoftNETCoreAppRuntimewinx64Version>
     <VSRedistCommonNetCoreSharedFrameworkx64100Version>10.0.0-preview.4.25174.9</VSRedistCommonNetCoreSharedFrameworkx64100Version>
     <!-- dotnet/sdk references -->
-    <VSRedistCommonNetCoreSdkPlaceholderx64100Version>10.0.100-preview.4.25203.8</VSRedistCommonNetCoreSdkPlaceholderx64100Version>
+    <VSRedistCommonNetCoreSdkPlaceholderx64100Version>10.0.100-preview.4.25203.20</VSRedistCommonNetCoreSdkPlaceholderx64100Version>
     <!-- dotnet/symstore references -->
     <MicrosoftFileFormatsVersion>1.0.615501</MicrosoftFileFormatsVersion>
   </PropertyGroup>
