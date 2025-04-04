@@ -71,23 +71,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         }
 
         /// <inheritdoc/>
-        public bool TryCreateOptions(
-            string triggerName,
-            out object options)
-        {
-            // Check that the trigger is registered and has options
-            if (_map.TryGetValue(triggerName, out ICollectionRuleTriggerDescriptor descriptor) &&
-                null != descriptor.OptionsType)
-            {
-                options = Activator.CreateInstance(descriptor.OptionsType);
-                return true;
-            }
-
-            options = null;
-            return false;
-        }
-
-        /// <inheritdoc/>
         public bool TryValidateOptions(
             string triggerName,
             object options,

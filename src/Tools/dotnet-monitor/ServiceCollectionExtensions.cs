@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.AspNetCore.Authentication;
@@ -40,6 +40,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
 
@@ -196,7 +197,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return services;
         }
 
-        public static IServiceCollection RegisterCollectionRuleAction<TFactory, TOptions>(this IServiceCollection services, string actionName)
+        public static IServiceCollection RegisterCollectionRuleAction<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TFactory, TOptions>(this IServiceCollection services, string actionName)
             where TFactory : class, ICollectionRuleActionFactory<TOptions>
             where TOptions : BaseRecordOptions, new()
         {
@@ -209,7 +210,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return services;
         }
 
-        public static IServiceCollection RegisterCollectionRuleTrigger<TFactory>(this IServiceCollection services, string triggerName)
+        public static IServiceCollection RegisterCollectionRuleTrigger<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TFactory>(this IServiceCollection services, string triggerName)
             where TFactory : class, ICollectionRuleTriggerFactory
         {
             services.AddSingleton<TFactory>();
@@ -219,7 +220,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return services;
         }
 
-        public static IServiceCollection RegisterCollectionRuleTrigger<TFactory, TOptions>(this IServiceCollection services, string triggerName)
+        public static IServiceCollection RegisterCollectionRuleTrigger<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TFactory, TOptions>(this IServiceCollection services, string triggerName)
             where TFactory : class, ICollectionRuleTriggerFactory<TOptions>
             where TOptions : class, new()
         {

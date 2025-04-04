@@ -32,7 +32,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             services.ConfigureHttpJsonOptions(options => {
                 options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                options.SerializerOptions.TypeInfoResolverChain.Add(MonitorJsonSerializerContext.Default);
             });
+
+            services.AddValidation();
 
             services.Configure<ApiBehaviorOptions>(options =>
             {

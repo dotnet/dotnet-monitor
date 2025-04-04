@@ -59,19 +59,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         }
 
         /// <inheritdoc/>
-        public bool TryCreateOptions(
-            string actionName,
-            out object options)
-        {
-            if (_map.TryGetValue(actionName, out ICollectionRuleActionDescriptor descriptor))
-            {
-                options = Activator.CreateInstance(descriptor.OptionsType);
-                return true;
-            }
-
-            options = null;
-            return false;
-        }
 
         /// <inheritdoc/>
         public bool TryValidateOptions(

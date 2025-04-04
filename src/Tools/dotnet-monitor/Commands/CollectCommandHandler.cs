@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http.Validation;
 using Microsoft.Diagnostics.Monitoring;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.Auth;
@@ -85,7 +86,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
         {
             return builder.ConfigureServices((HostBuilderContext context, IServiceCollection services) =>
             {
-                IAuthenticationConfigurator authConfigurator = AuthConfiguratorFactory.Create(startupAuthMode, context);
+                var validationOptions = services.BuildServiceProvider().GetRequiredService<IOptions<ValidationOptions>>().Value;
+                IAuthenticationConfigurator authConfigurator = AuthConfiguratorFactory.Create(startupAuthMode, context, validationOptions);
                 services.AddSingleton<IAuthenticationConfigurator>(authConfigurator);
 
                 //TODO Many of these service additions should be done through extension methods

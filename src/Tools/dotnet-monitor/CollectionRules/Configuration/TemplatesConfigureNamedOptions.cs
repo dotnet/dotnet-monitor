@@ -1,7 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
 using Microsoft.Extensions.Configuration;
@@ -13,23 +12,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
         IPostConfigureOptions<TemplateOptions>
     {
         private readonly ICollectionRuleTriggerOperations _triggerOperations;
-        private readonly ICollectionRuleActionOperations _actionOperations;
         private readonly IConfiguration _configuration;
         private static readonly string collectionRuleActionsPath = ConfigurationPath.Combine(nameof(RootOptions.Templates), nameof(TemplateOptions.CollectionRuleActions));
         private static readonly string collectionRuleTriggersPath = ConfigurationPath.Combine(nameof(RootOptions.Templates), nameof(TemplateOptions.CollectionRuleTriggers));
 
         public TemplatesPostConfigureOptions(
             ICollectionRuleTriggerOperations triggerOperations,
-            ICollectionRuleActionOperations actionOperations,
             IConfiguration configuration)
         {
             _triggerOperations = triggerOperations;
-            _actionOperations = actionOperations;
             _configuration = configuration;
         }
 
         public void PostConfigure(string? name, TemplateOptions options)
         {
+            System.Console.WriteLine("TemplatesConfigureNamedOptions PostConfigure");
             IConfigurationSection collectionRuleActionsSection = _configuration.GetSection(collectionRuleActionsPath);
 
             if (options.CollectionRuleActions != null)
@@ -40,7 +37,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 
                     if (actionSection.Exists())
                     {
-                        CollectionRuleBindingHelper.BindActionSettings(actionSection, options.CollectionRuleActions[key], _actionOperations);
+                        CollectionRuleBindingHelper.BindActionSettings(actionSection, options.CollectionRuleActions[key]);
                     }
                 }
             }

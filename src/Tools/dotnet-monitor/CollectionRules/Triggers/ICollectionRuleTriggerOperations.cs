@@ -19,13 +19,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
             string triggerName,
             out ICollectionRuleTriggerFactoryProxy factory);
 
-        /// <summary>
-        /// Attempts to create an options instance of the options type
-        /// associated with the registered trigger name.
-        /// </summary>
-        bool TryCreateOptions(
-            string triggerName,
-            out object options);
 
         /// <summary>
         /// Attempts to validate an options instance of the options type

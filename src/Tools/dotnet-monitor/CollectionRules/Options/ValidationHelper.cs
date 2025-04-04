@@ -1,32 +1,23 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.AspNetCore.Http.Validation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Threading;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
 {
     internal static class ValidationHelper
     {
-        public static void TryValidateItems(IEnumerable<object> items, ValidationContext validationContext, ICollection<ValidationResult> results)
-        {
-            int index = 0;
-            foreach (object item in items)
-            {
-                ValidationContext itemContext = new(item, validationContext, validationContext.Items);
-                itemContext.MemberName = validationContext.MemberName + "[" + index.ToString() + "]";
-
-                Validator.TryValidateObject(item, itemContext, results);
-
-                index++;
-            }
-        }
-
 #nullable disable
+        [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(TimeSpan))]
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicProperties, typeof(string))]
         public static bool TryValidateOptions(Type optionsType, object options, ValidationContext validationContext, ICollection<ValidationResult> results)
         {
             RequiredAttribute requiredAttribute = new();
@@ -60,5 +51,56 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             }
         }
 #nullable restore
+
+        public static bool TryValidateObject(object options, Type type, ValidationOptions validationOptions, ValidationContext validationContext, ICollection<ValidationResult> results)
+        {
+            return TryValidateObject(options, type, validationOptions, validationContext, results);
+        }
+
+        public static bool TryValidateObject(object options, Type type, ValidationOptions validationOptions, List<ValidationResult> results)
+        {
+            var validationContext = new ValidationContext(options, type.Name, null, items: null) {
+                MemberName = type.Name
+            };
+            return TryValidateObject(options, type, validationOptions, validationContext, results);
+        }
+
+        public static bool TryValidateObject(object options, Type type, ValidationOptions validationOptions, ValidationContext validationContext, List<ValidationResult> results)
+        {
+            if (!validationOptions.TryGetValidatableTypeInfo(type, out IValidatableInfo? validatableTypeInfo))
+            {
+                throw new Exception("No type info found for type " + type.FullName);
+            }
+            if (validationContext.MemberName is null)
+            {
+                throw new ArgumentNullException(nameof(validationContext.MemberName));
+            }
+            var validateContext = new ValidateContext()
+            {
+                ValidationOptions = validationOptions,
+                ValidationContext = new(options, validationContext.MemberName, null, items: null)
+            };
+            validatableTypeInfo.ValidateAsync(options, validateContext, CancellationToken.None).GetAwaiter().GetResult();
+            if (validateContext.ValidationErrors is Dictionary<string, string[]> validationErrors)
+            {
+                foreach (var (name, errors) in validationErrors)
+                {
+                    foreach (var error in errors)
+                    {
+                        results.Add(new ValidationResult(error, [name]));
+                    }
+                }
+                return false;
+            }
+            return true;
+        }
+
+        public static void ValidateObject(object options, Type type, ValidationOptions validationOptions)
+        {
+            if (!TryValidateObject(options, type, validationOptions, new List<ValidationResult>()))
+            {
+                throw new ValidationException("Validation failed for " + type.FullName);
+            }
+        }
     }
 }

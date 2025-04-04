@@ -3,6 +3,7 @@
 
 #nullable disable
 
+using Microsoft.AspNetCore.Http.Validation;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
@@ -10,16 +11,17 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {
+    [JsonSerializable(typeof(ExtensionManifest))]
+    internal partial class ExtensionManifestContext : JsonSerializerContext
+    {
+    }
+
     internal class ExtensionManifest : IValidatableObject
     {
-        private static readonly JsonSerializerOptions _serializerOptions = new()
-        {
-            Converters = { new JsonStringEnumConverter() }
-        };
-
         public const string DefaultFileName = "extension.json";
 
         /// <summary>
@@ -60,7 +62,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 
             try
             {
-                return JsonSerializer.Deserialize<ExtensionManifest>(stream, _serializerOptions);
+                return JsonSerializer.Deserialize(stream, ExtensionManifestContext.Default.ExtensionManifest);
             }
             catch (JsonException ex)
             {
@@ -70,11 +72,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             }
         }
 
-        public void Validate()
+        public void Validate(ValidationOptions validationOptions)
         {
             List<ValidationResult> results = new();
-            if (!Validator.TryValidateObject(this, new ValidationContext(this), results, validateAllProperties: true) &&
-                results.Count > 0)
+            if (!ValidationHelper.TryValidateObject(this, typeof(ExtensionManifest), validationOptions, results))
             {
                 ExtensionException.ThrowInvalidManifest(results.First().ErrorMessage);
             }

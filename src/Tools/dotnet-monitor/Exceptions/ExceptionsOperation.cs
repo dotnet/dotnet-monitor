@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
 using Models = Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using NameFormatter = Microsoft.Diagnostics.Monitoring.WebApi.Stacks.NameFormatter;
+using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 {
@@ -159,7 +160,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
                 };
             }
 
-            await JsonSerializer.SerializeAsync(stream, model, cancellationToken: token);
+            await JsonSerializer.SerializeAsync(stream, model, ExceptionInstanceContext.Default.ExceptionInstance, cancellationToken: token);
 
             await stream.WriteAsync(JsonRecordDelimiter, token);
         }
@@ -329,5 +330,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
         {
             return !string.IsNullOrEmpty(instance.ActivityId);
         }
+    }
+
+    [JsonSerializable(typeof(Models.ExceptionInstance))]
+    partial class ExceptionInstanceContext : JsonSerializerContext{
     }
 }

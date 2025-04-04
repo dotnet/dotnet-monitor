@@ -3,11 +3,13 @@
 
 #nullable enable
 
+using Microsoft.AspNetCore.Http.Validation;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 
 #if EXTENSION
 namespace Microsoft.Diagnostics.Monitoring.Extension.Common
@@ -20,33 +22,40 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         where TOptions : class
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly ValidationOptions _validationOptions;
 
         public DataAnnotationValidateOptions(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
+            _validationOptions = serviceProvider.GetRequiredService<IOptions<ValidationOptions>>().Value;
         }
 
         public ValidateOptionsResult Validate(string? name, TOptions options)
         {
-            ValidationContext validationContext = new(options, _serviceProvider, null);
-            ICollection<ValidationResult> results = new Collection<ValidationResult>();
-            if (!Validator.TryValidateObject(options, validationContext, results, validateAllProperties: true))
+            var results = new List<ValidationResult>();
+            if (!ValidationHelper.TryValidateObject(options, typeof(TOptions), _validationOptions, results))
             {
                 IList<string> failures = new List<string>();
                 foreach (ValidationResult result in results)
                 {
-                    if (ValidationResult.Success != result)
+                    if (result.MemberNames is IEnumerable<string> memberNames)
                     {
-#nullable disable
+                        foreach (string memberName in memberNames)
+                        {
+                            failures.Add($"{memberName}: {result.ErrorMessage}");
+                        }
+                    }
+                    else
+                    {
+                        if (result.ErrorMessage is null)
+                        {
+                            throw new ArgumentNullException(nameof(result.ErrorMessage));
+                        }
                         failures.Add(result.ErrorMessage);
-#nullable restore
                     }
                 }
 
-                if (failures.Count > 0)
-                {
-                    return ValidateOptionsResult.Fail(failures);
-                }
+                return ValidateOptionsResult.Fail(failures);
             }
 
             return ValidateOptionsResult.Success;

@@ -1,4 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project>
+
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk.Web" />
+
   <PropertyGroup>
     <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
     <RootNamespace>Microsoft.Diagnostics.Tools.Monitor</RootNamespace>
@@ -12,8 +15,16 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <!-- <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles> -->
     <DisableCompileTimeOpenApiXmlGenerator>true</DisableCompileTimeOpenApiXmlGenerator>
+    <PublishTrimmed>true</PublishTrimmed>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <InterceptorsNamespaces>$(InterceptorsNamespaces);Microsoft.AspNetCore.Http.Validation.Generated</InterceptorsNamespaces>
+    <NoWarn>$(NoWarn);IDE0005</NoWarn> <!-- Disable IDE0005: Using directive is unnecessary. -->
   </PropertyGroup>
 
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);NU1603</NoWarn>
+  </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
@@ -132,5 +143,26 @@
       </TfmSpecificPackageFile>
     </ItemGroup>
   </Target>
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk.Web" />
+
+  <!-- <PropertyGroup>
+    <RuntimeFrameworkVersion>$(NetCoreAppVersion)</RuntimeFrameworkVersion>
+  </PropertyGroup> -->
+
+
+  <ItemGroup>
+    <KnownFrameworkReference
+      Update="Microsoft.NETCore.App"
+      TargetingPackVersion="$(NetCoreAppVersion)"
+      DefaultRuntimeFrameworkVersion="$(NetCoreAppVersion)"
+      LatestRuntimeFrameworkVersion="$(NetCoreAppVersion)" />
+
+    <KnownFrameworkReference
+      Update="Microsoft.AspNetCore.App"
+      TargetingPackVersion="$(AspNetCoreAppVersion)"
+      DefaultRuntimeFrameworkVersion="$(AspNetCoreAppVersion)"
+      LatestRuntimeFrameworkVersion="$(AspNetCoreAppVersion)" />
+  </ItemGroup>
 
 </Project>

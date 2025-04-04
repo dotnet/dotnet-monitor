@@ -15,7 +15,6 @@
     <ProjectReference Include="..\..\Tools\dotnet-monitor\dotnet-monitor.csproj" />
     <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.TestCommon\Microsoft.Diagnostics.Monitoring.TestCommon.csproj" />
     <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.Tool.UnitTestCommon\Microsoft.Diagnostics.Monitoring.Tool.UnitTestCommon.csproj" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" GeneratePathProperty="true" />
   </ItemGroup>
 
   <ItemGroup>

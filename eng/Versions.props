@@ -52,8 +52,8 @@
     <MicrosoftDotNetCodeAnalysisVersion>10.0.0-beta.25202.1</MicrosoftDotNetCodeAnalysisVersion>
     <MicrosoftDotNetXUnitExtensionsVersion>10.0.0-beta.25202.1</MicrosoftDotNetXUnitExtensionsVersion>
     <!-- dotnet/aspnetcore references -->
-    <MicrosoftAspNetCoreAppRuntimewinx64Version>10.0.0-preview.3.25172.1</MicrosoftAspNetCoreAppRuntimewinx64Version>
-    <VSRedistCommonAspNetCoreSharedFrameworkx64100Version>10.0.0-preview.3.25172.1</VSRedistCommonAspNetCoreSharedFrameworkx64100Version>
+    <MicrosoftAspNetCoreAppRuntimewinx64Version>10.0.0-preview.4.25181.4</MicrosoftAspNetCoreAppRuntimewinx64Version>
+    <VSRedistCommonAspNetCoreSharedFrameworkx64100Version>10.0.0-preview.4.25181.4</VSRedistCommonAspNetCoreSharedFrameworkx64100Version>
     <!-- dotnet/command-line-api references -->
     <SystemCommandLineVersion>2.0.0-beta5.25170.1</SystemCommandLineVersion>
     <!-- dotnet/diagnostics references -->
@@ -62,8 +62,8 @@
     <!-- dotnet/roslyn-analyzers -->
     <MicrosoftCodeAnalysisNetAnalyzersVersion>10.0.0-preview.25076.4</MicrosoftCodeAnalysisNetAnalyzersVersion>
     <!-- dotnet/runtime references -->
-    <MicrosoftNETCoreAppRuntimewinx64Version>10.0.0-preview.3.25171.5</MicrosoftNETCoreAppRuntimewinx64Version>
-    <VSRedistCommonNetCoreSharedFrameworkx64100Version>10.0.0-preview.3.25171.5</VSRedistCommonNetCoreSharedFrameworkx64100Version>
+    <MicrosoftNETCoreAppRuntimewinx64Version>10.0.0-preview.4.25174.9</MicrosoftNETCoreAppRuntimewinx64Version>
+    <VSRedistCommonNetCoreSharedFrameworkx64100Version>10.0.0-preview.3.25174.9</VSRedistCommonNetCoreSharedFrameworkx64100Version>
     <!-- dotnet/sdk references -->
     <VSRedistCommonNetCoreSdkPlaceholderx64100Version>10.0.100-preview.3.25201.16</VSRedistCommonNetCoreSdkPlaceholderx64100Version>
     <!-- dotnet/symstore references -->
@@ -131,7 +131,7 @@
     <MicrosoftAspNetCoreAuthenticationNegotiateVersion>$(MicrosoftAspNetCoreApp100Version)</MicrosoftAspNetCoreAuthenticationNegotiateVersion>
     <MicrosoftExtensionsConfigurationAbstractionsVersion>$(MicrosoftNETCoreApp100Version)</MicrosoftExtensionsConfigurationAbstractionsVersion>
     <MicrosoftExtensionsLoggingVersion>$(MicrosoftNETCoreApp100Version)</MicrosoftExtensionsLoggingVersion>
-    <MicrosoftExtensionsLoggingAbstractionsVersion>$(MicrosoftNETCoreApp100Version)</MicrosoftExtensionsLoggingAbstractionsVersion>
+    <MicrosoftExtensionsLoggingAbstractionsVersion>$(MicrosoftExtensionsLoggingAbstractions100Version)</MicrosoftExtensionsLoggingAbstractionsVersion>
     <MicrosoftExtensionsLoggingConsoleVersion>$(MicrosoftNETCoreApp100Version)</MicrosoftExtensionsLoggingConsoleVersion>
     <SystemTextJsonVersion>$(MicrosoftNETCoreApp100Version)</SystemTextJsonVersion>
     <MicrosoftAspNetCoreOpenApiVersion>$(MicrosoftAspNetCoreApp100Version)</MicrosoftAspNetCoreOpenApiVersion>

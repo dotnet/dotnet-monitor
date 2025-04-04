@@ -184,7 +184,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 try
                 {
                     IpcEndpointInfo info = await server.AcceptAsync(token).ConfigureAwait(false);
-
                     _ = Task.Run(async () =>
                     {
                         try
