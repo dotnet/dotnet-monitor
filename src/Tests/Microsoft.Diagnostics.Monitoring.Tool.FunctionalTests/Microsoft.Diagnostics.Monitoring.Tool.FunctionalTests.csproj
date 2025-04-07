@@ -69,7 +69,6 @@
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\AspNetRequestDurationOptionsDefaults.cs" Link="Options\CollectionRules\Triggers\AspNetRequestDurationOptionsDefaults.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\AspNetResponseStatusOptions.cs" Link="Options\CollectionRules\Triggers\AspNetResponseStatusOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\AspNetResponseStatusOptionsDefaults.cs" Link="Options\CollectionRules\Triggers\AspNetResponseStatusOptionsDefaults.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\BaseOptions.cs" Link="Options\CollectionRules\Triggers\BaseOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterOptions.cs" Link="Options\CollectionRules\Triggers\EventCounterOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterOptionsDefaults.cs" Link="Options\CollectionRules\Triggers\EventCounterOptionsDefaults.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventCounterShortcuts\CPUUsageOptions.cs" Link="Options\CollectionRules\Triggers\EventCounterShortcuts\CPUUsageOptions.cs" />
