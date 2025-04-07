@@ -11,7 +11,11 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Threading;
 
+#if EXTENSION
+namespace Microsoft.Diagnostics.Monitoring.Extension.Common
+#else
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
+#endif
 {
     internal static class ValidationHelper
     {
@@ -50,7 +54,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
                 return false;
             }
         }
-#nullable restore
+#nullable enable
 
         public static bool TryValidateObject(object options, Type type, ValidationOptions validationOptions, ValidationContext validationContext, ICollection<ValidationResult> results)
         {

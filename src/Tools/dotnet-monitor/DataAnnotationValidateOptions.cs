@@ -9,7 +9,9 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+#if !EXTENSION
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
+#endif
 
 #if EXTENSION
 namespace Microsoft.Diagnostics.Monitoring.Extension.Common

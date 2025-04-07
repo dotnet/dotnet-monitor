@@ -16,7 +16,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
 #if SCHEMAGEN
     [NJsonSchema.Annotations.JsonSchemaFlatten]
 #endif
-    internal sealed partial record class CollectExceptionsOptions : BaseRecordOptions, IEgressProviderProperties
+
+    internal sealed partial record class CollectExceptionsOptions :
+        BaseRecordOptions,
+        // IValidateOptions<CollectExceptionsOptions>,
+        IEgressProviderProperties
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),

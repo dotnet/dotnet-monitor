@@ -112,8 +112,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         }
 #nullable restore
 
-        public object? SubstituteOptionValues(IDictionary<string, CollectionRuleActionResult> actionResults, int actionIndex, object? settings)
+        public object? SubstituteOptionValues(IDictionary<string, CollectionRuleActionResult> actionResults, int actionIndex, CollectionRuleActionOptions actionOptions)
         {
+            object? settings = actionOptions.Settings;
             //Attempt to substitute context properties.
             object? originalSettings = settings;
 
@@ -160,7 +161,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             }
             string? commandLine = _ruleContext.EndpointInfo.CommandLine;
 
-            settings = _tokenParser.SubstituteOptionValues(settings, new TokenContext
+            settings = _tokenParser.SubstituteOptionValues(actionOptions, new TokenContext
             {
                 CloneOnSubstitution = ReferenceEquals(originalSettings, settings),
                 RuntimeId = _ruleContext.EndpointInfo.RuntimeInstanceCookie,
@@ -289,7 +290,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         private static IEnumerable<PropertyInfo> GetDependencyPropertiesFromSettings(CollectionRuleActionOptions options)
         {
-            return ConfigurationTokenParser.GetPropertiesFromSettings(options.Settings, p => p.GetCustomAttributes(typeof(ActionOptionsDependencyPropertyAttribute), inherit: true).Any());
+            return ConfigurationTokenParser.GetPropertiesFromSettings(options, p => p.GetCustomAttributes(typeof(ActionOptionsDependencyPropertyAttribute), inherit: true).Any());
         }
     }
 }

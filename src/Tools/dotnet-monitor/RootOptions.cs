@@ -38,6 +38,5 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public TemplateOptions? Templates { get; set; }
 
         public DotnetMonitorDebugOptions? DotnetMonitorDebug { get; set; }
-
     }
 }

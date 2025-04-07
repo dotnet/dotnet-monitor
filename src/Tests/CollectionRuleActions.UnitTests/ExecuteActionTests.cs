@@ -1,11 +1,13 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.AspNetCore.Http.Validation;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using Microsoft.Extensions.Options;
 using System;
 using System.Globalization;
 using System.IO;
@@ -175,7 +177,7 @@ namespace CollectionRuleActions.UnitTests
 
         private static async Task ValidateAction(Action<ExecuteOptions> optionsCallback, Func<ICollectionRuleAction, CancellationToken, Task> actionCallback)
         {
-            ExecuteActionFactory factory = new();
+            ExecuteActionFactory factory = new(Options.Create<ValidationOptions>(new()));
 
             ExecuteOptions options = new();
 

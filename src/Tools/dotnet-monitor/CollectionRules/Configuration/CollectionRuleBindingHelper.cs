@@ -14,14 +14,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 {
     internal static class CollectionRuleBindingHelper
     {
-        public static object CreateActionSettings(
-            string actionType,
-            Func<CollectDumpOptions> collectDump,
-            Func<CollectExceptionsOptions> collectExceptions
-        ) => actionType switch {
-                KnownCollectionRuleActions.CollectDump => collectDump(),
-                KnownCollectionRuleActions.CollectExceptions => collectExceptions(),
-        };
+        // public static object CreateActionSettings(
+        //     string actionType,
+        //     Func<CollectDumpOptions> collectDump,
+        //     Func<CollectExceptionsOptions> collectExceptions
+        // ) => actionType switch {
+        //         KnownCollectionRuleActions.CollectDump => collectDump(),
+        //         KnownCollectionRuleActions.CollectExceptions => collectExceptions(),
+        //         _ => throw new ArgumentException($"Unknown action type: {actionType}", nameof(actionType))
+        // };
 
         // public static object NewActionSettings(string actionType) => 
         //     actionType switch {

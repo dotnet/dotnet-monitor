@@ -165,4 +165,11 @@
       LatestRuntimeFrameworkVersion="$(AspNetCoreAppVersion)" />
   </ItemGroup>
 
+  <Target Name="RemoveAnalyzer" BeforeTargets="CoreCompile">
+    <ItemGroup>
+      <!-- remove Microsoft.AspNetCore.Http.ValidationsGenerator.dll -->
+      <Analyzer Remove="@(Analyzer)" Condition="'%(Analyzer.FileName)' == 'Microsoft.AspNetCore.Http.ValidationsGenerator'" />
+    </ItemGroup>
+  </Target>
+
 </Project>
