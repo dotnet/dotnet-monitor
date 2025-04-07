@@ -163,7 +163,7 @@ extends:
       displayName: Push To NuGet Feed
       dependsOn: Validation
       variables:
-      - group: .NET Core Nuget API Keys
+      - group: '.NET Core Nuget API Keys'
       jobs:
       - job: Job_1
         displayName: Push To NuGet
@@ -174,11 +174,11 @@ extends:
         - download: dotnet-monitor_build
           artifact: StagingToolAssetsLayout
         - task: NuGetAuthenticate@0
-          enabled: eq(parameters.DraftRelease, false)
+          condition: and(succeeded(), ${{ eq(parameters.DraftRelease, false) }})
           displayName: Authenticate to AzDO Feeds
         - task: PowerShell@2
           displayName: Push To NuGet
-          enabled: eq(parameters.DraftRelease, false)
+          condition: and(succeeded(), ${{ eq(parameters.DraftRelease, false) }})
           inputs:
             filePath: $(DRP_RepoRoot)\eng\release\Scripts\PublishToNuget.ps1
             arguments: -ManifestPath $(DRP_OutputManifestPath) -StagingPath $(DRP_MonitorRelease) -FeedEndpoint $(DRP_NugetFeed) -FeedPat $(DotNetNugetApiKey-A4)
