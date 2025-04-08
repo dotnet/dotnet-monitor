@@ -108,10 +108,12 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                 "Microsoft.Diagnostics.Monitoring.UnitTestApp",
                 tfm);
 
+#pragma warning disable CS0618 // Type or member is obsolete
             _startupHookPath = AssemblyHelper.GetAssemblyArtifactBinPath(
                 testAssembly,
                 "Microsoft.Diagnostics.Monitoring.StartupHook",
                 TargetFrameworkMoniker.Net60);
+#pragma warning restore CS0618 // Type or member is obsolete
 
             _waitingForEnvironmentVariables = new Dictionary<string, TaskCompletionSource<string>>();
 

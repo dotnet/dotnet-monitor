@@ -47,10 +47,8 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
                     { Constants.InstrumentMetadataKey, Constants.InstrumentMetadataValue }
                 };
 
-#if NET8_0_OR_GREATER
                 Meter meter3 = new Meter(Constants.ProviderName3, "1.0.0", meterTags);
                 Counter<int> counter3 = meter3.CreateCounter<int>(Constants.CounterName, null, null, instrumentTags);
-#endif
 
                 var metadata = new Dictionary<string, object>
                 {
@@ -69,9 +67,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 
                     counter2.Add(1);
 
-#if NET8_0_OR_GREATER
                     counter3.Add(1, metadata.ToArray());
-#endif
 
                     await Task.Delay(100);
                 }

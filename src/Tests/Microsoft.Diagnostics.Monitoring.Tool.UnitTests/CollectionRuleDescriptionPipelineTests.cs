@@ -36,7 +36,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Test for the Finished (Startup) state.
         /// </summary>
         [Theory]
-        [MemberData(nameof(CollectionRulePipelineTests.GetTfmsSupportingPortListener), MemberType = typeof(CollectionRulePipelineTests))]
+        [MemberData(nameof(ActionTestsHelper.GetTfms), MemberType = typeof(ActionTestsHelper))]
         public Task CollectionRuleDescriptionPipeline_StartupTriggerTest(TargetFrameworkMoniker appTfm)
         {
             CallbackActionService callbackService = new(_outputHelper);
@@ -97,7 +97,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Test for Executing Action state.
         /// </summary>
         [Theory(Skip = "https://github.com/dotnet/dotnet-monitor/issues/2241")]
-        [MemberData(nameof(CollectionRulePipelineTests.GetTfmsSupportingPortListener), MemberType = typeof(CollectionRulePipelineTests))]
+        [MemberData(nameof(ActionTestsHelper.GetTfms), MemberType = typeof(ActionTestsHelper))]
         public Task CollectionRuleDescriptionPipeline_ExecutingAction(TargetFrameworkMoniker appTfm)
         {
             TimeSpan ClockIncrementDuration = TimeSpan.FromMilliseconds(10);
@@ -189,7 +189,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Test for Throttled -> Running -> Throttled.
         /// </summary>
         [Theory]
-        [MemberData(nameof(CollectionRulePipelineTests.GetTfmsSupportingPortListener), MemberType = typeof(CollectionRulePipelineTests))]
+        [MemberData(nameof(ActionTestsHelper.GetTfms), MemberType = typeof(ActionTestsHelper))]
         public Task CollectionRuleDescriptionPipeline_Throttled(TargetFrameworkMoniker appTfm)
         {
             const int IterationCount = 5;
@@ -297,7 +297,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Test for the Finished (Rule Duration) state.
         /// </summary>
         [Theory]
-        [MemberData(nameof(CollectionRulePipelineTests.GetTfmsSupportingPortListener), MemberType = typeof(CollectionRulePipelineTests))]
+        [MemberData(nameof(ActionTestsHelper.GetTfms), MemberType = typeof(ActionTestsHelper))]
         public Task CollectionRuleDescriptionPipeline_ReachedRuleDuration(TargetFrameworkMoniker appTfm)
         {
             ManualTriggerService triggerService = new();
@@ -344,7 +344,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Test for the Finished (Action Count Limit) state.
         /// </summary>
         [Theory]
-        [MemberData(nameof(CollectionRulePipelineTests.GetTfmsSupportingPortListener), MemberType = typeof(CollectionRulePipelineTests))]
+        [MemberData(nameof(ActionTestsHelper.GetTfms), MemberType = typeof(ActionTestsHelper))]
         public Task CollectionRuleDescriptionPipeline_ActionCountLimitUnlimitedDurationTest(TargetFrameworkMoniker appTfm)
         {
             TimeSpan ClockIncrementDuration = TimeSpan.FromMilliseconds(10);

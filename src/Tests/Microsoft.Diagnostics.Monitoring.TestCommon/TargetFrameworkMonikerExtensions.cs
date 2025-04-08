@@ -19,14 +19,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             {
                 case TargetFrameworkMoniker.Current:
                     return TestDotNetHost.CurrentAspNetCoreVersionString;
-                case TargetFrameworkMoniker.NetCoreApp31:
-                    return TestDotNetHost.AspNetCore31VersionString;
-                case TargetFrameworkMoniker.Net50:
-                    return TestDotNetHost.AspNetCore50VersionString;
-                case TargetFrameworkMoniker.Net60:
-                    return TestDotNetHost.AspNetCore60VersionString;
-                case TargetFrameworkMoniker.Net70:
-                    return TestDotNetHost.AspNetCore70VersionString;
                 case TargetFrameworkMoniker.Net80:
                     return TestDotNetHost.AspNetCore80VersionString;
                 case TargetFrameworkMoniker.Net90:
@@ -41,14 +33,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             {
                 case TargetFrameworkMoniker.Current:
                     return TestDotNetHost.CurrentNetCoreVersionString;
-                case TargetFrameworkMoniker.NetCoreApp31:
-                    return TestDotNetHost.NetCore31VersionString;
-                case TargetFrameworkMoniker.Net50:
-                    return TestDotNetHost.NetCore50VersionString;
-                case TargetFrameworkMoniker.Net60:
-                    return TestDotNetHost.NetCore60VersionString;
-                case TargetFrameworkMoniker.Net70:
-                    return TestDotNetHost.NetCore70VersionString;
                 case TargetFrameworkMoniker.Net80:
                     return TestDotNetHost.NetCore80VersionString;
                 case TargetFrameworkMoniker.Net90:

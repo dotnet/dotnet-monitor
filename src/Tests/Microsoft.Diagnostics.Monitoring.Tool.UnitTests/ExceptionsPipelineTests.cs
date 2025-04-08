@@ -29,10 +29,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         private readonly EndpointUtilities _endpointUtilities;
 
         // Startup hook assembly is only built for net6.0 and should be forward compatible
+#pragma warning disable CS0618 // Type or member is obsolete
         private static string StartupHookPath => AssemblyHelper.GetAssemblyArtifactBinPath(
             Assembly.GetExecutingAssembly(),
             "Microsoft.Diagnostics.Monitoring.StartupHook",
             TargetFrameworkMoniker.Net60);
+#pragma warning restore CS0618 // Type or member is obsolete
 
         private static readonly ExceptionFilterSettings SimpleInvalidOperationException = new()
         {
@@ -657,12 +659,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Action<IEnumerable<IExceptionInstance>> validate,
             Architecture? architecture = null)
         {
-            string startupHookPathForCallback = null;
-#if NET8_0_OR_GREATER
-            // Starting in .NET 8, the startup hook can be applied dynamically via DiagnosticsClient.
-            startupHookPathForCallback = StartupHookPath;
-#endif
-            EndpointInfoSourceCallback callback = new(_outputHelper, startupHookPathForCallback);
+            EndpointInfoSourceCallback callback = new(_outputHelper, StartupHookPath);
             await using ServerSourceHolder sourceHolder = await _endpointUtilities.StartServerAsync(callback);
 
             await using AppRunner runner = _endpointUtilities.CreateAppRunner(
@@ -671,11 +668,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 TargetFrameworkMoniker.Current);
             runner.Architecture = architecture;
             runner.ScenarioName = TestAppScenarios.Exceptions.Name + " " + subScenarioName;
-
-#if !NET8_0_OR_GREATER
-            // Runtimes lower than .NET 8 will require setting the startup hook environment variable explicitly.
-            runner.Environment.Add(ToolIdentifiers.EnvironmentVariables.StartupHooks, StartupHookPath);
-#endif
 
             Task<IEndpointInfo> newEndpointInfoTask = callback.WaitAddedEndpointInfoAsync(runner, CommonTestTimeouts.StartProcess);
 
