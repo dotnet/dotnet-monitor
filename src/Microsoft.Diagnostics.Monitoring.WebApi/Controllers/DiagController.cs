@@ -27,9 +27,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
     [ApiController]
     [HostRestriction]
     [Authorize(Policy = AuthConstants.PolicyName)]
-#if NETCOREAPP3_1_OR_GREATER
     [ProducesErrorResponseType(typeof(ValidationProblemDetails))]
-#endif
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     public partial class DiagController : DiagnosticsControllerBase

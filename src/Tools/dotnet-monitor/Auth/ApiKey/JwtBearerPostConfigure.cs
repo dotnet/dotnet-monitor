@@ -26,10 +26,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
             MonitorApiKeyConfiguration configSnapshot = _apiKeyConfig.CurrentValue;
             if (!configSnapshot.Configured || configSnapshot.ValidationErrors?.Any() == true)
             {
-#if NET8_0_OR_GREATER
                 // https://github.com/aspnet/Announcements/issues/508
                 options.UseSecurityTokenValidators = true;
-#endif
 #pragma warning disable CS0618 // Type or member is obsolete
                 options.SecurityTokenValidators.Add(new RejectAllSecurityValidator());
 #pragma warning restore CS0618 // Type or member is obsolete

@@ -967,10 +967,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.HttpApi
         private static JsonSerializerOptions CreateValidationProblemDetailsDeserializeOptions()
         {
             JsonSerializerOptions options = CreateJsonDeserializeOptions();
-#if NET8_0_OR_GREATER
+
             // Workaround for https://github.com/dotnet/aspnetcore/issues/47223
             options.PropertyNameCaseInsensitive = true;
-#endif
+
             return options;
         }
     }

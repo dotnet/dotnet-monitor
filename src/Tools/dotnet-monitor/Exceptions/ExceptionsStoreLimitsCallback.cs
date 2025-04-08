@@ -30,14 +30,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
         public ExceptionsStoreLimitsCallback(IExceptionsStore store, int topLevelLimit)
         {
             ArgumentNullException.ThrowIfNull(store);
-#if NET8_0_OR_GREATER
             ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(topLevelLimit, 0);
-#else
-            if (topLevelLimit <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(topLevelLimit));
-            }
-#endif
 
             _store = store;
             _topLevelLimit = topLevelLimit;
