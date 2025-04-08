@@ -78,15 +78,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             get
             {
                 // Update with specific TFM when building this assembly for a new target framework.
-#if NETCOREAPP3_1
-                return TargetFrameworkMoniker.NetCoreApp31;
-#elif NET5_0
-                return TargetFrameworkMoniker.Net50;
-#elif NET6_0
-                return TargetFrameworkMoniker.Net60;
-#elif NET7_0
-                return TargetFrameworkMoniker.Net70;
-#elif NET8_0
+#if NET8_0
                 return TargetFrameworkMoniker.Net80;
 #endif
             }
