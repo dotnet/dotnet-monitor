@@ -97,11 +97,9 @@ The nightly image is `mcr.microsoft.com/dotnet/nightly/monitor`. The tag list is
 ## Release to nuget.org and Add GitHub Release
 
 1. Run the [Generate release notes](https://github.com/dotnet/dotnet-monitor/actions/workflows/generate-release-notes.yml) workflow, setting `Use workflow from` to the release branch. Review and merge in the PR created by this workflow.
-1. Start [release pipeline](https://dev.azure.com/dnceng/internal/_release?_a=releases&view=mine&definitionId=105). Allow the stages to trigger automatically (do not check the boxes in the associated dropdown). During creation of the release you must select the dotnet-monitor build to release from the list of available builds. This must be a build with the tag `MonitorRelease` and the associated `MonitorRelease` artifact (set `dotnet-monitor_build` to the pipeline run of `dotnet monitor` that is being released; set `dotnet-monitor_source` to the latest commit from `main`).
+1. **The day of the release** run the [dotnet-dotnet-monitor-publish](https://dev.azure.com/dnceng/internal/_build?definitionId=1444) pipeline. During creation of the release you must select the dotnet-monitor build to release from the list of available builds. This must be a build with the tag `MonitorRelease` and the associated `MonitorRelease` artifact. Set the branch to `main`. Set `DraftRelease` to false when ready to publish.
 1. The release will start the stage "Pre-Release Verification"; this will check that the above steps were done as expected. The name of the release will be updated automatically.
-1. Approve the sign-off step the day before the release after 8:15 AM PT, when ready to publish.
-> [!NOTE]
-> After sign-off of the "Pre-Release Verification" environment the NuGet and GitHub release steps will automatically wait until 8:15 AM PT the next day.
+1. Have the release approved by another team member.
 
 The remainder of the release will automatically push NuGet packages to nuget.org, [tag](https://github.com/dotnet/dotnet-monitor/tags) the commit from the build with the release version, and add a new [GitHub release](https://github.com/dotnet/dotnet-monitor/releases).
 
