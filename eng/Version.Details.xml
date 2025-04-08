@@ -1,8 +1,8 @@
 <Dependencies>
   <ProductDependencies>
-    <Dependency Name="Microsoft.AspNetCore.App.Runtime.win-x64" Version="10.0.0-preview.3.25172.1" CoherentParentDependency="VS.Redist.Common.NetCore.SdkPlaceholder.x64.10.0">
+    <Dependency Name="Microsoft.AspNetCore.App.Runtime.win-x64" Version="10.0.0-preview.4.25207.5" CoherentParentDependency="VS.Redist.Common.NetCore.SdkPlaceholder.x64.10.0">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
-      <Sha>de35e2b0a0d8d5d1e307907983a6838da1092898</Sha>
+      <Sha>8491a278ab03850dbbe3f93a6f304852751c9980</Sha>
     </Dependency>
     <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="9.0.0-preview.25155.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
@@ -46,21 +46,21 @@
       <Uri>https://github.com/dotnet/diagnostics</Uri>
       <Sha>b1037b7cc1ef0b00a9032f19a83b074a00c9a4b8</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.NETCore.App.Runtime.win-x64" Version="10.0.0-preview.3.25171.5" CoherentParentDependency="VS.Redist.Common.NetCore.SdkPlaceholder.x64.10.0">
+    <Dependency Name="Microsoft.NETCore.App.Runtime.win-x64" Version="10.0.0-preview.4.25207.7" CoherentParentDependency="VS.Redist.Common.NetCore.SdkPlaceholder.x64.10.0">
       <Uri>https://github.com/dotnet/runtime</Uri>
-      <Sha>0a33e18a0bccc10a0c4646dbf5b0fc70cbb3aa44</Sha>
+      <Sha>9559b2a8c2961fd72d2e687a2b3f8f148aa33eb5</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.10.0" Version="10.0.0-preview.3.25172.1" CoherentParentDependency="VS.Redist.Common.NetCore.SdkPlaceholder.x64.10.0">
+    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.10.0" Version="10.0.0-preview.4.25207.5" CoherentParentDependency="VS.Redist.Common.NetCore.SdkPlaceholder.x64.10.0">
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
-      <Sha>de35e2b0a0d8d5d1e307907983a6838da1092898</Sha>
+      <Sha>8491a278ab03850dbbe3f93a6f304852751c9980</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.NetCore.SdkPlaceholder.x64.10.0" Version="10.0.100-preview.3.25201.16">
+    <Dependency Name="VS.Redist.Common.NetCore.SdkPlaceholder.x64.10.0" Version="10.0.100-preview.4.25208.22">
       <Uri>https://github.com/dotnet/sdk</Uri>
-      <Sha>9dee3cf508254bc3859d9cd2fe96aeb2ad1b9751</Sha>
+      <Sha>e20d672fcf93502f8a1b88b491488753d069b6ad</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.10.0" Version="10.0.0-preview.3.25171.5" CoherentParentDependency="VS.Redist.Common.NetCore.SdkPlaceholder.x64.10.0">
+    <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.10.0" Version="10.0.0-preview.4.25207.7" CoherentParentDependency="VS.Redist.Common.NetCore.SdkPlaceholder.x64.10.0">
       <Uri>https://github.com/dotnet/runtime</Uri>
-      <Sha>0a33e18a0bccc10a0c4646dbf5b0fc70cbb3aa44</Sha>
+      <Sha>9559b2a8c2961fd72d2e687a2b3f8f148aa33eb5</Sha>
     </Dependency>
   </ToolsetDependencies>
 </Dependencies>
