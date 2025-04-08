@@ -236,7 +236,7 @@ extends:
           displayName: Generate Release
           inputs:
             filePath: $(DRP_RepoRoot)\eng\release\Scripts\GenerateGithubRelease.ps1
-            arguments: -ManifestPath $(DRP_OutputManifestPath) -ReleaseNotes $(DRP_ReleaseNotes) -GhRepository $(DRP_GithubRepo) -GhOrganization $(DRP_GithubOrg) -TagName $(ReleaseVersion) -DraftRelease $(DRP_DraftRelease)
+            arguments: -ManifestPath $(DRP_OutputManifestPath) -ReleaseNotes $(DRP_ReleaseNotes) -GhRepository $(DRP_GithubRepo) -GhOrganization $(DRP_GithubOrg) -TagName $(ReleaseVersion) -DraftRelease $$(DRP_DraftRelease)
             workingDirectory: $(DRP_RepoRoot)
           env:
             GITHUB_TOKEN: $(BotAccount-dotnet-bot-repo-PAT)
