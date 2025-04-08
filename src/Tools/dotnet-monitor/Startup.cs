@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.IO.Compression;
 using System.Text.Json.Serialization;
 using System.Reflection;
+using Microsoft.AspNetCore.Http.Validation.Generated;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -35,7 +36,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 options.SerializerOptions.TypeInfoResolverChain.Add(MonitorJsonSerializerContext.Default);
             });
 
-            services.AddValidation();
+            MyExtensions.AddValidation(services);
 
             services.Configure<ApiBehaviorOptions>(options =>
             {

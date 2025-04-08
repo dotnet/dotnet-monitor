@@ -25,6 +25,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     [JsonSerializable(typeof(IEnumerable<ProcessIdentifier>))]
     [JsonSerializable(typeof(IList<ProcessIdentifier>))]
     [JsonSerializable(typeof(LogsConfiguration))]
+    [JsonSerializable(typeof(MetricsOptions))]
     [JsonSerializable(typeof(OperationStatus))]
     [JsonSerializable(typeof(ProcessInfo))]
     [JsonSerializable(typeof(ProblemDetails))]
