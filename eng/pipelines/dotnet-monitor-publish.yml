@@ -57,7 +57,7 @@ extends:
       variables:
       - group: Release-Pipeline
       jobs:
-      - job: Job_1
+      - job: VerificationJob
         displayName: Release Verification
         condition: succeeded()
         timeoutInMinutes: 0
@@ -104,31 +104,31 @@ extends:
             targetType: inline
             script: |
               # Write your PowerShell commands here.
-              $newReleaseName = "${env:ReleaseVersion}-${env:BUILD_BUILDNUMBER}";
-              if ($(DRP_DraftRelease) -eq "true") {
-                  $newReleaseName += "[Draft]";
+              $newReleaseName = "${env:ReleaseVersion}-${env:BUILD_BUILDNUMBER}"
+              if ("$(DRP_DraftRelease)" -eq "true") {
+                  $newReleaseName += "[Draft]"
               }
-              Write-Host "Setting release name to: $newReleaseName";
-              Write-Host "##vso[build.updatebuildnumber]$newReleaseName";
+              Write-Host "Setting release name to: $newReleaseName"
+              Write-Host "##vso[build.updatebuildnumber]$newReleaseName"
         - task: PowerShell@2
           displayName: Check for Nuget Assets
           inputs:
             targetType: inline
             script: |-
-              $nugetPath = "${env:DRP_MONITORRELEASE}\NugetAssets";
-              Write-Host "Looking for nuget packages under $nugetPath";
+              $nugetPath = "${env:DRP_MONITORRELEASE}\NugetAssets"
+              Write-Host "Looking for nuget packages under $nugetPath"
               if (-not (Test-Path -path $nugetPath)) {
-                  Write-Host "##vso[task.logissue type=error]Can't find file at $nugetPath";
-                  exit 1;
+                  Write-Host "##vso[task.logissue type=error]Can't find file at $nugetPath"
+                  exit 1
               }
               else {
-                  $pkgs = Get-ChildItem -Path "$nugetPath" -Filter "*.nupkg" -Recurse;
-                  $measurePkgs = $pkgs | Measure-Object;
+                  $pkgs = Get-ChildItem -Path "$nugetPath" -Filter "*.nupkg" -Recurse
+                  $measurePkgs = $pkgs | Measure-Object
                   if (${env:Monitor_PublishedPackageCount} -ne $measurePkgs.Count) {
-                      Write-Host "##vso[task.logissue type=error]Expected ${env:Monitor_PublishedPackageCount} .nupkg files, found $($measurePkgs.Count) packages.";
+                      Write-Host "##vso[task.logissue type=error]Expected ${env:Monitor_PublishedPackageCount} .nupkg files, found $($measurePkgs.Count) packages."
                   }
                   else {
-                      Write-Host "Found $($measurePkgs.Count) packages, as expected.";
+                      Write-Host "Found $($measurePkgs.Count) packages, as expected."
                   }
               }
         - task: PowerShell@2
@@ -136,19 +136,20 @@ extends:
           inputs:
             targetType: inline
             script: |-
-              $notesPath = $env:DRP_ReleaseNotes;
-              Write-Host "Looking for release notes at $notesPath";
+              $notesPath = $env:DRP_ReleaseNotes
+              Write-Host "Looking for release notes at $notesPath"
               if (-not (Test-Path -path $notesPath)) {
-                  Write-Host "##vso[task.logissue type=error]Can't find file at $notesPath";
-                  exit 1;
+                  Write-Host "##vso[task.logissue type=error]Can't find file at $notesPath"
+                  exit 1
               }
               else {
-                  $notesContent = Get-Content -Path $notesPath;
-                  Write-Host "Contents of $notesPath :";
-                  Write-Host "$notesContent";
+                  $notesContent = Get-Content -Path $notesPath
+                  Write-Host "Contents of $notesPath :"
+                  Write-Host "$notesContent"
               }
       - job: PostDeploymentApprovalJob
         displayName: Post-Deployment Approval
+        dependsOn: VerificationJob
         condition: succeeded()
         timeoutInMinutes: 0
         pool: server
