@@ -12,7 +12,7 @@
     <MicrosoftExtensionsLoggingConsole100Version>$(MicrosoftNETCoreApp100Version)</MicrosoftExtensionsLoggingConsole100Version>
     <!-- System.Text.Json -->
     <SystemTextJson100Version>$(MicrosoftNETCoreApp100Version)</SystemTextJson100Version>
-    <!-- Microsoft.Extensions.Loggincg.Abstractions -->
-    <MicrosoftExtensionsLoggingAbstractions100Version>10.0.0-preview.4.25180.1</MicrosoftExtensionsLoggingAbstractions100Version>
+    <!-- Microsoft.Extensions.Logging.Abstractions -->
+    <MicrosoftExtensionsLoggingAbstractions100Version>10.0.0-preview.4.25207.7</MicrosoftExtensionsLoggingAbstractions100Version>
   </PropertyGroup>
 </Project>
