@@ -4,6 +4,9 @@
 using Microsoft.AspNetCore.Http.Validation;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Mvc.Testing;
 using System.IO;
 using System.Text.Json;
 using Xunit;
@@ -11,18 +14,24 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
+    public class ExtensionManifestFixture : WebApplicationFactory<Program>
+    {
+    }
+
     [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
-    public sealed class ExtensionManifestTests
+    public sealed class ExtensionManifestTests : IClassFixture<ExtensionManifestFixture>
     {
         private const string ExpectedName = "CustomEgress";
         private const string ExpectedExecutableName = "CustomExecutable";
         private const string ExpectedAssemblyName = "CustomAssembly";
 
         private readonly ITestOutputHelper _outputHelper;
+        private readonly ExtensionManifestFixture _fixture;
 
-        public ExtensionManifestTests(ITestOutputHelper outputHelper)
+        public ExtensionManifestTests(ITestOutputHelper outputHelper, ExtensionManifestFixture fixture)
         {
             _outputHelper = outputHelper;
+            _fixture = fixture;
         }
 
         [Fact]
@@ -92,7 +101,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Null(manifest.AssemblyFileName);
             Assert.Null(manifest.ExecutableFileName);
 
-            ExtensionException ex = Assert.Throws<ExtensionException>(() => manifest.Validate(new Microsoft.AspNetCore.Http.Validation.ValidationOptions()));
+            var validationOptions = _fixture.Services.GetRequiredService<IOptions<ValidationOptions>>().Value;
+            ExtensionException ex = Assert.Throws<ExtensionException>(() => manifest.Validate(validationOptions));
             Assert.Null(ex.InnerException);
         }
 
@@ -106,8 +116,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 using Utf8JsonWriter writer = new(stream);
                 writer.WriteStartObject();
-                writer.WriteString(nameof(ExtensionManifest.Name), ExpectedName);
-                writer.WriteEndObject();
+                writer.WriteString(nameof(ExtensionManifest.Name), ExpectedName);writer.WriteEndObject();
                 writer.Flush();
             }
 
@@ -116,7 +125,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Null(manifest.AssemblyFileName);
             Assert.Null(manifest.ExecutableFileName);
 
-            ExtensionException ex = Assert.Throws<ExtensionException>(() => manifest.Validate(new ValidationOptions()));
+            var validationOptions = _fixture.Services.GetRequiredService<IOptions<ValidationOptions>>().Value;
+            ExtensionException ex = Assert.Throws<ExtensionException>(() => manifest.Validate(validationOptions));
             Assert.Null(ex.InnerException);
         }
 

@@ -20,6 +20,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
     {
     }
 
+    [ValidatableType]
     internal class ExtensionManifest : IValidatableObject
     {
         public const string DefaultFileName = "extension.json";
@@ -96,7 +97,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
                             CultureInfo.InvariantCulture,
                             Strings.ErrorMessage_TwoFieldsCannotBeSpecified,
                             nameof(AssemblyFileName),
-                            nameof(ExecutableFileName))));
+                            nameof(ExecutableFileName)),
+                            [nameof(AssemblyFileName), nameof(ExecutableFileName)]));
             }
 
             if (!hasAssemblyFileName && !hasExecutableFileName)
@@ -107,7 +109,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
                             CultureInfo.InvariantCulture,
                             Strings.ErrorMessage_TwoFieldsMissing,
                             nameof(AssemblyFileName),
-                            nameof(ExecutableFileName))));
+                            nameof(ExecutableFileName)),
+                            [nameof(AssemblyFileName), nameof(ExecutableFileName)]));
             }
 
             return results;

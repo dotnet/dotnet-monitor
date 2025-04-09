@@ -115,8 +115,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 //is not added until WebHostDefaults are added.
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    TestAssemblies.AddHostingStartup(webBuilder);
-
                     // ASP.NET will initially create a configuration that primarily contains
                     // the ASPNETCORE_* environment variables. This IWebHostBuilder configuration callback
                     // is invoked before any of the usual configuration phases (host, app, service, container)

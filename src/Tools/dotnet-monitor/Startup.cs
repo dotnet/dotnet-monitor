@@ -36,8 +36,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 options.SerializerOptions.TypeInfoResolverChain.Add(MonitorJsonSerializerContext.Default);
             });
 
-            MyExtensions.AddValidation(services);
-
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.InvalidModelStateResponseFactory = context =>
