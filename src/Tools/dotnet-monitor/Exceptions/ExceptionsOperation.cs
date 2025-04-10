@@ -218,11 +218,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
             await writer.WriteLineAsync();
             await writer.WriteLineAsync();
 
-#if NET8_0_OR_GREATER
             await writer.FlushAsync(token);
-#else
-            await writer.FlushAsync();
-#endif
         }
 
         // Writes the inner exceptions and stack frames of the current exception:

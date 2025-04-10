@@ -67,34 +67,5 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 ArrayPool<byte>.Shared.Return(otherBuffer);
             }
         }
-
-#if !NET7_0_OR_GREATER
-        public static async ValueTask<int> ReadAtLeastAsync(
-            this Stream stream,
-            Memory<byte> buffer,
-            int minimumBytes,
-            bool throwOnEndOfStream = true,
-            CancellationToken cancellationToken = default)
-        {
-            int totalRead = 0;
-            while (totalRead < minimumBytes)
-            {
-                int read = await stream.ReadAsync(buffer.Slice(totalRead), cancellationToken).ConfigureAwait(false);
-                if (read == 0)
-                {
-                    if (throwOnEndOfStream)
-                    {
-                        throw new EndOfStreamException();
-                    }
-
-                    return totalRead;
-                }
-
-                totalRead += read;
-            }
-
-            return totalRead;
-        }
-#endif
     }
 }

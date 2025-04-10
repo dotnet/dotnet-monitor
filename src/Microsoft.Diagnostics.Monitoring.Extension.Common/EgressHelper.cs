@@ -129,9 +129,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
             // dependency injection.
             services.TryAddSingleton<EgressProvider<TOptions>, TProvider>();
 
-#if NET7_0_OR_GREATER
             services.MakeReadOnly();
-#endif
 
             ServiceProvider serviceProvider = services.BuildServiceProvider();
 
@@ -163,7 +161,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
             }
 
             payloadBuffer = new byte[payloadLengthBuffer];
-            await ReadExactlyAsync(payloadBuffer, token);
+            await StdInStream.ReadExactlyAsync(payloadBuffer, token);
 
             ExtensionEgressPayload configPayload = JsonSerializer.Deserialize<ExtensionEgressPayload>(payloadBuffer);
 
@@ -214,25 +212,6 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
             const int DefaultBufferSize = 0x10000;
 
             await StdInStream.CopyToAsync(outputStream, DefaultBufferSize, cancellationToken);
-        }
-
-        private static async Task ReadExactlyAsync(Memory<byte> buffer, CancellationToken token)
-        {
-#if NET7_0_OR_GREATER
-            await StdInStream.ReadExactlyAsync(buffer, token);
-#else
-            int totalRead = 0;
-            while (totalRead < buffer.Length)
-            {
-                int read = await StdInStream.ReadAsync(buffer.Slice(totalRead), token).ConfigureAwait(false);
-                if (read == 0)
-                {
-                    throw new EndOfStreamException();
-                }
-
-                totalRead += read;
-            }
-#endif
         }
     }
 
