@@ -94,14 +94,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             await ExceptionsJsonTest(targetArchitecture, true);
         }
 
-#if NET8_0_OR_GREATER
         [Theory]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public async Task ExceptionsWithoutEnvVarJsonTest(Architecture targetArchitecture)
         {
             await ExceptionsJsonTest(targetArchitecture, false);
         }
-#endif
 
         private async Task ExceptionsJsonTest(Architecture targetArchitecture, bool enableStartupHook)
         {
