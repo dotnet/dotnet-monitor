@@ -14,7 +14,6 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IO;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -58,12 +57,6 @@ namespace CollectionRuleActions.UnitTests
 
         private async Task CollectDumpAction_SuccessCore(TargetFrameworkMoniker tfm, DumpType dumpType, string artifactName = null)
         {
-            // MacOS dumps inconsistently segfault the runtime on .NET 5: https://github.com/dotnet/dotnet-monitor/issues/174
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && tfm == TargetFrameworkMoniker.Net50)
-            {
-                return;
-            }
-
             using TemporaryDirectory tempDirectory = new(_outputHelper);
 
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>

@@ -80,7 +80,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
             public static class SubScenarios
             {
-#if NET7_0_OR_GREATER
                 /* Probe management */
                 public const string ProbeInstallation = nameof(ProbeInstallation);
                 public const string ProbeUninstallation = nameof(ProbeUninstallation);
@@ -115,9 +114,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
                 /* Self tests */
                 public const string AssertsInProbesAreCaught = nameof(AssertsInProbesAreCaught);
-#else // NET7_0_OR_GREATER
-                public const string ValidateNoMutatingProfiler = nameof(ValidateNoMutatingProfiler);
-#endif // NET7_0_OR_GREATER
             }
         }
 

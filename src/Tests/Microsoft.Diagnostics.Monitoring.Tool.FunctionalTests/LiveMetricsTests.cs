@@ -361,7 +361,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
-#if NET8_0_OR_GREATER
         [Fact]
         public async Task TestSystemDiagnosticsMetrics_MeterInstrumentTags()
         {
@@ -442,6 +441,5 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     });
                 });
         }
-#endif
     }
 }

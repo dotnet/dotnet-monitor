@@ -4,9 +4,6 @@
 using Microsoft.Extensions.Configuration;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-#if !NET7_0_OR_GREATER
-using System.Reflection;
-#endif
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -65,20 +62,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private static bool TryGetInnerConfiguration(this ChainedConfigurationProvider provider, out IConfiguration configuration)
         {
-#if NET7_0_OR_GREATER
             configuration = provider.Configuration;
             return true;
-#else
-            FieldInfo configField = provider.GetType().GetField("_config", BindingFlags.NonPublic | BindingFlags.Instance);
-            if (null != configField)
-            {
-                configuration = configField.GetValue(provider) as IConfiguration;
-                return null != configuration;
-            }
-
-            configuration = null;
-            return false;
-#endif
         }
     }
 }
