@@ -22,27 +22,13 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
     {
         private static TargetFrameworkMoniker[] tfmsToTest =
         [
-            TargetFrameworkMoniker.Net70,
-            TargetFrameworkMoniker.Net80
-        ];
-
-        private static TargetFrameworkMoniker[] tfms7PlusToTest =
-        [
-            TargetFrameworkMoniker.Net70,
-            TargetFrameworkMoniker.Net80
+            TargetFrameworkMoniker.Net80,
+            TargetFrameworkMoniker.Net90,
         ];
 
         public static IEnumerable<object[]> GetTfms()
         {
             foreach (TargetFrameworkMoniker tfm in tfmsToTest)
-            {
-                yield return new object[] { tfm };
-            }
-        }
-
-        public static IEnumerable<object[]> Get7PlusTfms()
-        {
-            foreach (TargetFrameworkMoniker tfm in tfms7PlusToTest)
             {
                 yield return new object[] { tfm };
             }
@@ -65,20 +51,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             foreach (TargetFrameworkMoniker tfm in tfmsToTest)
             {
                 yield return new object[] { tfm, DumpType.Full };
-                // Capturing non-full dumps via diagnostic command works inconsistently
-                // on Alpine for .NET 5 and lower (the dump command will return successfully, but)
-                // the dump file will not exist). Only test other dump types on .NET 6+
-                if (!DistroInformation.IsAlpineLinux
-                    || tfm == TargetFrameworkMoniker.Net60
-                    || tfm == TargetFrameworkMoniker.Net70
-                    || tfm == TargetFrameworkMoniker.Net80
-                    || tfm == TargetFrameworkMoniker.Net90
-                    || tfm == TargetFrameworkMoniker.Net100)
-                {
-                    yield return new object[] { tfm, DumpType.WithHeap };
-                    yield return new object[] { tfm, DumpType.Triage };
-                    yield return new object[] { tfm, DumpType.Mini };
-                }
+                yield return new object[] { tfm, DumpType.WithHeap };
+                yield return new object[] { tfm, DumpType.Triage };
+                yield return new object[] { tfm, DumpType.Mini };
             }
         }
 
@@ -108,7 +83,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 string profilerPath = ProfilerHelper.GetPath(architecture);
                 if (File.Exists(profilerPath))
                 {
-                    foreach (TargetFrameworkMoniker tfm in ActionTestsHelper.tfms7PlusToTest)
+                    foreach (TargetFrameworkMoniker tfm in tfmsToTest)
                     {
                         arguments.Add(new object[] { tfm, architecture, profilerPath });
                     }

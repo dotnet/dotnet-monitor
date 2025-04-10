@@ -15,17 +15,9 @@
 
   <PropertyGroup>
     <DotNetHostGeneratedFileName>$(IntermediateOutputPath)/$(TargetFramework)/TestDotNetHost.g.cs</DotNetHostGeneratedFileName>
-    <NetCoreAppVersion Condition="'$(TargetFramework)' == 'netcoreapp3.1'">$(MicrosoftNETCoreApp31Version)</NetCoreAppVersion>
-    <NetCoreAppVersion Condition="'$(TargetFramework)' == 'net5.0'">$(MicrosoftNETCoreApp50Version)</NetCoreAppVersion>
-    <NetCoreAppVersion Condition="'$(TargetFramework)' == 'net6.0'">$(MicrosoftNETCoreApp60Version)</NetCoreAppVersion>
-    <NetCoreAppVersion Condition="'$(TargetFramework)' == 'net7.0'">$(MicrosoftNETCoreApp70Version)</NetCoreAppVersion>
     <NetCoreAppVersion Condition="'$(TargetFramework)' == 'net8.0'">$(MicrosoftNETCoreApp80Version)</NetCoreAppVersion>
     <NetCoreAppVersion Condition="'$(TargetFramework)' == 'net9.0'">$(MicrosoftNETCoreApp90Version)</NetCoreAppVersion>
     <NetCoreAppVersion Condition="'$(TargetFramework)' == 'net10.0'">$(MicrosoftNETCoreApp100Version)</NetCoreAppVersion>
-    <AspNetCoreAppVersion Condition="'$(TargetFramework)' == 'netcoreapp3.1'">$(MicrosoftAspNetCoreApp31Version)</AspNetCoreAppVersion>
-    <AspNetCoreAppVersion Condition="'$(TargetFramework)' == 'net5.0'">$(MicrosoftAspNetCoreApp50Version)</AspNetCoreAppVersion>
-    <AspNetCoreAppVersion Condition="'$(TargetFramework)' == 'net6.0'">$(MicrosoftAspNetCoreApp60Version)</AspNetCoreAppVersion>
-    <AspNetCoreAppVersion Condition="'$(TargetFramework)' == 'net7.0'">$(MicrosoftAspNetCoreApp70Version)</AspNetCoreAppVersion>
     <AspNetCoreAppVersion Condition="'$(TargetFramework)' == 'net8.0'">$(MicrosoftAspNetCoreApp80Version)</AspNetCoreAppVersion>
     <AspNetCoreAppVersion Condition="'$(TargetFramework)' == 'net9.0'">$(MicrosoftAspNetCoreApp90Version)</AspNetCoreAppVersion>
     <AspNetCoreAppVersion Condition="'$(TargetFramework)' == 'net10.0'">$(MicrosoftAspNetCoreApp100Version)</AspNetCoreAppVersion>
@@ -89,38 +81,6 @@
       For each target framework, copy and modify the version for NETCore and AspNetCore; include any remaining
       frameworks that are not forcibly re-versioned.
       -->
-    <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">
-      <_TestRuntimeFramework Include="@(RuntimeFramework)" Condition=" '%(Identity)' == 'Microsoft.NETCore.App' ">
-        <Version>$(MicrosoftNETCoreApp31Version)</Version>
-      </_TestRuntimeFramework>
-      <_TestRuntimeFramework Include="@(RuntimeFramework)" Condition=" '%(Identity)' == 'Microsoft.AspNetCore.App' ">
-        <Version>$(MicrosoftAspNetCoreApp31Version)</Version>
-      </_TestRuntimeFramework>
-    </ItemGroup>
-    <ItemGroup Condition=" '$(TargetFramework)' == 'net5.0' ">
-      <_TestRuntimeFramework Include="@(RuntimeFramework)" Condition=" '%(Identity)' == 'Microsoft.NETCore.App' ">
-        <Version>$(MicrosoftNETCoreApp50Version)</Version>
-      </_TestRuntimeFramework>
-      <_TestRuntimeFramework Include="@(RuntimeFramework)" Condition=" '%(Identity)' == 'Microsoft.AspNetCore.App' ">
-        <Version>$(MicrosoftAspNetCoreApp50Version)</Version>
-      </_TestRuntimeFramework>
-    </ItemGroup>
-    <ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
-      <_TestRuntimeFramework Include="@(RuntimeFramework)" Condition=" '%(Identity)' == 'Microsoft.NETCore.App' ">
-        <Version>$(MicrosoftNETCoreApp60Version)</Version>
-      </_TestRuntimeFramework>
-      <_TestRuntimeFramework Include="@(RuntimeFramework)" Condition=" '%(Identity)' == 'Microsoft.AspNetCore.App' ">
-        <Version>$(MicrosoftAspNetCoreApp60Version)</Version>
-      </_TestRuntimeFramework>
-    </ItemGroup>
-    <ItemGroup Condition=" '$(TargetFramework)' == 'net7.0' ">
-      <_TestRuntimeFramework Include="@(RuntimeFramework)" Condition=" '%(Identity)' == 'Microsoft.NETCore.App' ">
-        <Version>$(MicrosoftNETCoreApp70Version)</Version>
-      </_TestRuntimeFramework>
-      <_TestRuntimeFramework Include="@(RuntimeFramework)" Condition=" '%(Identity)' == 'Microsoft.AspNetCore.App' ">
-        <Version>$(MicrosoftAspNetCoreApp70Version)</Version>
-      </_TestRuntimeFramework>
-    </ItemGroup>
     <ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">
       <_TestRuntimeFramework Include="@(RuntimeFramework)" Condition=" '%(Identity)' == 'Microsoft.NETCore.App' ">
         <Version>$(MicrosoftNETCoreApp80Version)</Version>
