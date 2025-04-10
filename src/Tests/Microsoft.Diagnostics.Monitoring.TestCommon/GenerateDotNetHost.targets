@@ -10,6 +10,7 @@
     <DotNetHostGeneratedFileName>$(IntermediateOutputPath)/$(TargetFramework)/TestDotNetHost.g.cs</DotNetHostGeneratedFileName>
     <NetCoreAppVersion Condition="'$(TargetFramework)' == 'net8.0'">$(MicrosoftNETCoreApp80Version)</NetCoreAppVersion>
     <NetCoreAppVersion Condition="'$(TargetFramework)' == 'net9.0'">$(MicrosoftNETCoreApp90Version)</NetCoreAppVersion>
+    <NetCoreAppVersion Condition="'$(TargetFramework)' == '10.0'">$(MicrosoftNETCoreApp100Version)</NetCoreAppVersion>
     <AspNetCoreAppVersion Condition="'$(TargetFramework)' == 'net8.0'">$(MicrosoftAspNetCoreApp80Version)</AspNetCoreAppVersion>
     <AspNetCoreAppVersion Condition="'$(TargetFramework)' == 'net9.0'">$(MicrosoftAspNetCoreApp90Version)</AspNetCoreAppVersion>
     <AspNetCoreAppVersion Condition="'$(TargetFramework)' == 'net10.0'">$(MicrosoftAspNetCoreApp100Version)</AspNetCoreAppVersion>
