@@ -160,26 +160,12 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
         private async Task ReadLinesAsync(StreamReader reader, List<string> lines, Action<string> callback, CancellationToken cancelToken)
         {
-#if !NET7_0_OR_GREATER
-            // Closing the reader to cancel the async await will dispose the underlying stream.
-            // Technically, this means the reader/stream cannot be used after canceling reading of lines
-            // from the process, but this is probably okay since the adapter is already logging each line
-            // and providing a callback to callers to read each line. It's unlikely the reader/stream will
-            // be accessed after this adapter is disposed.
-            using var cancelReg = cancelToken.Register(reader.Close);
-#endif
-
             try
             {
                 bool readAborted = false;
                 while (!_finishReads)
                 {
-#if NET7_0_OR_GREATER
                     string line = await reader.ReadLineAsync(cancelToken).ConfigureAwait(false);
-#else
-                    // ReadLineAsync does not have cancellation in 6.0 or lower
-                    string line = await reader.ReadLineAsync().ConfigureAwait(false);
-#endif
 
                     if (null == line)
                     {
@@ -195,12 +181,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                 // stream if readAborted is not set. This is so we can ensure that the entire stream is read.
                 if (!readAborted && _finishReads)
                 {
-#if NET7_0_OR_GREATER
                     string remainder = await reader.ReadToEndAsync(cancelToken).ConfigureAwait(false);
-#else
-                    // ReadToEndAsync does not have cancellation in 6.0 or lower
-                    string remainder = await reader.ReadToEndAsync().ConfigureAwait(false);
-#endif
+
                     foreach (string line in remainder.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None))
                     {
                         lines.Add(line);

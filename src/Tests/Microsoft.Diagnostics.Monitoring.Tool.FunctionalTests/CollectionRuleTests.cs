@@ -72,7 +72,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
-#if NET8_0_OR_GREATER
         /// <summary>
         /// Validates that a startup rule will execute and complete without action beyond
         /// discovering the target process.
@@ -111,7 +110,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     ruleCompletedTask = runner.WaitForCollectionRuleCompleteAsync(DefaultRuleName);
                 });
         }
-#endif
 
         /// <summary>
         /// Validates that a non-startup rule will complete when it has an action limit specified
@@ -291,7 +289,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
-#if NET8_0_OR_GREATER
         /// <summary>
         /// Validates that a collection rule with a managed entry point assembly name filter can be matched to the
         /// target process.
@@ -353,7 +350,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     filteredTask = runner.WaitForCollectionRuleUnmatchedFiltersAsync(DefaultRuleName);
                 });
         }
-#endif
 
         /// <summary>
         /// Validates that a change in the collection rule configuration is detected and applied correctly.

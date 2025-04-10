@@ -3,29 +3,21 @@
     "dotnet": "10.0.100-preview.3.25178.6",
     "runtimes": {
       "aspnetcore": [
-        "$(MicrosoftAspNetCoreApp60Version)",
-        "$(MicrosoftAspNetCoreApp70Version)",
         "$(MicrosoftAspNetCoreApp80Version)",
         "$(MicrosoftAspNetCoreApp90Version)",
         "$(MicrosoftAspNetCoreApp100Version)"
       ],
       "aspnetcore/x86": [
-        "$(MicrosoftAspNetCoreApp60Version)",
-        "$(MicrosoftAspNetCoreApp70Version)",
         "$(MicrosoftAspNetCoreApp80Version)",
         "$(MicrosoftAspNetCoreApp90Version)",
         "$(MicrosoftAspNetCoreApp100Version)"
       ],
       "dotnet": [
-        "$(MicrosoftNETCoreApp60Version)",
-        "$(MicrosoftNETCoreApp70Version)",
         "$(MicrosoftNETCoreApp80Version)",
         "$(MicrosoftNETCoreApp90Version)",
         "$(MicrosoftNETCoreApp100Version)"
       ],
       "dotnet/x86": [
-        "$(MicrosoftNETCoreApp60Version)",
-        "$(MicrosoftNETCoreApp70Version)",
         "$(MicrosoftNETCoreApp80Version)",
         "$(MicrosoftNETCoreApp90Version)",
         "$(MicrosoftNETCoreApp100Version)"

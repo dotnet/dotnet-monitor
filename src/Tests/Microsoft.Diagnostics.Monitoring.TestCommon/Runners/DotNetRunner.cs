@@ -165,15 +165,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
 
             if (StopOnParentExit)
             {
-                int pid;
-#if NET5_0_OR_GREATER
-                pid = System.Environment.ProcessId;
-#else
-                using (Process process = Process.GetCurrentProcess())
-                {
-                    pid = process.Id;
-                }
-#endif
+                int pid = System.Environment.ProcessId;
+
                 Environment.Add(TestProcessCleanupIdentifiers.EnvironmentVariables.ParentPid, pid.ToString(CultureInfo.InvariantCulture));
 
                 if (Environment.TryGetValue(ToolIdentifiers.EnvironmentVariables.StartupHooks, out string startupHooks) &&
