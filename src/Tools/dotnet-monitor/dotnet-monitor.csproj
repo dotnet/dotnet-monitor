@@ -15,7 +15,6 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <!-- <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles> -->
     <DisableCompileTimeOpenApiXmlGenerator>true</DisableCompileTimeOpenApiXmlGenerator>
-    <PublishTrimmed>true</PublishTrimmed>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
     <InterceptorsNamespaces>$(InterceptorsNamespaces);Microsoft.AspNetCore.Http.Validation.Generated</InterceptorsNamespaces>
