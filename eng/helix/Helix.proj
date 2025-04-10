@@ -127,12 +127,6 @@
 
   <!-- Correlation Payload: AspNetCore (these packages also contain corresponding NetCoreApp version) -->
   <ItemGroup>
-    <AdditionalDotNetPackage Include="$(MicrosoftAspNetCoreApp60Version)">
-      <PackageType>aspnetcore-runtime</PackageType>
-    </AdditionalDotNetPackage>
-    <AdditionalDotNetPackage Include="$(MicrosoftAspNetCoreApp70Version)">
-      <PackageType>aspnetcore-runtime</PackageType>
-    </AdditionalDotNetPackage>
     <AdditionalDotNetPackage Include="$(MicrosoftAspNetCoreApp80Version)">
       <PackageType>aspnetcore-runtime</PackageType>
     </AdditionalDotNetPackage>

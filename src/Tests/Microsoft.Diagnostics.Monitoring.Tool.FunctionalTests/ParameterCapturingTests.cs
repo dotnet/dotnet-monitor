@@ -47,7 +47,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             _tempDirectory = new(outputHelper);
         }
 
-#if NET7_0_OR_GREATER
         [Theory]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public async Task UnresolvableMethodsFailsOperation(Architecture targetArchitecture)
@@ -96,26 +95,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         public Task CapturesParametersAndOutputNewlineDelimitedJson(Architecture targetArchitecture) =>
             CapturesParametersCore(TestAppScenarios.ParameterCapturing.SubScenarios.AspNetApp, targetArchitecture, CapturedParameterFormat.NewlineDelimitedJson, shouldSuspendTargetApp: true, enableStartupHook: true);
 
-#if NET8_0_OR_GREATER
         [Theory]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public Task CapturesParametersNoSuspend(Architecture targetArchitecture) =>
             CapturesParametersCore(TestAppScenarios.ParameterCapturing.SubScenarios.AspNetApp, targetArchitecture, CapturedParameterFormat.JsonSequence, shouldSuspendTargetApp: false, enableStartupHook: false);
 
-#endif // NET8_0_OR_GREATER
-
         [Theory]
         [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
         public Task AppWithStartupHookFailsInNoSuspend(Architecture targetArchitecture) =>
             ValidateBadRequestFailure(TestAppScenarios.ParameterCapturing.SubScenarios.AspNetApp, targetArchitecture, shouldSuspendTargetApp: false, enableStartupHook: true);
-
-#else // NET7_0_OR_GREATER
-        [Theory]
-        [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
-        public Task Net6AppFailsOperation(Architecture targetArchitecture) =>
-            ValidateBadRequestFailure(TestAppScenarios.ParameterCapturing.SubScenarios.AspNetApp, targetArchitecture, shouldSuspendTargetApp: true, enableStartupHook: true);
-
-#endif // NET7_0_OR_GREATER
 
         private async Task CapturesParametersCore(
             string subScenarioName,
