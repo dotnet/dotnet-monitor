@@ -19,8 +19,8 @@
 #@   return [
 #@     struct.encode({"name": "main", "majorVersion": "8"}),
 #@     struct.encode({"name": "release/9.x", "majorVersion": "9"}),
+#@     struct.encode({"name": "release/9.0", "majorVersion": "9"}),
 #@     struct.encode({"name": "release/8.x", "majorVersion": "8"}),
-#@     struct.encode({"name": "release/8.0", "majorVersion": "8"}),
 #@   ]
 #@ end
 
