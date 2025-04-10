@@ -1,6 +1,6 @@
 ﻿<Project>
 
-  <!-- 
+  <!--
     DotNetHostGeneratedFileName, GenerateDotNetHostSourceFile, and InjectDotNetHostSourceFile are used for injecting the value of the
     Microsoft.NETCore.App version into csharp code so that it can be used by testing harnesses for running tests under a specific
     runtime version. This specifically allows tests to run on a version of the runtime besides whatever was included with Arcade's SDK.
@@ -8,16 +8,8 @@
 
   <PropertyGroup>
     <DotNetHostGeneratedFileName>$(IntermediateOutputPath)/$(TargetFramework)/TestDotNetHost.g.cs</DotNetHostGeneratedFileName>
-    <NetCoreAppVersion Condition="'$(TargetFramework)' == 'netcoreapp3.1'">$(MicrosoftNETCoreApp31Version)</NetCoreAppVersion>
-    <NetCoreAppVersion Condition="'$(TargetFramework)' == 'net5.0'">$(MicrosoftNETCoreApp50Version)</NetCoreAppVersion>
-    <NetCoreAppVersion Condition="'$(TargetFramework)' == 'net6.0'">$(MicrosoftNETCoreApp60Version)</NetCoreAppVersion>
-    <NetCoreAppVersion Condition="'$(TargetFramework)' == 'net7.0'">$(MicrosoftNETCoreApp70Version)</NetCoreAppVersion>
     <NetCoreAppVersion Condition="'$(TargetFramework)' == 'net8.0'">$(MicrosoftNETCoreApp80Version)</NetCoreAppVersion>
     <NetCoreAppVersion Condition="'$(TargetFramework)' == 'net9.0'">$(MicrosoftNETCoreApp90Version)</NetCoreAppVersion>
-    <AspNetCoreAppVersion Condition="'$(TargetFramework)' == 'netcoreapp3.1'">$(MicrosoftAspNetCoreApp31Version)</AspNetCoreAppVersion>
-    <AspNetCoreAppVersion Condition="'$(TargetFramework)' == 'net5.0'">$(MicrosoftAspNetCoreApp50Version)</AspNetCoreAppVersion>
-    <AspNetCoreAppVersion Condition="'$(TargetFramework)' == 'net6.0'">$(MicrosoftAspNetCoreApp60Version)</AspNetCoreAppVersion>
-    <AspNetCoreAppVersion Condition="'$(TargetFramework)' == 'net7.0'">$(MicrosoftAspNetCoreApp70Version)</AspNetCoreAppVersion>
     <AspNetCoreAppVersion Condition="'$(TargetFramework)' == 'net8.0'">$(MicrosoftAspNetCoreApp80Version)</AspNetCoreAppVersion>
     <AspNetCoreAppVersion Condition="'$(TargetFramework)' == 'net9.0'">$(MicrosoftAspNetCoreApp90Version)</AspNetCoreAppVersion>
   </PropertyGroup>
@@ -27,16 +19,8 @@
       <TemplateContent>$([System.IO.File]::ReadAllText('TestDotNetHost.cs.template'))</TemplateContent>
       <TransformedContent>$(TemplateContent.Replace('$MicrosoftNetCoreAppVersion$', '$(NetCoreAppVersion)'))</TransformedContent>
       <TransformedContent>$(TransformedContent.Replace('$MicrosoftAspNetCoreAppVersion$', '$(AspNetCoreAppVersion)'))</TransformedContent>
-      <TransformedContent>$(TransformedContent.Replace('$MicrosoftNetCoreApp31Version$', '$(MicrosoftNETCoreApp31Version)'))</TransformedContent>
-      <TransformedContent>$(TransformedContent.Replace('$MicrosoftNetCoreApp50Version$', '$(MicrosoftNETCoreApp50Version)'))</TransformedContent>
-      <TransformedContent>$(TransformedContent.Replace('$MicrosoftNetCoreApp60Version$', '$(MicrosoftNETCoreApp60Version)'))</TransformedContent>
-      <TransformedContent>$(TransformedContent.Replace('$MicrosoftNetCoreApp70Version$', '$(MicrosoftNETCoreApp70Version)'))</TransformedContent>
       <TransformedContent>$(TransformedContent.Replace('$MicrosoftNetCoreApp80Version$', '$(MicrosoftNETCoreApp80Version)'))</TransformedContent>
       <TransformedContent>$(TransformedContent.Replace('$MicrosoftNetCoreApp90Version$', '$(MicrosoftNETCoreApp90Version)'))</TransformedContent>
-      <TransformedContent>$(TransformedContent.Replace('$MicrosoftAspNetCoreApp31Version$', '$(MicrosoftAspNetCoreApp31Version)'))</TransformedContent>
-      <TransformedContent>$(TransformedContent.Replace('$MicrosoftAspNetCoreApp50Version$', '$(MicrosoftAspNetCoreApp50Version)'))</TransformedContent>
-      <TransformedContent>$(TransformedContent.Replace('$MicrosoftAspNetCoreApp60Version$', '$(MicrosoftAspNetCoreApp60Version)'))</TransformedContent>
-      <TransformedContent>$(TransformedContent.Replace('$MicrosoftAspNetCoreApp70Version$', '$(MicrosoftAspNetCoreApp70Version)'))</TransformedContent>
       <TransformedContent>$(TransformedContent.Replace('$MicrosoftAspNetCoreApp80Version$', '$(MicrosoftAspNetCoreApp80Version)'))</TransformedContent>
       <TransformedContent>$(TransformedContent.Replace('$MicrosoftAspNetCoreApp90Version$', '$(MicrosoftAspNetCoreApp90Version)'))</TransformedContent>
     </PropertyGroup>

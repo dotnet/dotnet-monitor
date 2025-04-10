@@ -37,11 +37,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Stacks
                 await writer.WriteLineAsync();
             }
 
-#if NET8_0_OR_GREATER
             await writer.FlushAsync(token);
-#else
-            await writer.FlushAsync();
-#endif
         }
 
         /// <returns>True if the frame should be included in the stack trace.</returns>

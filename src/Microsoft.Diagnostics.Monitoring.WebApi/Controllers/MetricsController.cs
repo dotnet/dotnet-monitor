@@ -12,9 +12,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
     [Route("")]
     [ApiController]
-#if NETCOREAPP3_1_OR_GREATER
     [ProducesErrorResponseType(typeof(ValidationProblemDetails))]
-#endif
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public class MetricsController : ControllerBase
     {
