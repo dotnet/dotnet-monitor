@@ -98,7 +98,7 @@
         {
             "label": "Regenerate dependabot.yml",
             "type": "shell",
-            "command": "C:\\Users\\jander\\Downloads\\ytt-windows-amd64.exe",
+            "command": "ytt",
             "args": [
                 "-f",
                 ".github/dependabot.template.yml",
