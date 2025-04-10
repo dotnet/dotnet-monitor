@@ -42,7 +42,7 @@ namespace CollectionRuleActions.UnitTests
         /// The required APIs only exist on .NET 6.0+
         /// </remarks>
         [Theory]
-        [MemberData(nameof(ActionTestsHelper.Get7PlusTfms), MemberType = typeof(ActionTestsHelper))]
+        [MemberData(nameof(ActionTestsHelper.GetTfms), MemberType = typeof(ActionTestsHelper))]
         public async Task TestSetEnvVar(TargetFrameworkMoniker tfm)
         {
             await TestHostHelper.CreateCollectionRulesHost(
@@ -89,7 +89,7 @@ namespace CollectionRuleActions.UnitTests
         /// The required APIs only exist on .NET 6.0+
         /// </remarks>
         [Theory]
-        [MemberData(nameof(ActionTestsHelper.Get7PlusTfms), MemberType = typeof(ActionTestsHelper))]
+        [MemberData(nameof(ActionTestsHelper.GetTfms), MemberType = typeof(ActionTestsHelper))]
         public async Task TestGetEnvVar(TargetFrameworkMoniker tfm)
         {
             const string VariableDoesNotExist = "SomeEnvVarThatIsNotSet";
@@ -149,14 +149,14 @@ namespace CollectionRuleActions.UnitTests
         }
 
         /// <summary>
-        /// Test that the <see cref="SetEnvironmentVariableActionFactory.SetEnvironmentVariableAction"/> to 
+        /// Test that the <see cref="SetEnvironmentVariableActionFactory.SetEnvironmentVariableAction"/> to
         /// <see cref="GetEnvironmentVariableActionFactory.GetEnvironmentVariableAction"/> round trip works correctly.
         /// </summary>
         /// <remarks>
         /// The required APIs only exist on .NET 6.0+
         /// </remarks>
         [Theory]
-        [MemberData(nameof(ActionTestsHelper.Get7PlusTfms), MemberType = typeof(ActionTestsHelper))]
+        [MemberData(nameof(ActionTestsHelper.GetTfms), MemberType = typeof(ActionTestsHelper))]
         public async Task TestEnvVarRoundTrip(TargetFrameworkMoniker tfm)
         {
             await TestHostHelper.CreateCollectionRulesHost(

@@ -27,7 +27,6 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
         {
             Command scenarioCommand = new(TestAppScenarios.FunctionProbes.Name);
 
-#if NET7_0_OR_GREATER
             Dictionary<string, TestCaseAsync> testCases = new()
             {
                 /* Probe management */
@@ -83,11 +82,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios.FunctionProbes
 
                 scenarioCommand.Subcommands.Add(testCaseCommand);
             }
-#else // NET7_0_OR_GREATER
-            Command validateNoMutatingProfilerCommand = new(TestAppScenarios.FunctionProbes.SubScenarios.ValidateNoMutatingProfiler);
-            validateNoMutatingProfilerCommand.SetAction(ValidateNoMutatingProfilerAsync);
-            scenarioCommand.Subcommands.Add(validateNoMutatingProfilerCommand);
-#endif // NET7_0_OR_GREATER
+
             return scenarioCommand;
         }
 

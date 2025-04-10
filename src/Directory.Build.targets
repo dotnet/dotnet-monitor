@@ -71,38 +71,6 @@
       For each target framework, copy and modify the version for NETCore and AspNetCore; include any remaining
       frameworks that are not forcibly re-versioned.
       -->
-    <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">
-      <_TestRuntimeFramework Include="@(RuntimeFramework)" Condition=" '%(Identity)' == 'Microsoft.NETCore.App' ">
-        <Version>$(MicrosoftNETCoreApp31Version)</Version>
-      </_TestRuntimeFramework>
-      <_TestRuntimeFramework Include="@(RuntimeFramework)" Condition=" '%(Identity)' == 'Microsoft.AspNetCore.App' ">
-        <Version>$(MicrosoftAspNetCoreApp31Version)</Version>
-      </_TestRuntimeFramework>
-    </ItemGroup>
-    <ItemGroup Condition=" '$(TargetFramework)' == 'net5.0' ">
-      <_TestRuntimeFramework Include="@(RuntimeFramework)" Condition=" '%(Identity)' == 'Microsoft.NETCore.App' ">
-        <Version>$(MicrosoftNETCoreApp50Version)</Version>
-      </_TestRuntimeFramework>
-      <_TestRuntimeFramework Include="@(RuntimeFramework)" Condition=" '%(Identity)' == 'Microsoft.AspNetCore.App' ">
-        <Version>$(MicrosoftAspNetCoreApp50Version)</Version>
-      </_TestRuntimeFramework>
-    </ItemGroup>
-    <ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
-      <_TestRuntimeFramework Include="@(RuntimeFramework)" Condition=" '%(Identity)' == 'Microsoft.NETCore.App' ">
-        <Version>$(MicrosoftNETCoreApp60Version)</Version>
-      </_TestRuntimeFramework>
-      <_TestRuntimeFramework Include="@(RuntimeFramework)" Condition=" '%(Identity)' == 'Microsoft.AspNetCore.App' ">
-        <Version>$(MicrosoftAspNetCoreApp60Version)</Version>
-      </_TestRuntimeFramework>
-    </ItemGroup>
-    <ItemGroup Condition=" '$(TargetFramework)' == 'net7.0' ">
-      <_TestRuntimeFramework Include="@(RuntimeFramework)" Condition=" '%(Identity)' == 'Microsoft.NETCore.App' ">
-        <Version>$(MicrosoftNETCoreApp70Version)</Version>
-      </_TestRuntimeFramework>
-      <_TestRuntimeFramework Include="@(RuntimeFramework)" Condition=" '%(Identity)' == 'Microsoft.AspNetCore.App' ">
-        <Version>$(MicrosoftAspNetCoreApp70Version)</Version>
-      </_TestRuntimeFramework>
-    </ItemGroup>
     <ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">
       <_TestRuntimeFramework Include="@(RuntimeFramework)" Condition=" '%(Identity)' == 'Microsoft.NETCore.App' ">
         <Version>$(MicrosoftNETCoreApp80Version)</Version>
