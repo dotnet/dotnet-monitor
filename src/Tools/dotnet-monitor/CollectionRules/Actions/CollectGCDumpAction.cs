@@ -4,9 +4,11 @@
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using System;
-using System.ComponentModel.DataAnnotations;
 using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
+using Microsoft.AspNetCore.Http.Validation;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 {
@@ -14,10 +16,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         ICollectionRuleActionFactory<CollectGCDumpOptions>
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly ValidationOptions _validationOptions;
 
         public CollectGCDumpActionFactory(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+            _validationOptions = serviceProvider.GetRequiredService<IOptions<ValidationOptions>>().Value;
         }
 
         public ICollectionRuleAction Create(IProcessInfo processInfo, CollectGCDumpOptions options)
@@ -26,9 +30,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             {
                 throw new ArgumentNullException(nameof(options));
             }
-
-            ValidationContext context = new(options, _serviceProvider, items: null);
-            Validator.ValidateObject(options, context, validateAllProperties: true);
+            ValidationHelper.ValidateObject(options, typeof(CollectGCDumpOptions), _validationOptions);
 
             return new CollectGCDumpAction(_serviceProvider, processInfo, options);
         }

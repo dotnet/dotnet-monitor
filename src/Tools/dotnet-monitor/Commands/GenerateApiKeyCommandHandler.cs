@@ -12,6 +12,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Commands
 {
@@ -48,7 +49,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                     Authentication = opts.Authentication,
                     AuthorizationHeader = $"{AuthConstants.ApiKeySchema} {newJwt.Token}" // This is the actual format of the HTTP header and should not be localized
                 };
-                outputBldr.AppendLine(JsonSerializer.Serialize(result, result.GetType(), new JsonSerializerOptions() { WriteIndented = true }));
+                outputBldr.AppendLine(JsonSerializer.Serialize(result, MachineOutputFormatContext.Default.MachineOutputFormat));
             }
             else
             {
@@ -144,5 +145,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
             public required AuthenticationOptions Authentication { get; set; }
             public required string AuthorizationHeader { get; set; }
         }
+    }
+
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(GenerateApiKeyCommandHandler.MachineOutputFormat))]
+    internal partial class MachineOutputFormatContext : JsonSerializerContext
+    {
     }
 }

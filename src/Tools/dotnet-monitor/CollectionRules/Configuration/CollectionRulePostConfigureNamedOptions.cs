@@ -3,6 +3,7 @@
 
 #nullable disable
 
+using System;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
@@ -10,7 +11,6 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
@@ -64,9 +64,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
                 {
                     CollectionRuleActionOptions actionOptions = new();
 
-                    actionSection.Bind(actionOptions);
 
-                    CollectionRuleBindingHelper.BindActionSettings(actionSection, actionOptions, _actionOperations);
+                    CollectionRuleBindingHelper.BindActionSettings(actionSection, actionOptions);
 
                     ruleOptions.Actions.Add(actionOptions);
                 }
@@ -132,7 +131,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
             if (!templatesOptions.TryGetValue(templateKey, out templatesValue))
             {
                 templatesValue = new();
-                ruleOptions.ErrorList.Add(new ValidationResult(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_TemplateNotFound, templateKey)));
+                ruleOptions.ErrorList.Add(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_TemplateNotFound, templateKey));
                 return false;
             }
 

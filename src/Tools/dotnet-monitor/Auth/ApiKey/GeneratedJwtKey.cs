@@ -54,7 +54,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
             ECDsa pubDsa = ECDsa.Create(dsa.ExportParameters(includePrivateParameters: false));
             ECDsaSecurityKey pubSecKey = new ECDsaSecurityKey(pubDsa);
             JsonWebKey jwk = JsonWebKeyConverter.ConvertFromECDsaSecurityKey(pubSecKey);
-            string publicKeyJson = JsonSerializer.Serialize(jwk, new JsonSerializerOptions() { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull });
+            string publicKeyJson = JsonSerializer.Serialize(jwk, JsonWebKeyContext.Default.JsonWebKey);
             string publicKeyEncoded = Base64UrlEncoder.Encode(publicKeyJson);
 
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
@@ -62,5 +62,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
 
             return new GeneratedJwtKey(output, subjectStr, publicKeyEncoded);
         }
+    }
+
+    [JsonSerializable(typeof(JsonWebKey))]
+    partial class JsonWebKeyContext : JsonSerializerContext
+    {
     }
 }

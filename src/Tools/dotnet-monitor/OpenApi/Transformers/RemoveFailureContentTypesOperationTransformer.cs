@@ -28,7 +28,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers
                     }
                 }
             }
-
             return Task.CompletedTask;
         }
     }

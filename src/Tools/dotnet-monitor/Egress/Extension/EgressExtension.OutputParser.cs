@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics;
 using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,16 +20,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         {
             private readonly ILogger<EgressExtension> _logger;
             private readonly TaskCompletionSource<TResult> _resultCompletionSource;
+            private readonly JsonTypeInfo<TResult> _jsonTypeInfo;
             private readonly EventWaitHandle _beginReadsHandle;
             private readonly Process _process;
             // We need to store the process ID for logging because we can't access it after the process exits
             private int _processId = -1;
 
-            public OutputParser(Process process, ILogger<EgressExtension> logger)
+            public OutputParser(Process process, ILogger<EgressExtension> logger, JsonTypeInfo<TResult> jsonTypeInfo)
             {
                 _process = process;
                 _logger = logger;
                 _resultCompletionSource = new TaskCompletionSource<TResult>();
+                _jsonTypeInfo = jsonTypeInfo;
                 _beginReadsHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
 
                 _process.OutputDataReceived += ParseStdOut;
@@ -68,7 +71,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                     try
                     {
                         // Check if the object is a TResult
-                        TResult result = JsonSerializer.Deserialize<TResult>(eventArgs.Data);
+                        TResult result = JsonSerializer.Deserialize<TResult>(eventArgs.Data, _jsonTypeInfo);
                         if (result.IsValid())
                         {
                             _resultCompletionSource.TrySetResult(result);

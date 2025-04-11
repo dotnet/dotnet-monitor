@@ -22,14 +22,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             out ICollectionRuleActionFactoryProxy action);
 
         /// <summary>
-        /// Attempts to create an options instance of the options type
-        /// associated with the registered action name.
-        /// </summary>
-        bool TryCreateOptions(
-            string actionName,
-            out object options);
-
-        /// <summary>
         /// Attempts to validate an options instance of the options type
         /// associated with the registered action name.
         /// </summary>

@@ -142,14 +142,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task ProcessInfoTest()
         {
-            PassThroughOptions settings = null;
+            CollectionRuleActionOptions actionOptions = null;
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
                 CollectionRuleOptions options = rootOptions.CreateCollectionRule(DefaultRuleName)
                     .AddPassThroughAction("a1", ConfigurationTokenParser.ProcessNameReference, ConfigurationTokenParser.ProcessIdReference, ConfigurationTokenParser.CommandLineReference)
                     .SetStartupTrigger();
 
-                settings = (PassThroughOptions)options.Actions.Last().Settings;
+                actionOptions = options.Actions.Last();
             }, host =>
             {
                 using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TimeoutMs);
@@ -166,7 +166,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 CollectionRuleContext context = new(DefaultRuleName, ruleOptions, new TestProcessInfo(instanceId, processId: processId, commandLine: commandLine), HostInfo.GetCurrent(timeProvider), logger);
 
                 ActionOptionsDependencyAnalyzer analyzer = ActionOptionsDependencyAnalyzer.Create(context);
-                PassThroughOptions newSettings = (PassThroughOptions)analyzer.SubstituteOptionValues(new Dictionary<string, CollectionRuleActionResult>(), 1, settings);
+                PassThroughOptions newSettings = (PassThroughOptions)analyzer.SubstituteOptionValues(new Dictionary<string, CollectionRuleActionResult>(), 1, actionOptions);
 
                 Assert.Equal(processName, newSettings.Input1);
                 Assert.Equal(processId.ToString(CultureInfo.InvariantCulture), newSettings.Input2);
@@ -181,14 +181,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task HostInfoTest()
         {
-            PassThroughOptions settings = null;
+            CollectionRuleActionOptions actionOptions = null;
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
                 CollectionRuleOptions options = rootOptions.CreateCollectionRule(DefaultRuleName)
                     .AddPassThroughAction("a1", ConfigurationTokenParser.HostNameReference, ConfigurationTokenParser.UnixTimeReference, "test")
                     .SetStartupTrigger();
 
-                settings = (PassThroughOptions)options.Actions.Last().Settings;
+                actionOptions = options.Actions.Last();
             }, host =>
             {
                 using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TimeoutMs);
@@ -203,7 +203,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 CollectionRuleContext context = new(DefaultRuleName, ruleOptions, new TestProcessInfo(instanceId), hostInfo, logger);
 
                 ActionOptionsDependencyAnalyzer analyzer = ActionOptionsDependencyAnalyzer.Create(context);
-                PassThroughOptions newSettings = (PassThroughOptions)analyzer.SubstituteOptionValues(new Dictionary<string, CollectionRuleActionResult>(), 1, settings);
+                PassThroughOptions newSettings = (PassThroughOptions)analyzer.SubstituteOptionValues(new Dictionary<string, CollectionRuleActionResult>(), 1, actionOptions);
 
                 Assert.Equal(hostName, newSettings.Input1);
                 Assert.Equal(hostInfo.TimeProvider.GetUtcNow().ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture), newSettings.Input2);
@@ -223,7 +223,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             string a2input3 = "$(Actions.a1.MissingResult)";
 
             LogRecord record = new LogRecord();
-            PassThroughOptions settings = null;
+            CollectionRuleActionOptions actionOptions = null;
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
                 CollectionRuleOptions options = rootOptions.CreateCollectionRule(DefaultRuleName)
@@ -231,7 +231,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     .AddPassThroughAction("a2", a2input1, a2input2, a2input3)
                     .SetStartupTrigger();
 
-                settings = (PassThroughOptions)options.Actions.Last().Settings;
+                actionOptions = options.Actions.Last();
             }, host =>
             {
                 using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TimeoutMs);
@@ -245,7 +245,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 ActionOptionsDependencyAnalyzer analyzer = ActionOptionsDependencyAnalyzer.Create(context);
                 analyzer.GetActionDependencies(1);
-                analyzer.SubstituteOptionValues(new Dictionary<string, CollectionRuleActionResult>(), 1, settings);
+                analyzer.SubstituteOptionValues(new Dictionary<string, CollectionRuleActionResult>(), 1, actionOptions);
 
                 Assert.Equal(3, record.Events.Count);
                 Assert.Equal(LoggingEventIds.InvalidActionReferenceToken.Id(), record.Events[0].EventId.Id);
@@ -264,15 +264,15 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         [Fact]
         public async Task RuntimeIdReferenceTest()
         {
-            PassThroughOptions settings = null;
+            CollectionRuleActionOptions actionOptions = null;
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
             {
                 CollectionRuleOptions options = rootOptions.CreateCollectionRule(DefaultRuleName)
                     .AddPassThroughAction("a1", ConfigurationTokenParser.RuntimeIdReference, "test", "test")
                     .SetStartupTrigger();
 
-                settings = (PassThroughOptions)options.Actions.Last().Settings;
-            }, host =>
+                actionOptions = options.Actions.Last();
+           }, host =>
             {
                 using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TimeoutMs);
 
@@ -284,7 +284,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 CollectionRuleContext context = new(DefaultRuleName, ruleOptions, new TestProcessInfo(instanceId), HostInfo.GetCurrent(timeProvider), logger);
 
                 ActionOptionsDependencyAnalyzer analyzer = ActionOptionsDependencyAnalyzer.Create(context);
-                PassThroughOptions newSettings = (PassThroughOptions)analyzer.SubstituteOptionValues(new Dictionary<string, CollectionRuleActionResult>(), 1, settings);
+                PassThroughOptions newSettings = (PassThroughOptions)analyzer.SubstituteOptionValues(new Dictionary<string, CollectionRuleActionResult>(), 1, actionOptions);
 
                 Assert.Equal(instanceId.ToString("D"), newSettings.Input1);
 

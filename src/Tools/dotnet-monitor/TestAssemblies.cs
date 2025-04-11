@@ -19,32 +19,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         private const string ArtifactsDirectoryName = "artifacts";
         private const string TestHostingStartupAssemblyName = "Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup";
-        private const string TestStartupHookAssemblyName = "Microsoft.Diagnostics.Monitoring.Tool.TestStartupHook";
-
-#nullable disable
-        [Conditional("DEBUG")]
-        public static void SimulateStartupHook()
-        {
-            // This code is to aid loading the TestStartupHook assembly when debug launching dotnet-monitor
-            // so that additional manual configuration is not necessary. The functional tests already bootstrap
-            // loading this assembly and initialize the hosting startup using standard dotnet environment variables.
-
-            AssemblyLoadContext alc = AssemblyLoadContext.GetLoadContext(Assembly.GetExecutingAssembly());
-            // Skip attempting to load if it is already loaded
-            if (!alc.Assemblies.Any(a => TestStartupHookAssemblyName.Equals(a.GetName().Name)))
-            {
-                // Only load if can compute the path correctly
-                if (TryComputeBuildOutputAssemblyPath(TestStartupHookAssemblyName, out string startupHookAssemblyPath))
-                {
-                    // Load and simulate startup hook initialization
-                    Assembly startupHookAssembly = alc.LoadFromAssemblyPath(startupHookAssemblyPath);
-                    Type startupHookType = startupHookAssembly.GetType("StartupHook");
-                    MethodInfo initializeMethod = startupHookType.GetMethod("Initialize", BindingFlags.Public | BindingFlags.Static);
-                    initializeMethod.Invoke(null, Array.Empty<object>());
-                }
-            }
-        }
-#nullable restore
 
         [Conditional("DEBUG")]
         public static void AddHostingStartup(IWebHostBuilder builder)

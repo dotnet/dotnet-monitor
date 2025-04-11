@@ -1,7 +1,10 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.AspNetCore.Http.Validation;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -9,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
 {
@@ -21,20 +25,26 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
     {
         private readonly ILogger<MonitorApiKeyPostConfigure> _logger;
         private readonly IOptionsMonitor<MonitorApiKeyOptions> _apiKeyOptions;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly ValidationOptions _validationOptions;
 
         public MonitorApiKeyPostConfigure(
+            IServiceProvider serviceProvider,
             ILogger<MonitorApiKeyPostConfigure> logger,
             IOptionsMonitor<MonitorApiKeyOptions> apiKeyOptions)
         {
             _logger = logger;
             _apiKeyOptions = apiKeyOptions;
+            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+            _validationOptions = serviceProvider.GetRequiredService<IOptions<ValidationOptions>>().Value;
         }
 
         public void PostConfigure(string? name, MonitorApiKeyConfiguration options)
         {
             MonitorApiKeyOptions sourceOptions = _apiKeyOptions.CurrentValue;
 
-            IList<ValidationResult> errors = new List<ValidationResult>();
+            List<ValidationResult> errors = new List<ValidationResult>();
+
 
             // If nothing is set, lets not attach an error and instead pass along the blank config
             if (sourceOptions.Subject == null && sourceOptions.PublicKey == null)
@@ -48,11 +58,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
             // Some options are configured (but may not be valid)
             options.Configured = true;
 
-            Validator.TryValidateObject(
-                sourceOptions,
-                new ValidationContext(sourceOptions, null, null),
-                errors,
-                validateAllProperties: true);
+            ValidationHelper.TryValidateObject(sourceOptions, typeof(MonitorApiKeyOptions), _validationOptions, errors);
 
             string? jwkJson = null;
             try

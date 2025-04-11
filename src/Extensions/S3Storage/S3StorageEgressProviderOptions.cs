@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
 {
@@ -51,6 +52,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_S3StorageEgressProviderOptions_PreSignedUrlExpiry))]
         [Range(typeof(TimeSpan), "00:01:00", "1.00:00:00")]
+        [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Addressed by DynamicDependency on ValidationHelper.TryValidateOptions method")]
         public TimeSpan? PreSignedUrlExpiry { get; set; }
 
         [Display(

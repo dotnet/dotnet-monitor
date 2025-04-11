@@ -13,5 +13,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public const string ApplicationSpeedscopeJson = "application/speedscope+json";
         public const string TextPlain = "text/plain";
         public const string TextPlain_v0_0_4 = TextPlain + "; version=0.0.4";
+        public const string TextJson = "text/json";
+        public const string ApplicationAnyJson = "application/*+json";
     }
 }

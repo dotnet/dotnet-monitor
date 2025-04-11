@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
-    <DisableCompileTimeOpenApiXmlGenerator>true</DisableCompileTimeOpenApiXmlGenerator>
+    <InterceptorsNamespaces>$(InterceptorsNamespaces);Microsoft.AspNetCore.Http.Validation.Generated</InterceptorsNamespaces>
   </PropertyGroup>
 
   <ItemGroup>

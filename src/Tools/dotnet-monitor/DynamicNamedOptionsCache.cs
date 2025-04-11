@@ -20,7 +20,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     /// </remarks>
     internal sealed class DynamicNamedOptionsCache<TOptions> :
         OptionsCache<TOptions>
-        where TOptions : class
+        where TOptions : class, new()
     {
         public override TOptions GetOrAdd(string name, Func<TOptions> createOptions)
         {

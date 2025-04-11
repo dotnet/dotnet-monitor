@@ -15,7 +15,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         public IDictionary<string, string> Properties { get; set; }
         public IDictionary<string, string> Configuration { get; set; }
         public string ProviderName { get; set; }
-        [JsonConverter(typeof(JsonStringEnumConverter))]
+        [JsonConverter(typeof(JsonStringEnumConverter<LogLevel>))]
         public LogLevel LogLevel { get; set; }
     }
 }

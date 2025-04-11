@@ -3,9 +3,12 @@
 
 #nullable disable
 
+using Microsoft.AspNetCore.Http.Validation;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using System;
@@ -17,6 +20,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,6 +33,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         private readonly string _extensionPath;
         private readonly ILogger<EgressExtension> _logger;
         private readonly ExtensionManifest _manifest;
+        private readonly ValidationOptions _validationOptions;
         private readonly IDictionary<string, string> _processEnvironmentVariables = new Dictionary<string, string>();
         private const int PayloadProtocolVersion = 1;
 
@@ -38,12 +43,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             ExtensionManifest manifest,
             string extensionPath,
             IEgressConfigurationProvider configurationProvider,
-            ILogger<EgressExtension> logger)
+            ILogger<EgressExtension> logger,
+            IOptions<ValidationOptions> validationOptions)
         {
             _configurationProvider = configurationProvider ?? throw new ArgumentNullException(nameof(configurationProvider));
             _extensionPath = extensionPath ?? throw new ArgumentNullException(nameof(extensionPath));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _manifest = manifest ?? throw new ArgumentNullException(nameof(manifest));
+            _validationOptions = validationOptions?.Value ?? throw new ArgumentNullException(nameof(validationOptions));
         }
 
         /// <inheritdoc/>
@@ -107,7 +114,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             ExtensionMode mode,
             CancellationToken token)
         {
-            _manifest.Validate();
+            _manifest.Validate(_validationOptions);
 
             ProcessStartInfo pStart = new ProcessStartInfo()
             {
@@ -171,7 +178,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             };
 
             var parserLogger = mode == ExtensionMode.Execute ? _logger : NullLogger<EgressExtension>.Instance;
-            using OutputParser<EgressArtifactResult> parser = new(p, parserLogger);
+            using OutputParser<EgressArtifactResult> parser = new(p, parserLogger, EgressArtifactResultContext.Default.EgressArtifactResult);
 
             _logger.ExtensionStarting(_manifest.Name);
             if (!p.Start())
@@ -183,7 +190,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
             // p.StandardInput.BaseStream Format: Version (int), Payload Length (long), Payload, Artifact
             using Stream intermediateStream = new MemoryStream();
-            await JsonSerializer.SerializeAsync(intermediateStream, payload, options: null, token);
+            await JsonSerializer.SerializeAsync(intermediateStream, payload, ExtensionEgressPayloadContext.Default.ExtensionEgressPayload, token);
 
             using (BinaryWriter writer = new BinaryWriter(p.StandardInput.BaseStream, Encoding.UTF8, leaveOpen: true))
             {
@@ -283,5 +290,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
             return configAsDict;
         }
+    }
+
+    [JsonSerializable(typeof(EgressArtifactResult))]
+    partial class EgressArtifactResultContext : JsonSerializerContext
+    {
+    }
+
+    [JsonSerializable(typeof(ExtensionEgressPayload))]
+    partial class ExtensionEgressPayloadContext : JsonSerializerContext
+    {
     }
 }
