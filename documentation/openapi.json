@@ -1912,16 +1912,20 @@
         "type": "object",
         "properties": {
           "exceptionType": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "moduleName": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "typeName": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "methodName": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -2030,9 +2034,10 @@
           "Warning",
           "Error",
           "Critical",
-          "None",
-          null
-        ]
+          "None"
+        ],
+        "type": "string",
+        "nullable": true
       },
       "OperationError": {
         "type": "object",
