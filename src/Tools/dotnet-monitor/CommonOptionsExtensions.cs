@@ -99,10 +99,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             MapGlobalCounterOptions(obj.GlobalCounter, FormattableString.Invariant($"{prefix}{nameof(obj.GlobalCounter)}"), separator, map);
             // InProcessFeaturesOptions
             // CorsConfigurationOptions
+            MapDiagnosticPortOptions(obj.DiagnosticPort, FormattableString.Invariant($"{prefix}{nameof(obj.DiagnosticPort)}"), separator, map);
             // DiagnosticPortOptions
             // EgressOptions
             // MetricsOptions
-            // StorageOptions
+            MapStorageOptions(obj.Storage, FormattableString.Invariant($"{prefix}{nameof(obj.Storage)}"), separator, map);
             // ProcessFilterOptions
             // CollectionRuleDefaultsOptions
             // Templates
@@ -143,14 +144,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 MapString(obj.Subject, FormattableString.Invariant($"{prefix}{nameof(obj.Subject)}"), map);
                 MapString(obj.PublicKey, FormattableString.Invariant($"{prefix}{nameof(obj.PublicKey)}"), map);
                 MapString(obj.Issuer, FormattableString.Invariant($"{prefix}{nameof(obj.Issuer)}"), map);
-            }
-        }
-
-        private static void MapString(string? value, string valueName, IDictionary<string, string> map)
-        {
-            if (null != value)
-            {
-                map.Add(valueName, value);
             }
         }
 
@@ -210,6 +203,45 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
         }
 
+        private static void MapDiagnosticPortOptions(DiagnosticPortOptions? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapDiagnosticPortConnectionMode(obj.ConnectionMode, FormattableString.Invariant($"{prefix}{nameof(obj.ConnectionMode)}"), map);
+                MapString(obj.EndpointName, FormattableString.Invariant($"{prefix}{nameof(obj.EndpointName)}"), map);
+                MapInt(obj.MaxConnections, FormattableString.Invariant($"{prefix}{nameof(obj.MaxConnections)}"), map);
+                MapBool(obj.DeleteEndpointOnStartup, FormattableString.Invariant($"{prefix}{nameof(obj.DeleteEndpointOnStartup)}"), map);
+            }
+        }
+
+        private static void MapDiagnosticPortConnectionMode(DiagnosticPortConnectionMode? value, string valueName, IDictionary<string, string> map)
+        {
+            if (null != value)
+            {
+                map.Add(valueName, ConvertUtils.ToString(value, CultureInfo.InvariantCulture));
+            }
+        }
+
+        private static void MapStorageOptions(StorageOptions? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapString(obj.DefaultSharedPath, FormattableString.Invariant($"{prefix}{nameof(obj.DefaultSharedPath)}"), map);
+                MapString(obj.DumpTempFolder, FormattableString.Invariant($"{prefix}{nameof(obj.DumpTempFolder)}"), map);
+                MapString(obj.SharedLibraryPath, FormattableString.Invariant($"{prefix}{nameof(obj.SharedLibraryPath)}"), map);
+            }
+        }
+
+        private static void MapString(string? value, string valueName, IDictionary<string, string> map)
+        {
+            if (null != value)
+            {
+                map.Add(valueName, ConvertUtils.ToString(value, CultureInfo.InvariantCulture));
+            }
+        }
+
         private static void MapFloat(float? value, string valueName, IDictionary<string, string> map)
         {
             if (null != value)
@@ -219,6 +251,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         }
 
         private static void MapInt(int? value, string valueName, IDictionary<string, string> map)
+        {
+            if (null != value)
+            {
+                map.Add(valueName, ConvertUtils.ToString(value, CultureInfo.InvariantCulture));
+            }
+        }
+
+        private static void MapBool(bool? value, string valueName, IDictionary<string, string> map)
         {
             if (null != value)
             {
