@@ -82,7 +82,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             var validateContext = new ValidateContext()
             {
                 ValidationOptions = validationOptions,
-                ValidationContext = new(options, validationContext.MemberName, null, items: null)
+                ValidationContext = validationContext
             };
             validatableTypeInfo.ValidateAsync(options, validateContext, CancellationToken.None).GetAwaiter().GetResult();
             if (validateContext.ValidationErrors is Dictionary<string, string[]> validationErrors)

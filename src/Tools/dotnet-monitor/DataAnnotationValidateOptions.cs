@@ -35,7 +35,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public ValidateOptionsResult Validate(string? name, TOptions options)
         {
             var results = new List<ValidationResult>();
-            if (!ValidationHelper.TryValidateObject(options, typeof(TOptions), _validationOptions, results))
+            var typeName = typeof(TOptions).Name;
+            var validationContext = new ValidationContext(options, typeName, _serviceProvider, items: null) {
+                MemberName = typeName
+            };
+            if (!ValidationHelper.TryValidateObject(options, typeof(TOptions), _validationOptions, validationContext, results))
             {
                 IList<string> failures = new List<string>();
                 foreach (ValidationResult result in results)

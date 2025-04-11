@@ -7,6 +7,7 @@
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 #endif
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -95,6 +96,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             // TODO: in Tests, it has an additional property. Weird.
             MapAuthenticationOptions(obj.Authentication, FormattableString.Invariant($"{prefix}{nameof(obj.Authentication)}"), separator, map);
+            MapCollectionRules(obj.CollectionRules, FormattableString.Invariant($"{prefix}{nameof(obj.CollectionRules)}"), separator, map);
             // GlobalCounterOptions
             MapGlobalCounterOptions(obj.GlobalCounter, FormattableString.Invariant($"{prefix}{nameof(obj.GlobalCounter)}"), separator, map);
             // InProcessFeaturesOptions
@@ -125,6 +127,49 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         //         }
         //     }
         // }
+
+        private static void MapCollectionRules(IDictionary<string, CollectionRuleOptions>? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                System.Console.WriteLine("MapCollectionRules");
+                var prefix = FormattableString.Invariant($"{valueName}{separator}"); // passed to mapdictionary.
+                foreach ((string key, CollectionRuleOptions value) in obj)
+                {
+                    string keyString = ConvertUtils.ToString(key, CultureInfo.InvariantCulture);
+                    System.Console.WriteLine($"key: {keyString}");
+                    MapCollectionRuleOptions(value, FormattableString.Invariant($"{prefix}{keyString}"), separator, map);
+                }
+            }
+        }
+
+        private static void MapCollectionRuleOptions(CollectionRuleOptions obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            string prefix = FormattableString.Invariant($"{valueName}{separator}");
+            // MapFilters(obj.Filters, FormattableString.Invariant($"{prefix}{nameof(obj.Filters)}"), separator, map);
+            // MapTrigger(obj.Trigger, FormattableString.Invariant($"{prefix}{nameof(obj.Trigger)}"), separator, map);
+            MapActions(obj.Actions, FormattableString.Invariant($"{prefix}{nameof(obj.Actions)}"), separator, map);
+            // MapLimits(obj.Limits, FormattableString.Invariant($"{prefix}{nameof(obj.Limits)}"), separator, map);
+        }
+
+        private static void MapActions(List<CollectionRuleActionOptions> obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            string prefix = FormattableString.Invariant($"{valueName}{separator}");
+            for (int index = 0; index < obj.Count; index++)
+            {
+                CollectionRuleActionOptions value = obj[index];
+                MapCollectionRuleActionOptions(value, FormattableString.Invariant($"{prefix}{index}"), separator, map);
+            }
+        }
+
+        private static void MapCollectionRuleActionOptions(CollectionRuleActionOptions obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            string prefix = FormattableString.Invariant($"{valueName}{separator}");
+            MapString(obj.Name, FormattableString.Invariant($"{prefix}{nameof(obj.Name)}"), map);
+            MapString(obj.Type, FormattableString.Invariant($"{prefix}{nameof(obj.Type)}"), map);
+            // TODO: map object Settings
+            MapBool(obj.WaitForCompletion, FormattableString.Invariant($"{prefix}{nameof(obj.WaitForCompletion)}"), map);
+        }
 
         private static void MapAuthenticationOptions(AuthenticationOptions? obj, string valueName, string separator, IDictionary<string, string> map)
         {
