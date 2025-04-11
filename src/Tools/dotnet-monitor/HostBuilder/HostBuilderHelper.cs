@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.AspNetCore.Http.Validation.Generated;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.Auth;
@@ -129,6 +130,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         services.AddSingleton(listenResults);
                         services.AddSingleton<IStartupFilter, AddressListenResultsStartupFilter>();
                         services.AddHostedService<StartupLoggingHostedService>();
+                        MyExtensions.AddValidation(services);
                     })
                     .ConfigureKestrel((context, options) =>
                     {
