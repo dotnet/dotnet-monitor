@@ -34,17 +34,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
 
-            services.Configure<ApiBehaviorOptions>(options =>
-            {
-                options.InvalidModelStateResponseFactory = context =>
-                {
-                    var details = new ValidationProblemDetails(context.ModelState);
-                    var result = new BadRequestObjectResult(details);
-                    result.ContentTypes.Add(ContentTypes.ApplicationProblemJson);
-                    return result;
-                };
-            });
-
             services.Configure<BrotliCompressionProviderOptions>(options =>
             {
                 options.Level = CompressionLevel.Optimal;
@@ -92,8 +81,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             app.UseEndpoints(builder =>
             {
-                var serviceProvider = builder.ServiceProvider;
-
                 DiagController.MapActionMethods(builder);
                 DiagController.MapMetricsActionMethods(builder);
                 ExceptionsController.MapActionMethods(builder);
