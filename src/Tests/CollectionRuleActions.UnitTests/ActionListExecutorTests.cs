@@ -76,7 +76,7 @@ namespace CollectionRuleActions.UnitTests
             });
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/dotnet/aspnetcore/pull/61402")]
         public Task ActionListExecutor_SecondActionFail_DeferredCompletion()
         {
             return ActionListExecutor_SecondActionFail(waitForCompletion: false);
@@ -165,9 +165,9 @@ namespace CollectionRuleActions.UnitTests
                 Assert.Equal(string.Format(Strings.ErrorMessage_NonzeroExitCode, "1"), actionExecutionException.Message);
 
                 VerifyStartCallbackCount(waitForCompletion, callbackCount);
-            }, services =>
+            }, serviceCollection =>
             {
-                services.AddValidation();
+                AddValidation(serviceCollection);
             });
         }
 
@@ -190,7 +190,13 @@ namespace CollectionRuleActions.UnitTests
             }, serviceCollection =>
             {
                 serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions>(nameof(PassThroughAction));
+                AddValidation(serviceCollection);
             });
+        }
+
+        static void AddValidation(IServiceCollection serviceCollection)
+        {
+            serviceCollection.AddValidation();
         }
 
         private static void VerifyStartCallbackCount(bool waitForCompletion, int callbackCount)

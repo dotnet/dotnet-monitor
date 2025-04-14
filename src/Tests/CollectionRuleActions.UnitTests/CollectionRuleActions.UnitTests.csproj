@@ -1,4 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project>
+
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk.Web" />
 
   <PropertyGroup>
     <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
@@ -15,5 +17,21 @@
     <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.TestCommon\Microsoft.Diagnostics.Monitoring.TestCommon.csproj" />
     <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.Tool.UnitTestCommon\Microsoft.Diagnostics.Monitoring.Tool.UnitTestCommon.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <KnownFrameworkReference
+      Update="Microsoft.NETCore.App"
+      TargetingPackVersion="$(NetCoreAppVersion)"
+      DefaultRuntimeFrameworkVersion="$(NetCoreAppVersion)"
+      LatestRuntimeFrameworkVersion="$(NetCoreAppVersion)" />
+
+    <KnownFrameworkReference
+      Update="Microsoft.AspNetCore.App"
+      TargetingPackVersion="$(AspNetCoreAppVersion)"
+      DefaultRuntimeFrameworkVersion="$(AspNetCoreAppVersion)"
+      LatestRuntimeFrameworkVersion="$(AspNetCoreAppVersion)" />
+  </ItemGroup>
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk.Web" />
 
 </Project>
