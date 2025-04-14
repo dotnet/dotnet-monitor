@@ -39,9 +39,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                         Status = StatusCodes.Status400BadRequest
                     };
 
-                    await context.HttpContext.Response.WriteAsJsonAsync(problemDetails, options: null, contentType: ContentTypes.ApplicationProblemJson);
-
                     _logger.LogError(Strings.ErrorMessage_HttpEgressDisabled);
+
+                    return TypedResults.Problem(problemDetails);
                 }
             }
             return await next(context);
@@ -50,7 +50,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
     public static class EgressValidationExtensions
     {
-
         public static RouteHandlerBuilder RequireEgressValidation(this RouteHandlerBuilder builder)
         {
             return builder.AddEndpointFilter<EgressValidationFilter>();

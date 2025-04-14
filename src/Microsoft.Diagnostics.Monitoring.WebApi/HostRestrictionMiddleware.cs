@@ -4,7 +4,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
-using System;
 using System.Linq;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
@@ -33,7 +32,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             var metadata = context.GetEndpoint()?.Metadata.GetMetadata<HostRestrictionAttribute>();
             if (metadata != null)
             {
-                Console.WriteLine("type? " + metadata.GetType());
                 var _restrictedPorts = _metricsPortsProvider.MetricsPorts.ToArray();
                 if (_restrictedPorts.Any(port => context.Request.Host.Port == port))
                 {
