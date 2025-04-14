@@ -3,77 +3,57 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
-using System;
 using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-
-    public class EgressValidationUnhandledExceptionMiddleware
+    public class EgressValidationFilter : IEndpointFilter
     {
-        private readonly RequestDelegate _next;
+        private const string EgressQuery = "egressprovider";
         private readonly ILogger _logger;
 
-        public EgressValidationUnhandledExceptionMiddleware(RequestDelegate next, ILogger<EgressValidationUnhandledExceptionMiddleware> logger)
+        public EgressValidationFilter(ILogger<EgressValidationFilter> logger)
         {
-            _next = next;
             _logger = logger;
         }
 
-        public async Task InvokeAsync(HttpContext context)
+        public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
         {
-            try
-            {
-                await _next(context);
-            }
-            catch (EgressValidationExtensions.EgressDisabledException egressException)
-            {
-                var problemDetails = egressException.ToProblemDetails(StatusCodes.Status400BadRequest);
-                context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                await context.Response.WriteAsJsonAsync(problemDetails, options: null, contentType: ContentTypes.ApplicationProblemJson);
+            var services = context.HttpContext.RequestServices;
+            var egressOutputConfiguration = services.GetRequiredService<IEgressOutputConfiguration>();
 
-                _logger.LogError(egressException.Message);
+            StringValues value;
+            bool egressProviderGiven = context.HttpContext.Request.Query.TryGetValue(EgressQuery, out value);
+
+            if (!egressProviderGiven || StringValues.IsNullOrEmpty(value))
+            {
+                if (!egressOutputConfiguration.IsHttpEgressEnabled)
+                {
+                    var problemDetails = new ProblemDetails
+                    {
+                        Detail = Strings.ErrorMessage_HttpEgressDisabled,
+                        Status = StatusCodes.Status400BadRequest
+                    };
+
+                    await context.HttpContext.Response.WriteAsJsonAsync(problemDetails, options: null, contentType: ContentTypes.ApplicationProblemJson);
+
+                    _logger.LogError(Strings.ErrorMessage_HttpEgressDisabled);
+                }
             }
+            return await next(context);
         }
     }
 
     public static class EgressValidationExtensions
     {
-        private const string EgressQuery = "egressprovider";
 
         public static RouteHandlerBuilder RequireEgressValidation(this RouteHandlerBuilder builder)
         {
-            return builder.AddEndpointFilter(async (context, next) =>
-            {
-                var services = context.HttpContext.RequestServices;
-                var egressOutputConfiguration = services.GetRequiredService<IEgressOutputConfiguration>();
-
-                StringValues value;
-                bool egressProviderGiven = context.HttpContext.Request.Query.TryGetValue(EgressQuery, out value);
-
-                if (!egressProviderGiven || StringValues.IsNullOrEmpty(value))
-                {
-                    if (!egressOutputConfiguration.IsHttpEgressEnabled)
-                    {
-                        throw new EgressDisabledException();
-                    }
-                }
-                return await next(context);
-            });
-        }
-
-        public class EgressDisabledException : Exception
-        {
-            public override string Message
-            {
-                get
-                {
-                    return Strings.ErrorMessage_HttpEgressDisabled;
-                }
-            }
+            return builder.AddEndpointFilter<EgressValidationFilter>();
         }
     }
 }

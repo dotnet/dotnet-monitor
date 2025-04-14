@@ -87,8 +87,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 OperationsController.MapActionMethods(builder);
 
                 builder.MapOpenApi("/");
-
-                app.UseMiddleware<EgressValidationUnhandledExceptionMiddleware>();
             });
         }
     }
