@@ -165,10 +165,7 @@ namespace CollectionRuleActions.UnitTests
                 Assert.Equal(string.Format(Strings.ErrorMessage_NonzeroExitCode, "1"), actionExecutionException.Message);
 
                 VerifyStartCallbackCount(waitForCompletion, callbackCount);
-            }, serviceCollection =>
-            {
-                AddValidation(serviceCollection);
-            });
+            }, AddValidation);
         }
 
 
