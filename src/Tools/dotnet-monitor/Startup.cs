@@ -3,7 +3,6 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Controllers;
@@ -34,17 +33,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.ConfigureHttpJsonOptions(options => {
                 options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
                 options.SerializerOptions.TypeInfoResolverChain.Add(MonitorJsonSerializerContext.Default);
-            });
-
-            services.Configure<ApiBehaviorOptions>(options =>
-            {
-                options.InvalidModelStateResponseFactory = context =>
-                {
-                    var details = new ValidationProblemDetails(context.ModelState);
-                    var result = new BadRequestObjectResult(details);
-                    result.ContentTypes.Add(ContentTypes.ApplicationProblemJson);
-                    return result;
-                };
             });
 
             services.Configure<BrotliCompressionProviderOptions>(options =>
@@ -94,8 +82,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             app.UseEndpoints(builder =>
             {
-                var serviceProvider = builder.ServiceProvider;
-
                 DiagController.MapActionMethods(builder);
                 DiagController.MapMetricsActionMethods(builder);
                 ExceptionsController.MapActionMethods(builder);
@@ -103,8 +89,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 OperationsController.MapActionMethods(builder);
 
                 builder.MapOpenApi("/");
-
-                app.UseMiddleware<EgressValidationUnhandledExceptionMiddleware>();
             });
         }
     }
