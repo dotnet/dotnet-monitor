@@ -30,7 +30,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             {
                 throw new ArgumentNullException(nameof(options));
             }
-            ValidationHelper.ValidateObject(options, typeof(CollectGCDumpOptions), _validationOptions);
+            ValidationHelper.ValidateObject(options, typeof(CollectGCDumpOptions), _validationOptions, _serviceProvider);
 
             return new CollectGCDumpAction(_serviceProvider, processInfo, options);
         }

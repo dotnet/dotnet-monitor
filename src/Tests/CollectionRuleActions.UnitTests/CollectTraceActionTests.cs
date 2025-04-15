@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
+using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
@@ -55,7 +56,7 @@ namespace CollectionRuleActions.UnitTests
             }, async host =>
             {
                 await PerformTrace(host, tfm);
-            });
+            }, TestValidatableTypes.AddValidation);
         }
 
         [Theory]
@@ -99,7 +100,8 @@ namespace CollectionRuleActions.UnitTests
                         options.Duration = TimeSpan.FromSeconds(2);
                     })
                     .SetStartupTrigger();
-            }, host => PerformTrace(host, TargetFrameworkMoniker.Current, artifactName));
+            }, host => PerformTrace(host, TargetFrameworkMoniker.Current, artifactName),
+            TestValidatableTypes.AddValidation);
         }
 
         private async Task PerformTrace(IHost host, TargetFrameworkMoniker tfm, string artifactName = null)

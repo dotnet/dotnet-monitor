@@ -14,21 +14,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.Extension
     {
         private readonly IEgressConfigurationProvider _configurationProvider;
         private readonly ILogger<EgressExtension> _logger;
-        private readonly IOptions<ValidationOptions> _validationOptions;
+        private readonly IServiceProvider _serviceProvider;
 
         public EgressExtensionFactory(
             IEgressConfigurationProvider configurationProvider,
             ILogger<EgressExtension> logger,
-            IOptions<ValidationOptions> validationOptions)
+            IServiceProvider serviceProvider)
         {
             _configurationProvider = configurationProvider;
             _logger = logger;
-            _validationOptions = validationOptions ?? throw new ArgumentNullException(nameof(validationOptions));
+            _serviceProvider = serviceProvider;
         }
 
         public IEgressExtension Create(ExtensionManifest manifest, string path)
         {
-            return new EgressExtension(manifest, path, _configurationProvider, _logger, _validationOptions);
+            return new EgressExtension(manifest, path, _configurationProvider, _logger, _serviceProvider);
         }
     }
 }

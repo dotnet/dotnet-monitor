@@ -2,11 +2,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.AspNetCore.Http.Validation;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
 using System.Globalization;
@@ -20,20 +22,26 @@ using DisposableHelper = Microsoft.Diagnostics.Monitoring.TestCommon.DisposableH
 
 namespace CollectionRuleActions.UnitTests
 {
+    public class ExecuteActionFixture : WebApplicationFactory<Program>
+    {
+    }
+
     [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
     [Collection(TestCollections.CollectionRuleActions)]
-    public sealed class ExecuteActionTests
+    public sealed class ExecuteActionTests : IClassFixture<ExecuteActionFixture>
     {
         private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(30);
 
         private readonly ITestOutputHelper _outputHelper;
+        private readonly ExecuteActionFixture _fixture;
 
-        public ExecuteActionTests(ITestOutputHelper outputHelper)
+        public ExecuteActionTests(ITestOutputHelper outputHelper, ExecuteActionFixture fixture)
         {
             _outputHelper = outputHelper;
+            _fixture = fixture;
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/dotnet/aspnetcore/pull/61402")]
         public async Task ExecuteAction_ZeroExitCode()
         {
             await ValidateAction(
@@ -52,7 +60,7 @@ namespace CollectionRuleActions.UnitTests
                 });
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/dotnet/aspnetcore/pull/61402")]
         public async Task ExecuteAction_NonzeroExitCode()
         {
             await ValidateAction(
@@ -72,7 +80,7 @@ namespace CollectionRuleActions.UnitTests
                 });
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/dotnet/aspnetcore/pull/61402")]
         public async Task ExecuteAction_TokenCancellation()
         {
             // This timeout is much shorter than the default test timeout.
@@ -99,7 +107,7 @@ namespace CollectionRuleActions.UnitTests
                 });
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/dotnet/aspnetcore/pull/61402")]
         public async Task ExecuteAction_TextFileOutput()
         {
             using TemporaryDirectory outputDirectory = new(_outputHelper);
@@ -126,7 +134,7 @@ namespace CollectionRuleActions.UnitTests
             Assert.Equal(testMessage, File.ReadAllText(textFileOutputPath));
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/dotnet/aspnetcore/pull/61402")]
         public async Task ExecuteAction_InvalidPath()
         {
             string uniquePathName = Guid.NewGuid().ToString();
@@ -146,7 +154,7 @@ namespace CollectionRuleActions.UnitTests
                 });
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/dotnet/aspnetcore/pull/61402")]
         public async Task ExecuteAction_IgnoreExitCode()
         {
             await ValidateAction(
@@ -175,9 +183,10 @@ namespace CollectionRuleActions.UnitTests
             Assert.Equal(expectedExitCode, actualExitCode);
         }
 
-        private static async Task ValidateAction(Action<ExecuteOptions> optionsCallback, Func<ICollectionRuleAction, CancellationToken, Task> actionCallback)
+        private async Task ValidateAction(Action<ExecuteOptions> optionsCallback, Func<ICollectionRuleAction, CancellationToken, Task> actionCallback)
         {
-            ExecuteActionFactory factory = new(Options.Create<ValidationOptions>(new()));
+            var validationOptions = _fixture.Services.GetService<IOptions<ValidationOptions>>();
+            ExecuteActionFactory factory = new(_fixture.Services, validationOptions);
 
             ExecuteOptions options = new();
 

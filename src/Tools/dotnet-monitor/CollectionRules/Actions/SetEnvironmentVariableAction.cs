@@ -36,7 +36,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 throw new ArgumentNullException(nameof(options));
             }
 
-            ValidationHelper.ValidateObject(options, typeof(SetEnvironmentVariableOptions), _validationOptions);
+            ValidationHelper.ValidateObject(options, typeof(SetEnvironmentVariableOptions), _validationOptions, _serviceProvider);
 
             return new SetEnvironmentVariableAction(_logger, processInfo, options);
         }

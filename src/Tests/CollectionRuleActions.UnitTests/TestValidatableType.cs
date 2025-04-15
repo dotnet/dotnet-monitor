@@ -2,8 +2,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.AspNetCore.Http.Validation;
+using Microsoft.AspNetCore.Http.Validation.Generated;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using Microsoft.Diagnostics.Monitoring.WebApi;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -17,5 +20,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public required CollectionRuleOptions CollectionRuleOptions { get; init; }
 
         public required ExecuteOptions ExecuteOptions { get; init; }
+
+        public required SetEnvironmentVariableOptions SetEnvironmentVariableOptions { get; init; }
+
+        public required GetEnvironmentVariableOptions GetEnvironmentVariableOptions { get; init; }
+
+        public required CollectTraceOptions CollectTraceOptions { get; init; }
+        
+        public required GlobalCounterOptions GlobalCounterOptions { get; init; }
+
+        public static void AddValidation(IServiceCollection services)
+        {
+            GeneratedServiceCollectionExtensions.AddValidation(services);
+        }
     }
 }

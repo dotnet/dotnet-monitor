@@ -53,7 +53,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
                             CultureInfo.InvariantCulture,
                             Strings.ErrorMessage_TwoFieldsCannotBeSpecified,
                             nameof(Profile),
-                            nameof(StoppingEvent))));
+                            nameof(StoppingEvent)), [nameof(Profile), nameof(StoppingEvent)]));
                 }
 
                 if (HasProviders())
@@ -66,7 +66,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
                             CultureInfo.InvariantCulture,
                             Strings.ErrorMessage_TwoFieldsCannotBeSpecified,
                             nameof(Profile),
-                            nameof(Providers))));
+                            nameof(Providers)), [nameof(Profile), nameof(Providers)]));
                 }
             }
             else if (HasProviders())
@@ -91,7 +91,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
                         CultureInfo.InvariantCulture,
                         Strings.ErrorMessage_TwoFieldsMissing,
                         nameof(Profile),
-                        nameof(Providers))));
+                        nameof(Providers)), [nameof(Profile), nameof(Providers)]));
             }
 
             if (HasStoppingEvent())
@@ -107,7 +107,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
                             Strings.ErrorMessage_MissingStoppingEventProvider,
                             nameof(StoppingEvent),
                             StoppingEvent.ProviderName,
-                            nameof(Providers))));
+                            nameof(Providers)), [nameof(StoppingEvent), nameof(Providers)]));
                 }
             }
 

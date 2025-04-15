@@ -36,7 +36,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 throw new ArgumentNullException(nameof(options));
             }
 
-            ValidationHelper.ValidateObject(options, typeof(LoadProfilerOptions), _validationOptions);
+            ValidationHelper.ValidateObject(options, typeof(LoadProfilerOptions), _validationOptions, _serviceProvider);
 
             return new LoadProfilerAction(_logger, processInfo, options);
         }

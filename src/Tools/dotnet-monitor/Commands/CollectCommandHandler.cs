@@ -86,8 +86,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
         {
             return builder.ConfigureServices((HostBuilderContext context, IServiceCollection services) =>
             {
-                var validationOptions = services.BuildServiceProvider().GetRequiredService<IOptions<ValidationOptions>>().Value;
-                IAuthenticationConfigurator authConfigurator = AuthConfiguratorFactory.Create(startupAuthMode, context, validationOptions);
+                IAuthenticationConfigurator authConfigurator = AuthConfiguratorFactory.Create(startupAuthMode, context, services.BuildServiceProvider());
                 services.AddSingleton<IAuthenticationConfigurator>(authConfigurator);
 
                 //TODO Many of these service additions should be done through extension methods

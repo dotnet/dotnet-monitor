@@ -40,7 +40,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
                     {
                         foreach (string failure in validateResult.Failures)
                         {
-                            results.Add(new ValidationResult(failure));
+                            results.Add(new ValidationResult(failure, [validationContext.MemberName]));
                             hasFailedResults = true;
                         }
                     }
@@ -61,9 +61,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             return TryValidateObject(options, type, validationOptions, validationContext, results);
         }
 
-        public static bool TryValidateObject(object options, Type type, ValidationOptions validationOptions, List<ValidationResult> results)
+        public static bool TryValidateObject(object options, Type type, ValidationOptions validationOptions, IServiceProvider serviceProvider, List<ValidationResult> results)
         {
-            var validationContext = new ValidationContext(options, type.Name, null, items: null) {
+            var validationContext = new ValidationContext(options, type.Name, serviceProvider, items: null) {
                 MemberName = type.Name
             };
             return TryValidateObject(options, type, validationOptions, validationContext, results);
@@ -99,9 +99,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             return true;
         }
 
-        public static void ValidateObject(object options, Type type, ValidationOptions validationOptions)
+        public static void ValidateObject(object options, Type type, ValidationOptions validationOptions, IServiceProvider serviceProvider)
         {
-            if (!TryValidateObject(options, type, validationOptions, new List<ValidationResult>()))
+            if (!TryValidateObject(options, type, validationOptions, serviceProvider, new List<ValidationResult>()))
             {
                 throw new ValidationException("Validation failed for " + type.FullName);
             }

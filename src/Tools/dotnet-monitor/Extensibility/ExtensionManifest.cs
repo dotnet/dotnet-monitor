@@ -4,6 +4,7 @@
 #nullable disable
 
 using Microsoft.AspNetCore.Http.Validation;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
@@ -73,10 +74,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             }
         }
 
-        public void Validate(ValidationOptions validationOptions)
+        public void Validate(IServiceProvider serviceProvider, ValidationOptions validationOptions)
         {
             List<ValidationResult> results = new();
-            if (!ValidationHelper.TryValidateObject(this, typeof(ExtensionManifest), validationOptions, results))
+            if (!ValidationHelper.TryValidateObject(this, typeof(ExtensionManifest), validationOptions, serviceProvider, results))
             {
                 ExtensionException.ThrowInvalidManifest(results.First().ErrorMessage);
             }

@@ -16,10 +16,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 {
     internal sealed class CollectExceptionsActionFactory : ICollectionRuleActionFactory<CollectExceptionsOptions>
     {
+        private readonly IServiceProvider _serviceProvider;
         private readonly ValidationOptions _validationOptions;
     
-        public CollectExceptionsActionFactory(IOptions<ValidationOptions> validationOptions)
+        public CollectExceptionsActionFactory(IServiceProvider serviceProvider, IOptions<ValidationOptions> validationOptions)
         {
+            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
             _validationOptions = validationOptions?.Value ?? throw new ArgumentNullException(nameof(validationOptions));
         }
 
@@ -31,7 +33,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             }
 
             List<ValidationResult> result = new();
-            if (!ValidationHelper.TryValidateObject(options, typeof(CollectExceptionsOptions), _validationOptions, result))
+            if (!ValidationHelper.TryValidateObject(options, typeof(CollectExceptionsOptions), _validationOptions, _serviceProvider, result))
             {
                 throw new ValidationException(
                     string.Join(Environment.NewLine, result.ConvertAll(r => r.ErrorMessage)));

@@ -27,7 +27,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 throw new ArgumentNullException(nameof(options));
             }
 
-            ValidationHelper.ValidateObject(options, typeof(CollectTraceOptions), _validationOptions);
+            ValidationHelper.ValidateObject(options, typeof(CollectTraceOptions), _validationOptions, _serviceProvider);
 
             return new CollectTraceAction(_serviceProvider, processInfo, options);
         }

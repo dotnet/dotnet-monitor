@@ -7,10 +7,15 @@
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 #endif
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.Globalization;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
@@ -96,7 +101,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             // TODO: in Tests, it has an additional property. Weird.
             MapAuthenticationOptions(obj.Authentication, FormattableString.Invariant($"{prefix}{nameof(obj.Authentication)}"), separator, map);
-            MapCollectionRules(obj.CollectionRules, FormattableString.Invariant($"{prefix}{nameof(obj.CollectionRules)}"), separator, map);
+            MapDictionary_String_CollectionRuleOptions(obj.CollectionRules, FormattableString.Invariant($"{prefix}{nameof(obj.CollectionRules)}"), separator, map);
             // GlobalCounterOptions
             MapGlobalCounterOptions(obj.GlobalCounter, FormattableString.Invariant($"{prefix}{nameof(obj.GlobalCounter)}"), separator, map);
             // InProcessFeaturesOptions
@@ -104,6 +109,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             MapDiagnosticPortOptions(obj.DiagnosticPort, FormattableString.Invariant($"{prefix}{nameof(obj.DiagnosticPort)}"), separator, map);
             // DiagnosticPortOptions
             // EgressOptions
+            MapEgressOptions(obj.Egress, FormattableString.Invariant($"{prefix}{nameof(obj.Egress)}"), separator, map);
             // MetricsOptions
             MapStorageOptions(obj.Storage, FormattableString.Invariant($"{prefix}{nameof(obj.Storage)}"), separator, map);
             // ProcessFilterOptions
@@ -128,16 +134,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         //     }
         // }
 
-        private static void MapCollectionRules(IDictionary<string, CollectionRuleOptions>? obj, string valueName, string separator, IDictionary<string, string> map)
+        private static void MapDictionary_String_CollectionRuleOptions(IDictionary<string, CollectionRuleOptions>? obj, string valueName, string separator, IDictionary<string, string> map)
         {
             if (null != obj)
             {
-                System.Console.WriteLine("MapCollectionRules");
                 var prefix = FormattableString.Invariant($"{valueName}{separator}"); // passed to mapdictionary.
                 foreach ((string key, CollectionRuleOptions value) in obj)
                 {
                     string keyString = ConvertUtils.ToString(key, CultureInfo.InvariantCulture);
-                    System.Console.WriteLine($"key: {keyString}");
                     MapCollectionRuleOptions(value, FormattableString.Invariant($"{prefix}{keyString}"), separator, map);
                 }
             }
@@ -147,7 +151,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             string prefix = FormattableString.Invariant($"{valueName}{separator}");
             // MapFilters(obj.Filters, FormattableString.Invariant($"{prefix}{nameof(obj.Filters)}"), separator, map);
-            // MapTrigger(obj.Trigger, FormattableString.Invariant($"{prefix}{nameof(obj.Trigger)}"), separator, map);
+            MapCollectionRuleTriggerOptions(obj.Trigger, FormattableString.Invariant($"{prefix}{nameof(obj.Trigger)}"), separator, map);
             MapActions(obj.Actions, FormattableString.Invariant($"{prefix}{nameof(obj.Actions)}"), separator, map);
             // MapLimits(obj.Limits, FormattableString.Invariant($"{prefix}{nameof(obj.Limits)}"), separator, map);
         }
@@ -167,8 +171,204 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             string prefix = FormattableString.Invariant($"{valueName}{separator}");
             MapString(obj.Name, FormattableString.Invariant($"{prefix}{nameof(obj.Name)}"), map);
             MapString(obj.Type, FormattableString.Invariant($"{prefix}{nameof(obj.Type)}"), map);
-            // TODO: map object Settings
+            MapCollectionRuleActionOptions_Settings(obj.Type, obj.Settings, FormattableString.Invariant($"{prefix}{nameof(obj.Settings)}"), separator, map);
             MapBool(obj.WaitForCompletion, FormattableString.Invariant($"{prefix}{nameof(obj.WaitForCompletion)}"), map);
+        }
+
+        private static void MapCollectionRuleActionOptions_Settings(string type, object? settings, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != settings)
+            {
+                switch (type)
+                {
+                    case KnownCollectionRuleActions.CollectDump:
+                        MapCollectDumpOptions(settings as CollectDumpOptions, valueName, separator, map);
+                        break;
+                    // case KnownCollectionRuleActions.CollectExceptions:
+                    //     MapCollectExceptionsOptions(settings as CollectExceptionsOptions, valueName, separator, map);
+                    //     break;
+                    // case KnownCollectionRuleActions.CollectGCDump:
+                    //     MapCollectGCDumpOptions(settings as CollectGCDumpOptions, valueName, separator, map);
+                    //     break;
+                    // case KnownCollectionRuleActions.CollectLiveMetrics:
+                    //     MapCollectLiveMetricsOptions(settings as CollectLiveMetricsOptions, valueName, separator, map);
+                    //     break;
+                    // case KnownCollectionRuleActions.CollectLogs:
+                    //     MapCollectLogsOptions(settings as CollectLogsOptions, valueName, separator, map);
+                    //     break;
+                    // case KnownCollectionRuleActions.CollectStacks:
+                    //     MapCollectStacksOptions(settings as CollectStacksOptions, valueName, separator, map);
+                    //     break;
+                    case KnownCollectionRuleActions.CollectTrace:
+                        MapCollectTraceOptions(settings as CollectTraceOptions, valueName, separator, map);
+                        break;
+                    // case KnownCollectionRuleActions.Execute:
+                    //     MapExecuteOptions(settings as ExecuteOptions, valueName, separator, map);
+                    //     break;
+                    // case KnownCollectionRuleActions.LoadProfiler:
+                    //     MapLoadProfilerOptions(settings as LoadProfilerOptions, valueName, separator, map);
+                    //     break;
+                    // case KnownCollectionRuleActions.SetEnvironmentVariable:
+                    //     MapSetEnvironmentVariableOptions(settings as SetEnvironmentVariableOptions, valueName, separator, map);
+                    //     break;
+                    // case KnownCollectionRuleActions.GetEnvironmentVariable:
+                    //     MapGetEnvironmentVariableOptions(settings as GetEnvironmentVariableOptions, valueName, separator, map);
+                    //     break;
+                    default:
+                        throw new NotSupportedException($"Unknown action type: {type}");
+                }
+            }
+        }
+
+        private static void MapCollectDumpOptions(CollectDumpOptions? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapDumpType(obj.Type, FormattableString.Invariant($"{prefix}{nameof(obj.Type)}"), map);
+                MapString(obj.Egress, FormattableString.Invariant($"{prefix}{nameof(obj.Egress)}"), map);
+                MapString(obj.ArtifactName, FormattableString.Invariant($"{prefix}{nameof(obj.ArtifactName)}"), map);
+            }
+        }
+
+        private static void MapCollectTraceOptions(CollectTraceOptions? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapTraceProfile(obj.Profile, FormattableString.Invariant($"{prefix}{nameof(obj.Profile)}"), map);
+                MapEventProviders(obj.Providers, FormattableString.Invariant($"{prefix}{nameof(obj.Providers)}"), separator, map);
+                MapBool(obj.RequestRundown, FormattableString.Invariant($"{prefix}{nameof(obj.RequestRundown)}"), map);
+                MapInt(obj.BufferSizeMegabytes, FormattableString.Invariant($"{prefix}{nameof(obj.BufferSizeMegabytes)}"), map);
+                MapTimeSpan(obj.Duration, FormattableString.Invariant($"{prefix}{nameof(obj.Duration)}"), map);
+                MapString(obj.Egress, FormattableString.Invariant($"{prefix}{nameof(obj.Egress)}"), map);
+                MapTraceEventFilter(obj.StoppingEvent, FormattableString.Invariant($"{prefix}{nameof(obj.StoppingEvent)}"), separator, map);
+                MapString(obj.ArtifactName, FormattableString.Invariant($"{prefix}{nameof(obj.ArtifactName)}"), map);
+            }
+        }
+
+        private static void MapTraceProfile(TraceProfile? value, string valueName, IDictionary<string, string> map)
+        {
+            if (null != value)
+            {
+                map.Add(valueName, ConvertUtils.ToString(value, CultureInfo.InvariantCulture));
+            }
+        }
+
+        private static void MapEventProviders(List<EventPipeProvider>? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                for (int index = 0; index < obj.Count; index++)
+                {
+                    EventPipeProvider value = obj[index];
+                    MapEventPipeProvider(value, FormattableString.Invariant($"{prefix}{index}"), separator, map);
+                }
+            }
+        }
+
+        private static void MapEventPipeProvider(EventPipeProvider obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            string prefix = FormattableString.Invariant($"{valueName}{separator}");
+            MapString(obj.Name, FormattableString.Invariant($"{prefix}{nameof(obj.Name)}"), map);
+            MapString(obj.Keywords, FormattableString.Invariant($"{prefix}{nameof(obj.Keywords)}"), map);
+            MapEventLevel(obj.EventLevel, FormattableString.Invariant($"{prefix}{nameof(obj.EventLevel)}"), map);
+            MapDictionary_String_String(obj.Arguments, FormattableString.Invariant($"{prefix}{nameof(obj.Arguments)}"), separator, map);
+        }
+
+        private static void MapEventLevel(EventLevel? value, string valueName, IDictionary<string, string> map)
+        {
+            if (null != value)
+            {
+                map.Add(valueName, ConvertUtils.ToString(value, CultureInfo.InvariantCulture));
+            }
+        }
+
+        private static void MapTimeSpan(TimeSpan? value, string valueName, IDictionary<string, string> map)
+        {
+            if (null != value)
+            {
+                map.Add(valueName, ConvertUtils.ToString(value, CultureInfo.InvariantCulture));
+            }
+        }
+
+        private static void MapTraceEventFilter(TraceEventFilter? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapString(obj.ProviderName, FormattableString.Invariant($"{prefix}{nameof(obj.ProviderName)}"), map);
+                MapString(obj.EventName, FormattableString.Invariant($"{prefix}{nameof(obj.EventName)}"), map);
+                MapDictionary_String_String(obj.PayloadFilter, FormattableString.Invariant($"{prefix}{nameof(obj.PayloadFilter)}"), separator, map);
+            }
+        }
+
+        private static void MapDictionary_String_String(IDictionary<string, string>? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                foreach ((string key, string value) in obj)
+                {
+                    string keyString = ConvertUtils.ToString(key, CultureInfo.InvariantCulture);
+                    MapString(value, FormattableString.Invariant($"{prefix}{keyString}"), map);
+                }
+            }
+        }
+
+        private static void MapDumpType(DumpType? value, string valueName, IDictionary<string, string> map)
+        {
+            if (null != value)
+            {
+                map.Add(valueName, ConvertUtils.ToString(value, CultureInfo.InvariantCulture));
+            }
+        }
+
+        private static void MapCollectionRuleTriggerOptions(CollectionRuleTriggerOptions? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapString(obj.Type, FormattableString.Invariant($"{prefix}{nameof(obj.Type)}"), map);
+                MapCollectionRuleTriggerOptions_Settings(obj.Type, obj.Settings, FormattableString.Invariant($"{prefix}{nameof(obj.Settings)}"), separator, map);
+            }
+        }
+
+        private static void MapCollectionRuleTriggerOptions_Settings(string type, object? settings, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != settings)
+            {
+                switch (type)
+                {
+                    // case KnownCollectionRuleTriggers.AspNetRequestCount:
+                    //     MapAspNetRequestCountOptions(settings as AspNetRequestCountOptions, valueName, separator, map);
+                    //     break;
+                    // case KnownCollectionRuleTriggers.AspNetRequestDuration:
+                    //     MapAspNetRequestDurationOptions(settings as AspNetRequestDurationOptions, valueName, separator, map);
+                    //     break;
+                    // case KnownCollectionRuleTriggers.AspNetResponseStatus:
+                    //     MapAspNetResponseStatusOptions(settings as AspNetResponseStatusOptions, valueName, separator, map);
+                    //     break;
+                    // case KnownCollectionRuleTriggers.EventCounter:
+                    //     MapEventCounterOptions(settings as EventCounterOptions, valueName, separator, map);
+                    //     break;
+                    // case KnownCollectionRuleTriggers.CPUUsage:
+                    //     MapCPUUsageOptions(settings as CPUUsageOptions, valueName, separator, map);
+                    //     break;
+                    // case KnownCollectionRuleTriggers.GCHeapSize:
+                    //     MapGCHeapSizeOptions(settings as GCHeapSizeOptions, valueName, separator, map);
+                    //     break;
+                    // case KnownCollectionRuleTriggers.ThreadpoolQueueLength:
+                    //     MapThreadpoolQueueLengthOptions(settings as ThreadpoolQueueLengthOptions, valueName, separator, map);
+                    //     break;
+                    // case KnownCollectionRuleTriggers.EventMeter:
+                    //     MapEventMeterOptions(settings as EventMeterOptions, valueName, separator, map);
+                    //     break;
+                    default:
+                        throw new NotSupportedException($"Unknown trigger type: {type}");
+                }
+            }
         }
 
         private static void MapAuthenticationOptions(AuthenticationOptions? obj, string valueName, string separator, IDictionary<string, string> map)
@@ -265,6 +465,40 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             if (null != value)
             {
                 map.Add(valueName, ConvertUtils.ToString(value, CultureInfo.InvariantCulture));
+            }
+        }
+
+        private static void MapEgressOptions(EgressOptions? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapDictionary_String_FileSystemEgressProviderOptions(obj.FileSystem, FormattableString.Invariant($"{prefix}{nameof(obj.FileSystem)}"), separator, map);
+                MapDictionary_String_String(obj.Properties, FormattableString.Invariant($"{prefix}{nameof(obj.Properties)}"), separator, map);
+            }
+        }
+
+        private static void MapDictionary_String_FileSystemEgressProviderOptions(IDictionary<string, FileSystemEgressProviderOptions>? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                foreach ((string key, FileSystemEgressProviderOptions value) in obj)
+                {
+                    string keyString = ConvertUtils.ToString(key, CultureInfo.InvariantCulture);
+                    MapFileSystemEgressProviderOptions(value, FormattableString.Invariant($"{prefix}{keyString}"), separator, map);
+                }
+            }
+        }
+
+        private static void MapFileSystemEgressProviderOptions(FileSystemEgressProviderOptions? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapString(obj.DirectoryPath, FormattableString.Invariant($"{prefix}{nameof(obj.DirectoryPath)}"), map);
+                MapString(obj.IntermediateDirectoryPath, FormattableString.Invariant($"{prefix}{nameof(obj.IntermediateDirectoryPath)}"), map);
+                MapInt(obj.CopyBufferSize, FormattableString.Invariant($"{prefix}{nameof(obj.CopyBufferSize)}"), map);
             }
         }
 

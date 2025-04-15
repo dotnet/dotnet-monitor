@@ -20,10 +20,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
     internal sealed class ExecuteActionFactory :
         ICollectionRuleActionFactory<ExecuteOptions>
     {
+        private readonly IServiceProvider _serviceProvider;
         private readonly ValidationOptions _validationOptions;
 
-        public ExecuteActionFactory(IOptions<ValidationOptions> validationOptions)
+        public ExecuteActionFactory(IServiceProvider serviceProvider, IOptions<ValidationOptions> validationOptions)
         {
+            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
             _validationOptions = validationOptions?.Value ?? throw new ArgumentNullException(nameof(validationOptions));
         }
 
@@ -34,7 +36,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 throw new ArgumentNullException(nameof(options));
             }
 
-            ValidationHelper.ValidateObject(options, typeof(ExecuteOptions), _validationOptions);
+            ValidationHelper.ValidateObject(options, typeof(ExecuteOptions), _validationOptions, _serviceProvider);
 
             return new ExecuteAction(processInfo, options);
         }

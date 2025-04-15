@@ -102,7 +102,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Null(manifest.ExecutableFileName);
 
             var validationOptions = _fixture.Services.GetRequiredService<IOptions<ValidationOptions>>().Value;
-            ExtensionException ex = Assert.Throws<ExtensionException>(() => manifest.Validate(validationOptions));
+            ExtensionException ex = Assert.Throws<ExtensionException>(() => manifest.Validate(_fixture.Services, validationOptions));
             Assert.Null(ex.InnerException);
         }
 
@@ -126,7 +126,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Null(manifest.ExecutableFileName);
 
             var validationOptions = _fixture.Services.GetRequiredService<IOptions<ValidationOptions>>().Value;
-            ExtensionException ex = Assert.Throws<ExtensionException>(() => manifest.Validate(validationOptions));
+            ExtensionException ex = Assert.Throws<ExtensionException>(() => manifest.Validate(_fixture.Services, validationOptions));
             Assert.Null(ex.InnerException);
         }
 
@@ -152,7 +152,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Equal(ExpectedAssemblyName, manifest.AssemblyFileName);
             Assert.Equal(ExpectedExecutableName, manifest.ExecutableFileName);
 
-            ExtensionException ex = Assert.Throws<ExtensionException>(() => manifest.Validate(new ValidationOptions()));
+            var validationOptions = _fixture.Services.GetRequiredService<IOptions<ValidationOptions>>().Value;
+            ExtensionException ex = Assert.Throws<ExtensionException>(() => manifest.Validate(_fixture.Services, validationOptions));
             Assert.Null(ex.InnerException);
         }
 
@@ -177,7 +178,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Equal(ExpectedAssemblyName, manifest.AssemblyFileName);
             Assert.Null(manifest.ExecutableFileName);
 
-            manifest.Validate(new ValidationOptions());
+    
+            var validationOptions = _fixture.Services.GetRequiredService<IOptions<ValidationOptions>>().Value;
+            manifest.Validate(_fixture.Services, validationOptions);
         }
 
         [Fact]
@@ -201,7 +204,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Null(manifest.AssemblyFileName);
             Assert.Equal(ExpectedExecutableName, manifest.ExecutableFileName);
 
-            manifest.Validate(new ValidationOptions());
+            var validationOptions = _fixture.Services.GetRequiredService<IOptions<ValidationOptions>>().Value;
+            manifest.Validate(_fixture.Services, validationOptions);
         }
 
         private static Stream CreateManifestStream(TemporaryDirectory dir, out string path)

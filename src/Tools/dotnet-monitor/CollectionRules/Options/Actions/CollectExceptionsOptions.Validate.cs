@@ -27,7 +27,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
                     string.Format(
                         CultureInfo.InvariantCulture,
                         Strings.ErrorMessage_DisabledFeature,
-                        nameof(CollectExceptionsAction))));
+                        nameof(CollectExceptionsAction)), [nameof(CollectExceptionsAction)]));
             }
 
             return results;

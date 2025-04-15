@@ -32,7 +32,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 throw new ArgumentNullException(nameof(options));
             }
 
-            ValidationHelper.ValidateObject(options, typeof(CollectDumpOptions), _validationOptions);
+            ValidationHelper.ValidateObject(options, typeof(CollectDumpOptions), _validationOptions, _serviceProvider);
 
             return new CollectDumpAction(_serviceProvider, processInfo, options);
         }
