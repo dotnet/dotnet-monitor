@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.Logging;
@@ -15,45 +16,44 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
+    public class MinimalControllerBase
+    {
+        internal HttpContext HttpContext { get; }
+
+        internal HttpRequest Request => HttpContext.Request;
+
+        public MinimalControllerBase(HttpContext httpContext)
+        {
+            HttpContext = httpContext;
+        }
+    }
+
     internal static class ControllerExtensions
     {
-        public static ActionResult FeatureNotEnabled(this ControllerBase controller, string featureName)
+        public static ProblemHttpResult FeatureNotEnabled(this MinimalControllerBase controller, string featureName)
         {
-            return new BadRequestObjectResult(new ProblemDetails()
+            return TypedResults.Problem(new ProblemDetails()
             {
                 Detail = string.Format(Strings.Message_FeatureNotEnabled, featureName),
                 Status = StatusCodes.Status400BadRequest
             });
         }
 
-        public static ActionResult NotAcceptable(this ControllerBase controller)
+        public static IResult NotAcceptable(this MinimalControllerBase controller)
         {
-            return new StatusCodeResult((int)HttpStatusCode.NotAcceptable);
+            return TypedResults.StatusCode((int)HttpStatusCode.NotAcceptable);
         }
 
-        public static ActionResult InvokeService(this ControllerBase controller, Func<ActionResult> serviceCall, ILogger logger)
+        public static IResult InvokeService<T>(this MinimalControllerBase controller, Func<T> serviceCall, ILogger logger)
+            where T : IResult
         {
-            //We can convert ActionResult to ActionResult<T>
-            //and then safely convert back.
-            return controller.InvokeService<object>(() => serviceCall(), logger).Result!;
-        }
-
-        public static ActionResult<T> InvokeService<T>(this ControllerBase controller, Func<ActionResult<T>> serviceCall, ILogger logger)
-        {
-            //Convert from ActionResult<T> to Task<ActionResult<T>>
+            //Convert from IResult to Task<IResult>
             //and safely convert back.
             return controller.InvokeService(() => Task.FromResult(serviceCall()), logger).Result;
         }
 
-        public static async Task<ActionResult> InvokeService(this ControllerBase controller, Func<Task<ActionResult>> serviceCall, ILogger logger)
-        {
-            //Task<ActionResult> -> Task<ActionResult<T>>
-            //Then unwrap the result back to ActionResult
-            ActionResult<object> result = await controller.InvokeService<object>(async () => await serviceCall(), logger);
-            return result.Result!;
-        }
-
-        public static async Task<ActionResult<T>> InvokeService<T>(this ControllerBase controller, Func<Task<ActionResult<T>>> serviceCall, ILogger logger)
+        public static async Task<IResult> InvokeService<T>(this MinimalControllerBase controller, Func<Task<T>> serviceCall, ILogger logger)
+            where T : IResult
         {
             CancellationToken token = controller.HttpContext.RequestAborted;
             // Exceptions are logged in the "when" clause in order to preview the exception
@@ -98,9 +98,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             }
         }
 
-        public static ObjectResult Problem(this ControllerBase controller, Exception ex, int statusCode = StatusCodes.Status400BadRequest)
+        public static ProblemHttpResult Problem(this MinimalControllerBase controller, Exception ex, int statusCode = StatusCodes.Status400BadRequest)
         {
-            return new BadRequestObjectResult(ex.ToProblemDetails(statusCode)) { StatusCode = statusCode };
+            return TypedResults.Problem(ex.ToProblemDetails(statusCode));
         }
 
         private static bool LogError(ILogger logger, Exception ex)

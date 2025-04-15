@@ -1,8 +1,10 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -10,11 +12,7 @@ using System;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
 {
-    [Route("")]
-    [ApiController]
-    [ProducesErrorResponseType(typeof(ValidationProblemDetails))]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    public class MetricsController : ControllerBase
+    public class MetricsController : MinimalControllerBase
     {
         private const string ArtifactType_Metrics = "metrics";
 
@@ -22,20 +20,30 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
         private readonly MetricsStoreService _metricsStore;
         private readonly MetricsOptions _metricsOptions;
 
-        public MetricsController(ILogger<MetricsController> logger,
-            IServiceProvider serviceProvider,
-            IOptions<MetricsOptions> metricsOptions)
+        public MetricsController(ILogger<MetricsController> logger, HttpContext httpContext, IOptions<MetricsOptions> metricsOptions) :
+            base(httpContext)
         {
             _logger = logger;
-            _metricsStore = serviceProvider.GetRequiredService<MetricsStoreService>();
+            _metricsStore = httpContext.RequestServices.GetRequiredService<MetricsStoreService>();
             _metricsOptions = metricsOptions.Value;
         }
 
-        [EndpointSummary("Get a list of the current backlog of metrics for a process in the Prometheus exposition format.")]
-        [HttpGet("metrics", Name = nameof(GetMetrics))]
-        [ProducesWithProblemDetails]
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK, ContentTypes.TextPlain_v0_0_4)]
-        public ActionResult GetMetrics()
+        public static void MapActionMethods(IEndpointRouteBuilder builder)
+        {
+            // GetMetrics
+            builder.MapGet("metrics",
+                [EndpointSummary("Get a list of the current backlog of metrics for a process in the Prometheus exposition format.")] (
+                ILogger<MetricsController> logger,
+                HttpContext context,
+                IOptions<MetricsOptions> metricsOptions) =>
+                    new MetricsController(logger, context, metricsOptions).GetMetrics())
+                .WithName(nameof(GetMetrics))
+                .Produces<ValidationProblemDetails>(StatusCodes.Status400BadRequest, ContentTypes.ApplicationProblemJson)
+                .Produces<string>(StatusCodes.Status200OK, ContentTypes.TextPlain_v0_0_4)
+                .WithTags("Metrics");
+        }
+
+        public IResult GetMetrics()
         {
             return this.InvokeService(() =>
             {
