@@ -68,7 +68,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                         {
                             // Create configuration from object model.
                             MemoryConfigurationSource source = new();
-                            source.InitialData = (IDictionary<string, string?>)opts.ToConfigurationValues(); // Cast the values as nullable, since they are reference types we can safely do this.
+                            CommonOptionsMapper optionsMapper = new();
+                            source.InitialData = (IDictionary<string, string?>)optionsMapper.ToConfigurationValues(opts); // Cast the values as nullable, since they are reference types we can safely do this.
                             ConfigurationBuilder builder = new();
                             builder.Add(source);
                             IConfigurationRoot configuration = builder.Build();
@@ -100,11 +101,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                     case OutputFormat.Cmd:
                     case OutputFormat.PowerShell:
                     case OutputFormat.Shell:
-                        IDictionary<string, string> optList = opts.ToEnvironmentConfiguration();
-                        foreach ((string name, string value) in optList)
                         {
-                            outputBldr.AppendFormat(CultureInfo.InvariantCulture, GetFormatString(output), name, value);
-                            outputBldr.AppendLine();
+                            CommonOptionsMapper optionsMapper = new();
+                            IDictionary<string, string> optList = optionsMapper.ToEnvironmentConfiguration(opts);
+                            foreach ((string name, string value) in optList)
+                            {
+                                outputBldr.AppendFormat(CultureInfo.InvariantCulture, GetFormatString(output), name, value);
+                                outputBldr.AppendLine();
+                            }
                         }
                         break;
                 }

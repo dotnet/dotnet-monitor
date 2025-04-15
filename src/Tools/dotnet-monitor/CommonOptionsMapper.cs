@@ -20,7 +20,7 @@ using System.Globalization;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
-    internal static class CommonOptionsExtensions
+    internal class CommonOptionsMapper
     {
         private const string KeySegmentSeparator = "__";
 
@@ -30,7 +30,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         /// <remarks>
         /// Each key is the configuration path; each value is the configuration path value.
         /// </remarks>
-        public static IDictionary<string, string> ToConfigurationValues(this RootOptions options)
+        public IDictionary<string, string> ToConfigurationValues(RootOptions options)
         {
             Dictionary<string, string> variables = new(StringComparer.OrdinalIgnoreCase);
             MapRootOptions(options, string.Empty, ConfigurationPath.KeyDelimiter, variables);
@@ -43,7 +43,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         /// <remarks>
         /// Each key is the variable name; each value is the variable value.
         /// </remarks>
-        public static IDictionary<string, string> ToEnvironmentConfiguration(this RootOptions options, bool useDotnetMonitorPrefix = false)
+        public IDictionary<string, string> ToEnvironmentConfiguration(RootOptions options, bool useDotnetMonitorPrefix = false)
         {
             Dictionary<string, string> variables = new(StringComparer.OrdinalIgnoreCase);
             MapRootOptions(options, useDotnetMonitorPrefix ? ToolIdentifiers.StandardPrefix : string.Empty, KeySegmentSeparator, variables);
@@ -56,7 +56,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         /// <remarks>
         /// Each key is the file name; each value is the file content.
         /// </remarks>
-        public static IDictionary<string, string> ToKeyPerFileConfiguration(this RootOptions options)
+        public IDictionary<string, string> ToKeyPerFileConfiguration(RootOptions options)
         {
             Dictionary<string, string> variables = new(StringComparer.OrdinalIgnoreCase);
             MapRootOptions(options, string.Empty, KeySegmentSeparator, variables);
@@ -97,7 +97,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         //     }
         // }
 
-        private static void MapRootOptions(RootOptions obj, string prefix, string separator, IDictionary<string, string> map)
+        private void MapRootOptions(RootOptions obj, string prefix, string separator, IDictionary<string, string> map)
         {
             // TODO: in Tests, it has an additional property. Weird.
             MapAuthenticationOptions(obj.Authentication, FormattableString.Invariant($"{prefix}{nameof(obj.Authentication)}"), separator, map);
@@ -134,7 +134,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         //     }
         // }
 
-        private static void MapDictionary_String_CollectionRuleOptions(IDictionary<string, CollectionRuleOptions>? obj, string valueName, string separator, IDictionary<string, string> map)
+        private void MapDictionary_String_CollectionRuleOptions(IDictionary<string, CollectionRuleOptions>? obj, string valueName, string separator, IDictionary<string, string> map)
         {
             if (null != obj)
             {
@@ -147,7 +147,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
         }
 
-        private static void MapCollectionRuleOptions(CollectionRuleOptions obj, string valueName, string separator, IDictionary<string, string> map)
+        private void MapCollectionRuleOptions(CollectionRuleOptions obj, string valueName, string separator, IDictionary<string, string> map)
         {
             string prefix = FormattableString.Invariant($"{valueName}{separator}");
             // MapFilters(obj.Filters, FormattableString.Invariant($"{prefix}{nameof(obj.Filters)}"), separator, map);
@@ -156,7 +156,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             // MapLimits(obj.Limits, FormattableString.Invariant($"{prefix}{nameof(obj.Limits)}"), separator, map);
         }
 
-        private static void MapActions(List<CollectionRuleActionOptions> obj, string valueName, string separator, IDictionary<string, string> map)
+        private void MapActions(List<CollectionRuleActionOptions> obj, string valueName, string separator, IDictionary<string, string> map)
         {
             string prefix = FormattableString.Invariant($"{valueName}{separator}");
             for (int index = 0; index < obj.Count; index++)
@@ -166,7 +166,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
         }
 
-        private static void MapCollectionRuleActionOptions(CollectionRuleActionOptions obj, string valueName, string separator, IDictionary<string, string> map)
+        private void MapCollectionRuleActionOptions(CollectionRuleActionOptions obj, string valueName, string separator, IDictionary<string, string> map)
         {
             string prefix = FormattableString.Invariant($"{valueName}{separator}");
             MapString(obj.Name, FormattableString.Invariant($"{prefix}{nameof(obj.Name)}"), map);
@@ -175,10 +175,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             MapBool(obj.WaitForCompletion, FormattableString.Invariant($"{prefix}{nameof(obj.WaitForCompletion)}"), map);
         }
 
-        private static void MapCollectionRuleActionOptions_Settings(string type, object? settings, string valueName, string separator, IDictionary<string, string> map)
+        private Dictionary<string, Action<object, string, string, IDictionary<string, string>>>? _actionSettingsMap;
+
+        public void AddActionSettings<TSettings>(string type, Action<TSettings, string, string, IDictionary<string, string>> mapAction)
+        {
+            (_actionSettingsMap ??= new()).Add(type, (obj, valueName, separator, map) =>
+            {
+                mapAction((TSettings)obj, valueName, separator, map);
+            });
+        }
+
+        private void MapCollectionRuleActionOptions_Settings(string type, object? settings, string valueName, string separator, IDictionary<string, string> map)
         {
             if (null != settings)
             {
+                // TODO: inline the well-known ones to avoid a dictionary lookup.
                 switch (type)
                 {
                     case KnownCollectionRuleActions.CollectDump:
@@ -206,6 +217,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     //     MapExecuteOptions(settings as ExecuteOptions, valueName, separator, map);
                     //     break;
                     // case KnownCollectionRuleActions.LoadProfiler:
+
                     //     MapLoadProfilerOptions(settings as LoadProfilerOptions, valueName, separator, map);
                     //     break;
                     // case KnownCollectionRuleActions.SetEnvironmentVariable:
@@ -215,7 +227,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     //     MapGetEnvironmentVariableOptions(settings as GetEnvironmentVariableOptions, valueName, separator, map);
                     //     break;
                     default:
-                        throw new NotSupportedException($"Unknown action type: {type}");
+                        if (_actionSettingsMap?.TryGetValue(type, out Action<object, string, string, IDictionary<string, string>>? mapAction) == true)
+                        {
+                            mapAction(settings, valueName, separator, map);
+                        }
+                        else
+                        {
+                            throw new NotSupportedException($"Unknown action type: {type}");
+                        }
+                        break;
                 }
             }
         }
