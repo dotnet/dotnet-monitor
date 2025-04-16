@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -28,6 +29,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public required CollectTraceOptions CollectTraceOptions { get; init; }
         
         public required GlobalCounterOptions GlobalCounterOptions { get; init; }
+
+        public required CollectGCDumpOptions CollectGCDumpOptions { get; init; }
+
+        public required CollectLiveMetricsOptions CollectLiveMetricsOptions { get; init; }
+
+        public required RootOptions RootOptions { get; init; }
+
+        public required FileSystemEgressProviderOptions FileSystemEgressProviderOptions { get; init; }
 
         public static void AddValidation(IServiceCollection services)
         {

@@ -6,6 +6,7 @@
 #if UNITTEST
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 #endif
+using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
@@ -107,8 +108,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             // InProcessFeaturesOptions
             // CorsConfigurationOptions
             MapDiagnosticPortOptions(obj.DiagnosticPort, FormattableString.Invariant($"{prefix}{nameof(obj.DiagnosticPort)}"), separator, map);
-            // DiagnosticPortOptions
-            // EgressOptions
             MapEgressOptions(obj.Egress, FormattableString.Invariant($"{prefix}{nameof(obj.Egress)}"), separator, map);
             // MetricsOptions
             MapStorageOptions(obj.Storage, FormattableString.Invariant($"{prefix}{nameof(obj.Storage)}"), separator, map);
@@ -195,15 +194,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     case KnownCollectionRuleActions.CollectDump:
                         MapCollectDumpOptions(settings as CollectDumpOptions, valueName, separator, map);
                         break;
-                    // case KnownCollectionRuleActions.CollectExceptions:
-                    //     MapCollectExceptionsOptions(settings as CollectExceptionsOptions, valueName, separator, map);
-                    //     break;
-                    // case KnownCollectionRuleActions.CollectGCDump:
-                    //     MapCollectGCDumpOptions(settings as CollectGCDumpOptions, valueName, separator, map);
-                    //     break;
-                    // case KnownCollectionRuleActions.CollectLiveMetrics:
-                    //     MapCollectLiveMetricsOptions(settings as CollectLiveMetricsOptions, valueName, separator, map);
-                    //     break;
+                    case KnownCollectionRuleActions.CollectExceptions:
+                        MapCollectExceptionsOptions(settings as CollectExceptionsOptions, valueName, separator, map);
+                        break;
+                    case KnownCollectionRuleActions.CollectGCDump:
+                        MapCollectGCDumpOptions(settings as CollectGCDumpOptions, valueName, separator, map);
+                        break;
+                    case KnownCollectionRuleActions.CollectLiveMetrics:
+                        MapCollectLiveMetricsOptions(settings as CollectLiveMetricsOptions, valueName, separator, map);
+                        break;
                     // case KnownCollectionRuleActions.CollectLogs:
                     //     MapCollectLogsOptions(settings as CollectLogsOptions, valueName, separator, map);
                     //     break;
@@ -213,19 +212,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     case KnownCollectionRuleActions.CollectTrace:
                         MapCollectTraceOptions(settings as CollectTraceOptions, valueName, separator, map);
                         break;
-                    // case KnownCollectionRuleActions.Execute:
-                    //     MapExecuteOptions(settings as ExecuteOptions, valueName, separator, map);
-                    //     break;
-                    // case KnownCollectionRuleActions.LoadProfiler:
-
-                    //     MapLoadProfilerOptions(settings as LoadProfilerOptions, valueName, separator, map);
-                    //     break;
-                    // case KnownCollectionRuleActions.SetEnvironmentVariable:
-                    //     MapSetEnvironmentVariableOptions(settings as SetEnvironmentVariableOptions, valueName, separator, map);
-                    //     break;
-                    // case KnownCollectionRuleActions.GetEnvironmentVariable:
-                    //     MapGetEnvironmentVariableOptions(settings as GetEnvironmentVariableOptions, valueName, separator, map);
-                    //     break;
+                    case KnownCollectionRuleActions.Execute:
+                        MapExecuteOptions(settings as ExecuteOptions, valueName, separator, map);
+                        break;
+                    case KnownCollectionRuleActions.LoadProfiler:
+                        MapLoadProfilerOptions(settings as LoadProfilerOptions, valueName, separator, map);
+                        break;
+                    case KnownCollectionRuleActions.SetEnvironmentVariable:
+                        MapSetEnvironmentVariableOptions(settings as SetEnvironmentVariableOptions, valueName, separator, map);
+                        break;
+                    case KnownCollectionRuleActions.GetEnvironmentVariable:
+                        MapGetEnvironmentVariableOptions(settings as GetEnvironmentVariableOptions, valueName, separator, map);
+                        break;
                     default:
                         if (_actionSettingsMap?.TryGetValue(type, out Action<object, string, string, IDictionary<string, string>>? mapAction) == true)
                         {
@@ -251,6 +249,135 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             }
         }
 
+        private static void MapCollectExceptionsOptions(CollectExceptionsOptions? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapString(obj.Egress, FormattableString.Invariant($"{prefix}{nameof(obj.Egress)}"), map);
+                MapExceptionFormat(obj.Format, FormattableString.Invariant($"{prefix}{nameof(obj.Format)}"), map);
+                MapExceptionsConfiguration(obj.Filters, FormattableString.Invariant($"{prefix}{nameof(obj.Filters)}"), separator, map);
+                MapString(obj.ArtifactName, FormattableString.Invariant($"{prefix}{nameof(obj.ArtifactName)}"), map);
+            }
+        }
+
+        private static void MapExceptionFormat(ExceptionFormat? value, string valueName, IDictionary<string, string> map)
+        {
+            if (null != value)
+            {
+                map.Add(valueName, ConvertUtils.ToString(value, CultureInfo.InvariantCulture));
+            }
+        }
+
+        private static void MapExceptionsConfiguration(ExceptionsConfiguration? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapList_ExceptionFilter(obj.Include, FormattableString.Invariant($"{prefix}{nameof(obj.Include)}"), separator, map);
+                MapList_ExceptionFilter(obj.Exclude, FormattableString.Invariant($"{prefix}{nameof(obj.Exclude)}"), separator, map);
+            }
+        }
+
+        private static void MapList_ExceptionFilter(List<ExceptionFilter>? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                for (int index = 0; index < obj.Count; index++)
+                {
+                    ExceptionFilter value = obj[index];
+                    MapExceptionFilter(value, FormattableString.Invariant($"{prefix}{index}"), separator, map);
+                }
+            }
+        }
+
+        private static void MapExceptionFilter(ExceptionFilter obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            string prefix = FormattableString.Invariant($"{valueName}{separator}");
+            MapString(obj.ExceptionType, FormattableString.Invariant($"{prefix}{nameof(obj.ExceptionType)}"), map);
+            MapString(obj.ModuleName, FormattableString.Invariant($"{prefix}{nameof(obj.ModuleName)}"), map);
+            MapString(obj.TypeName, FormattableString.Invariant($"{prefix}{nameof(obj.TypeName)}"), map);
+            MapString(obj.MethodName, FormattableString.Invariant($"{prefix}{nameof(obj.MethodName)}"), map);
+        }
+
+        private static void MapCollectGCDumpOptions(CollectGCDumpOptions? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapString(obj.Egress, FormattableString.Invariant($"{prefix}{nameof(obj.Egress)}"), map);
+                MapString(obj.ArtifactName, FormattableString.Invariant($"{prefix}{nameof(obj.ArtifactName)}"), map);
+            }
+        }
+
+        private static void MapCollectLiveMetricsOptions(CollectLiveMetricsOptions? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapBool(obj.IncludeDefaultProviders, FormattableString.Invariant($"{prefix}{nameof(obj.IncludeDefaultProviders)}"), map);
+                MapArray_EventMetricsProvider(obj.Providers, FormattableString.Invariant($"{prefix}{nameof(obj.Providers)}"), separator, map);
+                MapArray_EventMetricsMeter(obj.Meters, FormattableString.Invariant($"{prefix}{nameof(obj.Meters)}"), separator, map);
+                MapTimeSpan(obj.Duration, FormattableString.Invariant($"{prefix}{nameof(obj.Duration)}"), map);
+                MapString(obj.Egress, FormattableString.Invariant($"{prefix}{nameof(obj.Egress)}"), map);
+                MapString(obj.ArtifactName, FormattableString.Invariant($"{prefix}{nameof(obj.ArtifactName)}"), map);
+            }
+        }
+
+        private static void MapArray_EventMetricsProvider(EventMetricsProvider[]? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                for (int index = 0; index < obj.Length; index++)
+                {
+                    EventMetricsProvider value = obj[index];
+                    MapEventMetricsProvider(value, FormattableString.Invariant($"{prefix}{index}"), separator, map);
+                }
+            }
+        }
+
+        private static void MapEventMetricsProvider(EventMetricsProvider obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            string prefix = FormattableString.Invariant($"{valueName}{separator}");
+            MapString(obj.ProviderName, FormattableString.Invariant($"{prefix}{nameof(obj.ProviderName)}"), map);
+            MapArray_String(obj.CounterNames, FormattableString.Invariant($"{prefix}{nameof(obj.CounterNames)}"), separator, map);
+        }
+
+        private static void MapArray_String(string[]? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                for (int index = 0; index < obj.Length; index++)
+                {
+                    string value = obj[index];
+                    MapString(value, FormattableString.Invariant($"{prefix}{index}"), map);
+                }
+            }
+        }
+
+        private static void MapArray_EventMetricsMeter(EventMetricsMeter[]? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                for (int index = 0; index < obj.Length; index++)
+                {
+                    EventMetricsMeter value = obj[index];
+                    MapEventMetricsMeter(value, FormattableString.Invariant($"{prefix}{index}"), separator, map);
+                }
+            }
+        }
+
+        private static void MapEventMetricsMeter(EventMetricsMeter obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            string prefix = FormattableString.Invariant($"{valueName}{separator}");
+            MapString(obj.MeterName, FormattableString.Invariant($"{prefix}{nameof(obj.MeterName)}"), map);
+            MapArray_String(obj.InstrumentNames, FormattableString.Invariant($"{prefix}{nameof(obj.InstrumentNames)}"), separator, map);
+        }
+
         private static void MapCollectTraceOptions(CollectTraceOptions? obj, string valueName, string separator, IDictionary<string, string> map)
         {
             if (null != obj)
@@ -264,6 +391,54 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 MapString(obj.Egress, FormattableString.Invariant($"{prefix}{nameof(obj.Egress)}"), map);
                 MapTraceEventFilter(obj.StoppingEvent, FormattableString.Invariant($"{prefix}{nameof(obj.StoppingEvent)}"), separator, map);
                 MapString(obj.ArtifactName, FormattableString.Invariant($"{prefix}{nameof(obj.ArtifactName)}"), map);
+            }
+        }
+
+        private static void MapExecuteOptions(ExecuteOptions? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapString(obj.Path, FormattableString.Invariant($"{prefix}{nameof(obj.Path)}"), map);
+                MapString(obj.Arguments, FormattableString.Invariant($"{prefix}{nameof(obj.Arguments)}"), map);
+                MapBool(obj.IgnoreExitCode, FormattableString.Invariant($"{prefix}{nameof(obj.IgnoreExitCode)}"), map);
+            }
+        }
+
+        private static void MapLoadProfilerOptions(LoadProfilerOptions? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapString(obj.Path, FormattableString.Invariant($"{prefix}{nameof(obj.Path)}"), map);
+                MapGuid(obj.Clsid, FormattableString.Invariant($"{prefix}{nameof(obj.Clsid)}"), map);
+            }
+        }
+
+        private static void MapGuid(Guid? value, string valueName, IDictionary<string, string> map)
+        {
+            if (null != value)
+            {
+                map.Add(valueName, ConvertUtils.ToString(value, CultureInfo.InvariantCulture));
+            }
+        }
+
+        private static void MapSetEnvironmentVariableOptions(SetEnvironmentVariableOptions? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapString(obj.Name, FormattableString.Invariant($"{prefix}{nameof(obj.Name)}"), map);
+                MapString(obj.Value, FormattableString.Invariant($"{prefix}{nameof(obj.Value)}"), map);
+            }
+        }
+
+        private static void MapGetEnvironmentVariableOptions(GetEnvironmentVariableOptions? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapString(obj.Name, FormattableString.Invariant($"{prefix}{nameof(obj.Name)}"), map);
             }
         }
 

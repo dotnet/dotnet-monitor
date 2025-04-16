@@ -82,7 +82,7 @@ namespace CollectionRuleActions.UnitTests
             return ActionListExecutor_SecondActionFail(waitForCompletion: false);
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/dotnet/aspnetcore/pull/61402")]
         public Task ActionListExecutor_SecondActionFail_WaitedCompletion()
         {
             return ActionListExecutor_SecondActionFail(waitForCompletion: true);
