@@ -38,6 +38,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public required FileSystemEgressProviderOptions FileSystemEgressProviderOptions { get; init; }
 
+        public required CollectDumpOptions CollectDumpOptions { get; init; }
+
+        public required LoadProfilerOptions LoadProfilerOptions { get; init; }
+
         public static void AddValidation(IServiceCollection services)
         {
             GeneratedServiceCollectionExtensions.AddValidation(services);

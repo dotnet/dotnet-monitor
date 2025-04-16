@@ -80,7 +80,8 @@ namespace CollectionRuleActions.UnitTests
                         options.Duration = TimeSpan.FromSeconds(2);
                     })
                     .SetStartupTrigger();
-            }, host => PerformTrace(host, tfm));
+            }, host => PerformTrace(host, tfm),
+            TestValidatableTypes.AddValidation);
         }
 
         [Fact]

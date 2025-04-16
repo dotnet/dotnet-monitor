@@ -294,6 +294,16 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                 validatableInfo = CreateFileSystemEgressProviderOptions();
                 return true;
             }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectDumpOptions))
+            {
+                validatableInfo = CreateCollectDumpOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.LoadProfilerOptions))
+            {
+                validatableInfo = CreateLoadProfilerOptions();
+                return true;
+            }
             if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.TestValidatableTypes))
             {
                 validatableInfo = CreateTestValidatableTypes();
@@ -717,12 +727,13 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
             return new GeneratedValidatableTypeInfo(
                 type: typeof(global::System.Guid),
                 members: [
-                    new GeneratedValidatablePropertyInfo(
-                        containingType: typeof(global::System.Guid),
-                        propertyType: typeof(global::System.Guid),
-                        name: "AllBitsSet",
-                        displayName: "AllBitsSet"
-                    ),
+                    // https://github.com/dotnet/aspnetcore/issues/61525
+                    // new GeneratedValidatablePropertyInfo(
+                    //     containingType: typeof(global::System.Guid),
+                    //     propertyType: typeof(global::System.Guid),
+                    //     name: "AllBitsSet",
+                    //     displayName: "AllBitsSet"
+                    // ),
                 ]
             );
         }
@@ -1500,6 +1511,58 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                 ]
             );
         }
+        private ValidatableTypeInfo CreateCollectDumpOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectDumpOptions),
+                members: [
+                    // new GeneratedValidatablePropertyInfo(
+                    //     containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectDumpOptions),
+                    //     propertyType: typeof(global::System.Type),
+                    //     name: "EqualityContract",
+                    //     displayName: "EqualityContract"
+                    // ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectDumpOptions),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.Models.DumpType?),
+                        name: "Type",
+                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectDumpOptions),
+                        propertyType: typeof(string),
+                        name: "Egress",
+                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateLoadProfilerOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.LoadProfilerOptions),
+                members: [
+                    // new GeneratedValidatablePropertyInfo(
+                    //     containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.LoadProfilerOptions),
+                    //     propertyType: typeof(global::System.Type),
+                    //     name: "EqualityContract",
+                    //     displayName: "EqualityContract"
+                    // ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.LoadProfilerOptions),
+                        propertyType: typeof(string),
+                        name: "Path",
+                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.LoadProfilerOptions),
+                        propertyType: typeof(global::System.Guid),
+                        name: "Clsid",
+                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings"
+                    ),
+                ]
+            );
+        }
         private ValidatableTypeInfo CreateTestValidatableTypes()
         {
             return new GeneratedValidatableTypeInfo(
@@ -1565,6 +1628,18 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                         name: "FileSystemEgressProviderOptions",
                         displayName: "FileSystemEgressProviderOptions"
                     ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.TestValidatableTypes),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectDumpOptions),
+                        name: "CollectDumpOptions",
+                        displayName: "CollectDumpOptions"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.TestValidatableTypes),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.LoadProfilerOptions),
+                        name: "LoadProfilerOptions",
+                        displayName: "LoadProfilerOptions"
+                    ),
                 ]
             );
         }
@@ -1574,7 +1649,7 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.AspNetCore.Http.ValidationsGenerator, Version=10.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60", "10.0.0.0")]
     internal static class GeneratedServiceCollectionExtensions
     {
-        // [global::System.Runtime.CompilerServices.InterceptsLocationAttribute(1, "o12abVmqqV0zqGgiPVl+aU9UAQBWYWxpZGF0YWJsZUluZm9SZXNvbHZlci5jcw==")]
+        // [global::System.Runtime.CompilerServices.InterceptsLocationAttribute(1, "tmDjl/scvJBp7h4Jis0nT+NkAQBWYWxpZGF0YWJsZUluZm9SZXNvbHZlci5jcw==")]
         public static global::Microsoft.Extensions.DependencyInjection.IServiceCollection AddValidation(this global::Microsoft.Extensions.DependencyInjection.IServiceCollection services, global::System.Action<ValidationOptions>? configureOptions = null)
         {
             // Use non-extension method to avoid infinite recursion.
