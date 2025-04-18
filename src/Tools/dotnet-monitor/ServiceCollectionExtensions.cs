@@ -199,11 +199,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static IServiceCollection RegisterCollectionRuleAction<TFactory, TOptions, TDescriptor>(this IServiceCollection services)
             where TFactory : class, ICollectionRuleActionFactory<TOptions>
             where TOptions : BaseRecordOptions, new()
-            where TDescriptor : class, ICollectionRuleActionDescriptor, new()
+            where TDescriptor : class, ICollectionRuleActionDescriptor
         {
             services.AddSingleton<TFactory>();
             services.AddSingleton<CollectionRuleActionFactoryProxy<TFactory, TOptions>>();
-            services.AddSingleton<ICollectionRuleActionDescriptor, TDescriptor>(sp => new TDescriptor());
+            services.AddSingleton<ICollectionRuleActionDescriptor, TDescriptor>();
             // NOTE: When opening collection rule actions for extensibility, this should not be added for all registered actions.
             // Each action should register its own IValidateOptions<> implementation (if it needs one).
             services.AddSingleton<IValidateOptions<TOptions>, DataAnnotationValidateOptions<TOptions>>();
@@ -212,22 +212,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection RegisterCollectionRuleTrigger<TFactory, TDescriptor>(this IServiceCollection services)
             where TFactory : class, ICollectionRuleTriggerFactory
-            where TDescriptor : class, ICollectionRuleTriggerDescriptor, new()
+            where TDescriptor : class, ICollectionRuleTriggerDescriptor
         {
             services.AddSingleton<TFactory>();
             services.AddSingleton<CollectionRuleTriggerFactoryProxy<TFactory>>();
-            services.AddSingleton<ICollectionRuleTriggerDescriptor, TDescriptor>(sp => new TDescriptor());
+            services.AddSingleton<ICollectionRuleTriggerDescriptor, TDescriptor>();
             return services;
         }
 
         public static IServiceCollection RegisterCollectionRuleTrigger<TFactory, TOptions, TDescriptor>(this IServiceCollection services)
             where TFactory : class, ICollectionRuleTriggerFactory<TOptions>
             where TOptions : class, new()
-            where TDescriptor : class, ICollectionRuleTriggerDescriptor, new()
+            where TDescriptor : class, ICollectionRuleTriggerDescriptor
         {
             services.AddSingleton<TFactory>();
             services.AddSingleton<CollectionRuleTriggerFactoryProxy<TFactory, TOptions>>();
-            services.AddSingleton<ICollectionRuleTriggerDescriptor, TDescriptor>(sp => new TDescriptor());
+            services.AddSingleton<ICollectionRuleTriggerDescriptor, TDescriptor>();
             // NOTE: When opening collection rule triggers for extensibility, this should not be added for all registered triggers.
             // Each trigger should register its own IValidateOptions<> implementation (if it needs one).
             services.AddSingleton<IValidateOptions<TOptions>, DataAnnotationValidateOptions<TOptions>>();
