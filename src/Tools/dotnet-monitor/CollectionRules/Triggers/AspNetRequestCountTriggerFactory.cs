@@ -7,6 +7,7 @@ using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers.AspNet;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Globalization;
 
@@ -51,5 +52,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         public Type FactoryType => typeof(AspNetRequestCountTriggerFactory);
         public Type? OptionsType => typeof(AspNetRequestCountOptions);
         public string TriggerName => KnownCollectionRuleTriggers.AspNetRequestCount;
+
+        public bool TryBindOptions(IConfigurationSection settingsSection, out object? settings)
+        {
+            var options = new AspNetRequestCountOptions();
+            settingsSection.Bind(options);
+            settings = options;
+            return true;
+        }
     }
 }

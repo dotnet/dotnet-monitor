@@ -22,12 +22,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
         public static void BindTriggerSettings(IConfigurationSection triggerSection, CollectionRuleTriggerOptions triggerOptions, ICollectionRuleTriggerOperations triggerOperations)
         {
             if (null != triggerOptions &&
-                triggerOperations.TryCreateOptions(triggerOptions.Type, out object triggerSettings))
+                triggerOperations.TryBindOptions(triggerOptions.Type, triggerSection, out object triggerSettings))
             {
-                IConfigurationSection settingsSection = triggerSection.GetSection(nameof(CollectionRuleTriggerOptions.Settings));
-
-                settingsSection.Bind(triggerSettings);
-
                 triggerOptions.Settings = triggerSettings;
             }
         }

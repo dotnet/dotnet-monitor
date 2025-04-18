@@ -23,7 +23,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             out ICollectionRuleActionFactoryProxy action);
 
         /// <summary>
-        /// Attempts to create an options instance of the options type
+        /// Attempts to bind an options instance of the options type
         /// associated with the registered action name.
         /// </summary>
         bool TryBindOptions(

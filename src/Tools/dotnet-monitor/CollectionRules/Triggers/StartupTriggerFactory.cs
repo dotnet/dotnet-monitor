@@ -3,6 +3,7 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
+using Microsoft.Extensions.Configuration;
 using System;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
@@ -25,5 +26,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         public Type FactoryType => typeof(StartupTriggerFactory);
         public Type? OptionsType => null;
         public string TriggerName => KnownCollectionRuleTriggers.Startup;
+
+        public bool TryBindOptions(IConfigurationSection settingsSection, out object? settings)
+        {
+            settings = null;
+            return false;
+        }
     }
 }

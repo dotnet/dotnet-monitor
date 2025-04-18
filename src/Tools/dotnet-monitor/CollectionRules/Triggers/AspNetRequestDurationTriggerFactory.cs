@@ -8,6 +8,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Globalization;
 
@@ -57,5 +58,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         public Type FactoryType => typeof(AspNetRequestDurationTriggerFactory);
         public Type? OptionsType => typeof(AspNetRequestDurationOptions);
         public string TriggerName => KnownCollectionRuleTriggers.AspNetRequestDuration;
+
+        public bool TryBindOptions(IConfigurationSection settingsSection, out object? settings)
+        {
+            var options = new AspNetRequestDurationOptions();
+            settingsSection.Bind(options);
+            settings = options;
+            return true;
+        }
     }
 }

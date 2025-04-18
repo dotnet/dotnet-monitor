@@ -7,6 +7,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
 using System;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
@@ -62,5 +63,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         public Type FactoryType => typeof(EventMeterTriggerFactory);
         public Type? OptionsType => typeof(EventMeterOptions);
         public string TriggerName => KnownCollectionRuleTriggers.EventMeter;
+
+        public bool TryBindOptions(IConfigurationSection settingsSection, out object? settings)
+        {
+            var options = new EventMeterOptions();
+            settingsSection.Bind(options);
+            settings = options;
+            return true;
+        }
     }
 }

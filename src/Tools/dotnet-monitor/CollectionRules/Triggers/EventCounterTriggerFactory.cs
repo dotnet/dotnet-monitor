@@ -8,6 +8,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
 using System;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
@@ -116,5 +117,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         public Type FactoryType => typeof(EventCounterTriggerFactory);
         public Type? OptionsType => typeof(EventCounterOptions);
         public string TriggerName => KnownCollectionRuleTriggers.EventCounter;
+
+        public bool TryBindOptions(IConfigurationSection settingsSection, out object? settings)
+        {
+            var options = new EventCounterOptions();
+            settingsSection.Bind(options);
+            settings = options;
+            return true;
+        }
     }
 }
