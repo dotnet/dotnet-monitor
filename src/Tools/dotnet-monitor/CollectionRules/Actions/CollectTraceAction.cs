@@ -5,6 +5,7 @@ using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
@@ -106,5 +107,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 return egressOperation;
             }
         }
+    }
+
+    internal sealed class CollectTraceActionDescriptor : ICollectionRuleActionDescriptor
+    {
+        public string ActionName => KnownCollectionRuleActions.CollectTrace;
+        public Type FactoryType => typeof(CollectTraceActionFactory);
+        public Type OptionsType => typeof(CollectTraceOptions);
     }
 }

@@ -140,17 +140,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureCollectionRules(this IServiceCollection services)
         {
-            services.RegisterCollectionRuleAction<CollectDumpActionFactory, CollectDumpOptions>(KnownCollectionRuleActions.CollectDump);
-            services.RegisterCollectionRuleAction<CollectExceptionsActionFactory, CollectExceptionsOptions>(KnownCollectionRuleActions.CollectExceptions);
-            services.RegisterCollectionRuleAction<CollectGCDumpActionFactory, CollectGCDumpOptions>(KnownCollectionRuleActions.CollectGCDump);
-            services.RegisterCollectionRuleAction<CollectLiveMetricsActionFactory, CollectLiveMetricsOptions>(KnownCollectionRuleActions.CollectLiveMetrics);
-            services.RegisterCollectionRuleAction<CollectLogsActionFactory, CollectLogsOptions>(KnownCollectionRuleActions.CollectLogs);
-            services.RegisterCollectionRuleAction<CollectStacksActionFactory, CollectStacksOptions>(KnownCollectionRuleActions.CollectStacks);
-            services.RegisterCollectionRuleAction<CollectTraceActionFactory, CollectTraceOptions>(KnownCollectionRuleActions.CollectTrace);
-            services.RegisterCollectionRuleAction<ExecuteActionFactory, ExecuteOptions>(KnownCollectionRuleActions.Execute);
-            services.RegisterCollectionRuleAction<LoadProfilerActionFactory, LoadProfilerOptions>(KnownCollectionRuleActions.LoadProfiler);
-            services.RegisterCollectionRuleAction<SetEnvironmentVariableActionFactory, SetEnvironmentVariableOptions>(KnownCollectionRuleActions.SetEnvironmentVariable);
-            services.RegisterCollectionRuleAction<GetEnvironmentVariableActionFactory, GetEnvironmentVariableOptions>(KnownCollectionRuleActions.GetEnvironmentVariable);
+            services.RegisterCollectionRuleAction<CollectDumpActionFactory, CollectDumpOptions, CollectDumpActionDescriptor>();
+            services.RegisterCollectionRuleAction<CollectExceptionsActionFactory, CollectExceptionsOptions, CollectExceptionsActionDescriptor>();
+            services.RegisterCollectionRuleAction<CollectGCDumpActionFactory, CollectGCDumpOptions, CollectGCDumpActionDescriptor>();
+            services.RegisterCollectionRuleAction<CollectLiveMetricsActionFactory, CollectLiveMetricsOptions, CollectLiveMetricsActionDescriptor>();
+            services.RegisterCollectionRuleAction<CollectLogsActionFactory, CollectLogsOptions, CollectLogsActionDescriptor>();
+            services.RegisterCollectionRuleAction<CollectStacksActionFactory, CollectStacksOptions, CollectStacksActionDescriptor>();
+            services.RegisterCollectionRuleAction<CollectTraceActionFactory, CollectTraceOptions, CollectTraceActionDescriptor>();
+            services.RegisterCollectionRuleAction<ExecuteActionFactory, ExecuteOptions, ExecuteActionDescriptor>();
+            services.RegisterCollectionRuleAction<LoadProfilerActionFactory, LoadProfilerOptions, LoadProfilerActionDescriptor>();
+            services.RegisterCollectionRuleAction<SetEnvironmentVariableActionFactory, SetEnvironmentVariableOptions, SetEnvironmentVariableActionDescriptor>();
+            services.RegisterCollectionRuleAction<GetEnvironmentVariableActionFactory, GetEnvironmentVariableOptions, GetEnvironmentVariableActionDescriptor>();
 
             services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.AspNetRequestCountTriggerFactory, AspNetRequestCountOptions>(KnownCollectionRuleTriggers.AspNetRequestCount);
             services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.AspNetRequestDurationTriggerFactory, AspNetRequestDurationOptions>(KnownCollectionRuleTriggers.AspNetRequestDuration);
@@ -196,13 +196,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return services;
         }
 
-        public static IServiceCollection RegisterCollectionRuleAction<TFactory, TOptions>(this IServiceCollection services, string actionName)
+        public static IServiceCollection RegisterCollectionRuleAction<TFactory, TOptions, TDescriptor>(this IServiceCollection services)
             where TFactory : class, ICollectionRuleActionFactory<TOptions>
             where TOptions : BaseRecordOptions, new()
+            where TDescriptor : class, ICollectionRuleActionDescriptor, new()
         {
             services.AddSingleton<TFactory>();
             services.AddSingleton<CollectionRuleActionFactoryProxy<TFactory, TOptions>>();
-            services.AddSingleton<ICollectionRuleActionDescriptor, CollectionRuleActionDescriptor<TFactory, TOptions>>(sp => new CollectionRuleActionDescriptor<TFactory, TOptions>(actionName));
+            services.AddSingleton<ICollectionRuleActionDescriptor, TDescriptor>(sp => new TDescriptor());
             // NOTE: When opening collection rule actions for extensibility, this should not be added for all registered actions.
             // Each action should register its own IValidateOptions<> implementation (if it needs one).
             services.AddSingleton<IValidateOptions<TOptions>, DataAnnotationValidateOptions<TOptions>>();

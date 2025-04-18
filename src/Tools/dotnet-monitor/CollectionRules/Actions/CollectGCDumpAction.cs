@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.ComponentModel.DataAnnotations;
 using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 {
@@ -58,5 +59,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     collectionRuleMetadata);
             }
         }
+    }
+
+    internal sealed class CollectGCDumpActionDescriptor : ICollectionRuleActionDescriptor
+    {
+        public string ActionName => KnownCollectionRuleActions.CollectGCDump;
+        public Type FactoryType => typeof(CollectGCDumpActionFactory);
+        public Type OptionsType => typeof(CollectGCDumpOptions);
     }
 }

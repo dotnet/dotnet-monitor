@@ -3,6 +3,7 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using System;
 using System.Collections.Generic;
@@ -73,6 +74,13 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         }
     }
 
+    internal sealed class CallbackActionDescriptor : ICollectionRuleActionDescriptor
+    {
+        public string ActionName => CallbackAction.ActionName;
+        public Type OptionsType => typeof(BaseRecordOptions);
+        public Type FactoryType => typeof(CallbackActionFactory);
+    }
+
     internal sealed class DelayedCallbackAction : ICollectionRuleAction
     {
         public const string ActionName = nameof(DelayedCallbackAction);
@@ -109,6 +117,13 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
             return Task.FromResult(new CollectionRuleActionResult());
         }
+    }
+
+    internal sealed class DelayedCallbackActionDescriptor : ICollectionRuleActionDescriptor
+    {
+        public string ActionName => DelayedCallbackAction.ActionName;
+        public Type OptionsType => typeof(BaseRecordOptions);
+        public Type FactoryType => typeof(DelayedCallbackActionFactory);
     }
 
     internal sealed class CallbackActionService

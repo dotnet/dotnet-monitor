@@ -3,6 +3,7 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.NETCore.Client;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.Logging;
 using System;
@@ -82,5 +83,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 };
             }
         }
+    }
+
+    internal sealed class GetEnvironmentVariableActionDescriptor : ICollectionRuleActionDescriptor
+    {
+        public string ActionName => KnownCollectionRuleActions.GetEnvironmentVariable;
+        public Type OptionsType => typeof(GetEnvironmentVariableOptions);
+        public Type FactoryType => typeof(GetEnvironmentVariableActionFactory);
     }
 }

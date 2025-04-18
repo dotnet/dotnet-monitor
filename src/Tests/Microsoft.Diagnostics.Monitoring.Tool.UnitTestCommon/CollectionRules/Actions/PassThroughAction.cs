@@ -3,7 +3,9 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -51,6 +53,13 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
             return Task.FromResult(result);
         }
+    }
+
+    internal sealed class PassThroughActionDescriptor : ICollectionRuleActionDescriptor
+    {
+        public string ActionName => nameof(PassThroughAction);
+        public Type OptionsType => typeof(PassThroughOptions);
+        public Type FactoryType => typeof(PassThroughActionFactory);
     }
 
     internal sealed record class PassThroughOptions : BaseRecordOptions

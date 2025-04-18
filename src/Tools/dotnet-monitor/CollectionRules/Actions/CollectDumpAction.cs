@@ -3,6 +3,7 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -65,5 +66,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 return egressOperation;
             }
         }
+    }
+
+    internal sealed class CollectDumpActionDescriptor : ICollectionRuleActionDescriptor
+    {
+        public string ActionName => KnownCollectionRuleActions.CollectDump;
+        public Type FactoryType => typeof(CollectDumpActionFactory);
+        public Type OptionsType => typeof(CollectDumpOptions);
     }
 }
