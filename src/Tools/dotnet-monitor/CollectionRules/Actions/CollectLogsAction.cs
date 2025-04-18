@@ -7,9 +7,11 @@ using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
@@ -84,6 +86,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
                 return egressOperation;
             }
+        }
+    }
+
+    internal sealed class CollectLogsActionDescriptor : ICollectionRuleActionDescriptor
+    {
+        public string ActionName => KnownCollectionRuleActions.CollectLogs;
+        public Type FactoryType => typeof(CollectLogsActionFactory);
+        public Type OptionsType => typeof(CollectLogsOptions);
+
+        public void BindOptions(IConfigurationSection settingsSection, out object settings)
+        {
+            CollectLogsOptions options = new();
+            settingsSection.Bind(options);
+            settings = options;
         }
     }
 }

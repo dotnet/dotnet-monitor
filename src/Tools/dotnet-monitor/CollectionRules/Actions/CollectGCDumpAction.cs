@@ -3,12 +3,14 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using System;
 using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
 using Microsoft.AspNetCore.Http.Validation;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 {
@@ -59,6 +61,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     tags: null,
                     collectionRuleMetadata);
             }
+        }
+    }
+
+    internal sealed class CollectGCDumpActionDescriptor : ICollectionRuleActionDescriptor
+    {
+        public string ActionName => KnownCollectionRuleActions.CollectGCDump;
+        public Type FactoryType => typeof(CollectGCDumpActionFactory);
+        public Type OptionsType => typeof(CollectGCDumpOptions);
+
+        public void BindOptions(IConfigurationSection settingsSection, out object settings)
+        {
+            CollectGCDumpOptions options = new();
+            settingsSection.Bind(options);
+            settings = options;
         }
     }
 }

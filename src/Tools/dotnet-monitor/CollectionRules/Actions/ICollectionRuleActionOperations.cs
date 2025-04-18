@@ -3,6 +3,7 @@
 
 #nullable disable
 
+using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -20,6 +21,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         bool TryCreateFactory(
             string actionName,
             out ICollectionRuleActionFactoryProxy action);
+
+        /// <summary>
+        /// Attempts to bind an options instance of the options type
+        /// associated with the registered action name.
+        /// </summary>
+        bool TryBindOptions(
+            string actionName,
+            IConfigurationSection actionSection,
+            out object options);
 
         /// <summary>
         /// Attempts to validate an options instance of the options type

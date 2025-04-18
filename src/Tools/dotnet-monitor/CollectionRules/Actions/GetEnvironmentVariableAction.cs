@@ -9,6 +9,8 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -85,6 +87,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                         }
                 };
             }
+        }
+    }
+
+    internal sealed class GetEnvironmentVariableActionDescriptor : ICollectionRuleActionDescriptor
+    {
+        public string ActionName => KnownCollectionRuleActions.GetEnvironmentVariable;
+        public Type OptionsType => typeof(GetEnvironmentVariableOptions);
+        public Type FactoryType => typeof(GetEnvironmentVariableActionFactory);
+
+        public void BindOptions(IConfigurationSection settingsSection, out object settings)
+        {
+            GetEnvironmentVariableOptions options = new();
+            settingsSection.Bind(options);
+            settings = options;
         }
     }
 }

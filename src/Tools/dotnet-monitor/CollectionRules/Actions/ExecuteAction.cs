@@ -7,6 +7,8 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.Options;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -113,6 +115,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                     throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_NonzeroExitCode, exitCode.ToString(CultureInfo.InvariantCulture)));
                 }
             }
+        }
+    }
+
+    internal sealed class ExecuteActionDescriptor : ICollectionRuleActionDescriptor
+    {
+        public string ActionName => KnownCollectionRuleActions.Execute;
+        public Type FactoryType => typeof(ExecuteActionFactory);
+        public Type OptionsType => typeof(ExecuteOptions);
+
+        public void BindOptions(IConfigurationSection settingsSection, out object settings)
+        {
+            ExecuteOptions options = new();
+            settingsSection.Bind(options);
+            settings = options;
         }
     }
 }

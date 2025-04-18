@@ -5,6 +5,7 @@
 
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -67,6 +68,23 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
             }
 
             factory = null;
+            return false;
+        }
+
+        /// <inheritdoc/>
+        public bool TryBindOptions(
+            string triggerName,
+            IConfigurationSection triggerSection,
+            out object options)
+        {
+            // Check that the trigger is registered and has options
+            if (_map.TryGetValue(triggerName, out ICollectionRuleTriggerDescriptor descriptor))
+            {
+                IConfigurationSection settingsSection = triggerSection.GetSection(nameof(CollectionRuleTriggerOptions.Settings));
+                return descriptor.TryBindOptions(settingsSection, out options);
+            }
+
+            options = null;
             return false;
         }
 

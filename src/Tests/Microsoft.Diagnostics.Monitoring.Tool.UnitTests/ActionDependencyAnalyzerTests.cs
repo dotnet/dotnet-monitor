@@ -135,7 +135,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 Assert.Equal("Output a1input3 trail", a2output3);
             }, serviceCollection =>
             {
-                serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions>(nameof(PassThroughAction));
+                serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions, PassThroughActionDescriptor>();
             });
         }
 
@@ -174,7 +174,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             }, serviceCollection =>
             {
-                serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions>(nameof(PassThroughAction));
+                serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions, PassThroughActionDescriptor>();
             });
         }
 
@@ -211,7 +211,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }, serviceCollection =>
             {
                 serviceCollection.AddSingleton<TimeProvider, MockTimeProvider>();
-                serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions>(nameof(PassThroughAction));
+                serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions, PassThroughActionDescriptor>();
             });
         }
 
@@ -254,7 +254,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             }, serviceCollection =>
             {
-                serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions>(nameof(PassThroughAction));
+                serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions, PassThroughActionDescriptor>();
             }, loggingBuilder =>
             {
                 loggingBuilder.AddProvider(new TestLoggerProvider(record));
@@ -290,7 +290,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             }, serviceCollection =>
             {
-                serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions>(nameof(PassThroughAction));
+                serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions, PassThroughActionDescriptor>();
             });
         }
 
@@ -352,7 +352,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 Assert.Equal("Output a1input3 trail", a2output3);
             }, serviceCollection =>
             {
-                serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions>(nameof(PassThroughAction));
+                serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions, PassThroughActionDescriptor>();
             });
         }
     }

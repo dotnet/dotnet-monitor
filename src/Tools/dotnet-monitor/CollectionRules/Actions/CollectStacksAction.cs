@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Http.Validation;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
 using System;
 using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
 
@@ -73,5 +75,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 CallStackFormat.Speedscope => StackFormat.Speedscope,
                 _ => throw new InvalidOperationException()
             };
+    }
+
+    internal sealed class CollectStacksActionDescriptor : ICollectionRuleActionDescriptor
+    {
+        public string ActionName => KnownCollectionRuleActions.CollectStacks;
+        public Type FactoryType => typeof(CollectStacksActionFactory);
+        public Type OptionsType => typeof(CollectStacksOptions);
+
+        public void BindOptions(IConfigurationSection settingsSection, out object settings)
+        {
+            CollectStacksOptions options = new();
+            settingsSection.Bind(options);
+            settings = options;
+        }
     }
 }
