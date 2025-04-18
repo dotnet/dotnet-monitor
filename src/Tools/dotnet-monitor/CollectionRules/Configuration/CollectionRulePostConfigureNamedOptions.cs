@@ -64,6 +64,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
                 {
                     CollectionRuleActionOptions actionOptions = new();
 
+                    actionSection.Bind(actionOptions);
 
                     CollectionRuleBindingHelper.BindActionSettings(actionSection, actionOptions, _actionOperations);
 

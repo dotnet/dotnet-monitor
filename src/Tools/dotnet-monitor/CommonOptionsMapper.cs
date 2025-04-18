@@ -149,10 +149,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private void MapCollectionRuleOptions(CollectionRuleOptions obj, string valueName, string separator, IDictionary<string, string> map)
         {
             string prefix = FormattableString.Invariant($"{valueName}{separator}");
-            // MapFilters(obj.Filters, FormattableString.Invariant($"{prefix}{nameof(obj.Filters)}"), separator, map);
+            MapFilters(obj.Filters, FormattableString.Invariant($"{prefix}{nameof(obj.Filters)}"), separator, map);
             MapCollectionRuleTriggerOptions(obj.Trigger, FormattableString.Invariant($"{prefix}{nameof(obj.Trigger)}"), separator, map);
             MapActions(obj.Actions, FormattableString.Invariant($"{prefix}{nameof(obj.Actions)}"), separator, map);
-            // MapLimits(obj.Limits, FormattableString.Invariant($"{prefix}{nameof(obj.Limits)}"), separator, map);
+            MapLimits(obj.Limits, FormattableString.Invariant($"{prefix}{nameof(obj.Limits)}"), separator, map);
         }
 
         private void MapActions(List<CollectionRuleActionOptions> obj, string valueName, string separator, IDictionary<string, string> map)
@@ -235,6 +235,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         }
                         break;
                 }
+            }
+        }
+
+        private static void MapLimits(CollectionRuleLimitsOptions? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapInt(obj.ActionCount, FormattableString.Invariant($"{prefix}{nameof(obj.ActionCount)}"), map);
+                MapTimeSpan(obj.ActionCountSlidingWindowDuration, FormattableString.Invariant($"{prefix}{nameof(obj.ActionCountSlidingWindowDuration)}"), map);
+                MapTimeSpan(obj.RuleDuration, FormattableString.Invariant($"{prefix}{nameof(obj.RuleDuration)}"), map);
             }
         }
 
@@ -513,6 +524,47 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         }
 
         private static void MapDumpType(DumpType? value, string valueName, IDictionary<string, string> map)
+        {
+            if (null != value)
+            {
+                map.Add(valueName, ConvertUtils.ToString(value, CultureInfo.InvariantCulture));
+            }
+        }
+
+        private static void MapFilters(List<ProcessFilterDescriptor>? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                for (int index = 0; index < obj.Count; index++)
+                {
+                    ProcessFilterDescriptor value = obj[index];
+                    MapProcessFilterDescriptor(value, FormattableString.Invariant($"{prefix}{index}"), separator, map);
+                }
+            }
+        }
+
+        private static void MapProcessFilterDescriptor(ProcessFilterDescriptor obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            string prefix = FormattableString.Invariant($"{valueName}{separator}");
+            MapProcessFilterKey(obj.Key, FormattableString.Invariant($"{prefix}{nameof(obj.Key)}"), map);
+            MapString(obj.Value, FormattableString.Invariant($"{prefix}{nameof(obj.Value)}"), map);
+            MapProcessFilterType(obj.MatchType, FormattableString.Invariant($"{prefix}{nameof(obj.MatchType)}"), map);
+            MapString(obj.ProcessName, FormattableString.Invariant($"{prefix}{nameof(obj.ProcessName)}"), map);
+            MapString(obj.ProcessId, FormattableString.Invariant($"{prefix}{nameof(obj.ProcessId)}"), map);
+            MapString(obj.CommandLine, FormattableString.Invariant($"{prefix}{nameof(obj.CommandLine)}"), map);
+            MapString(obj.ManagedEntryPointAssemblyName, FormattableString.Invariant($"{prefix}{nameof(obj.ManagedEntryPointAssemblyName)}"), map);
+        }
+
+        private static void MapProcessFilterKey(ProcessFilterKey? value, string valueName, IDictionary<string, string> map)
+        {
+            if (null != value)
+            {
+                map.Add(valueName, ConvertUtils.ToString(value, CultureInfo.InvariantCulture));
+            }
+        }
+
+        private static void MapProcessFilterType(ProcessFilterType? value, string valueName, IDictionary<string, string> map)
         {
             if (null != value)
             {

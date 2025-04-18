@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
     <DisableCompileTimeOpenApiXmlGenerator>true</DisableCompileTimeOpenApiXmlGenerator>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
 
   <ItemGroup>
@@ -188,5 +189,11 @@
     <KnownFrameworkReference Update="Microsoft.NETCore.App" TargetingPackVersion="$(NetCoreAppVersion)" DefaultRuntimeFrameworkVersion="$(NetCoreAppVersion)" LatestRuntimeFrameworkVersion="$(NetCoreAppVersion)" />
     <KnownFrameworkReference Update="Microsoft.AspNetCore.App" TargetingPackVersion="$(AspNetCoreAppVersion)" DefaultRuntimeFrameworkVersion="$(AspNetCoreAppVersion)" LatestRuntimeFrameworkVersion="$(AspNetCoreAppVersion)" />
   </ItemGroup>
+
+  <Target Name="RemoveAnalyzer" BeforeTargets="CoreCompile">
+    <ItemGroup>
+      <Analyzer Remove="@(Analyzer)" Condition="'%(Analyzer.FileName)' == 'Microsoft.AspNetCore.Http.ValidationsGenerator'" />
+    </ItemGroup>
+  </Target>
 
 </Project>
