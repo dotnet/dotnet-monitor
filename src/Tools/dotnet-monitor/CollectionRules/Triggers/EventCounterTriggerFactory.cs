@@ -126,4 +126,49 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
             return true;
         }
     }
+
+    internal sealed class CPUUsageTriggerDescriptor : ICollectionRuleTriggerDescriptor
+    {
+        public Type FactoryType => typeof(EventCounterTriggerFactory);
+        public Type? OptionsType => typeof(CPUUsageOptions);
+        public string TriggerName => KnownCollectionRuleTriggers.CPUUsage;
+
+        public bool TryBindOptions(IConfigurationSection settingsSection, out object? settings)
+        {
+            var options = new CPUUsageOptions();
+            settingsSection.Bind(options);
+            settings = options;
+            return true;
+        }
+    }
+
+    internal sealed class GCHeapSizeTriggerDescriptor : ICollectionRuleTriggerDescriptor
+    {
+        public Type FactoryType => typeof(EventCounterTriggerFactory);
+        public Type? OptionsType => typeof(GCHeapSizeOptions);
+        public string TriggerName => KnownCollectionRuleTriggers.GCHeapSize;
+
+        public bool TryBindOptions(IConfigurationSection settingsSection, out object? settings)
+        {
+            var options = new GCHeapSizeOptions();
+            settingsSection.Bind(options);
+            settings = options;
+            return true;
+        }
+    }
+
+    internal sealed class ThreadpoolQueueLengthTriggerDescriptor : ICollectionRuleTriggerDescriptor
+    {
+        public Type FactoryType => typeof(EventCounterTriggerFactory);
+        public Type? OptionsType => typeof(ThreadpoolQueueLengthOptions);
+        public string TriggerName => KnownCollectionRuleTriggers.ThreadpoolQueueLength;
+
+        public bool TryBindOptions(IConfigurationSection settingsSection, out object? settings)
+        {
+            var options = new ThreadpoolQueueLengthOptions();
+            settingsSection.Bind(options);
+            settings = options;
+            return true;
+        }
+    }
 }
