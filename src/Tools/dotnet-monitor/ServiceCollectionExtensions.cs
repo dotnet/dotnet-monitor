@@ -152,15 +152,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.RegisterCollectionRuleAction<SetEnvironmentVariableActionFactory, SetEnvironmentVariableOptions, SetEnvironmentVariableActionDescriptor>();
             services.RegisterCollectionRuleAction<GetEnvironmentVariableActionFactory, GetEnvironmentVariableOptions, GetEnvironmentVariableActionDescriptor>();
 
-            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.AspNetRequestCountTriggerFactory, AspNetRequestCountOptions, CollectionRules.Triggers.AspNetRequestCountTriggerDescriptor>();
-            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.AspNetRequestDurationTriggerFactory, AspNetRequestDurationOptions, CollectionRules.Triggers.AspNetRequestDurationTriggerDescriptor>();
-            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.AspNetResponseStatusTriggerFactory, AspNetResponseStatusOptions, CollectionRules.Triggers.AspNetResponseStatusTriggerDescriptor>();
-            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, EventCounterOptions, CollectionRules.Triggers.EventCounterTriggerDescriptor>();
-            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, CPUUsageOptions, CollectionRules.Triggers.EventCounterTriggerDescriptor>();
-            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, GCHeapSizeOptions, CollectionRules.Triggers.EventCounterTriggerDescriptor>();
-            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, ThreadpoolQueueLengthOptions, CollectionRules.Triggers.EventCounterTriggerDescriptor>();
-            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.StartupTriggerFactory, CollectionRules.Triggers.StartupTriggerDescriptor>();
-            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventMeterTriggerFactory, EventMeterOptions, CollectionRules.Triggers.EventMeterTriggerDescriptor>();
+            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.AspNetRequestCountTriggerFactory, AspNetRequestCountOptions, AspNetRequestCountTriggerDescriptor>();
+            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.AspNetRequestDurationTriggerFactory, AspNetRequestDurationOptions, AspNetRequestDurationTriggerDescriptor>();
+            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.AspNetResponseStatusTriggerFactory, AspNetResponseStatusOptions, AspNetResponseStatusTriggerDescriptor>();
+            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, EventCounterOptions, EventCounterTriggerDescriptor>();
+            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, CPUUsageOptions, CPUUsageTriggerDescriptor>();
+            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, GCHeapSizeOptions, GCHeapSizeTriggerDescriptor>();
+            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, ThreadpoolQueueLengthOptions, ThreadpoolQueueLengthTriggerDescriptor>();
+            services.RegisterCollectionRuleTrigger<StartupTriggerFactory, StartupTriggerDescriptor>();
+            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventMeterTriggerFactory, EventMeterOptions, EventMeterTriggerDescriptor>();
 
             services.AddSingleton<EventPipeTriggerFactory>();
             services.AddSingleton<ITraceEventTriggerFactory<EventCounterTriggerSettings>, Monitoring.EventPipe.Triggers.EventCounter.EventCounterTriggerFactory>();
