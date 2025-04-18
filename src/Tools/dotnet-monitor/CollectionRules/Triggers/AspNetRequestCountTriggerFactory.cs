@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers;
 using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers.AspNet;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using System;
 using System.Globalization;
 
@@ -43,5 +44,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
 
             return EventPipeTriggerFactory.Create(endpointInfo, aspnetTriggerSourceConfiguration, _traceEventTriggerFactory, settings, callback);
         }
+    }
+
+    internal sealed class AspNetRequestCountTriggerDescriptor : ICollectionRuleTriggerDescriptor
+    {
+        public Type FactoryType => typeof(AspNetRequestCountTriggerFactory);
+        public Type? OptionsType => typeof(AspNetRequestCountOptions);
+        public string TriggerName => KnownCollectionRuleTriggers.AspNetRequestCount;
     }
 }

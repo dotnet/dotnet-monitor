@@ -5,6 +5,7 @@ using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers;
 using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers.SystemDiagnosticsMetrics;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Extensions.Options;
 using System;
 
@@ -54,5 +55,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
                 settings,
                 callback);
         }
+    }
+
+    internal sealed class EventMeterTriggerDescriptor : ICollectionRuleTriggerDescriptor
+    {
+        public Type FactoryType => typeof(EventMeterTriggerFactory);
+        public Type? OptionsType => typeof(EventMeterOptions);
+        public string TriggerName => KnownCollectionRuleTriggers.EventMeter;
     }
 }

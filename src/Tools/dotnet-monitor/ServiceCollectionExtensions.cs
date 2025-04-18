@@ -152,15 +152,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.RegisterCollectionRuleAction<SetEnvironmentVariableActionFactory, SetEnvironmentVariableOptions, SetEnvironmentVariableActionDescriptor>();
             services.RegisterCollectionRuleAction<GetEnvironmentVariableActionFactory, GetEnvironmentVariableOptions, GetEnvironmentVariableActionDescriptor>();
 
-            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.AspNetRequestCountTriggerFactory, AspNetRequestCountOptions>(KnownCollectionRuleTriggers.AspNetRequestCount);
-            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.AspNetRequestDurationTriggerFactory, AspNetRequestDurationOptions>(KnownCollectionRuleTriggers.AspNetRequestDuration);
-            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.AspNetResponseStatusTriggerFactory, AspNetResponseStatusOptions>(KnownCollectionRuleTriggers.AspNetResponseStatus);
-            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, EventCounterOptions>(KnownCollectionRuleTriggers.EventCounter);
-            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, CPUUsageOptions>(KnownCollectionRuleTriggers.CPUUsage);
-            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, GCHeapSizeOptions>(KnownCollectionRuleTriggers.GCHeapSize);
-            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, ThreadpoolQueueLengthOptions>(KnownCollectionRuleTriggers.ThreadpoolQueueLength);
-            services.RegisterCollectionRuleTrigger<StartupTriggerFactory>(KnownCollectionRuleTriggers.Startup);
-            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventMeterTriggerFactory, EventMeterOptions>(KnownCollectionRuleTriggers.EventMeter);
+            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.AspNetRequestCountTriggerFactory, AspNetRequestCountOptions, CollectionRules.Triggers.AspNetRequestCountTriggerDescriptor>();
+            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.AspNetRequestDurationTriggerFactory, AspNetRequestDurationOptions, CollectionRules.Triggers.AspNetRequestDurationTriggerDescriptor>();
+            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.AspNetResponseStatusTriggerFactory, AspNetResponseStatusOptions, CollectionRules.Triggers.AspNetResponseStatusTriggerDescriptor>();
+            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, EventCounterOptions, CollectionRules.Triggers.EventCounterTriggerDescriptor>();
+            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, CPUUsageOptions, CollectionRules.Triggers.EventCounterTriggerDescriptor>();
+            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, GCHeapSizeOptions, CollectionRules.Triggers.EventCounterTriggerDescriptor>();
+            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, ThreadpoolQueueLengthOptions, CollectionRules.Triggers.EventCounterTriggerDescriptor>();
+            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.StartupTriggerFactory, CollectionRules.Triggers.StartupTriggerDescriptor>();
+            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventMeterTriggerFactory, EventMeterOptions, CollectionRules.Triggers.EventMeterTriggerDescriptor>();
 
             services.AddSingleton<EventPipeTriggerFactory>();
             services.AddSingleton<ITraceEventTriggerFactory<EventCounterTriggerSettings>, Monitoring.EventPipe.Triggers.EventCounter.EventCounterTriggerFactory>();
@@ -210,24 +210,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return services;
         }
 
-        public static IServiceCollection RegisterCollectionRuleTrigger<TFactory>(this IServiceCollection services, string triggerName)
+        public static IServiceCollection RegisterCollectionRuleTrigger<TFactory, TDescriptor>(this IServiceCollection services)
             where TFactory : class, ICollectionRuleTriggerFactory
+            where TDescriptor : class, ICollectionRuleTriggerDescriptor, new()
         {
             services.AddSingleton<TFactory>();
             services.AddSingleton<CollectionRuleTriggerFactoryProxy<TFactory>>();
-            services.AddSingleton<ICollectionRuleTriggerDescriptor, CollectionRuleTriggerDescriptor<TFactory>>(
-                sp => new CollectionRuleTriggerDescriptor<TFactory>(triggerName));
+            services.AddSingleton<ICollectionRuleTriggerDescriptor, TDescriptor>(sp => new TDescriptor());
             return services;
         }
 
-        public static IServiceCollection RegisterCollectionRuleTrigger<TFactory, TOptions>(this IServiceCollection services, string triggerName)
+        public static IServiceCollection RegisterCollectionRuleTrigger<TFactory, TOptions, TDescriptor>(this IServiceCollection services)
             where TFactory : class, ICollectionRuleTriggerFactory<TOptions>
             where TOptions : class, new()
+            where TDescriptor : class, ICollectionRuleTriggerDescriptor, new()
         {
             services.AddSingleton<TFactory>();
             services.AddSingleton<CollectionRuleTriggerFactoryProxy<TFactory, TOptions>>();
-            services.AddSingleton<ICollectionRuleTriggerDescriptor, CollectionRuleTriggerProvider<TFactory, TOptions>>(
-                sp => new CollectionRuleTriggerProvider<TFactory, TOptions>(triggerName));
+            services.AddSingleton<ICollectionRuleTriggerDescriptor, TDescriptor>(sp => new TDescriptor());
             // NOTE: When opening collection rule triggers for extensibility, this should not be added for all registered triggers.
             // Each trigger should register its own IValidateOptions<> implementation (if it needs one).
             services.AddSingleton<IValidateOptions<TOptions>, DataAnnotationValidateOptions<TOptions>>();

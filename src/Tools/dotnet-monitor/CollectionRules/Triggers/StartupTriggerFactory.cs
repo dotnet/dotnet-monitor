@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using System;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
@@ -17,5 +18,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         {
             return new StartupTrigger(callback);
         }
+    }
+
+    internal sealed class StartupTriggerDescriptor : ICollectionRuleTriggerDescriptor
+    {
+        public Type FactoryType => typeof(StartupTriggerFactory);
+        public Type? OptionsType => null;
+        public string TriggerName => KnownCollectionRuleTriggers.Startup;
     }
 }
