@@ -8,6 +8,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.ComponentModel.DataAnnotations;
 using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
@@ -114,5 +115,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         public string ActionName => KnownCollectionRuleActions.CollectTrace;
         public Type FactoryType => typeof(CollectTraceActionFactory);
         public Type OptionsType => typeof(CollectTraceOptions);
+
+        public void BindOptions(IConfigurationSection settingsSection, out object settings)
+        {
+            CollectTraceOptions options = new();
+            settingsSection.Bind(options);
+            settings = options;
+        }
     }
 }

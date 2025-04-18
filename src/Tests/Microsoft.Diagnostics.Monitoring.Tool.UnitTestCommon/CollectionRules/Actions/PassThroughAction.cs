@@ -5,6 +5,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -60,6 +61,13 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         public string ActionName => nameof(PassThroughAction);
         public Type OptionsType => typeof(PassThroughOptions);
         public Type FactoryType => typeof(PassThroughActionFactory);
+
+        public void BindOptions(IConfigurationSection settingsSection, out object settings)
+        {
+            PassThroughOptions options = new();
+            settingsSection.Bind(options);
+            settings = options;
+        }
     }
 
     internal sealed record class PassThroughOptions : BaseRecordOptions

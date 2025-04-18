@@ -8,6 +8,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -90,5 +91,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         public string ActionName => KnownCollectionRuleActions.CollectLogs;
         public Type FactoryType => typeof(CollectLogsActionFactory);
         public Type OptionsType => typeof(CollectLogsOptions);
+
+        public void BindOptions(IConfigurationSection settingsSection, out object settings)
+        {
+            CollectLogsOptions options = new();
+            settingsSection.Bind(options);
+            settings = options;
+        }
     }
 }

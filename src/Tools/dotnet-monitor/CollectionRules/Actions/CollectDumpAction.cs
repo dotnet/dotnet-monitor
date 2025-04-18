@@ -5,6 +5,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -73,5 +74,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         public string ActionName => KnownCollectionRuleActions.CollectDump;
         public Type FactoryType => typeof(CollectDumpActionFactory);
         public Type OptionsType => typeof(CollectDumpOptions);
+
+        public void BindOptions(IConfigurationSection settingsSection, out object settings)
+        {
+            CollectDumpOptions options = new();
+            settingsSection.Bind(options);
+            settings = options;
+        }
     }
 }
