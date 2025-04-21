@@ -48,7 +48,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     {
                         foreach (string memberName in memberNames)
                         {
-                            failures.Add($"{memberName}: {result.ErrorMessage}");
+                            failures.Add(result.ErrorMessage);
                         }
                     }
                     else

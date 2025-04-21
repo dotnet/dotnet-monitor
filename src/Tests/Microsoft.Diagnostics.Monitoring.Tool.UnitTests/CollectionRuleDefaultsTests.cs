@@ -73,7 +73,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                         () => ActionTestsHelper.GetActionOptions<OptionsValidationException>(host, DefaultRuleName));
 
                 Assert.Equal(string.Format(OptionsDisplayStrings.ErrorMessage_NoDefaultEgressProvider), invalidOptionsException.Message);
-            });
+            }, TestValidatableTypes.AddValidation);
         }
 
         [Fact]
