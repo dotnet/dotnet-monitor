@@ -19,12 +19,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
     internal sealed record class SetEnvironmentVariableOptions : BaseRecordOptions
     {
         [Display(
+            Name = nameof(Name),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_SetEnvironmentVariableOptions_Name))]
         [Required]
         public string Name { get; set; } = string.Empty;
 
         [Display(
+            Name = nameof(Value),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_SetEnvironmentVariableOptions_Value))]
         public string? Value { get; set; }

@@ -11,11 +11,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     internal sealed class EgressOptions
     {
         [Display(
+            Name = nameof(FileSystem),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EgressOptions_FileSystem))]
         public IDictionary<string, FileSystemEgressProviderOptions>? FileSystem { get; set; }
 
         [Display(
+            Name = nameof(Properties),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EgressOptions_Properties))]
         public IDictionary<string, string>? Properties { get; set; }

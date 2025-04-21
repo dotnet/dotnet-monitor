@@ -11,6 +11,7 @@ namespace Microsoft.Diagnostics.Monitoring.Options
         IInProcessFeatureOptions
     {
         [Display(
+            Name = nameof(Enabled),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CallStacksOptions_Enabled))]
         [DefaultValue(CallStacksOptionsDefaults.Enabled)]

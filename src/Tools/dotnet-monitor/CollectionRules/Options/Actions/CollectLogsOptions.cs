@@ -26,6 +26,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
     internal sealed partial record class CollectLogsOptions : BaseRecordOptions, IEgressProviderProperties
     {
         [Display(
+            Name = nameof(DefaultLevel),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectLogsOptions_DefaultLevel))]
         [EnumDataType(typeof(LogLevel))]
@@ -33,17 +34,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
         public LogLevel? DefaultLevel { get; set; }
 
         [Display(
+            Name = nameof(FilterSpecs),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectLogsOptions_FilterSpecs))]
         public Dictionary<string, LogLevel?>? FilterSpecs { get; set; }
 
         [Display(
+            Name = nameof(UseAppFilters),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectLogsOptions_UseAppFilters))]
         [DefaultValue(CollectLogsOptionsDefaults.UseAppFilters)]
         public bool? UseAppFilters { get; set; }
 
         [Display(
+            Name = nameof(Duration),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectArtifactOptions_Duration))]
         [Range(typeof(TimeSpan), ActionOptionsConstants.Duration_MinValue, ActionOptionsConstants.Duration_MaxValue)]
@@ -52,6 +56,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
         public TimeSpan? Duration { get; set; }
 
         [Display(
+            Name = nameof(Egress),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectArtifactOptions_Egress))]
         [Required(
@@ -63,6 +68,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
         public string Egress { get; set; } = string.Empty;
 
         [Display(
+            Name = nameof(Format),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectLogsOptions_Format))]
         [DefaultValue(CollectLogsOptionsDefaults.Format)]
@@ -70,6 +76,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
         public LogFormat? Format { get; set; }
 
         [Display(
+            Name = nameof(ArtifactName),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectArtifactOptions_ArtifactName))]
         public string? ArtifactName { get; set; }

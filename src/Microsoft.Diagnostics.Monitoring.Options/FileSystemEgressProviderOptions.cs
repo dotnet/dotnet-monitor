@@ -15,17 +15,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
         public const int CopyBufferSize_MaxValue = int.MaxValue;
 
         [Display(
+            Name = nameof(DirectoryPath),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_FileSystemEgressProviderOptions_DirectoryPath))]
         [Required]
         public string DirectoryPath { get; set; } = string.Empty;
 
         [Display(
+            Name = nameof(IntermediateDirectoryPath),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_FileSystemEgressProviderOptions_IntermediateDirectoryPath))]
         public string? IntermediateDirectoryPath { get; set; }
 
         [Display(
+            Name = nameof(CopyBufferSize),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CommonEgressProviderOptions_CopyBufferSize))]
         [Range(CopyBufferSize_MinValue, CopyBufferSize_MaxValue)]

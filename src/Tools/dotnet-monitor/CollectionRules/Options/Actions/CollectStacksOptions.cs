@@ -25,6 +25,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
     internal sealed partial record class CollectStacksOptions : BaseRecordOptions, IEgressProviderProperties
     {
         [Display(
+            Name = nameof(Egress),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectArtifactOptions_Egress))]
         [Required(
@@ -36,12 +37,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
         public string Egress { get; set; } = string.Empty;
 
         [Display(
+            Name = nameof(Format),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectStacksOptions_Format))]
         [DefaultValue(CallStackFormat.Json)]
         public CallStackFormat? Format { get; set; }
 
         [Display(
+            Name = nameof(ArtifactName),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectArtifactOptions_ArtifactName))]
         public string? ArtifactName { get; set; }

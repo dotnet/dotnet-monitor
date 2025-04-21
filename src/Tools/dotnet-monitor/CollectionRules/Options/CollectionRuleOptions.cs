@@ -15,12 +15,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
     internal sealed partial class CollectionRuleOptions
     {
         [Display(
+            Name = nameof(Filters),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleOptions_Filters))]
         public List<ProcessFilterDescriptor> Filters { get; set; } = [];
 
 #nullable disable
         [Display(
+            Name = nameof(Trigger),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleOptions_Trigger))]
         [Required]
@@ -28,11 +30,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
 #nullable enable
 
         [Display(
+            Name = nameof(Actions),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleOptions_Actions))]
         public List<CollectionRuleActionOptions> Actions { get; set; } = [];
 
         [Display(
+            Name = nameof(Limits),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleOptions_Limits))]
         public CollectionRuleLimitsOptions? Limits { get; set; }

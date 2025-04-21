@@ -17,28 +17,33 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
     internal sealed partial class EventMeterOptions : IValidateOptions<EventMeterOptions>, ISlidingWindowDurationProperties
     {
         [Display(
+            Name = nameof(MeterName),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EventMeterOptions_MeterName))]
         [Required]
         public string MeterName { get; set; } = string.Empty;
 
         [Display(
+            Name = nameof(InstrumentName),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EventMeterOptions_InstrumentName))]
         [Required]
         public string InstrumentName { get; set; } = string.Empty;
 
         [Display(
+            Name = nameof(GreaterThan),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EventMeterOptions_GreaterThan))]
         public double? GreaterThan { get; set; }
 
         [Display(
+            Name = nameof(LessThan),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EventMeterOptions_LessThan))]
         public double? LessThan { get; set; }
 
         [Display(
+            Name = nameof(SlidingWindowDuration),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EventMeterOptions_SlidingWindowDuration))]
         [Range(typeof(TimeSpan), TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue)]
@@ -46,6 +51,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
         public TimeSpan? SlidingWindowDuration { get; set; }
 
         [Display(
+            Name = nameof(HistogramPercentile),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EventMeterOptions_HistogramPercentile))]
         [Range(TriggerOptionsConstants.Percentage_MinValue, TriggerOptionsConstants.Percentage_MaxValue)]

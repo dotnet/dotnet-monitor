@@ -9,11 +9,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     internal sealed partial class AuthenticationOptions
     {
         [Display(
+            Name = nameof(MonitorApiKey),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AuthenticationOptions_MonitorApiKey))]
         public MonitorApiKeyOptions? MonitorApiKey { get; set; }
 
         [Display(
+            Name = nameof(AzureAd),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AuthenticationOptions_AzureAd))]
         public AzureAdOptions? AzureAd { get; set; }

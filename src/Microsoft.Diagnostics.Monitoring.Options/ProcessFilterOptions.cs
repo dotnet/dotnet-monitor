@@ -10,14 +10,17 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     public enum ProcessFilterKey
     {
         [Display(
+            Name = nameof(ProcessId),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterKey_ProcessId))]
         ProcessId,
         [Display(
+            Name = nameof(ProcessName),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterKey_ProcessName))]
         ProcessName,
         [Display(
+            Name = nameof(CommandLine),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterKey_CommandLine))]
         CommandLine,
@@ -27,11 +30,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     public enum ProcessFilterType
     {
         [Display(
+            Name = nameof(Exact),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterType_Exact))]
         Exact,
 
         [Display(
+            Name = nameof(Contains),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterType_Contains))]
         Contains,
@@ -40,6 +45,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     public sealed class ProcessFilterOptions
     {
         [Display(
+            Name = nameof(Filters),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterOptions_Filters))]
         public List<ProcessFilterDescriptor> Filters { get; set; } = [];
@@ -48,37 +54,44 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     public sealed partial class ProcessFilterDescriptor
     {
         [Display(
+            Name = nameof(Key),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterDescriptor_Key))]
         public ProcessFilterKey Key { get; set; }
 
         [Display(
+            Name = nameof(Value),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterDescriptor_Value))]
         public string? Value { get; set; }
 
         [Display(
+            Name = nameof(MatchType),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterDescriptor_MatchType))]
         [DefaultValue(ProcessFilterType.Exact)]
         public ProcessFilterType MatchType { get; set; } = ProcessFilterType.Exact;
 
         [Display(
+            Name = nameof(ProcessName),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterDescriptor_ProcessName))]
         public string? ProcessName { get; set; }
 
         [Display(
+            Name = nameof(ProcessId),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterDescriptor_ProcessId))]
         public string? ProcessId { get; set; }
 
         [Display(
+            Name = nameof(CommandLine),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterDescriptor_CommandLine))]
         public string? CommandLine { get; set; }
 
         [Display(
+            Name = nameof(ManagedEntryPointAssemblyName),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ProcessFilterDescriptor_ManagedEntryPointAssemblyName))]
         public string? ManagedEntryPointAssemblyName { get; set; }

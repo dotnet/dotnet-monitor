@@ -16,6 +16,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public const float IntervalMaxSeconds = 60 * 60 * 24; // One day
 
         [Display(
+            Name = nameof(IntervalSeconds),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_GlobalCounterOptions_IntervalSeconds))]
         [Range(IntervalMinSeconds, IntervalMaxSeconds)]
@@ -23,6 +24,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public float? IntervalSeconds { get; set; }
 
         [Display(
+            Name = nameof(MaxHistograms),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricsOptions_MaxHistograms))]
         [DefaultValue(GlobalCounterOptionsDefaults.MaxHistograms)]
@@ -30,6 +32,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public int? MaxHistograms { get; set; }
 
         [Display(
+            Name = nameof(MaxTimeSeries),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricsOptions_MaxTimeSeries))]
         [DefaultValue(GlobalCounterOptionsDefaults.MaxTimeSeries)]
@@ -37,6 +40,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public int? MaxTimeSeries { get; set; }
 
         [Display(
+            Name = nameof(Providers),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_GlobalCounterOptions_Providers))]
         public System.Collections.Generic.IDictionary<string, GlobalProviderOptions>? Providers { get; set; } = new Dictionary<string, GlobalProviderOptions>(StringComparer.OrdinalIgnoreCase);

@@ -18,12 +18,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
     internal sealed record class LoadProfilerOptions : BaseRecordOptions
     {
         [Display(
+            Name = nameof(Path),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LoadProfilerOptions_Path))]
         [Required]
         public string Path { get; set; } = string.Empty;
 
         [Display(
+            Name = nameof(Clsid),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LoadProfilerOptions_Clsid))]
         [Required]

@@ -11,6 +11,7 @@ namespace Microsoft.Diagnostics.Monitoring.Options
     internal sealed class LogLevelOptions
     {
         [Display(
+            Name = nameof(LogLevel),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LogLevelOptions_LogLevel))]
         public IDictionary<string, LogLevel?>? LogLevel { get; set; }

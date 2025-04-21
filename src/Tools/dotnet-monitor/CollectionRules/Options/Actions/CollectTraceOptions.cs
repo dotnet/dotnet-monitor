@@ -25,23 +25,27 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
     internal sealed partial record class CollectTraceOptions : BaseRecordOptions, IEgressProviderProperties
     {
         [Display(
+            Name = nameof(Profile),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectTraceOptions_Profile))]
         [EnumDataType(typeof(TraceProfile))]
         public TraceProfile? Profile { get; set; }
 
         [Display(
+            Name = nameof(Providers),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectTraceOptions_Providers))]
         public List<EventPipeProvider>? Providers { get; set; }
 
         [Display(
+            Name = nameof(RequestRundown),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectTraceOptions_RequestRundown))]
         [DefaultValue(CollectTraceOptionsDefaults.RequestRundown)]
         public bool? RequestRundown { get; set; }
 
         [Display(
+            Name = nameof(BufferSizeMegabytes),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectTraceOptions_BufferSizeMegabytes))]
         [Range(ActionOptionsConstants.BufferSizeMegabytes_MinValue, ActionOptionsConstants.BufferSizeMegabytes_MaxValue)]
@@ -49,6 +53,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
         public int? BufferSizeMegabytes { get; set; }
 
         [Display(
+            Name = nameof(Duration),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectArtifactOptions_Duration))]
         [Range(typeof(TimeSpan), ActionOptionsConstants.Duration_MinValue, ActionOptionsConstants.Duration_MaxValue)]
@@ -57,6 +62,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
         public TimeSpan? Duration { get; set; }
 
         [Display(
+            Name = nameof(Egress),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectArtifactOptions_Egress))]
         [Required(
@@ -68,11 +74,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
         public string Egress { get; set; } = string.Empty;
 
         [Display(
+            Name = nameof(StoppingEvent),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectTraceOptions_StoppingEvent))]
         public TraceEventFilter? StoppingEvent { get; set; }
 
         [Display(
+            Name = nameof(ArtifactName),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectArtifactOptions_ArtifactName))]
         public string? ArtifactName { get; set; }

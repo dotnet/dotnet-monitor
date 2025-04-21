@@ -17,28 +17,33 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
     internal sealed partial class EventCounterOptions : IValidateOptions<EventCounterOptions>, ISlidingWindowDurationProperties
     {
         [Display(
+            Name = nameof(ProviderName),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EventCounterOptions_ProviderName))]
         [Required]
         public string ProviderName { get; set; } = string.Empty;
 
         [Display(
+            Name = nameof(CounterName),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EventCounterOptions_CounterName))]
         [Required]
         public string CounterName { get; set; } = string.Empty;
 
         [Display(
+            Name = nameof(GreaterThan),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EventCounterOptions_GreaterThan))]
         public double? GreaterThan { get; set; }
 
         [Display(
+            Name = nameof(LessThan),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EventCounterOptions_LessThan))]
         public double? LessThan { get; set; }
 
         [Display(
+            Name = nameof(SlidingWindowDuration),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EventCounterOptions_SlidingWindowDuration))]
         [Range(typeof(TimeSpan), TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue)]

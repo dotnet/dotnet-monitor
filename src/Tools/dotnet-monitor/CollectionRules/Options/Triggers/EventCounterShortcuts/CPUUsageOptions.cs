@@ -18,6 +18,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.E
     internal sealed partial class CPUUsageOptions : IValidateOptions<CPUUsageOptions>, IEventCounterShortcuts, ISlidingWindowDurationProperties
     {
         [Display(
+            Name = nameof(GreaterThan),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CPUUsageOptions_GreaterThan))]
         [DefaultValue(CPUUsageOptionsDefaults.GreaterThan)]
@@ -25,12 +26,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.E
         public double? GreaterThan { get; set; }
 
         [Display(
+            Name = nameof(LessThan),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CPUUsageOptions_LessThan))]
         [Range(TriggerOptionsConstants.Percentage_MinValue, TriggerOptionsConstants.Percentage_MaxValue)]
         public double? LessThan { get; set; }
 
         [Display(
+            Name = nameof(SlidingWindowDuration),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EventCounterOptions_SlidingWindowDuration))]
         [Range(typeof(TimeSpan), TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue)]

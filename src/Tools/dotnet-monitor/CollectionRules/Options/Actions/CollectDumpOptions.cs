@@ -22,6 +22,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
     internal sealed partial record class CollectDumpOptions : BaseRecordOptions, IEgressProviderProperties
     {
         [Display(
+            Name = nameof(Type),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectDumpOptions_Type))]
         [EnumDataType(typeof(DumpType))]
@@ -29,6 +30,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
         public DumpType? Type { get; set; }
 
         [Display(
+            Name = nameof(Egress),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectArtifactOptions_Egress))]
         [Required(
@@ -40,6 +42,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
         public string Egress { get; set; } = string.Empty;
 
         [Display(
+            Name = nameof(ArtifactName),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectArtifactOptions_ArtifactName))]
         public string? ArtifactName { get; set; }
