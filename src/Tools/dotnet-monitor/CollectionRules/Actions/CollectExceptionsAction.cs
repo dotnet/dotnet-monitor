@@ -3,7 +3,9 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.ComponentModel.DataAnnotations;
 using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
@@ -53,6 +55,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 collectionRuleMetadata: collectionRuleMetadata);
 
             return egressOperation;
+        }
+    }
+
+    internal sealed class CollectExceptionsActionDescriptor : ICollectionRuleActionDescriptor
+    {
+        public string ActionName => KnownCollectionRuleActions.CollectExceptions;
+        public Type FactoryType => typeof(CollectExceptionsActionFactory);
+        public Type OptionsType => typeof(CollectExceptionsOptions);
+
+        public void BindOptions(IConfigurationSection settingsSection, out object settings)
+        {
+            CollectExceptionsOptions options = new();
+            settingsSection.Bind(options);
+            settings = options;
         }
     }
 }

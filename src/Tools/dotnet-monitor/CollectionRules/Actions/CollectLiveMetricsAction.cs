@@ -5,6 +5,8 @@ using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
@@ -93,6 +95,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 
                 return egressOperation;
             }
+        }
+    }
+
+    internal sealed class CollectLiveMetricsActionDescriptor : ICollectionRuleActionDescriptor
+    {
+        public string ActionName => KnownCollectionRuleActions.CollectLiveMetrics;
+        public Type FactoryType => typeof(CollectLiveMetricsActionFactory);
+        public Type OptionsType => typeof(CollectLiveMetricsOptions);
+
+        public void BindOptions(IConfigurationSection settingsSection, out object settings)
+        {
+            CollectLiveMetricsOptions options = new();
+            settingsSection.Bind(options);
+            settings = options;
         }
     }
 }

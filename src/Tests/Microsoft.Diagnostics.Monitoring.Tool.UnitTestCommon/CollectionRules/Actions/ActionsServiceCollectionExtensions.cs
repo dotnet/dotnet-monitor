@@ -14,7 +14,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         public static IServiceCollection RegisterTestAction(this IServiceCollection services, CallbackActionService callback)
         {
             services.AddSingleton(callback);
-            services.RegisterCollectionRuleAction<CallbackActionFactory, BaseRecordOptions>(CallbackAction.ActionName);
+            services.RegisterCollectionRuleAction<CallbackActionFactory, BaseRecordOptions, CallbackActionDescriptor>();
 
             return services;
         }
@@ -22,7 +22,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         public static IServiceCollection RegisterDelayedTestAction(this IServiceCollection services, CallbackActionService callback)
         {
             services.AddSingleton(callback);
-            services.RegisterCollectionRuleAction<DelayedCallbackActionFactory, BaseRecordOptions>(DelayedCallbackAction.ActionName);
+            services.RegisterCollectionRuleAction<DelayedCallbackActionFactory, BaseRecordOptions, DelayedCallbackActionDescriptor>();
 
             return services;
         }
