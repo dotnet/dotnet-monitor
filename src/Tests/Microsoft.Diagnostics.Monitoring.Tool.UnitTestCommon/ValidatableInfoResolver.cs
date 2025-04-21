@@ -209,6 +209,11 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                 validatableInfo = CreateCollectLiveMetricsOptions();
                 return true;
             }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectStacksOptions))
+            {
+                validatableInfo = CreateCollectStacksOptions();
+                return true;
+            }
             if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.MonitorApiKeyOptions))
             {
                 validatableInfo = CreateMonitorApiKeyOptions();
@@ -304,7 +309,32 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                 validatableInfo = CreateLoadProfilerOptions();
                 return true;
             }
-            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.TestValidatableTypes))
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectExceptionsOptions))
+            {
+                validatableInfo = CreateCollectExceptionsOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetRequestDurationOptions))
+            {
+                validatableInfo = CreateAspNetRequestDurationOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetRequestCountOptions))
+            {
+                validatableInfo = CreateAspNetRequestCountOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetResponseStatusOptions))
+            {
+                validatableInfo = CreateAspNetResponseStatusOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Monitoring.TestCommon.PassThroughOptions))
+            {
+                validatableInfo = CreatePassThroughOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Monitoring.TestCommon.TestValidatableTypes))
             {
                 validatableInfo = CreateTestValidatableTypes();
                 return true;
@@ -329,7 +359,7 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleTriggerOptions),
                         propertyType: typeof(string),
                         name: "Type",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings1"
+                        displayName: "Type"
                     ),
                 ]
             );
@@ -343,7 +373,7 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleActionOptions),
                         propertyType: typeof(string),
                         name: "Type",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings2"
+                        displayName: "Type"
                     ),
                 ]
             );
@@ -357,19 +387,19 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleLimitsOptions),
                         propertyType: typeof(int?),
                         name: "ActionCount",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings3"
+                        displayName: "ActionCount"
                     ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleLimitsOptions),
                         propertyType: typeof(global::System.TimeSpan?),
                         name: "ActionCountSlidingWindowDuration",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings4"
+                        displayName: "ActionCountSlidingWindowDuration"
                     ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleLimitsOptions),
                         propertyType: typeof(global::System.TimeSpan?),
                         name: "RuleDuration",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings5"
+                        displayName: "RuleDuration"
                     ),
                 ]
             );
@@ -383,19 +413,19 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleOptions),
                         propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleTriggerOptions),
                         name: "Trigger",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings6"
+                        displayName: "Trigger"
                     ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleOptions),
                         propertyType: typeof(global::System.Collections.Generic.List<global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleActionOptions>),
                         name: "Actions",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings7"
+                        displayName: "Actions"
                     ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleOptions),
                         propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleLimitsOptions),
                         name: "Limits",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings8"
+                        displayName: "Limits"
                     ),
                 ]
             );
@@ -904,7 +934,7 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.ExecuteOptions),
                         propertyType: typeof(string),
                         name: "Path",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings9"
+                        displayName: "Path"
                     ),
                 ]
             );
@@ -924,7 +954,7 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.SetEnvironmentVariableOptions),
                         propertyType: typeof(string),
                         name: "Name",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings10"
+                        displayName: "Name"
                     ),
                 ]
             );
@@ -944,7 +974,7 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.GetEnvironmentVariableOptions),
                         propertyType: typeof(string),
                         name: "Name",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings11"
+                        displayName: "Name"
                     ),
                 ]
             );
@@ -978,19 +1008,19 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.TraceEventFilter),
                         propertyType: typeof(string),
                         name: "ProviderName",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings12"
+                        displayName: "ProviderName"
                     ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.TraceEventFilter),
                         propertyType: typeof(string),
                         name: "EventName",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings13"
+                        displayName: "EventName"
                     ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.TraceEventFilter),
                         propertyType: typeof(global::System.Collections.Generic.IDictionary<string, string>),
                         name: "PayloadFilter",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings14"
+                        displayName: "PayloadFilter"
                     ),
                 ]
             );
@@ -1010,31 +1040,31 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectTraceOptions),
                         propertyType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.Models.TraceProfile?),
                         name: "Profile",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings15"
+                        displayName: "Profile"
                     ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectTraceOptions),
                         propertyType: typeof(int?),
                         name: "BufferSizeMegabytes",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings16"
+                        displayName: "BufferSizeMegabytes"
                     ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectTraceOptions),
                         propertyType: typeof(global::System.TimeSpan?),
                         name: "Duration",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings17"
+                        displayName: "Duration"
                     ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectTraceOptions),
                         propertyType: typeof(string),
                         name: "Egress",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings18"
+                        displayName: "Egress"
                     ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectTraceOptions),
                         propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.TraceEventFilter),
                         name: "StoppingEvent",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings19"
+                        displayName: "StoppingEvent"
                     ),
                 ]
             );
@@ -1048,25 +1078,25 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                         containingType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.GlobalCounterOptions),
                         propertyType: typeof(float?),
                         name: "IntervalSeconds",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings20"
+                        displayName: "IntervalSeconds"
                     ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.GlobalCounterOptions),
                         propertyType: typeof(int?),
                         name: "MaxHistograms",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings21"
+                        displayName: "MaxHistograms"
                     ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.GlobalCounterOptions),
                         propertyType: typeof(int?),
                         name: "MaxTimeSeries",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings22"
+                        displayName: "MaxTimeSeries"
                     ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.GlobalCounterOptions),
                         propertyType: typeof(global::System.Collections.Generic.IDictionary<string, global::Microsoft.Diagnostics.Monitoring.WebApi.GlobalProviderOptions>),
                         name: "Providers",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings23"
+                        displayName: "Providers"
                     ),
                 ]
             );
@@ -1086,7 +1116,7 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectGCDumpOptions),
                         propertyType: typeof(string),
                         name: "Egress",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings24"
+                        displayName: "Egress"
                     ),
                 ]
             );
@@ -1106,13 +1136,33 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectLiveMetricsOptions),
                         propertyType: typeof(global::System.TimeSpan?),
                         name: "Duration",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings25"
+                        displayName: "Duration"
                     ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectLiveMetricsOptions),
                         propertyType: typeof(string),
                         name: "Egress",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings26"
+                        displayName: "Egress"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateCollectStacksOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectStacksOptions),
+                members: [
+                    // new GeneratedValidatablePropertyInfo(
+                    //     containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectStacksOptions),
+                    //     propertyType: typeof(global::System.Type),
+                    //     name: "EqualityContract",
+                    //     displayName: "EqualityContract"
+                    // ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectStacksOptions),
+                        propertyType: typeof(string),
+                        name: "Egress",
+                        displayName: "Egress"
                     ),
                 ]
             );
@@ -1126,13 +1176,13 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.MonitorApiKeyOptions),
                         propertyType: typeof(string),
                         name: "Subject",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings27"
+                        displayName: "Subject"
                     ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.MonitorApiKeyOptions),
                         propertyType: typeof(string),
                         name: "PublicKey",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings28"
+                        displayName: "PublicKey"
                     ),
                 ]
             );
@@ -1146,25 +1196,25 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.AzureAdOptions),
                         propertyType: typeof(string),
                         name: "TenantId",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings29"
+                        displayName: "TenantId"
                     ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.AzureAdOptions),
                         propertyType: typeof(string),
                         name: "ClientId",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings30"
+                        displayName: "ClientId"
                     ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.AzureAdOptions),
                         propertyType: typeof(global::System.Uri),
                         name: "AppIdUri",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings31"
+                        displayName: "AppIdUri"
                     ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.AzureAdOptions),
                         propertyType: typeof(string),
                         name: "RequiredRole",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings32"
+                        displayName: "RequiredRole"
                     ),
                 ]
             );
@@ -1178,13 +1228,13 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.AuthenticationOptions),
                         propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.MonitorApiKeyOptions),
                         name: "MonitorApiKey",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings33"
+                        displayName: "MonitorApiKey"
                     ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.AuthenticationOptions),
                         propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.AzureAdOptions),
                         name: "AzureAd",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings34"
+                        displayName: "AzureAd"
                     ),
                 ]
             );
@@ -1212,13 +1262,13 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                         containingType: typeof(global::Microsoft.Diagnostics.Monitoring.Options.ExceptionsOptions),
                         propertyType: typeof(int?),
                         name: "TopLevelLimit",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings35"
+                        displayName: "TopLevelLimit"
                     ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Monitoring.Options.ExceptionsOptions),
                         propertyType: typeof(global::Microsoft.Diagnostics.Monitoring.Options.ExceptionsConfiguration),
                         name: "CollectionFilters",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings36"
+                        displayName: "CollectionFilters"
                     ),
                 ]
             );
@@ -1232,7 +1282,7 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                         containingType: typeof(global::Microsoft.Diagnostics.Monitoring.Options.InProcessFeaturesOptions),
                         propertyType: typeof(global::Microsoft.Diagnostics.Monitoring.Options.ExceptionsOptions),
                         name: "Exceptions",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings37"
+                        displayName: "Exceptions"
                     ),
                 ]
             );
@@ -1246,7 +1296,7 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                         containingType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.CorsConfigurationOptions),
                         propertyType: typeof(string),
                         name: "AllowedOrigins",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings38"
+                        displayName: "AllowedOrigins"
                     ),
                 ]
             );
@@ -1260,13 +1310,13 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.EgressOptions),
                         propertyType: typeof(global::System.Collections.Generic.IDictionary<string, global::Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem.FileSystemEgressProviderOptions>),
                         name: "FileSystem",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings39"
+                        displayName: "FileSystem"
                     ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.EgressOptions),
                         propertyType: typeof(global::System.Collections.Generic.IDictionary<string, string>),
                         name: "Properties",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings40"
+                        displayName: "Properties"
                     ),
                 ]
             );
@@ -1280,7 +1330,7 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                         containingType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.MetricProvider),
                         propertyType: typeof(string),
                         name: "ProviderName",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings41"
+                        displayName: "ProviderName"
                     ),
                 ]
             );
@@ -1294,13 +1344,13 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                         containingType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.MetricsOptions),
                         propertyType: typeof(int?),
                         name: "MetricCount",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings42"
+                        displayName: "MetricCount"
                     ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.MetricsOptions),
                         propertyType: typeof(global::System.Collections.Generic.List<global::Microsoft.Diagnostics.Monitoring.WebApi.MetricProvider>),
                         name: "Providers",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings43"
+                        displayName: "Providers"
                     ),
                 ]
             );
@@ -1314,7 +1364,7 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                         containingType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.ProcessFilterOptions),
                         propertyType: typeof(global::System.Collections.Generic.List<global::Microsoft.Diagnostics.Monitoring.WebApi.ProcessFilterDescriptor>),
                         name: "Filters",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings44"
+                        displayName: "Filters"
                     ),
                 ]
             );
@@ -1328,19 +1378,19 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleTriggerDefaultsOptions),
                         propertyType: typeof(int?),
                         name: "RequestCount",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings45"
+                        displayName: "RequestCount"
                     ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleTriggerDefaultsOptions),
                         propertyType: typeof(int?),
                         name: "ResponseCount",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings46"
+                        displayName: "ResponseCount"
                     ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleTriggerDefaultsOptions),
                         propertyType: typeof(global::System.TimeSpan?),
                         name: "SlidingWindowDuration",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings47"
+                        displayName: "SlidingWindowDuration"
                     ),
                 ]
             );
@@ -1354,19 +1404,19 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleLimitsDefaultsOptions),
                         propertyType: typeof(int?),
                         name: "ActionCount",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings48"
+                        displayName: "ActionCount"
                     ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleLimitsDefaultsOptions),
                         propertyType: typeof(global::System.TimeSpan?),
                         name: "ActionCountSlidingWindowDuration",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings49"
+                        displayName: "ActionCountSlidingWindowDuration"
                     ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleLimitsDefaultsOptions),
                         propertyType: typeof(global::System.TimeSpan?),
                         name: "RuleDuration",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings50"
+                        displayName: "RuleDuration"
                     ),
                 ]
             );
@@ -1380,13 +1430,13 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleDefaultsOptions),
                         propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleTriggerDefaultsOptions),
                         name: "Triggers",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings51"
+                        displayName: "Triggers"
                     ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleDefaultsOptions),
                         propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleLimitsDefaultsOptions),
                         name: "Limits",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings52"
+                        displayName: "Limits"
                     ),
                 ]
             );
@@ -1400,25 +1450,25 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.TemplateOptions),
                         propertyType: typeof(global::System.Collections.Generic.IDictionary<string, global::Microsoft.Diagnostics.Monitoring.WebApi.ProcessFilterDescriptor>),
                         name: "CollectionRuleFilters",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings53"
+                        displayName: "CollectionRuleFilters"
                     ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.TemplateOptions),
                         propertyType: typeof(global::System.Collections.Generic.IDictionary<string, global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleTriggerOptions>),
                         name: "CollectionRuleTriggers",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings54"
+                        displayName: "CollectionRuleTriggers"
                     ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.TemplateOptions),
                         propertyType: typeof(global::System.Collections.Generic.IDictionary<string, global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleActionOptions>),
                         name: "CollectionRuleActions",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings55"
+                        displayName: "CollectionRuleActions"
                     ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.TemplateOptions),
                         propertyType: typeof(global::System.Collections.Generic.IDictionary<string, global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleLimitsOptions>),
                         name: "CollectionRuleLimits",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings56"
+                        displayName: "CollectionRuleLimits"
                     ),
                 ]
             );
@@ -1500,13 +1550,13 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem.FileSystemEgressProviderOptions),
                         propertyType: typeof(string),
                         name: "DirectoryPath",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings57"
+                        displayName: "DirectoryPath"
                     ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem.FileSystemEgressProviderOptions),
                         propertyType: typeof(int?),
                         name: "CopyBufferSize",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings58"
+                        displayName: "CopyBufferSize"
                     ),
                 ]
             );
@@ -1526,13 +1576,13 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectDumpOptions),
                         propertyType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.Models.DumpType?),
                         name: "Type",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings59"
+                        displayName: "Type"
                     ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectDumpOptions),
                         propertyType: typeof(string),
                         name: "Egress",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings60"
+                        displayName: "Egress"
                     ),
                 ]
             );
@@ -1552,93 +1602,277 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.LoadProfilerOptions),
                         propertyType: typeof(string),
                         name: "Path",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings61"
+                        displayName: "Path"
                     ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.LoadProfilerOptions),
                         propertyType: typeof(global::System.Guid),
                         name: "Clsid",
-                        displayName: "Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings62"
+                        displayName: "Clsid"
                     ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateCollectExceptionsOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectExceptionsOptions),
+                members: [
+                    // new GeneratedValidatablePropertyInfo(
+                    //     containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectExceptionsOptions),
+                    //     propertyType: typeof(global::System.Type),
+                    //     name: "EqualityContract",
+                    //     displayName: "EqualityContract"
+                    // ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectExceptionsOptions),
+                        propertyType: typeof(string),
+                        name: "Egress",
+                        displayName: "Egress"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectExceptionsOptions),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Monitoring.Options.ExceptionsConfiguration),
+                        name: "Filters",
+                        displayName: "Filters"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateAspNetRequestDurationOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetRequestDurationOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetRequestDurationOptions),
+                        propertyType: typeof(int),
+                        name: "RequestCount",
+                        displayName: "RequestCount"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetRequestDurationOptions),
+                        propertyType: typeof(global::System.TimeSpan?),
+                        name: "RequestDuration",
+                        displayName: "RequestDuration"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetRequestDurationOptions),
+                        propertyType: typeof(global::System.TimeSpan?),
+                        name: "SlidingWindowDuration",
+                        displayName: "SlidingWindowDuration"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetRequestDurationOptions),
+                        propertyType: typeof(string[]),
+                        name: "IncludePaths",
+                        displayName: "IncludePaths"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetRequestDurationOptions),
+                        propertyType: typeof(string[]),
+                        name: "ExcludePaths",
+                        displayName: "ExcludePaths"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateAspNetRequestCountOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetRequestCountOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetRequestCountOptions),
+                        propertyType: typeof(int),
+                        name: "RequestCount",
+                        displayName: "RequestCount"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetRequestCountOptions),
+                        propertyType: typeof(global::System.TimeSpan?),
+                        name: "SlidingWindowDuration",
+                        displayName: "SlidingWindowDuration"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetRequestCountOptions),
+                        propertyType: typeof(string[]),
+                        name: "IncludePaths",
+                        displayName: "IncludePaths"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetRequestCountOptions),
+                        propertyType: typeof(string[]),
+                        name: "ExcludePaths",
+                        displayName: "ExcludePaths"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateAspNetResponseStatusOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetResponseStatusOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetResponseStatusOptions),
+                        propertyType: typeof(string[]),
+                        name: "StatusCodes",
+                        displayName: "StatusCodes"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetResponseStatusOptions),
+                        propertyType: typeof(int),
+                        name: "ResponseCount",
+                        displayName: "ResponseCount"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetResponseStatusOptions),
+                        propertyType: typeof(global::System.TimeSpan?),
+                        name: "SlidingWindowDuration",
+                        displayName: "SlidingWindowDuration"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetResponseStatusOptions),
+                        propertyType: typeof(string[]),
+                        name: "IncludePaths",
+                        displayName: "IncludePaths"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetResponseStatusOptions),
+                        propertyType: typeof(string[]),
+                        name: "ExcludePaths",
+                        displayName: "ExcludePaths"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreatePassThroughOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Monitoring.TestCommon.PassThroughOptions),
+                members: [
+                    // new GeneratedValidatablePropertyInfo(
+                    //     containingType: typeof(global::Microsoft.Diagnostics.Monitoring.TestCommon.PassThroughOptions),
+                    //     propertyType: typeof(global::System.Type),
+                    //     name: "EqualityContract",
+                    //     displayName: "EqualityContract"
+                    // ),
                 ]
             );
         }
         private ValidatableTypeInfo CreateTestValidatableTypes()
         {
             return new GeneratedValidatableTypeInfo(
-                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.TestValidatableTypes),
+                type: typeof(global::Microsoft.Diagnostics.Monitoring.TestCommon.TestValidatableTypes),
                 members: [
                     new GeneratedValidatablePropertyInfo(
-                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.TestValidatableTypes),
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.TestCommon.TestValidatableTypes),
                         propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleOptions),
                         name: "CollectionRuleOptions",
                         displayName: "CollectionRuleOptions"
                     ),
                     new GeneratedValidatablePropertyInfo(
-                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.TestValidatableTypes),
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.TestCommon.TestValidatableTypes),
                         propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.ExecuteOptions),
                         name: "ExecuteOptions",
                         displayName: "ExecuteOptions"
                     ),
                     new GeneratedValidatablePropertyInfo(
-                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.TestValidatableTypes),
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.TestCommon.TestValidatableTypes),
                         propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.SetEnvironmentVariableOptions),
                         name: "SetEnvironmentVariableOptions",
                         displayName: "SetEnvironmentVariableOptions"
                     ),
                     new GeneratedValidatablePropertyInfo(
-                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.TestValidatableTypes),
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.TestCommon.TestValidatableTypes),
                         propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.GetEnvironmentVariableOptions),
                         name: "GetEnvironmentVariableOptions",
                         displayName: "GetEnvironmentVariableOptions"
                     ),
                     new GeneratedValidatablePropertyInfo(
-                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.TestValidatableTypes),
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.TestCommon.TestValidatableTypes),
                         propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectTraceOptions),
                         name: "CollectTraceOptions",
                         displayName: "CollectTraceOptions"
                     ),
                     new GeneratedValidatablePropertyInfo(
-                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.TestValidatableTypes),
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.TestCommon.TestValidatableTypes),
                         propertyType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.GlobalCounterOptions),
                         name: "GlobalCounterOptions",
                         displayName: "GlobalCounterOptions"
                     ),
                     new GeneratedValidatablePropertyInfo(
-                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.TestValidatableTypes),
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.TestCommon.TestValidatableTypes),
                         propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectGCDumpOptions),
                         name: "CollectGCDumpOptions",
                         displayName: "CollectGCDumpOptions"
                     ),
                     new GeneratedValidatablePropertyInfo(
-                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.TestValidatableTypes),
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.TestCommon.TestValidatableTypes),
                         propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectLiveMetricsOptions),
                         name: "CollectLiveMetricsOptions",
                         displayName: "CollectLiveMetricsOptions"
                     ),
                     new GeneratedValidatablePropertyInfo(
-                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.TestValidatableTypes),
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.TestCommon.TestValidatableTypes),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectStacksOptions),
+                        name: "CollectStacksOptions",
+                        displayName: "CollectStacksOptions"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.TestCommon.TestValidatableTypes),
                         propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.RootOptions),
                         name: "RootOptions",
                         displayName: "RootOptions"
                     ),
                     new GeneratedValidatablePropertyInfo(
-                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.TestValidatableTypes),
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.TestCommon.TestValidatableTypes),
                         propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem.FileSystemEgressProviderOptions),
                         name: "FileSystemEgressProviderOptions",
                         displayName: "FileSystemEgressProviderOptions"
                     ),
                     new GeneratedValidatablePropertyInfo(
-                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.TestValidatableTypes),
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.TestCommon.TestValidatableTypes),
                         propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectDumpOptions),
                         name: "CollectDumpOptions",
                         displayName: "CollectDumpOptions"
                     ),
                     new GeneratedValidatablePropertyInfo(
-                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.TestValidatableTypes),
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.TestCommon.TestValidatableTypes),
                         propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.LoadProfilerOptions),
                         name: "LoadProfilerOptions",
                         displayName: "LoadProfilerOptions"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.TestCommon.TestValidatableTypes),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectExceptionsOptions),
+                        name: "CollectExceptionsOptions",
+                        displayName: "CollectExceptionsOptions"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.TestCommon.TestValidatableTypes),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetRequestDurationOptions),
+                        name: "AspNetRequestDurationOptions",
+                        displayName: "AspNetRequestDurationOptions"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.TestCommon.TestValidatableTypes),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetRequestCountOptions),
+                        name: "AspNetRequestCountOptions",
+                        displayName: "AspNetRequestCountOptions"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.TestCommon.TestValidatableTypes),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetResponseStatusOptions),
+                        name: "AspNetResponseStatusOptions",
+                        displayName: "AspNetResponseStatusOptions"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.TestCommon.TestValidatableTypes),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Monitoring.TestCommon.PassThroughOptions),
+                        name: "PassThroughOptions",
+                        displayName: "PassThroughOptions"
                     ),
                 ]
             );
@@ -1649,7 +1883,7 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.AspNetCore.Http.ValidationsGenerator, Version=10.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60", "10.0.0.0")]
     internal static class GeneratedServiceCollectionExtensions
     {
-        // [global::System.Runtime.CompilerServices.InterceptsLocationAttribute(1, "tmDjl/scvJBp7h4Jis0nT+NkAQBWYWxpZGF0YWJsZUluZm9SZXNvbHZlci5jcw==")]
+        // [global::System.Runtime.CompilerServices.InterceptsLocationAttribute(1, "tJYY5rjIqR+TnT4DExGdC8ipAQBWYWxpZGF0YWJsZUluZm9SZXNvbHZlci5jcw==")]
         public static global::Microsoft.Extensions.DependencyInjection.IServiceCollection AddValidation(this global::Microsoft.Extensions.DependencyInjection.IServiceCollection services, global::System.Action<ValidationOptions>? configureOptions = null)
         {
             // Use non-extension method to avoid infinite recursion.

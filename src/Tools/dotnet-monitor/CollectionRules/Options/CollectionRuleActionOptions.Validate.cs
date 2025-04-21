@@ -18,7 +18,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
 
             if (!string.IsNullOrEmpty(Type))
             {
-                validationContext = new ValidationContext(this, displayName: Type, validationContext, items: null)
+                validationContext = new ValidationContext(this, displayName: nameof(Settings), validationContext, items: null)
                 {
                     MemberName = nameof(Settings)
                 };

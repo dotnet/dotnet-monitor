@@ -49,7 +49,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             List<ActionCompletionEntry> deferredCompletions = new(context.Options.Actions.Count);
 
             var actionResults = new Dictionary<string, CollectionRuleActionResult>(StringComparer.Ordinal);
-            var dependencyAnalyzer = ActionOptionsDependencyAnalyzer.Create(context);
+            var dependencyAnalyzer = ActionOptionsDependencyAnalyzer.Create(context, _actionOperations);
 
             try
             {

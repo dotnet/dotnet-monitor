@@ -112,7 +112,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             // MetricsOptions
             MapStorageOptions(obj.Storage, FormattableString.Invariant($"{prefix}{nameof(obj.Storage)}"), separator, map);
             // ProcessFilterOptions
-            // CollectionRuleDefaultsOptions
+            MapCollectionRuleDefaultsOptions(obj.CollectionRuleDefaults, FormattableString.Invariant($"{prefix}{nameof(obj.CollectionRuleDefaults)}"), separator, map);
             // Templates
             // DotnetMonitorDebugOptions
             // FOR TESTS: Logging?
@@ -206,9 +206,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     // case KnownCollectionRuleActions.CollectLogs:
                     //     MapCollectLogsOptions(settings as CollectLogsOptions, valueName, separator, map);
                     //     break;
-                    // case KnownCollectionRuleActions.CollectStacks:
-                    //     MapCollectStacksOptions(settings as CollectStacksOptions, valueName, separator, map);
-                    //     break;
+                    case KnownCollectionRuleActions.CollectStacks:
+                        MapCollectStacksOptions(settings as CollectStacksOptions, valueName, separator, map);
+                        break;
                     case KnownCollectionRuleActions.CollectTrace:
                         MapCollectTraceOptions(settings as CollectTraceOptions, valueName, separator, map);
                         break;
@@ -387,6 +387,25 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             string prefix = FormattableString.Invariant($"{valueName}{separator}");
             MapString(obj.MeterName, FormattableString.Invariant($"{prefix}{nameof(obj.MeterName)}"), map);
             MapArray_String(obj.InstrumentNames, FormattableString.Invariant($"{prefix}{nameof(obj.InstrumentNames)}"), separator, map);
+        }
+
+        private static void MapCollectStacksOptions(CollectStacksOptions? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapString(obj.Egress, FormattableString.Invariant($"{prefix}{nameof(obj.Egress)}"), map);
+                MapCallStackFormat(obj.Format, FormattableString.Invariant($"{prefix}{nameof(obj.Format)}"), map);
+                MapString(obj.ArtifactName, FormattableString.Invariant($"{prefix}{nameof(obj.ArtifactName)}"), map);
+            }
+        }
+
+        private static void MapCallStackFormat(CallStackFormat? value, string valueName, IDictionary<string, string> map)
+        {
+            if (null != value)
+            {
+                map.Add(valueName, ConvertUtils.ToString(value, CultureInfo.InvariantCulture));
+            }
         }
 
         private static void MapCollectTraceOptions(CollectTraceOptions? obj, string valueName, string separator, IDictionary<string, string> map)
@@ -591,9 +610,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     // case KnownCollectionRuleTriggers.AspNetRequestCount:
                     //     MapAspNetRequestCountOptions(settings as AspNetRequestCountOptions, valueName, separator, map);
                     //     break;
-                    // case KnownCollectionRuleTriggers.AspNetRequestDuration:
-                    //     MapAspNetRequestDurationOptions(settings as AspNetRequestDurationOptions, valueName, separator, map);
-                    //     break;
+                    case KnownCollectionRuleTriggers.AspNetRequestDuration:
+                        MapAspNetRequestDurationOptions(settings as AspNetRequestDurationOptions, valueName, separator, map);
+                        break;
                     // case KnownCollectionRuleTriggers.AspNetResponseStatus:
                     //     MapAspNetResponseStatusOptions(settings as AspNetResponseStatusOptions, valueName, separator, map);
                     //     break;
@@ -615,6 +634,19 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     default:
                         throw new NotSupportedException($"Unknown trigger type: {type}");
                 }
+            }
+        }
+
+        private static void MapAspNetRequestDurationOptions(AspNetRequestDurationOptions? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapInt(obj.RequestCount, FormattableString.Invariant($"{prefix}{nameof(obj.RequestCount)}"), map);
+                MapTimeSpan(obj.RequestDuration, FormattableString.Invariant($"{prefix}{nameof(obj.RequestDuration)}"), map);
+                MapTimeSpan(obj.SlidingWindowDuration, FormattableString.Invariant($"{prefix}{nameof(obj.SlidingWindowDuration)}"), map);
+                MapArray_String(obj.IncludePaths, FormattableString.Invariant($"{prefix}{nameof(obj.IncludePaths)}"), separator, map);
+                MapArray_String(obj.ExcludePaths, FormattableString.Invariant($"{prefix}{nameof(obj.ExcludePaths)}"), separator, map);
             }
         }
 
@@ -757,6 +789,48 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 MapString(obj.DefaultSharedPath, FormattableString.Invariant($"{prefix}{nameof(obj.DefaultSharedPath)}"), map);
                 MapString(obj.DumpTempFolder, FormattableString.Invariant($"{prefix}{nameof(obj.DumpTempFolder)}"), map);
                 MapString(obj.SharedLibraryPath, FormattableString.Invariant($"{prefix}{nameof(obj.SharedLibraryPath)}"), map);
+            }
+        }
+
+        private static void MapCollectionRuleDefaultsOptions(CollectionRuleDefaultsOptions? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapCollectionRuleTriggerDefaultsOptions(obj.Triggers, FormattableString.Invariant($"{prefix}{nameof(obj.Triggers)}"), separator, map);
+                MapCollectionRuleActionDefaultsOptions(obj.Actions, FormattableString.Invariant($"{prefix}{nameof(obj.Actions)}"), separator, map);
+                MapCollectionRuleLimitsDefaultsOptions(obj.Limits, FormattableString.Invariant($"{prefix}{nameof(obj.Limits)}"), separator, map);
+            }
+        }
+
+        private static void MapCollectionRuleTriggerDefaultsOptions(CollectionRuleTriggerDefaultsOptions? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapInt(obj.RequestCount, FormattableString.Invariant($"{prefix}{nameof(obj.RequestCount)}"), map);
+                MapInt(obj.ResponseCount, FormattableString.Invariant($"{prefix}{nameof(obj.ResponseCount)}"), map);
+                MapTimeSpan(obj.SlidingWindowDuration, FormattableString.Invariant($"{prefix}{nameof(obj.SlidingWindowDuration)}"), map);
+            }
+        }
+
+        private static void MapCollectionRuleActionDefaultsOptions(CollectionRuleActionDefaultsOptions? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapString(obj.Egress, FormattableString.Invariant($"{prefix}{nameof(obj.Egress)}"), map);
+            }
+        }
+
+        private static void MapCollectionRuleLimitsDefaultsOptions(CollectionRuleLimitsDefaultsOptions? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapInt(obj.ActionCount, FormattableString.Invariant($"{prefix}{nameof(obj.ActionCount)}"), map);
+                MapTimeSpan(obj.ActionCountSlidingWindowDuration, FormattableString.Invariant($"{prefix}{nameof(obj.ActionCountSlidingWindowDuration)}"), map);
+                MapTimeSpan(obj.RuleDuration, FormattableString.Invariant($"{prefix}{nameof(obj.RuleDuration)}"), map);
             }
         }
 

@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
 using Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Triggers;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -94,6 +95,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 services =>
                 {
                     services.RegisterTestAction(callbackService);
+                    TestValidatableTypes.AddValidation(services);
                 });
         }
 
@@ -223,6 +225,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 services =>
                 {
                     services.RegisterTestAction(callbackService);
+                    TestValidatableTypes.AddValidation(services);
                 });
         }
 
@@ -398,6 +401,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     services.RegisterManualTrigger(triggerService);
                     services.RegisterTestAction(callbackService);
+                    TestValidatableTypes.AddValidation(services);
                 });
         }
 
@@ -461,6 +465,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     services.AddSingleton<TimeProvider>(timeProvider);
                     services.RegisterManualTrigger(triggerService);
                     services.RegisterTestAction(callbackService);
+                    TestValidatableTypes.AddValidation(services);
                 });
         }
 

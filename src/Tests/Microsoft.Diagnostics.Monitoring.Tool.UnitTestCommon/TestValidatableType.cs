@@ -4,12 +4,14 @@
 using Microsoft.AspNetCore.Http.Validation;
 using Microsoft.AspNetCore.Http.Validation.Generated;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
 
-namespace Microsoft.Diagnostics.Tools.Monitor
+namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
     // The Validation source generator doesn't run for libraries that don't call AddValidation,
     // so we can't generate IValidatableInfo by using [ValidatableType] directly on types defined
@@ -34,6 +36,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public required CollectLiveMetricsOptions CollectLiveMetricsOptions { get; init; }
 
+        public required CollectStacksOptions CollectStacksOptions { get; init; }
+
         public required RootOptions RootOptions { get; init; }
 
         public required FileSystemEgressProviderOptions FileSystemEgressProviderOptions { get; init; }
@@ -42,10 +46,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public required LoadProfilerOptions LoadProfilerOptions { get; init; }
 
+        public required CollectExceptionsOptions CollectExceptionsOptions { get; init; }
+
+        // Triggers...
+        public required AspNetRequestDurationOptions AspNetRequestDurationOptions { get; init; }
+        public required AspNetRequestCountOptions AspNetRequestCountOptions { get; init; }
+        public required AspNetResponseStatusOptions AspNetResponseStatusOptions { get; init; }
+
+        // TODO: only one resolver per project? Generate this for tests, for now. Maybe want to separate this one out
+        // by test later.
+        public required PassThroughOptions PassThroughOptions { get; init; }
+
         public static void AddValidation(IServiceCollection services)
         {
             GeneratedServiceCollectionExtensions.AddValidation(services);
-            // services.AddValidation();
         }
     }
 }

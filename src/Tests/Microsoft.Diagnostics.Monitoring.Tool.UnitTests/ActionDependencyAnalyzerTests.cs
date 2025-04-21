@@ -136,6 +136,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }, serviceCollection =>
             {
                 serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions, PassThroughActionDescriptor>();
+                TestValidatableTypes.AddValidation(serviceCollection);
             });
         }
 
@@ -157,6 +158,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 CollectionRuleOptions ruleOptions = host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>().Get(DefaultRuleName);
                 ILogger<CollectionRuleService> logger = host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
                 TimeProvider timeProvider = host.Services.GetRequiredService<TimeProvider>();
+                ICollectionRuleActionOperations actionOperations = host.Services.GetRequiredService<ICollectionRuleActionOperations>();
 
                 const string processName = "actionProcess";
                 const int processId = 123;
@@ -165,7 +167,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 Guid instanceId = Guid.NewGuid();
                 CollectionRuleContext context = new(DefaultRuleName, ruleOptions, new TestProcessInfo(instanceId, processId: processId, commandLine: commandLine), HostInfo.GetCurrent(timeProvider), logger);
 
-                ActionOptionsDependencyAnalyzer analyzer = ActionOptionsDependencyAnalyzer.Create(context);
+                ActionOptionsDependencyAnalyzer analyzer = ActionOptionsDependencyAnalyzer.Create(context, actionOperations);
                 PassThroughOptions newSettings = (PassThroughOptions)analyzer.SubstituteOptionValues(new Dictionary<string, CollectionRuleActionResult>(), 1, actionOptions);
 
                 Assert.Equal(processName, newSettings.Input1);
@@ -175,6 +177,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }, serviceCollection =>
             {
                 serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions, PassThroughActionDescriptor>();
+                TestValidatableTypes.AddValidation(serviceCollection);
             });
         }
 
@@ -196,13 +199,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 CollectionRuleOptions ruleOptions = host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>().Get(DefaultRuleName);
                 ILogger<CollectionRuleService> logger = host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
                 MockTimeProvider timeProvider = host.Services.GetRequiredService<TimeProvider>() as MockTimeProvider;
+                ICollectionRuleActionOperations actionOperations = host.Services.GetRequiredService<ICollectionRuleActionOperations>();
 
                 const string hostName = "exampleHost";
                 Guid instanceId = Guid.NewGuid();
                 HostInfo hostInfo = new HostInfo(hostName, timeProvider);
                 CollectionRuleContext context = new(DefaultRuleName, ruleOptions, new TestProcessInfo(instanceId), hostInfo, logger);
 
-                ActionOptionsDependencyAnalyzer analyzer = ActionOptionsDependencyAnalyzer.Create(context);
+                ActionOptionsDependencyAnalyzer analyzer = ActionOptionsDependencyAnalyzer.Create(context, actionOperations);
                 PassThroughOptions newSettings = (PassThroughOptions)analyzer.SubstituteOptionValues(new Dictionary<string, CollectionRuleActionResult>(), 1, actionOptions);
 
                 Assert.Equal(hostName, newSettings.Input1);
@@ -212,6 +216,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 serviceCollection.AddSingleton<TimeProvider, MockTimeProvider>();
                 serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions, PassThroughActionDescriptor>();
+                TestValidatableTypes.AddValidation(serviceCollection);
             });
         }
 
@@ -239,11 +244,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 CollectionRuleOptions ruleOptions = host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>().Get(DefaultRuleName);
                 ILogger<CollectionRuleService> logger = host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
                 TimeProvider timeProvider = host.Services.GetRequiredService<TimeProvider>();
+                ICollectionRuleActionOperations actionOperations = host.Services.GetRequiredService<ICollectionRuleActionOperations>();
 
                 Guid instanceId = Guid.NewGuid();
                 CollectionRuleContext context = new(DefaultRuleName, ruleOptions, new TestProcessInfo(instanceId), HostInfo.GetCurrent(timeProvider), logger);
 
-                ActionOptionsDependencyAnalyzer analyzer = ActionOptionsDependencyAnalyzer.Create(context);
+                ActionOptionsDependencyAnalyzer analyzer = ActionOptionsDependencyAnalyzer.Create(context, actionOperations);
                 analyzer.GetActionDependencies(1);
                 analyzer.SubstituteOptionValues(new Dictionary<string, CollectionRuleActionResult>(), 1, actionOptions);
 
@@ -255,6 +261,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }, serviceCollection =>
             {
                 serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions, PassThroughActionDescriptor>();
+                TestValidatableTypes.AddValidation(serviceCollection);
             }, loggingBuilder =>
             {
                 loggingBuilder.AddProvider(new TestLoggerProvider(record));
@@ -279,11 +286,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 CollectionRuleOptions ruleOptions = host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>().Get(DefaultRuleName);
                 ILogger<CollectionRuleService> logger = host.Services.GetRequiredService<ILogger<CollectionRuleService>>();
                 TimeProvider timeProvider = host.Services.GetRequiredService<TimeProvider>();
+                ICollectionRuleActionOperations actionOperations = host.Services.GetRequiredService<ICollectionRuleActionOperations>();
 
                 Guid instanceId = Guid.NewGuid();
                 CollectionRuleContext context = new(DefaultRuleName, ruleOptions, new TestProcessInfo(instanceId), HostInfo.GetCurrent(timeProvider), logger);
 
-                ActionOptionsDependencyAnalyzer analyzer = ActionOptionsDependencyAnalyzer.Create(context);
+                ActionOptionsDependencyAnalyzer analyzer = ActionOptionsDependencyAnalyzer.Create(context, actionOperations);
                 PassThroughOptions newSettings = (PassThroughOptions)analyzer.SubstituteOptionValues(new Dictionary<string, CollectionRuleActionResult>(), 1, actionOptions);
 
                 Assert.Equal(instanceId.ToString("D"), newSettings.Input1);
@@ -291,6 +299,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }, serviceCollection =>
             {
                 serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions, PassThroughActionDescriptor>();
+                TestValidatableTypes.AddValidation(serviceCollection);
             });
         }
 
@@ -353,6 +362,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }, serviceCollection =>
             {
                 serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions, PassThroughActionDescriptor>();
+                TestValidatableTypes.AddValidation(serviceCollection);
             });
         }
     }
