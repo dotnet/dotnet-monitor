@@ -31,10 +31,10 @@
       LatestRuntimeFrameworkVersion="$(AspNetCoreAppVersion)" />
   </ItemGroup>
 
-  <!-- <Target Name="RemoveAnalyzer" BeforeTargets="CoreCompile">
+  <Target Name="RemoveAnalyzer" BeforeTargets="CoreCompile">
     <ItemGroup>
       <Analyzer Remove="@(Analyzer)" Condition="'%(Analyzer.FileName)' == 'Microsoft.AspNetCore.Http.ValidationsGenerator'" />
     </ItemGroup>
-  </Target> -->
+  </Target>
 
 </Project>

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.Logging;
@@ -36,6 +37,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     internal sealed class ConfigurationTokenParser
     {
         private readonly ILogger _logger;
+        private readonly ICollectionRuleActionOperations _actionOperations;
 
         public const string SubstitutionPrefix = "$(";
         public const string SubstitutionSuffix = ")";
@@ -58,9 +60,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static readonly string HostNameReference = CreateTokenReference(MonitorInfoReference, HostName);
         public static readonly string UnixTimeReference = CreateTokenReference(MonitorInfoReference, UnixTime);
 
-        public ConfigurationTokenParser(ILogger logger)
+        public ConfigurationTokenParser(ILogger logger, ICollectionRuleActionOperations actionOperations)
         {
             _logger = logger;
+            _actionOperations = actionOperations;
         }
 
         public object? SubstituteOptionValues(CollectionRuleActionOptions actionOptions, TokenContext context)
@@ -68,7 +71,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             var originalSettings = actionOptions.Settings;
             object? settings = originalSettings;
 
-            foreach (PropertyInfo propertyInfo in GetPropertiesFromSettings(actionOptions))
+            if (!_actionOperations.TryGetOptionsType(actionOptions.Type, out Type optionsType))
+            {
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_UnknownActionType, actionOptions.Type));
+            }
+
+            foreach (PropertyInfo propertyInfo in GetPropertiesFromSettings(optionsType))
             {
                 string? originalPropertyValue = (string?)propertyInfo.GetValue(settings);
                 if (string.IsNullOrEmpty(originalPropertyValue))
@@ -123,33 +131,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return true;
         }
 
-        public static IEnumerable<PropertyInfo> GetPropertiesFromSettings(CollectionRuleActionOptions actionOptions, Predicate<PropertyInfo>? predicate = null)
+        public static IEnumerable<PropertyInfo> GetPropertiesFromSettings([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] Type type, Predicate<PropertyInfo>? predicate = null)
         {
-            object? settings = actionOptions.Settings;
-            return actionOptions.Type switch {
-                KnownCollectionRuleActions.CollectDump => GetPropertiesFromSettings(typeof(CollectDumpOptions), predicate),
-                KnownCollectionRuleActions.CollectExceptions => GetPropertiesFromSettings(typeof(CollectExceptionsOptions), predicate),
-                KnownCollectionRuleActions.CollectGCDump => GetPropertiesFromSettings(typeof(CollectGCDumpOptions), predicate),
-                KnownCollectionRuleActions.CollectLogs => GetPropertiesFromSettings(typeof(CollectLogsOptions), predicate),
-                KnownCollectionRuleActions.CollectStacks => GetPropertiesFromSettings(typeof(CollectStacksOptions), predicate),
-                KnownCollectionRuleActions.CollectTrace => GetPropertiesFromSettings(typeof(CollectTraceOptions), predicate),
-                KnownCollectionRuleActions.CollectLiveMetrics => GetPropertiesFromSettings(typeof(CollectLiveMetricsOptions), predicate),
-                KnownCollectionRuleActions.Execute => GetPropertiesFromSettings(typeof(ExecuteOptions), predicate),
-                KnownCollectionRuleActions.LoadProfiler => GetPropertiesFromSettings(typeof(LoadProfilerOptions), predicate),
-                KnownCollectionRuleActions.SetEnvironmentVariable => GetPropertiesFromSettings(typeof(SetEnvironmentVariableOptions), predicate),
-                KnownCollectionRuleActions.GetEnvironmentVariable => GetPropertiesFromSettings(typeof(GetEnvironmentVariableOptions), predicate),
-                _ => throw new ArgumentException(string.Format(
-                    CultureInfo.InvariantCulture,
-                    "Unknown action type: {0}",
-                    actionOptions.Type))
-            };
-
-            static IEnumerable<PropertyInfo> GetPropertiesFromSettings([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] Type type, Predicate<PropertyInfo>? predicate = null)
-            {
-                return type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                    .Where(p => p.PropertyType == typeof(string) && (predicate?.Invoke(p) ?? true))
-                    .ToArray();
-            }
+            return type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(p => p.PropertyType == typeof(string) && (predicate?.Invoke(p) ?? true))
+                .ToArray();
         }
 
         private static string CreateTokenReference(string category, string token) =>
