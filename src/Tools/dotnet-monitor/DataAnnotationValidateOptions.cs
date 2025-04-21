@@ -44,21 +44,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 IList<string> failures = new List<string>();
                 foreach (ValidationResult result in results)
                 {
-                    if (result.MemberNames is IEnumerable<string> memberNames)
+                    if (result.ErrorMessage is null)
                     {
-                        foreach (string memberName in memberNames)
-                        {
-                            failures.Add(result.ErrorMessage);
-                        }
+                        throw new ArgumentNullException(nameof(result.ErrorMessage));
                     }
-                    else
-                    {
-                        if (result.ErrorMessage is null)
-                        {
-                            throw new ArgumentNullException(nameof(result.ErrorMessage));
-                        }
-                        failures.Add(result.ErrorMessage);
-                    }
+                    failures.Add(result.ErrorMessage);
                 }
 
                 return ValidateOptionsResult.Fail(failures);

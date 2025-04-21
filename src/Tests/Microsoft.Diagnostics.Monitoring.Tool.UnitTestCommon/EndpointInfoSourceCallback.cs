@@ -8,10 +8,8 @@ using Microsoft.Diagnostics.Tools.Monitor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.TestCommon
@@ -80,7 +78,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         {
             if (endpointInfo.RuntimeVersion.Major >= 8 && !string.IsNullOrEmpty(_startupHookPath))
             {
-                await ApplyStartupHookAsync(new DiagnosticsClient(endpointInfo.ProcessId), _startupHookPath, token);
+                DiagnosticsClient client = new(endpointInfo.ProcessId);
+
+                await client.ApplyStartupHookAsync(_startupHookPath, token);
             }
         }
 
@@ -104,19 +104,6 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 _outputHelper,
                 info,
                 token);
-        }
-
-        private static Task ApplyStartupHookAsync(DiagnosticsClient client, string path, CancellationToken token)
-        {
-            // DiagnosticsClient.ApplyStartupHookAsync currently is not public
-            MethodBase applyStartupHookAsync =
-                typeof(DiagnosticsClient).GetMethod(
-                    "ApplyStartupHookAsync",
-                    BindingFlags.Instance | BindingFlags.NonPublic);
-
-            Assert.NotNull(applyStartupHookAsync);
-
-            return (Task)applyStartupHookAsync.Invoke(client, new object[] { path, token });
         }
 
         private static async Task<IEndpointInfo> WaitForCompletionAsync(string operation, SemaphoreSlim semaphore, List<CompletionEntry> entries, ITestOutputHelper outputHelper, AppRunner runner, TimeSpan timeout)

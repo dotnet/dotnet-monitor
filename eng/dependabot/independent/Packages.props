@@ -16,7 +16,6 @@
     <!-- Third-party references -->
     <PackageReference Include="Newtonsoft.Json" Version="$(NewtonsoftJsonVersion)" />
     <PackageReference Include="NJsonSchema" Version="$(NJsonSchemaVersion)" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="$(SwashbuckleAspNetCoreVersion)" />
     <PackageReference Include="Moq" Version="$(MoqVersion)" />
     <PackageReference Include="AWSSDK.S3" Version="$(AwsSdkS3Version)" />
     <PackageReference Include="AWSSDK.SecurityToken" Version="$(AwsSdkSecurityTokenVersion)" />
