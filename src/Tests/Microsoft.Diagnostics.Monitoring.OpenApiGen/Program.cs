@@ -3,6 +3,7 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.Auth;
@@ -15,7 +16,6 @@ using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Writers;
 using System;
 using System.IO;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -61,29 +61,14 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
             var corsOptions = host.Services.GetRequiredService<IOptions<CorsConfigurationOptions>>();
             Startup.Configure(appBuilder, env, corsOptions);
 
-            var openApiDocument = await GetOpenApiDocument(host);
+            IOpenApiDocumentProvider documentProvider = host.Services.GetRequiredKeyedService<IOpenApiDocumentProvider>("v1");
+            OpenApiDocument openApiDocument = await documentProvider.GetOpenApiDocumentAsync(CancellationToken.None);
 
             // Serialize the OpenApi document
             using FileStream stream = File.Create(outputPath);
             using StreamWriter writer = new(stream);
             var openApiWriter = new OpenApiJsonWriter(writer);
             openApiDocument.SerializeAsV3(openApiWriter);
-        }
-
-        private static object GetDocumentService(IServiceProvider serviceProvider)
-        {
-            var serviceType = Type.GetType("Microsoft.AspNetCore.OpenApi.OpenApiDocumentService, Microsoft.AspNetCore.OpenApi", throwOnError: true)!;
-            return serviceProvider.GetRequiredKeyedService(serviceType, "v1")!;
-        }
-
-        private static async Task<OpenApiDocument> GetOpenApiDocument(IHost host)
-        {
-            var documentService = GetDocumentService(host.Services);
-            var methodInfo = documentService.GetType().GetMethod("GetOpenApiDocumentAsync", BindingFlags.Public | BindingFlags.Instance)!;
-
-            object result = methodInfo.Invoke(documentService, new object?[] { host.Services, null, default(CancellationToken) })!;
-
-            return await (Task<OpenApiDocument>)result;
         }
     }
 }
