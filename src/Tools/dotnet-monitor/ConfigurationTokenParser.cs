@@ -37,7 +37,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     internal sealed class ConfigurationTokenParser
     {
         private readonly ILogger _logger;
-        private readonly ICollectionRuleActionOperations _actionOperations;
 
         public const string SubstitutionPrefix = "$(";
         public const string SubstitutionSuffix = ")";
@@ -60,23 +59,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static readonly string HostNameReference = CreateTokenReference(MonitorInfoReference, HostName);
         public static readonly string UnixTimeReference = CreateTokenReference(MonitorInfoReference, UnixTime);
 
-        public ConfigurationTokenParser(ILogger logger, ICollectionRuleActionOperations actionOperations)
+        public ConfigurationTokenParser(ILogger logger)
         {
             _logger = logger;
-            _actionOperations = actionOperations;
         }
 
-        public object? SubstituteOptionValues(CollectionRuleActionOptions actionOptions, TokenContext context)
+        public object? SubstituteOptionValues(object? originalSettings, Type settingsType, TokenContext context)
         {
-            var originalSettings = actionOptions.Settings;
             object? settings = originalSettings;
 
-            if (!_actionOperations.TryGetOptionsType(actionOptions.Type, out Type optionsType))
-            {
-                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_UnknownActionType, actionOptions.Type));
-            }
 
-            foreach (PropertyInfo propertyInfo in GetPropertiesFromSettings(optionsType))
+            foreach (PropertyInfo propertyInfo in GetPropertiesFromSettings(settingsType))
             {
                 string? originalPropertyValue = (string?)propertyInfo.GetValue(settings);
                 if (string.IsNullOrEmpty(originalPropertyValue))

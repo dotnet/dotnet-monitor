@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
@@ -38,6 +39,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
 
         public required CollectStacksOptions CollectStacksOptions { get; init; }
 
+        public required CollectLogsOptions CollectLogsOptions { get; init; }
+
         public required RootOptions RootOptions { get; init; }
 
         public required FileSystemEgressProviderOptions FileSystemEgressProviderOptions { get; init; }
@@ -49,9 +52,15 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         public required CollectExceptionsOptions CollectExceptionsOptions { get; init; }
 
         // Triggers...
-        public required AspNetRequestDurationOptions AspNetRequestDurationOptions { get; init; }
         public required AspNetRequestCountOptions AspNetRequestCountOptions { get; init; }
+        public required AspNetRequestDurationOptions AspNetRequestDurationOptions { get; init; }
         public required AspNetResponseStatusOptions AspNetResponseStatusOptions { get; init; }
+        public required EventCounterOptions EventCounterOptions { get; init; }
+        public required CPUUsageOptions CPUUsageOptions { get; init; }
+        public required GCHeapSizeOptions GCHeapSizeOptions { get; init; }
+        public required ThreadpoolQueueLengthOptions ThreadpoolQueueLengthOptions { get; init; }
+        public required EventMeterOptions EventMeterOptions { get; init; }
+
 
         // TODO: only one resolver per project? Generate this for tests, for now. Maybe want to separate this one out
         // by test later.

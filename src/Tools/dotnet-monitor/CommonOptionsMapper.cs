@@ -13,8 +13,10 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
@@ -204,9 +206,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     case KnownCollectionRuleActions.CollectLiveMetrics:
                         MapCollectLiveMetricsOptions(settings as CollectLiveMetricsOptions, valueName, separator, map);
                         break;
-                    // case KnownCollectionRuleActions.CollectLogs:
-                    //     MapCollectLogsOptions(settings as CollectLogsOptions, valueName, separator, map);
-                    //     break;
+                    case KnownCollectionRuleActions.CollectLogs:
+                        MapCollectLogsOptions(settings as CollectLogsOptions, valueName, separator, map);
+                        break;
                     case KnownCollectionRuleActions.CollectStacks:
                         MapCollectStacksOptions(settings as CollectStacksOptions, valueName, separator, map);
                         break;
@@ -355,6 +357,50 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             string prefix = FormattableString.Invariant($"{valueName}{separator}");
             MapString(obj.ProviderName, FormattableString.Invariant($"{prefix}{nameof(obj.ProviderName)}"), map);
             MapArray_String(obj.CounterNames, FormattableString.Invariant($"{prefix}{nameof(obj.CounterNames)}"), separator, map);
+        }
+
+        static void MapCollectLogsOptions(CollectLogsOptions? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapLogLevel(obj.DefaultLevel, FormattableString.Invariant($"{prefix}{nameof(obj.DefaultLevel)}"), map);
+                MapDictionary_String_LogLevel(obj.FilterSpecs, FormattableString.Invariant($"{prefix}{nameof(obj.FilterSpecs)}"), separator, map);
+                MapBool(obj.UseAppFilters, FormattableString.Invariant($"{prefix}{nameof(obj.UseAppFilters)}"), map);
+                MapTimeSpan(obj.Duration, FormattableString.Invariant($"{prefix}{nameof(obj.Duration)}"), map);
+                MapString(obj.Egress, FormattableString.Invariant($"{prefix}{nameof(obj.Egress)}"), map);
+                MapLogFormat(obj.Format, FormattableString.Invariant($"{prefix}{nameof(obj.Format)}"), map);
+                MapString(obj.ArtifactName, FormattableString.Invariant($"{prefix}{nameof(obj.ArtifactName)}"), map);
+            }
+        }
+
+        static void MapLogLevel(LogLevel? value, string valueName, IDictionary<string, string> map)
+        {
+            if (null != value)
+            {
+                map.Add(valueName, ConvertUtils.ToString(value, CultureInfo.InvariantCulture));
+            }
+        }
+
+        static void MapDictionary_String_LogLevel(IDictionary<string, LogLevel?>? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                foreach ((string key, LogLevel? value) in obj)
+                {
+                    string keyString = ConvertUtils.ToString(key, CultureInfo.InvariantCulture);
+                    MapLogLevel(value, FormattableString.Invariant($"{prefix}{keyString}"), map);
+                }
+            }
+        }
+
+        static void MapLogFormat(LogFormat? value, string valueName, IDictionary<string, string> map)
+        {
+            if (null != value)
+            {
+                map.Add(valueName, ConvertUtils.ToString(value, CultureInfo.InvariantCulture));
+            }
         }
 
         private static void MapArray_String(string[]? obj, string valueName, string separator, IDictionary<string, string> map)
@@ -608,33 +654,45 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             {
                 switch (type)
                 {
-                    // case KnownCollectionRuleTriggers.AspNetRequestCount:
-                    //     MapAspNetRequestCountOptions(settings as AspNetRequestCountOptions, valueName, separator, map);
-                    //     break;
+                    case KnownCollectionRuleTriggers.AspNetRequestCount:
+                        MapAspNetRequestCountOptions(settings as AspNetRequestCountOptions, valueName, separator, map);
+                        break;
                     case KnownCollectionRuleTriggers.AspNetRequestDuration:
                         MapAspNetRequestDurationOptions(settings as AspNetRequestDurationOptions, valueName, separator, map);
                         break;
-                    // case KnownCollectionRuleTriggers.AspNetResponseStatus:
-                    //     MapAspNetResponseStatusOptions(settings as AspNetResponseStatusOptions, valueName, separator, map);
-                    //     break;
-                    // case KnownCollectionRuleTriggers.EventCounter:
-                    //     MapEventCounterOptions(settings as EventCounterOptions, valueName, separator, map);
-                    //     break;
-                    // case KnownCollectionRuleTriggers.CPUUsage:
-                    //     MapCPUUsageOptions(settings as CPUUsageOptions, valueName, separator, map);
-                    //     break;
-                    // case KnownCollectionRuleTriggers.GCHeapSize:
-                    //     MapGCHeapSizeOptions(settings as GCHeapSizeOptions, valueName, separator, map);
-                    //     break;
-                    // case KnownCollectionRuleTriggers.ThreadpoolQueueLength:
-                    //     MapThreadpoolQueueLengthOptions(settings as ThreadpoolQueueLengthOptions, valueName, separator, map);
-                    //     break;
-                    // case KnownCollectionRuleTriggers.EventMeter:
-                    //     MapEventMeterOptions(settings as EventMeterOptions, valueName, separator, map);
-                    //     break;
+                    case KnownCollectionRuleTriggers.AspNetResponseStatus:
+                        MapAspNetResponseStatusOptions(settings as AspNetResponseStatusOptions, valueName, separator, map);
+                        break;
+                    case KnownCollectionRuleTriggers.EventCounter:
+                        MapEventCounterOptions(settings as EventCounterOptions, valueName, separator, map);
+                        break;
+                    case KnownCollectionRuleTriggers.CPUUsage:
+                        MapCPUUsageOptions(settings as CPUUsageOptions, valueName, separator, map);
+                        break;
+                    case KnownCollectionRuleTriggers.GCHeapSize:
+                        MapGCHeapSizeOptions(settings as GCHeapSizeOptions, valueName, separator, map);
+                        break;
+                    case KnownCollectionRuleTriggers.ThreadpoolQueueLength:
+                        MapThreadpoolQueueLengthOptions(settings as ThreadpoolQueueLengthOptions, valueName, separator, map);
+                        break;
+                    case KnownCollectionRuleTriggers.EventMeter:
+                        MapEventMeterOptions(settings as EventMeterOptions, valueName, separator, map);
+                        break;
                     default:
                         throw new NotSupportedException($"Unknown trigger type: {type}");
                 }
+            }
+        }
+
+        private static void MapAspNetRequestCountOptions(AspNetRequestCountOptions? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapInt(obj.RequestCount, FormattableString.Invariant($"{prefix}{nameof(obj.RequestCount)}"), map);
+                MapTimeSpan(obj.SlidingWindowDuration, FormattableString.Invariant($"{prefix}{nameof(obj.SlidingWindowDuration)}"), map);
+                MapArray_String(obj.IncludePaths, FormattableString.Invariant($"{prefix}{nameof(obj.IncludePaths)}"), separator, map);
+                MapArray_String(obj.ExcludePaths, FormattableString.Invariant($"{prefix}{nameof(obj.ExcludePaths)}"), separator, map);
             }
         }
 
@@ -648,6 +706,87 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 MapTimeSpan(obj.SlidingWindowDuration, FormattableString.Invariant($"{prefix}{nameof(obj.SlidingWindowDuration)}"), map);
                 MapArray_String(obj.IncludePaths, FormattableString.Invariant($"{prefix}{nameof(obj.IncludePaths)}"), separator, map);
                 MapArray_String(obj.ExcludePaths, FormattableString.Invariant($"{prefix}{nameof(obj.ExcludePaths)}"), separator, map);
+            }
+        }
+
+        private static void MapAspNetResponseStatusOptions(AspNetResponseStatusOptions? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapArray_String(obj.StatusCodes, FormattableString.Invariant($"{prefix}{nameof(obj.StatusCodes)}"), separator, map);
+                MapInt(obj.ResponseCount, FormattableString.Invariant($"{prefix}{nameof(obj.ResponseCount)}"), map);
+                MapTimeSpan(obj.SlidingWindowDuration, FormattableString.Invariant($"{prefix}{nameof(obj.SlidingWindowDuration)}"), map);
+                MapArray_String(obj.IncludePaths, FormattableString.Invariant($"{prefix}{nameof(obj.IncludePaths)}"), separator, map);
+                MapArray_String(obj.ExcludePaths, FormattableString.Invariant($"{prefix}{nameof(obj.ExcludePaths)}"), separator, map);
+            }
+        }
+
+        private static void MapEventCounterOptions(EventCounterOptions? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapString(obj.ProviderName, FormattableString.Invariant($"{prefix}{nameof(obj.ProviderName)}"), map);
+                MapString(obj.CounterName, FormattableString.Invariant($"{prefix}{nameof(obj.CounterName)}"), map);
+                MapDouble(obj.GreaterThan, FormattableString.Invariant($"{prefix}{nameof(obj.GreaterThan)}"), map);
+                MapDouble(obj.LessThan, FormattableString.Invariant($"{prefix}{nameof(obj.LessThan)}"), map);
+                MapTimeSpan(obj.SlidingWindowDuration, FormattableString.Invariant($"{prefix}{nameof(obj.SlidingWindowDuration)}"), map);
+            }
+        }
+
+        private static void MapCPUUsageOptions(CPUUsageOptions? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapDouble(obj.GreaterThan, FormattableString.Invariant($"{prefix}{nameof(obj.GreaterThan)}"), map);
+                MapDouble(obj.LessThan, FormattableString.Invariant($"{prefix}{nameof(obj.LessThan)}"), map);
+                MapTimeSpan(obj.SlidingWindowDuration, FormattableString.Invariant($"{prefix}{nameof(obj.SlidingWindowDuration)}"), map);
+            }
+        }
+
+        private static void MapGCHeapSizeOptions(GCHeapSizeOptions? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapDouble(obj.GreaterThan, FormattableString.Invariant($"{prefix}{nameof(obj.GreaterThan)}"), map);
+                MapDouble(obj.LessThan, FormattableString.Invariant($"{prefix}{nameof(obj.LessThan)}"), map);
+                MapTimeSpan(obj.SlidingWindowDuration, FormattableString.Invariant($"{prefix}{nameof(obj.SlidingWindowDuration)}"), map);
+            }
+        }
+
+        private static void MapThreadpoolQueueLengthOptions(ThreadpoolQueueLengthOptions? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapDouble(obj.GreaterThan, FormattableString.Invariant($"{prefix}{nameof(obj.GreaterThan)}"), map);
+                MapDouble(obj.LessThan, FormattableString.Invariant($"{prefix}{nameof(obj.LessThan)}"), map);
+                MapTimeSpan(obj.SlidingWindowDuration, FormattableString.Invariant($"{prefix}{nameof(obj.SlidingWindowDuration)}"), map);
+            }
+        }
+
+        private static void MapEventMeterOptions(EventMeterOptions? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapString(obj.MeterName, FormattableString.Invariant($"{prefix}{nameof(obj.MeterName)}"), map);
+                MapString(obj.InstrumentName, FormattableString.Invariant($"{prefix}{nameof(obj.InstrumentName)}"), map);
+                MapDouble(obj.GreaterThan, FormattableString.Invariant($"{prefix}{nameof(obj.GreaterThan)}"), map);
+                MapDouble(obj.LessThan, FormattableString.Invariant($"{prefix}{nameof(obj.LessThan)}"), map);
+                MapTimeSpan(obj.SlidingWindowDuration, FormattableString.Invariant($"{prefix}{nameof(obj.SlidingWindowDuration)}"), map);
+                MapInt(obj.HistogramPercentile, FormattableString.Invariant($"{prefix}{nameof(obj.HistogramPercentile)}"), map);
+            }
+        }
+        
+        private static void MapDouble(double? value, string valueName, IDictionary<string, string> map)
+        {
+            if (null != value)
+            {
+                map.Add(valueName, ConvertUtils.ToString(value, CultureInfo.InvariantCulture));
             }
         }
 

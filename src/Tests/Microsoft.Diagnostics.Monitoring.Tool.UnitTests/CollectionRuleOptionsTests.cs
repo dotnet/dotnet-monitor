@@ -203,6 +203,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     VerifyRequiredMessage(failures, 1, nameof(EventCounterOptions.CounterName));
                     VerifyRangeMessage<TimeSpan>(failures, 2, nameof(EventCounterOptions.SlidingWindowDuration),
                         TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
+                    VerifyEitherRequiredMessage(failures, 3, nameof(EventCounterOptions.GreaterThan), nameof(EventCounterOptions.LessThan));
                 });
         }
 

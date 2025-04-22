@@ -81,7 +81,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         public static ActionOptionsDependencyAnalyzer Create(CollectionRuleContext context, ICollectionRuleActionOperations actionOperations)
         {
-            var analyzer = new ActionOptionsDependencyAnalyzer(context, new ConfigurationTokenParser(context.Logger, actionOperations), actionOperations);
+            var analyzer = new ActionOptionsDependencyAnalyzer(context, new ConfigurationTokenParser(context.Logger), actionOperations);
             analyzer.EnsureDependencies();
             return analyzer;
         }
@@ -164,7 +164,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             }
             string? commandLine = _ruleContext.EndpointInfo.CommandLine;
 
-            settings = _tokenParser.SubstituteOptionValues(actionOptions, new TokenContext
+            if (!_actionOperations.TryGetOptionsType(actionOptions.Type, out Type settingsType))
+            {
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_UnknownActionType, actionOptions.Name));
+            }
+            settings = _tokenParser.SubstituteOptionValues(settings, settingsType, new TokenContext
             {
                 CloneOnSubstitution = ReferenceEquals(originalSettings, settings),
                 RuntimeId = _ruleContext.EndpointInfo.RuntimeInstanceCookie,
