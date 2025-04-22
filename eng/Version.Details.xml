@@ -54,9 +54,9 @@
       <Uri>https://github.com/dotnet/aspnetcore</Uri>
       <Sha>efe40be07df5055d0d52810899349612e88c89a3</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.NetCore.SdkPlaceholder.x64.10.0" Version="10.0.100-preview.4.25220.1">
+    <Dependency Name="VS.Redist.Common.NetCore.SdkPlaceholder.x64.10.0" Version="10.0.100-preview.4.25221.9">
       <Uri>https://github.com/dotnet/sdk</Uri>
-      <Sha>f4de547215d995985f21f195b29909d8569bcf46</Sha>
+      <Sha>9ad45c662c772c8804905b7ca7fb44c1927b3d90</Sha>
     </Dependency>
     <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.10.0" Version="10.0.0-preview.4.25217.10" CoherentParentDependency="VS.Redist.Common.NetCore.SdkPlaceholder.x64.10.0">
       <Uri>https://github.com/dotnet/runtime</Uri>
