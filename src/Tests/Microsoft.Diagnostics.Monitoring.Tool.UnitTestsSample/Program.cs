@@ -7,7 +7,7 @@ using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddValidation();
+Microsoft.AspNetCore.Http.Validation.Generated.GeneratedServiceCollectionExtensions.AddValidation(builder.Services);
 builder.Build();
 
 public partial class Program {}
