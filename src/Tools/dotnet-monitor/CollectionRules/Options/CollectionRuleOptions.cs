@@ -30,7 +30,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
 #nullable enable
 
         [Display(
-            Name = nameof(Actions),
+            Name = nameof(Actions), 
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleOptions_Actions))]
         public List<CollectionRuleActionOptions> Actions { get; set; } = [];
@@ -41,6 +41,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleOptions_Limits))]
         public CollectionRuleLimitsOptions? Limits { get; set; }
 
-        internal List<string> ErrorList { get; } = new List<string>();
+        internal List<(string Error, string MemberName)> ErrorList { get; } = new List<(string Error, string MemberName)>();
     }
 }

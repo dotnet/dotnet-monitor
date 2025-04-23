@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.AspNetCore.Http.Validation;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Monitoring.WebApi.Validation;
@@ -81,6 +82,26 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
                 catch (OptionsValidationException e)
                 {
                     results.AddRange(e.Failures.Select((string failure) => new ValidationResult(e.Message)));
+                }
+
+                // Validate that each provider is valid.
+                int index = 0;
+                foreach (EventPipeProvider provider in Providers)
+                {
+                    ValidationContext providerContext = new(provider, validationContext, validationContext.Items);
+                    providerContext.MemberName = nameof(Providers) + "[" + index.ToString(CultureInfo.InvariantCulture) + "]";
+
+                    // Note: generated validation logic doesn't recurse into members of T for List<T>, when List<T> is not required.
+                    // Need to do the recursion ourselves.
+                    var validationOptions = validationContext.GetRequiredService<IOptions<ValidationOptions>>().Value;
+                    ValidationHelper.TryValidateObject(provider, typeof(EventPipeProvider), validationOptions, providerContext, results);
+
+                    if (counterOptions != null && !CounterValidator.ValidateProvider(counterOptions, provider, out string? errorMessage))
+                    {
+                        results.Add(new ValidationResult(errorMessage, new[] { nameof(EventPipeProvider.Arguments) }));
+                    }
+
+                    index++;
                 }
             }
             else

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http.Validation;
 using Microsoft.AspNetCore.Http.Validation.Generated;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Diagnostics.Tools.Monitor;
+using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts;
@@ -61,6 +62,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         public required ThreadpoolQueueLengthOptions ThreadpoolQueueLengthOptions { get; init; }
         public required EventMeterOptions EventMeterOptions { get; init; }
 
+        // Nested member
+        public required EventPipeProvider EventPipeProvider { get; init; }
 
         // TODO: only one resolver per project? Generate this for tests, for now. Maybe want to separate this one out
         // by test later.

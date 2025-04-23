@@ -9,6 +9,8 @@
 //------------------------------------------------------------------------------
 #nullable enable
 
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
+
 namespace System.Runtime.CompilerServices
 {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.AspNetCore.Http.ValidationsGenerator, Version=10.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60", "10.0.0.0")]
@@ -74,11 +76,11 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                 validatableInfo = CreateCollectionRuleLimitsOptions();
                 return true;
             }
-            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleOptions))
-            {
-                validatableInfo = CreateCollectionRuleOptions();
-                return true;
-            }
+            // if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleOptions))
+            // {
+            //     validatableInfo = CreateCollectionRuleOptions();
+            //     return true;
+            // }
             if (type == typeof(global::System.Reflection.MethodBase))
             {
                 validatableInfo = CreateMethodBase();
@@ -359,6 +361,11 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                 validatableInfo = CreateEventMeterOptions();
                 return true;
             }
+            if (type == typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.Models.EventPipeProvider))
+            {
+                validatableInfo = CreateEventPipeProvider();
+                return true;
+            }
             if (type == typeof(global::Microsoft.Diagnostics.Monitoring.TestCommon.PassThroughOptions))
             {
                 validatableInfo = CreatePassThroughOptions();
@@ -434,32 +441,32 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                 ]
             );
         }
-        private ValidatableTypeInfo CreateCollectionRuleOptions()
-        {
-            return new GeneratedValidatableTypeInfo(
-                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleOptions),
-                members: [
-                    new GeneratedValidatablePropertyInfo(
-                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleOptions),
-                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleTriggerOptions),
-                        name: "Trigger",
-                        displayName: "Trigger"
-                    ),
-                    new GeneratedValidatablePropertyInfo(
-                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleOptions),
-                        propertyType: typeof(global::System.Collections.Generic.List<global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleActionOptions>),
-                        name: "Actions",
-                        displayName: "Actions"
-                    ),
-                    new GeneratedValidatablePropertyInfo(
-                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleOptions),
-                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleLimitsOptions),
-                        name: "Limits",
-                        displayName: "Limits"
-                    ),
-                ]
-            );
-        }
+        // private ValidatableTypeInfo CreateCollectionRuleOptions()
+        // {
+        //     return new GeneratedValidatableTypeInfo(
+        //         type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleOptions),
+        //         members: [
+        //             new GeneratedValidatablePropertyInfo(
+        //                 containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleOptions),
+        //                 propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleTriggerOptions),
+        //                 name: "Trigger",
+        //                 displayName: "Trigger"
+        //             ),
+        //             new GeneratedValidatablePropertyInfo(
+        //                 containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleOptions),
+        //                 propertyType: typeof(global::System.Collections.Generic.List<global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleActionOptions>),
+        //                 name: "Actions",
+        //                 displayName: "Actions"
+        //             ),
+        //             new GeneratedValidatablePropertyInfo(
+        //                 containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleOptions),
+        //                 propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleLimitsOptions),
+        //                 name: "Limits",
+        //                 displayName: "Limits"
+        //             ),
+        //         ]
+        //     );
+        // }
         private ValidatableTypeInfo CreateMethodBase()
         {
             return new GeneratedValidatableTypeInfo(
@@ -1880,6 +1887,38 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                 ]
             );
         }
+        private ValidatableTypeInfo CreateEventPipeProvider()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.Models.EventPipeProvider),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.Models.EventPipeProvider),
+                        propertyType: typeof(string),
+                        name: "Name",
+                        displayName: "Name"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.Models.EventPipeProvider),
+                        propertyType: typeof(string),
+                        name: "Keywords",
+                        displayName: "Keywords"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.Models.EventPipeProvider),
+                        propertyType: typeof(global::System.Diagnostics.Tracing.EventLevel),
+                        name: "EventLevel",
+                        displayName: "EventLevel"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.Models.EventPipeProvider),
+                        propertyType: typeof(global::System.Collections.Generic.IDictionary<string, string>),
+                        name: "Arguments",
+                        displayName: "Arguments"
+                    ),
+                ]
+            );
+        }
         private ValidatableTypeInfo CreatePassThroughOptions()
         {
             return new GeneratedValidatableTypeInfo(
@@ -2045,13 +2084,14 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.AspNetCore.Http.ValidationsGenerator, Version=10.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60", "10.0.0.0")]
     internal static class GeneratedServiceCollectionExtensions
     {
-    // [global::System.Runtime.CompilerServices.InterceptsLocationAttribute(1, "YaPWBCMaf/YiusWOmOTnNE6zAQBWYWxpZGF0YWJsZUluZm9SZXNvbHZlci5jcw==")]
-    public static global::Microsoft.Extensions.DependencyInjection.IServiceCollection AddValidation(this global::Microsoft.Extensions.DependencyInjection.IServiceCollection services, global::System.Action<global::Microsoft.AspNetCore.Http.Validation.ValidationOptions>? configureOptions = null)
+        // [global::System.Runtime.CompilerServices.InterceptsLocationAttribute(1, "9oH9pfUMx0r35bT1qr89ily/AQBWYWxpZGF0YWJsZUluZm9SZXNvbHZlci5jcw==")]
+        public static global::Microsoft.Extensions.DependencyInjection.IServiceCollection AddValidation(this global::Microsoft.Extensions.DependencyInjection.IServiceCollection services, global::System.Action<global::Microsoft.AspNetCore.Http.Validation.ValidationOptions>? configureOptions = null)
         {
             // Use non-extension method to avoid infinite recursion.
             return global::Microsoft.Extensions.DependencyInjection.ValidationServiceCollectionExtensions.AddValidation(services, options =>
             {
                 options.Resolvers.Insert(0, new GeneratedValidatableInfoResolver());
+                options.Resolvers.Add(new CustomValidatableInfoResolver());
                 if (configureOptions is not null)
                 {
                     configureOptions(options);

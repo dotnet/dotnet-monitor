@@ -106,9 +106,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             // TODO: in Tests, it has an additional property. Weird.
             MapAuthenticationOptions(obj.Authentication, FormattableString.Invariant($"{prefix}{nameof(obj.Authentication)}"), separator, map);
             MapDictionary_String_CollectionRuleOptions(obj.CollectionRules, FormattableString.Invariant($"{prefix}{nameof(obj.CollectionRules)}"), separator, map);
-            // GlobalCounterOptions
             MapGlobalCounterOptions(obj.GlobalCounter, FormattableString.Invariant($"{prefix}{nameof(obj.GlobalCounter)}"), separator, map);
-            // InProcessFeaturesOptions
+            MapInProcessFeaturesOptions(obj.InProcessFeatures, FormattableString.Invariant($"{prefix}{nameof(obj.InProcessFeatures)}"), separator, map);
             // CorsConfigurationOptions
             MapDiagnosticPortOptions(obj.DiagnosticPort, FormattableString.Invariant($"{prefix}{nameof(obj.DiagnosticPort)}"), separator, map);
             MapEgressOptions(obj.Egress, FormattableString.Invariant($"{prefix}{nameof(obj.Egress)}"), separator, map);
@@ -863,7 +862,70 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 MapFloat(obj.IntervalSeconds, FormattableString.Invariant($"{prefix}{nameof(obj.IntervalSeconds)}"), map);
                 MapInt(obj.MaxHistograms, FormattableString.Invariant($"{prefix}{nameof(obj.MaxHistograms)}"), map);
                 MapInt(obj.MaxTimeSeries, FormattableString.Invariant($"{prefix}{nameof(obj.MaxTimeSeries)}"), map);
-                // MapDictionary(obj.Providers, prefix, separator, map);
+                MapDictionary_String_GlobalProviderOptions(obj.Providers, FormattableString.Invariant($"{prefix}{nameof(obj.Providers)}"), separator, map);
+            }
+        }
+
+        private static void MapDictionary_String_GlobalProviderOptions(IDictionary<string, GlobalProviderOptions>? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                foreach ((string key, GlobalProviderOptions value) in obj)
+                {
+                    string keyString = ConvertUtils.ToString(key, CultureInfo.InvariantCulture);
+                    MapGlobalProviderOptions(value, FormattableString.Invariant($"{prefix}{keyString}"), separator, map);
+                }
+            }
+        }
+
+        private static void MapGlobalProviderOptions(GlobalProviderOptions? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapFloat(obj.IntervalSeconds, FormattableString.Invariant($"{prefix}{nameof(obj.IntervalSeconds)}"), map);
+            }
+        }
+
+        private static void MapInProcessFeaturesOptions(InProcessFeaturesOptions? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapBool(obj.Enabled, FormattableString.Invariant($"{prefix}{nameof(obj.Enabled)}"), map);
+                MapCallStacksOptions(obj.CallStacks, FormattableString.Invariant($"{prefix}{nameof(obj.CallStacks)}"), separator, map);
+                MapExceptionsOptions(obj.Exceptions, FormattableString.Invariant($"{prefix}{nameof(obj.Exceptions)}"), separator, map);
+                MapParameterCapturingOptions(obj.ParameterCapturing, FormattableString.Invariant($"{prefix}{nameof(obj.ParameterCapturing)}"), separator, map);
+            }
+        }
+
+        private static void MapCallStacksOptions(CallStacksOptions? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapBool(obj.Enabled, FormattableString.Invariant($"{prefix}{nameof(obj.Enabled)}"), map);
+            }
+        }
+
+        private static void MapExceptionsOptions(ExceptionsOptions? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapBool(obj.Enabled, FormattableString.Invariant($"{prefix}{nameof(obj.Enabled)}"), map);
+                MapInt(obj.TopLevelLimit, FormattableString.Invariant($"{prefix}{nameof(obj.TopLevelLimit)}"), map);
+                MapExceptionsConfiguration(obj.CollectionFilters, FormattableString.Invariant($"{prefix}{nameof(obj.CollectionFilters)}"), separator, map);
+            }
+        }
+
+        private static void MapParameterCapturingOptions(ParameterCapturingOptions? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapBool(obj.Enabled, FormattableString.Invariant($"{prefix}{nameof(obj.Enabled)}"), map);
             }
         }
 
