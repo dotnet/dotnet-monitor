@@ -195,10 +195,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 ex =>
                 {
                     string[] failures = ex.Failures.ToArray();
-                    // Property validation failures will short-circuit the remainder of the validation
-                    // rules, thus only observe 3 errors when one might expect 4 (the fourth being that
-                    // either GreaterThan or LessThan should be specified).
-                    Assert.Equal(3, failures.Length);
+                    Assert.Equal(4, failures.Length);
                     VerifyRequiredMessage(failures, 0, nameof(EventCounterOptions.ProviderName));
                     VerifyRequiredMessage(failures, 1, nameof(EventCounterOptions.CounterName));
                     VerifyRangeMessage<TimeSpan>(failures, 2, nameof(EventCounterOptions.SlidingWindowDuration),
