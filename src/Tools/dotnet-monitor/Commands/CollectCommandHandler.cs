@@ -5,8 +5,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Diagnostics.Monitoring;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.Auth;
-using Microsoft.Diagnostics.Tools.Monitor.Stacks;
 using Microsoft.Diagnostics.Tools.Monitor.OpenApi;
+#if BUILDING_OTEL
+using Microsoft.Diagnostics.Tools.Monitor.OpenTelemetry;
+#endif
+using Microsoft.Diagnostics.Tools.Monitor.Stacks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -130,7 +133,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.ConfigureCollectionRules();
                 services.ConfigureLibrarySharing();
 
-                // 
+                //
                 // The order of the below calls is **important**.
                 // - ConfigureInProcessFeatures needs to be called before ConfigureProfiler and ConfigureStartupHook
                 //   because these features will configure themselves depending on environment variables set by InProcessFeaturesEndpointInfoSourceCallbacks.
@@ -152,6 +155,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.AddSingleton<ITraceOperationFactory, TraceOperationFactory>();
                 services.AddSingleton<IGCDumpOperationFactory, GCDumpOperationFactory>();
                 services.AddSingleton<IStacksOperationFactory, StacksOperationFactory>();
+#if BUILDING_OTEL
+                services.ConfigureOpenTelemetry();
+#endif
 
                 services.ConfigureCapabilities(noHttpEgress);
 

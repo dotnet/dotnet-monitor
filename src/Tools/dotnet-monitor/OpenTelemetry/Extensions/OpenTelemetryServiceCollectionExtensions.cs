@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+#if BUILDING_OTEL
 #nullable enable
 
 using System;
@@ -48,3 +49,4 @@ public static class OpenTelemetryServiceCollectionExtensions
         return services;
     }
 }
+#endif

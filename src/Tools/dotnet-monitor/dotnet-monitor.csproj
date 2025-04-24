@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
     <RootNamespace>Microsoft.Diagnostics.Tools.Monitor</RootNamespace>
@@ -25,6 +25,14 @@
 
   <ItemGroup Condition="'$(DIAGNOSTICS_REPO_ROOT)' != ''">
     <ProjectReference Include="$(DIAGNOSTICS_REPO_ROOT)\src\Microsoft.Diagnostics.Monitoring\Microsoft.Diagnostics.Monitoring.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup Condition="'$(OTEL_REPO_ROOT)' != ''">
+    <DefineConstants>$(DefineConstants);BUILDING_OTEL</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(OTEL_REPO_ROOT)' != ''">
+    <ProjectReference Include="$(OTEL_REPO_ROOT)\next-gen\src\OpenTelemetry.AutoInstrumentation.Sdk.Configuration\OpenTelemetry.AutoInstrumentation.Sdk.Configuration.csproj" />
   </ItemGroup>
 
   <ItemGroup>
