@@ -156,7 +156,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 services.AddSingleton<IGCDumpOperationFactory, GCDumpOperationFactory>();
                 services.AddSingleton<IStacksOperationFactory, StacksOperationFactory>();
 #if BUILDING_OTEL
-                services.ConfigureOpenTelemetry();
+                services.AddOpenTelemetry();
 #endif
 
                 services.ConfigureCapabilities(noHttpEgress);
