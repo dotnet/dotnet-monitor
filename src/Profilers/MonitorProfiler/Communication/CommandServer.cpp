@@ -195,20 +195,20 @@ void CommandServer::ProcessResetMessage(const IpcMessage& message, std::shared_p
 bool CommandServer::IsControlCommand(const IpcMessage& message)
 {
     switch (message.CommandSet) {
-        case CommandSet::Profiler:
+        case static_cast<int>(CommandSet::Profiler) :
             switch (message.Command)
             {
-                case ProfilerCommand::Start:
-                case ProfilerCommand::Stop:
+                case static_cast<int>(ProfilerCommand::Start):
+                case static_cast<int>(ProfilerCommand::Stop):
                     return true;
                 default:
                     return false;
             }
-        case CommandSet::StartupHook:
+        case static_cast<int>(CommandSet::StartupHook):
             switch (message.Command) {
-                case StartupHookCommand::ResetState:
-                case StartupHookCommand::Start:
-                case StartupHookCommand::Stop:
+                case static_cast<int>(StartupHookCommand::ResetState):
+                case static_cast<int>(StartupHookCommand::Start):
+                case static_cast<int>(StartupHookCommand::Stop):
                     return true;
                 default:
                     return false;
