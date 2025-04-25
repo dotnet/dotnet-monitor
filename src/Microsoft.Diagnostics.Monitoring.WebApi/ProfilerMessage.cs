@@ -26,13 +26,18 @@ namespace Microsoft.Diagnostics.Monitoring
 
     public enum ProfilerCommand : ushort
     {
-        Callstack
+        Callstack,
+        Stop,
+        Start,
     };
 
     public enum StartupHookCommand : ushort
     {
         StartCapturingParameters,
-        StopCapturingParameters
+        StopCapturingParameters,
+        Stop,
+        Start,
+        ResetState
     };
 
     public interface IProfilerMessage

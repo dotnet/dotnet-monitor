@@ -16,7 +16,16 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
 
         public CurrentAppDomainUnhandledExceptionSource()
         {
+        }
+
+        public override void Start()
+        {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+        }
+
+        public override void Stop()
+        {
+            AppDomain.CurrentDomain.UnhandledException -= CurrentDomain_UnhandledException;
         }
 
         private void CurrentDomain_UnhandledException(object? sender, UnhandledExceptionEventArgs e)

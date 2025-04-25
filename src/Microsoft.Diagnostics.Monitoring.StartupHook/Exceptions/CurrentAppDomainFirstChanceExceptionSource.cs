@@ -17,7 +17,16 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
 
         public CurrentAppDomainFirstChanceExceptionSource()
         {
+        }
+
+        public override void Start()
+        {
             AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
+        }
+
+        public override void Stop()
+        {
+            AppDomain.CurrentDomain.FirstChanceException -= CurrentDomain_FirstChanceException;
         }
 
         private void CurrentDomain_FirstChanceException(object? sender, FirstChanceExceptionEventArgs e)
