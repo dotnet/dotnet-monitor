@@ -81,7 +81,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
                 }
                 catch (OptionsValidationException e)
                 {
-                    results.AddRange(e.Failures.Select((string failure) => new ValidationResult(e.Message)));
+                    results.AddRange(e.Failures.Select((string failure) => new ValidationResult(e.Message, [e.OptionsType.Name])));
                 }
 
                 // Validate that each provider is valid.
