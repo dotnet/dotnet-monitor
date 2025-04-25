@@ -20,14 +20,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
     internal sealed record class ExecuteOptions : BaseRecordOptions
     {
         [Display(
-            Name = nameof(Path),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ExecuteOptions_Path))]
         [Required]
         public string Path { get; set; } = string.Empty;
 
         [Display(
-            Name = nameof(Arguments),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ExecuteOptions_Arguments))]
         [ActionOptionsDependencyProperty]

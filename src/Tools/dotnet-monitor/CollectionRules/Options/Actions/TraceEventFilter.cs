@@ -20,21 +20,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
     internal sealed record class TraceEventFilter : BaseRecordOptions
     {
         [Display(
-            Name = nameof(ProviderName),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_TraceEventFilter_ProviderName))]
         [Required]
         public string ProviderName { get; set; } = string.Empty;
 
         [Display(
-            Name = nameof(EventName),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_TraceEventFilter_EventName))]
         [Required]
         public string EventName { get; set; } = string.Empty;
 
         [Display(
-            Name = nameof(PayloadFilter),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_TraceEventFilter_PayloadFilter))]
         public IDictionary<string, string>? PayloadFilter { get; set; }

@@ -15,25 +15,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
     internal sealed partial class TemplateOptions
     {
         [Display(
-            Name = nameof(CollectionRuleFilters),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleOptions_Filters))]
         public IDictionary<string, ProcessFilterDescriptor>? CollectionRuleFilters { get; set; } = new Dictionary<string, ProcessFilterDescriptor>();
 
         [Display(
-            Name = nameof(CollectionRuleTriggers),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleOptions_Trigger))]
         public IDictionary<string, CollectionRuleTriggerOptions>? CollectionRuleTriggers { get; set; } = new Dictionary<string, CollectionRuleTriggerOptions>();
 
         [Display(
-            Name = nameof(CollectionRuleActions),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleOptions_Actions))]
         public IDictionary<string, CollectionRuleActionOptions>? CollectionRuleActions { get; set; } = new Dictionary<string, CollectionRuleActionOptions>();
 
         [Display(
-            Name = nameof(CollectionRuleLimits),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleOptions_Limits))]
         public IDictionary<string, CollectionRuleLimitsOptions>? CollectionRuleLimits { get; set; } = new Dictionary<string, CollectionRuleLimitsOptions>();

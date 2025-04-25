@@ -18,7 +18,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.E
     internal sealed partial class GCHeapSizeOptions : IValidateOptions<GCHeapSizeOptions>, IEventCounterShortcuts, ISlidingWindowDurationProperties
     {
         [Display(
-            Name = nameof(GreaterThan),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_GCHeapSizeOptions_GreaterThan))]
         [DefaultValue(GCHeapSizeOptionsDefaults.GreaterThan)]
@@ -26,14 +25,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.E
         public double? GreaterThan { get; set; }
 
         [Display(
-            Name = nameof(LessThan),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_GCHeapSizeOptions_LessThan))]
         [Range(0, double.MaxValue)]
         public double? LessThan { get; set; }
 
         [Display(
-            Name = nameof(SlidingWindowDuration),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EventCounterOptions_SlidingWindowDuration))]
         [Range(typeof(TimeSpan), TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue)]

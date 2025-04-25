@@ -11,14 +11,12 @@ namespace Microsoft.Diagnostics.Monitoring.Options
         IInProcessFeatureOptions
     {
         [Display(
-            Name = nameof(Enabled),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ExceptionsOptions_Enabled))]
         [DefaultValue(ExceptionsOptionsDefaults.Enabled)]
         public bool? Enabled { get; set; }
 
         [Display(
-            Name = nameof(TopLevelLimit),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ExceptionsOptions_TopLevelLimit))]
         [Range(1, int.MaxValue)]
@@ -26,7 +24,6 @@ namespace Microsoft.Diagnostics.Monitoring.Options
         public int? TopLevelLimit { get; set; }
 
         [Display(
-            Name = nameof(CollectionFilters),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ExceptionsOptions_CollectionFilters))]
         public ExceptionsConfiguration? CollectionFilters { get; set; }

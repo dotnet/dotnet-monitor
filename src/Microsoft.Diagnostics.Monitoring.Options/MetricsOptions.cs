@@ -17,20 +17,17 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     public class MetricsOptions
     {
         [Display(
-            Name = nameof(Enabled),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricsOptions_Enabled))]
         [DefaultValue(MetricsOptionsDefaults.Enabled)]
         public bool? Enabled { get; set; }
 
         [Display(
-            Name = nameof(Endpoints),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricsOptions_Endpoints))]
         public string? Endpoints { get; set; }
 
         [Display(
-            Name = nameof(MetricCount),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricsOptions_MetricCount))]
         [DefaultValue(MetricsOptionsDefaults.MetricCount)]
@@ -38,20 +35,17 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public int? MetricCount { get; set; }
 
         [Display(
-            Name = nameof(IncludeDefaultProviders),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricsOptions_IncludeDefaultProviders))]
         [DefaultValue(MetricsOptionsDefaults.IncludeDefaultProviders)]
         public bool? IncludeDefaultProviders { get; set; }
 
         [Display(
-            Name = nameof(Providers),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricsOptions_Providers))]
         public List<MetricProvider> Providers { get; set; } = [];
 
         [Display(
-            Name = nameof(Meters),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricsOptions_Meters))]
         public List<MeterConfiguration> Meters { get; set; } = [];
@@ -60,14 +54,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     public class MetricProvider
     {
         [Display(
-            Name = nameof(ProviderName),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricProvider_ProviderName))]
         [Required]
         public string ProviderName { get; set; } = string.Empty;
 
         [Display(
-            Name = nameof(CounterNames),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MetricProvider_CounterNames))]
         public List<string> CounterNames { get; set; } = [];
@@ -76,13 +68,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     public class MeterConfiguration
     {
         [Display(
-            Name = nameof(MeterName),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MeterConfiguration_MeterName))]
         public string? MeterName { get; set; }
 
         [Display(
-            Name = nameof(InstrumentNames),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MeterConfiguration_InstrumentNames))]
         public List<string> InstrumentNames { get; set; } = [];

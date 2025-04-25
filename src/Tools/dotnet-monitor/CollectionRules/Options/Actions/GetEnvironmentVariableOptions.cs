@@ -17,7 +17,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
     internal sealed record class GetEnvironmentVariableOptions : BaseRecordOptions
     {
         [Display(
-            Name = nameof(Name),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_GetEnvironmentVariableOptions_Name))]
         [Required]

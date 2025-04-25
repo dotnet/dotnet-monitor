@@ -24,26 +24,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
     internal sealed partial record class CollectLiveMetricsOptions : BaseRecordOptions, IEgressProviderProperties
     {
         [Display(
-            Name = nameof(IncludeDefaultProviders),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectLiveMetricsOptions_IncludeDefaultProviders))]
         [DefaultValue(CollectLiveMetricsOptionsDefaults.IncludeDefaultProviders)]
         public bool? IncludeDefaultProviders { get; set; }
 
         [Display(
-            Name = nameof(Providers),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectLiveMetricsOptions_Providers))]
         public EventMetricsProvider[]? Providers { get; set; }
 
         [Display(
-            Name = nameof(Meters),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectLiveMetricsOptions_Meters))]
         public EventMetricsMeter[]? Meters { get; set; }
 
         [Display(
-            Name = nameof(Duration),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectArtifactOptions_Duration))]
         [Range(typeof(TimeSpan), ActionOptionsConstants.Duration_MinValue, ActionOptionsConstants.Duration_MaxValue)]
@@ -52,7 +48,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
         public TimeSpan? Duration { get; set; }
 
         [Display(
-            Name = nameof(Egress),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectArtifactOptions_Egress))]
         [Required(
@@ -64,7 +59,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
         public string Egress { get; set; } = string.Empty;
 
         [Display(
-            Name = nameof(ArtifactName),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectArtifactOptions_ArtifactName))]
         public string? ArtifactName { get; set; }

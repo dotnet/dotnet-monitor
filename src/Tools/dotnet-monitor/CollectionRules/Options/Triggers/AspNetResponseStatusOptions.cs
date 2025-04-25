@@ -25,7 +25,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
 
 #nullable disable
         [Display(
-            Name = nameof(StatusCodes),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AspNetResponseStatusOptions_StatusCodes))]
         [Required]
@@ -38,7 +37,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
 #nullable enable
 
         [Display(
-            Name = nameof(ResponseCount),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AspNetResponseStatusOptions_ResponseCount))]
 
@@ -49,7 +47,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
         public int ResponseCount { get; set; }
 
         [Display(
-            Name = nameof(SlidingWindowDuration),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AspNetResponseStatusOptions_SlidingWindowDuration))]
         [Range(typeof(TimeSpan), TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue)]
@@ -59,7 +56,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
         // CONSIDER: Currently described that paths have to exactly match one item in the list.
         // Consider allowing for wildcard/globbing to simplify list of matchable paths.
         [Display(
-            Name = nameof(IncludePaths),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AspNetResponseStatusOptions_IncludePaths))]
         public string[]? IncludePaths { get; set; }
@@ -67,7 +63,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
         // CONSIDER: Currently described that paths have to exactly match one item in the list.
         // Consider allowing for wildcard/globbing to simplify list of matchable paths.
         [Display(
-            Name = nameof(ExcludePaths),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AspNetResponseStatusOptions_ExcludePaths))]
         public string[]? ExcludePaths { get; set; }

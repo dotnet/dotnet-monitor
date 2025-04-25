@@ -12,21 +12,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
     internal sealed class CollectionRuleTriggerDefaultsOptions
     {
         [Display(
-            Name = nameof(RequestCount),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleTriggerDefaultsOptions_RequestCount))]
         [Range(1, int.MaxValue)]
         public int? RequestCount { get; set; }
 
         [Display(
-            Name = nameof(ResponseCount),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleTriggerDefaultsOptions_ResponseCount))]
         [Range(1, int.MaxValue)]
         public int? ResponseCount { get; set; }
 
         [Display(
-            Name = nameof(SlidingWindowDuration),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleTriggerDefaultsOptions_SlidingWindowDuration))]
         [Range(typeof(TimeSpan), TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue)]

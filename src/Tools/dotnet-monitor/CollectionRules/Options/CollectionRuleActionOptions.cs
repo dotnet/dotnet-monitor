@@ -17,26 +17,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
     internal sealed partial class CollectionRuleActionOptions
     {
         [Display(
-            Name = nameof(Name),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleActionOptions_Name))]
         public string? Name { get; set; }
 
         [Display(
-            Name = nameof(Type),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleActionOptions_Type))]
         [Required]
         public string Type { get; set; } = string.Empty;
 
         [Display(
-            Name = nameof(Settings),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleActionOptions_Settings))]
         public object? Settings { get; internal set; }
 
         [Display(
-            Name = nameof(WaitForCompletion),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleActionOptions_WaitForCompletion))]
         [DefaultValue(CollectionRuleActionOptionsDefaults.WaitForCompletion)]

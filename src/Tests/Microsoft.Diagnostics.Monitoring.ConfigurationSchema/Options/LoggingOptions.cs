@@ -12,37 +12,31 @@ namespace Microsoft.Diagnostics.Monitoring.Options
     internal sealed class LoggingOptions
     {
         [Display(
-            Name = nameof(LogLevel),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LoggingOptions_LogLevel))]
         public IDictionary<string, LogLevel?>? LogLevel { get; set; }
 
         [Display(
-            Name = nameof(Console),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LoggingOptions_Console))]
         public ConsoleLoggerOptions? Console { get; set; }
 
         [Display(
-            Name = nameof(EventLog),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LoggingOptions_EventLog))]
         public LogLevelOptions? EventLog { get; set; }
 
         [Display(
-            Name = nameof(Debug),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LoggingOptions_Debug))]
         public LogLevelOptions? Debug { get; set; }
 
         [Display(
-            Name = nameof(EventSource),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LoggingOptions_EventSource))]
         public LogLevelOptions? EventSource { get; set; }
 
         [Display(
-            Name = nameof(CaptureScopes),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_LoggingOptions_CaptureScopes))]
         [DefaultValue(true)]

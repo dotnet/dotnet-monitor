@@ -8,7 +8,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     public class CorsConfigurationOptions
     {
         [Display(
-            Name = nameof(AllowedOrigins),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CorsConfiguration_AllowedOrigins))]
         [Required]

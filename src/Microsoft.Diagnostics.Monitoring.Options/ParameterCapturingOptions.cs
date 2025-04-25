@@ -11,7 +11,6 @@ namespace Microsoft.Diagnostics.Monitoring.Options
         IInProcessFeatureOptions
     {
         [Display(
-            Name = nameof(Enabled),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ParameterCapturingOptions_Enabled))]
         [DefaultValue(ParameterCapturingOptionsDefaults.Enabled)]

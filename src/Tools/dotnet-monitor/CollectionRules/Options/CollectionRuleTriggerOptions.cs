@@ -16,14 +16,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
     internal sealed partial class CollectionRuleTriggerOptions
     {
         [Display(
-            Name = nameof(Type),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleTriggerOptions_Type))]
         [Required]
         public string Type { get; set; } = string.Empty;
 
         [Display(
-            Name = nameof(Settings),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleTriggerOptions_Settings))]
         public object? Settings { get; internal set; }

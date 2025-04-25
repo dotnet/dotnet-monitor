@@ -9,26 +9,22 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
     public class DiagnosticPortOptions
     {
         [Display(
-            Name = nameof(ConnectionMode),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_DiagnosticPortOptions_ConnectionMode))]
         [DefaultValue(DiagnosticPortOptionsDefaults.ConnectionMode)]
         public DiagnosticPortConnectionMode? ConnectionMode { get; set; }
 
         [Display(
-            Name = nameof(EndpointName),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_DiagnosticPortOptions_EndpointName))]
         public string? EndpointName { get; set; }
 
         [Display(
-            Name = nameof(MaxConnections),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_DiagnosticPortOptions_MaxConnections))]
         public int? MaxConnections { get; set; }
 
         [Display(
-            Name = nameof(DeleteEndpointOnStartup),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_DiagnosticPortOptions_DeleteEndpointOnStartup))]
         [DefaultValue(DiagnosticPortOptionsDefaults.DeleteEndpointOnStartup)]

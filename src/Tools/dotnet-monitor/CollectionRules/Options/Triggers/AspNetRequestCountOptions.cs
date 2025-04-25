@@ -21,7 +21,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
         IValidateOptions<AspNetRequestCountOptions>
     {
         [Display(
-            Name = nameof(RequestCount),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AspNetRequestCountOptions_RequestCount))]
 
@@ -32,7 +31,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
         public int RequestCount { get; set; }
 
         [Display(
-            Name = nameof(SlidingWindowDuration),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AspNetRequestCountOptions_SlidingWindowDuration))]
         [Range(typeof(TimeSpan), TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue)]
@@ -42,7 +40,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
         // CONSIDER: Currently described that paths have to exactly match one item in the list.
         // Consider allowing for wildcard/globbing to simplify list of matchable paths.
         [Display(
-            Name = nameof(IncludePaths),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AspNetRequestCountOptions_IncludePaths))]
         public string[]? IncludePaths { get; set; }
@@ -50,7 +47,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
         // CONSIDER: Currently described that paths have to exactly match one item in the list.
         // Consider allowing for wildcard/globbing to simplify list of matchable paths.
         [Display(
-            Name = nameof(ExcludePaths),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AspNetRequestCountOptions_ExcludePaths))]
         public string[]? ExcludePaths { get; set; }

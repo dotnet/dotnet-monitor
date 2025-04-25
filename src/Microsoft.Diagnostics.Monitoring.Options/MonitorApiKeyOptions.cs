@@ -9,14 +9,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     internal sealed class MonitorApiKeyOptions
     {
         [Display(
-            Name = nameof(Subject),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MonitorApiKeyOptions_Subject))]
         [Required]
         public string Subject { get; set; } = string.Empty;
 
         [Display(
-            Name = nameof(PublicKey),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MonitorApiKeyOptions_PublicKey))]
         [RegularExpression("[0-9a-zA-Z_-]+")]
@@ -24,7 +22,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public string PublicKey { get; set; } = string.Empty;
 
         [Display(
-            Name = nameof(Issuer),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_MonitorApiKeyOptions_Issuer))]
         public string? Issuer { get; set; }

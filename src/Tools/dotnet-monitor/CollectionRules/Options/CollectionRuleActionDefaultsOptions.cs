@@ -11,7 +11,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
     internal sealed class CollectionRuleActionDefaultsOptions
     {
         [Display(
-            Name = nameof(Egress),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleActionDefaultsOptions_Egress))]
         public string? Egress { get; set; }

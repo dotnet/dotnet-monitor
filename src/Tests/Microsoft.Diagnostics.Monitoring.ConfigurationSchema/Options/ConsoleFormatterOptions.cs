@@ -10,20 +10,17 @@ namespace Microsoft.Diagnostics.Monitoring.Options
     internal sealed class ConsoleFormatterOptions
     {
         [Display(
-            Name = nameof(IncludeScopes),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleFormatterOptions_IncludeScopes))]
         public bool IncludeScopes { get; set; }
 
         [Display(
-            Name = nameof(TimestampFormat),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleFormatterOptions_TimestampFormat))]
         [DefaultValue(null)]
         public string? TimestampFormat { get; set; }
 
         [Display(
-            Name = nameof(UseUtcTimestamp),
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ConsoleFormatterOptions_UseUtcTimestamp))]
         [DefaultValue(false)]
