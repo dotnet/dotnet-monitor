@@ -477,8 +477,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         {
             const int IterationCount = 5;
             const int ExpectedActionExecutionCount = 3;
-            TimeSpan SlidingWindowDuration = TimeSpan.FromMilliseconds(100);
-            TimeSpan ClockIncrementDuration = TimeSpan.FromMilliseconds(10);
+            TimeSpan SlidingWindowDuration = TimeSpan.FromMilliseconds(1000);
+            TimeSpan ClockIncrementDuration = TimeSpan.FromMilliseconds(100);
 
             MockTimeProvider timeProvider = new();
             ManualTriggerService triggerService = new();
