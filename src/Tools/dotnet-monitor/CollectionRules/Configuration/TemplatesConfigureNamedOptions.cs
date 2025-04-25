@@ -30,7 +30,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 
         public void PostConfigure(string? name, TemplateOptions options)
         {
-            System.Console.WriteLine("TemplatesConfigureNamedOptions PostConfigure");
             IConfigurationSection collectionRuleActionsSection = _configuration.GetSection(collectionRuleActionsPath);
 
             if (options.CollectionRuleActions != null)

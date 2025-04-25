@@ -159,6 +159,11 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                 validatableInfo = CreateExecuteOptions();
                 return true;
             }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.AzureAdOptions))
+            {
+                validatableInfo = CreateAzureAdOptions();
+                return true;
+            }
             if (type == typeof(global::TestValidatableType))
             {
                 validatableInfo = CreateTestValidatableType();
@@ -688,12 +693,6 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
             return new GeneratedValidatableTypeInfo(
                 type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.BaseRecordOptions),
                 members: [
-                    // new GeneratedValidatablePropertyInfo(
-                    //     containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.BaseRecordOptions),
-                    //     propertyType: typeof(global::System.Type),
-                    //     name: "EqualityContract",
-                    //     displayName: "EqualityContract"
-                    // ),
                 ]
             );
         }
@@ -702,17 +701,43 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
             return new GeneratedValidatableTypeInfo(
                 type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.ExecuteOptions),
                 members: [
-                    // new GeneratedValidatablePropertyInfo(
-                    //     containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.ExecuteOptions),
-                    //     propertyType: typeof(global::System.Type),
-                    //     name: "EqualityContract",
-                    //     displayName: "EqualityContract"
-                    // ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.ExecuteOptions),
                         propertyType: typeof(string),
                         name: "Path",
                         displayName: "Path"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateAzureAdOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.AzureAdOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.AzureAdOptions),
+                        propertyType: typeof(string),
+                        name: "TenantId",
+                        displayName: "TenantId"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.AzureAdOptions),
+                        propertyType: typeof(string),
+                        name: "ClientId",
+                        displayName: "ClientId"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.AzureAdOptions),
+                        propertyType: typeof(global::System.Uri),
+                        name: "AppIdUri",
+                        displayName: "AppIdUri"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.AzureAdOptions),
+                        propertyType: typeof(string),
+                        name: "RequiredRole",
+                        displayName: "RequiredRole"
                     ),
                 ]
             );
@@ -740,6 +765,12 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                         name: "ExecuteOptions",
                         displayName: "ExecuteOptions"
                     ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::TestValidatableType),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.AzureAdOptions),
+                        name: "AzureAdOptions",
+                        displayName: "AzureAdOptions"
+                    ),
                 ]
             );
         }
@@ -749,8 +780,8 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.AspNetCore.Http.ValidationsGenerator, Version=10.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60", "10.0.0.0")]
     internal static class GeneratedServiceCollectionExtensions
     {
-        // [global::System.Runtime.CompilerServices.InterceptsLocationAttribute(1, "nMLdYxVpxyjXwof6UabUh7sBAABQcm9ncmFtLmNz")]
-        public static global::Microsoft.Extensions.DependencyInjection.IServiceCollection AddValidation(this global::Microsoft.Extensions.DependencyInjection.IServiceCollection services, global::System.Action<ValidationOptions>? configureOptions = null)
+        // [global::System.Runtime.CompilerServices.InterceptsLocationAttribute(1, "/S4C/fYaYK+RGue0pzw4eqSWAABWYWxpZGF0YWJsZUluZm9SZXNvbHZlci5jcw==")]
+        public static global::Microsoft.Extensions.DependencyInjection.IServiceCollection AddValidation(this global::Microsoft.Extensions.DependencyInjection.IServiceCollection services, global::System.Action<global::Microsoft.AspNetCore.Http.Validation.ValidationOptions>? configureOptions = null)
         {
             // Use non-extension method to avoid infinite recursion.
             return global::Microsoft.Extensions.DependencyInjection.ValidationServiceCollectionExtensions.AddValidation(services, options =>
@@ -777,13 +808,39 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
             var key = new CacheKey(containingType, propertyName);
             return _cache.GetOrAdd(key, static k =>
             {
+                var results = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationAttribute>();
+
+                // Get attributes from the property
                 var property = k.ContainingType.GetProperty(k.PropertyName);
-                if (property == null)
+                if (property != null)
                 {
-                    return [];
+                    var propertyAttributes = global::System.Reflection.CustomAttributeExtensions
+                        .GetCustomAttributes<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(property, inherit: true);
+
+                    results.AddRange(propertyAttributes);
                 }
 
-                return [.. global::System.Reflection.CustomAttributeExtensions.GetCustomAttributes<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(property, inherit: true)];
+                // Check constructors for parameters that match the property name
+                // to handle record scenarios
+                foreach (var constructor in k.ContainingType.GetConstructors())
+                {
+                    // Look for parameter with matching name (case insensitive)
+                    var parameter = global::System.Linq.Enumerable.FirstOrDefault(
+                        constructor.GetParameters(),
+                        p => string.Equals(p.Name, k.PropertyName, global::System.StringComparison.OrdinalIgnoreCase));
+
+                    if (parameter != null)
+                    {
+                        var paramAttributes = global::System.Reflection.CustomAttributeExtensions
+                            .GetCustomAttributes<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(parameter, inherit: true);
+
+                        results.AddRange(paramAttributes);
+
+                        break;
+                    }
+                }
+
+                return results.ToArray();
             });
         }
     }
