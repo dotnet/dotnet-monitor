@@ -794,8 +794,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             if (null != obj)
             {
                 string prefix = FormattableString.Invariant($"{valueName}{separator}");
-                MapMonitorApiKeyOptions(obj.MonitorApiKey, prefix, separator, map);
-                MapAzureAdOptions(obj.AzureAd, prefix, separator, map);
+                MapMonitorApiKeyOptions(obj.MonitorApiKey, FormattableString.Invariant($"{prefix}{nameof(obj.MonitorApiKey)}"), separator, map);
+                MapAzureAdOptions(obj.AzureAd, FormattableString.Invariant($"{prefix}{nameof(obj.AzureAd)}"), separator, map);
             }
         }
 
