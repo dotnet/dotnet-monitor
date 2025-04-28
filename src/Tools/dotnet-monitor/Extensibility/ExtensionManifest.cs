@@ -21,7 +21,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
     {
     }
 
-    [ValidatableType]
     internal class ExtensionManifest : IValidatableObject
     {
         public const string DefaultFileName = "extension.json";

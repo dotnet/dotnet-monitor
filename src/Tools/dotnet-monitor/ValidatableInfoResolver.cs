@@ -60,11 +60,6 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
         public bool TryGetValidatableTypeInfo(global::System.Type type, [global::System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out global::Microsoft.AspNetCore.Http.Validation.IValidatableInfo? validatableInfo)
         {
             validatableInfo = null;
-            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.Extensibility.ExtensionManifest))
-            {
-                validatableInfo = CreateExtensionManifest();
-                return true;
-            }
             if (type == typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.MetricProvider))
             {
                 validatableInfo = CreateMetricProvider();
@@ -90,6 +85,206 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                 validatableInfo = CreateAuthenticationOptions();
                 return true;
             }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleTriggerOptions))
+            {
+                validatableInfo = CreateCollectionRuleTriggerOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleActionOptions))
+            {
+                validatableInfo = CreateCollectionRuleActionOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleLimitsOptions))
+            {
+                validatableInfo = CreateCollectionRuleLimitsOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleOptions))
+            {
+                validatableInfo = CreateCollectionRuleOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.TraceEventFilter))
+            {
+                validatableInfo = CreateTraceEventFilter();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectTraceOptions))
+            {
+                validatableInfo = CreateCollectTraceOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.ExecuteOptions))
+            {
+                validatableInfo = CreateExecuteOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.SetEnvironmentVariableOptions))
+            {
+                validatableInfo = CreateSetEnvironmentVariableOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.GetEnvironmentVariableOptions))
+            {
+                validatableInfo = CreateGetEnvironmentVariableOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.GlobalCounterOptions))
+            {
+                validatableInfo = CreateGlobalCounterOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectGCDumpOptions))
+            {
+                validatableInfo = CreateCollectGCDumpOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectLiveMetricsOptions))
+            {
+                validatableInfo = CreateCollectLiveMetricsOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectStacksOptions))
+            {
+                validatableInfo = CreateCollectStacksOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectLogsOptions))
+            {
+                validatableInfo = CreateCollectLogsOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Monitoring.Options.ExceptionsConfiguration))
+            {
+                validatableInfo = CreateExceptionsConfiguration();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Monitoring.Options.ExceptionsOptions))
+            {
+                validatableInfo = CreateExceptionsOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Monitoring.Options.InProcessFeaturesOptions))
+            {
+                validatableInfo = CreateInProcessFeaturesOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.CorsConfigurationOptions))
+            {
+                validatableInfo = CreateCorsConfigurationOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.EgressOptions))
+            {
+                validatableInfo = CreateEgressOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.ProcessFilterOptions))
+            {
+                validatableInfo = CreateProcessFilterOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleTriggerDefaultsOptions))
+            {
+                validatableInfo = CreateCollectionRuleTriggerDefaultsOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleLimitsDefaultsOptions))
+            {
+                validatableInfo = CreateCollectionRuleLimitsDefaultsOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleDefaultsOptions))
+            {
+                validatableInfo = CreateCollectionRuleDefaultsOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.TemplateOptions))
+            {
+                validatableInfo = CreateTemplateOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.RootOptions))
+            {
+                validatableInfo = CreateRootOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem.FileSystemEgressProviderOptions))
+            {
+                validatableInfo = CreateFileSystemEgressProviderOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectDumpOptions))
+            {
+                validatableInfo = CreateCollectDumpOptions();
+                return true;
+            }
+            if (type == typeof(global::System.Guid))
+            {
+                validatableInfo = CreateGuid();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.LoadProfilerOptions))
+            {
+                validatableInfo = CreateLoadProfilerOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectExceptionsOptions))
+            {
+                validatableInfo = CreateCollectExceptionsOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetRequestCountOptions))
+            {
+                validatableInfo = CreateAspNetRequestCountOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetRequestDurationOptions))
+            {
+                validatableInfo = CreateAspNetRequestDurationOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetResponseStatusOptions))
+            {
+                validatableInfo = CreateAspNetResponseStatusOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterOptions))
+            {
+                validatableInfo = CreateEventCounterOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts.CPUUsageOptions))
+            {
+                validatableInfo = CreateCPUUsageOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts.GCHeapSizeOptions))
+            {
+                validatableInfo = CreateGCHeapSizeOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts.ThreadpoolQueueLengthOptions))
+            {
+                validatableInfo = CreateThreadpoolQueueLengthOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventMeterOptions))
+            {
+                validatableInfo = CreateEventMeterOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.Models.EventPipeProvider))
+            {
+                validatableInfo = CreateEventPipeProvider();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.Extensibility.ExtensionManifest))
+            {
+                validatableInfo = CreateExtensionManifest();
+                return true;
+            }
             if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.ValidatableTypes))
             {
                 validatableInfo = CreateValidatableTypes();
@@ -106,20 +301,6 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
             return false;
         }
 
-        private ValidatableTypeInfo CreateExtensionManifest()
-        {
-            return new GeneratedValidatableTypeInfo(
-                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.Extensibility.ExtensionManifest),
-                members: [
-                    new GeneratedValidatablePropertyInfo(
-                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.Extensibility.ExtensionManifest),
-                        propertyType: typeof(string),
-                        name: "Name",
-                        displayName: "Name"
-                    ),
-                ]
-            );
-        }
         private ValidatableTypeInfo CreateMetricProvider()
         {
             return new GeneratedValidatableTypeInfo(
@@ -226,6 +407,962 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                 ]
             );
         }
+        private ValidatableTypeInfo CreateCollectionRuleTriggerOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleTriggerOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleTriggerOptions),
+                        propertyType: typeof(string),
+                        name: "Type",
+                        displayName: "Type"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateCollectionRuleActionOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleActionOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleActionOptions),
+                        propertyType: typeof(string),
+                        name: "Type",
+                        displayName: "Type"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateCollectionRuleLimitsOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleLimitsOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleLimitsOptions),
+                        propertyType: typeof(int?),
+                        name: "ActionCount",
+                        displayName: "ActionCount"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleLimitsOptions),
+                        propertyType: typeof(global::System.TimeSpan?),
+                        name: "ActionCountSlidingWindowDuration",
+                        displayName: "ActionCountSlidingWindowDuration"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleLimitsOptions),
+                        propertyType: typeof(global::System.TimeSpan?),
+                        name: "RuleDuration",
+                        displayName: "RuleDuration"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateCollectionRuleOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleOptions),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleTriggerOptions),
+                        name: "Trigger",
+                        displayName: "Trigger"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleOptions),
+                        propertyType: typeof(global::System.Collections.Generic.List<global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleActionOptions>),
+                        name: "Actions",
+                        displayName: "Actions"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleOptions),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleLimitsOptions),
+                        name: "Limits",
+                        displayName: "Limits"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateTraceEventFilter()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.TraceEventFilter),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.TraceEventFilter),
+                        propertyType: typeof(string),
+                        name: "ProviderName",
+                        displayName: "ProviderName"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.TraceEventFilter),
+                        propertyType: typeof(string),
+                        name: "EventName",
+                        displayName: "EventName"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.TraceEventFilter),
+                        propertyType: typeof(global::System.Collections.Generic.IDictionary<string, string>),
+                        name: "PayloadFilter",
+                        displayName: "PayloadFilter"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateCollectTraceOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectTraceOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectTraceOptions),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.Models.TraceProfile?),
+                        name: "Profile",
+                        displayName: "Profile"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectTraceOptions),
+                        propertyType: typeof(int?),
+                        name: "BufferSizeMegabytes",
+                        displayName: "BufferSizeMegabytes"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectTraceOptions),
+                        propertyType: typeof(global::System.TimeSpan?),
+                        name: "Duration",
+                        displayName: "Duration"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectTraceOptions),
+                        propertyType: typeof(string),
+                        name: "Egress",
+                        displayName: "Egress"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectTraceOptions),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.TraceEventFilter),
+                        name: "StoppingEvent",
+                        displayName: "StoppingEvent"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateExecuteOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.ExecuteOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.ExecuteOptions),
+                        propertyType: typeof(string),
+                        name: "Path",
+                        displayName: "Path"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateSetEnvironmentVariableOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.SetEnvironmentVariableOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.SetEnvironmentVariableOptions),
+                        propertyType: typeof(string),
+                        name: "Name",
+                        displayName: "Name"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateGetEnvironmentVariableOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.GetEnvironmentVariableOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.GetEnvironmentVariableOptions),
+                        propertyType: typeof(string),
+                        name: "Name",
+                        displayName: "Name"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateGlobalCounterOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.GlobalCounterOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.GlobalCounterOptions),
+                        propertyType: typeof(float?),
+                        name: "IntervalSeconds",
+                        displayName: "IntervalSeconds"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.GlobalCounterOptions),
+                        propertyType: typeof(int?),
+                        name: "MaxHistograms",
+                        displayName: "MaxHistograms"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.GlobalCounterOptions),
+                        propertyType: typeof(int?),
+                        name: "MaxTimeSeries",
+                        displayName: "MaxTimeSeries"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.GlobalCounterOptions),
+                        propertyType: typeof(global::System.Collections.Generic.IDictionary<string, global::Microsoft.Diagnostics.Monitoring.WebApi.GlobalProviderOptions>),
+                        name: "Providers",
+                        displayName: "Providers"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateCollectGCDumpOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectGCDumpOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectGCDumpOptions),
+                        propertyType: typeof(string),
+                        name: "Egress",
+                        displayName: "Egress"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateCollectLiveMetricsOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectLiveMetricsOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectLiveMetricsOptions),
+                        propertyType: typeof(global::System.TimeSpan?),
+                        name: "Duration",
+                        displayName: "Duration"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectLiveMetricsOptions),
+                        propertyType: typeof(string),
+                        name: "Egress",
+                        displayName: "Egress"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateCollectStacksOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectStacksOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectStacksOptions),
+                        propertyType: typeof(string),
+                        name: "Egress",
+                        displayName: "Egress"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateCollectLogsOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectLogsOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectLogsOptions),
+                        propertyType: typeof(global::Microsoft.Extensions.Logging.LogLevel?),
+                        name: "DefaultLevel",
+                        displayName: "DefaultLevel"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectLogsOptions),
+                        propertyType: typeof(global::System.Collections.Generic.Dictionary<string, global::Microsoft.Extensions.Logging.LogLevel?>),
+                        name: "FilterSpecs",
+                        displayName: "FilterSpecs"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectLogsOptions),
+                        propertyType: typeof(global::System.TimeSpan?),
+                        name: "Duration",
+                        displayName: "Duration"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectLogsOptions),
+                        propertyType: typeof(string),
+                        name: "Egress",
+                        displayName: "Egress"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectLogsOptions),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Monitoring.Options.LogFormat?),
+                        name: "Format",
+                        displayName: "Format"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateExceptionsConfiguration()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Monitoring.Options.ExceptionsConfiguration),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.Options.ExceptionsConfiguration),
+                        propertyType: typeof(global::System.Collections.Generic.List<global::Microsoft.Diagnostics.Monitoring.Options.ExceptionFilter>),
+                        name: "Exclude",
+                        displayName: "Exclude"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateExceptionsOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Monitoring.Options.ExceptionsOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.Options.ExceptionsOptions),
+                        propertyType: typeof(int?),
+                        name: "TopLevelLimit",
+                        displayName: "TopLevelLimit"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.Options.ExceptionsOptions),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Monitoring.Options.ExceptionsConfiguration),
+                        name: "CollectionFilters",
+                        displayName: "CollectionFilters"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateInProcessFeaturesOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Monitoring.Options.InProcessFeaturesOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.Options.InProcessFeaturesOptions),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Monitoring.Options.ExceptionsOptions),
+                        name: "Exceptions",
+                        displayName: "Exceptions"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateCorsConfigurationOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.CorsConfigurationOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.CorsConfigurationOptions),
+                        propertyType: typeof(string),
+                        name: "AllowedOrigins",
+                        displayName: "AllowedOrigins"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateEgressOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.EgressOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.EgressOptions),
+                        propertyType: typeof(global::System.Collections.Generic.IDictionary<string, global::Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem.FileSystemEgressProviderOptions>),
+                        name: "FileSystem",
+                        displayName: "FileSystem"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.EgressOptions),
+                        propertyType: typeof(global::System.Collections.Generic.IDictionary<string, string>),
+                        name: "Properties",
+                        displayName: "Properties"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateProcessFilterOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.ProcessFilterOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.ProcessFilterOptions),
+                        propertyType: typeof(global::System.Collections.Generic.List<global::Microsoft.Diagnostics.Monitoring.WebApi.ProcessFilterDescriptor>),
+                        name: "Filters",
+                        displayName: "Filters"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateCollectionRuleTriggerDefaultsOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleTriggerDefaultsOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleTriggerDefaultsOptions),
+                        propertyType: typeof(int?),
+                        name: "RequestCount",
+                        displayName: "RequestCount"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleTriggerDefaultsOptions),
+                        propertyType: typeof(int?),
+                        name: "ResponseCount",
+                        displayName: "ResponseCount"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleTriggerDefaultsOptions),
+                        propertyType: typeof(global::System.TimeSpan?),
+                        name: "SlidingWindowDuration",
+                        displayName: "SlidingWindowDuration"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateCollectionRuleLimitsDefaultsOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleLimitsDefaultsOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleLimitsDefaultsOptions),
+                        propertyType: typeof(int?),
+                        name: "ActionCount",
+                        displayName: "ActionCount"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleLimitsDefaultsOptions),
+                        propertyType: typeof(global::System.TimeSpan?),
+                        name: "ActionCountSlidingWindowDuration",
+                        displayName: "ActionCountSlidingWindowDuration"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleLimitsDefaultsOptions),
+                        propertyType: typeof(global::System.TimeSpan?),
+                        name: "RuleDuration",
+                        displayName: "RuleDuration"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateCollectionRuleDefaultsOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleDefaultsOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleDefaultsOptions),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleTriggerDefaultsOptions),
+                        name: "Triggers",
+                        displayName: "Triggers"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleDefaultsOptions),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleLimitsDefaultsOptions),
+                        name: "Limits",
+                        displayName: "Limits"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateTemplateOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.TemplateOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.TemplateOptions),
+                        propertyType: typeof(global::System.Collections.Generic.IDictionary<string, global::Microsoft.Diagnostics.Monitoring.WebApi.ProcessFilterDescriptor>),
+                        name: "CollectionRuleFilters",
+                        displayName: "CollectionRuleFilters"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.TemplateOptions),
+                        propertyType: typeof(global::System.Collections.Generic.IDictionary<string, global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleTriggerOptions>),
+                        name: "CollectionRuleTriggers",
+                        displayName: "CollectionRuleTriggers"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.TemplateOptions),
+                        propertyType: typeof(global::System.Collections.Generic.IDictionary<string, global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleActionOptions>),
+                        name: "CollectionRuleActions",
+                        displayName: "CollectionRuleActions"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.TemplateOptions),
+                        propertyType: typeof(global::System.Collections.Generic.IDictionary<string, global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleLimitsOptions>),
+                        name: "CollectionRuleLimits",
+                        displayName: "CollectionRuleLimits"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateRootOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.RootOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.RootOptions),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.AuthenticationOptions),
+                        name: "Authentication",
+                        displayName: "Authentication"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.RootOptions),
+                        propertyType: typeof(global::System.Collections.Generic.IDictionary<string, global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleOptions>),
+                        name: "CollectionRules",
+                        displayName: "CollectionRules"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.RootOptions),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.GlobalCounterOptions),
+                        name: "GlobalCounter",
+                        displayName: "GlobalCounter"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.RootOptions),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Monitoring.Options.InProcessFeaturesOptions),
+                        name: "InProcessFeatures",
+                        displayName: "InProcessFeatures"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.RootOptions),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.CorsConfigurationOptions),
+                        name: "CorsConfiguration",
+                        displayName: "CorsConfiguration"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.RootOptions),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.EgressOptions),
+                        name: "Egress",
+                        displayName: "Egress"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.RootOptions),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.MetricsOptions),
+                        name: "Metrics",
+                        displayName: "Metrics"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.RootOptions),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.ProcessFilterOptions),
+                        name: "DefaultProcess",
+                        displayName: "DefaultProcess"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.RootOptions),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleDefaultsOptions),
+                        name: "CollectionRuleDefaults",
+                        displayName: "CollectionRuleDefaults"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.RootOptions),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.TemplateOptions),
+                        name: "Templates",
+                        displayName: "Templates"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateFileSystemEgressProviderOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem.FileSystemEgressProviderOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem.FileSystemEgressProviderOptions),
+                        propertyType: typeof(string),
+                        name: "DirectoryPath",
+                        displayName: "DirectoryPath"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem.FileSystemEgressProviderOptions),
+                        propertyType: typeof(int?),
+                        name: "CopyBufferSize",
+                        displayName: "CopyBufferSize"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateCollectDumpOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectDumpOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectDumpOptions),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.Models.DumpType?),
+                        name: "Type",
+                        displayName: "Type"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectDumpOptions),
+                        propertyType: typeof(string),
+                        name: "Egress",
+                        displayName: "Egress"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateGuid()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::System.Guid),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Guid),
+                        propertyType: typeof(global::System.Guid),
+                        name: "AllBitsSet",
+                        displayName: "AllBitsSet"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateLoadProfilerOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.LoadProfilerOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.LoadProfilerOptions),
+                        propertyType: typeof(string),
+                        name: "Path",
+                        displayName: "Path"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.LoadProfilerOptions),
+                        propertyType: typeof(global::System.Guid),
+                        name: "Clsid",
+                        displayName: "Clsid"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateCollectExceptionsOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectExceptionsOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectExceptionsOptions),
+                        propertyType: typeof(string),
+                        name: "Egress",
+                        displayName: "Egress"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectExceptionsOptions),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Monitoring.Options.ExceptionsConfiguration),
+                        name: "Filters",
+                        displayName: "Filters"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateAspNetRequestCountOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetRequestCountOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetRequestCountOptions),
+                        propertyType: typeof(int),
+                        name: "RequestCount",
+                        displayName: "RequestCount"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetRequestCountOptions),
+                        propertyType: typeof(global::System.TimeSpan?),
+                        name: "SlidingWindowDuration",
+                        displayName: "SlidingWindowDuration"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetRequestCountOptions),
+                        propertyType: typeof(string[]),
+                        name: "IncludePaths",
+                        displayName: "IncludePaths"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetRequestCountOptions),
+                        propertyType: typeof(string[]),
+                        name: "ExcludePaths",
+                        displayName: "ExcludePaths"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateAspNetRequestDurationOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetRequestDurationOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetRequestDurationOptions),
+                        propertyType: typeof(int),
+                        name: "RequestCount",
+                        displayName: "RequestCount"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetRequestDurationOptions),
+                        propertyType: typeof(global::System.TimeSpan?),
+                        name: "RequestDuration",
+                        displayName: "RequestDuration"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetRequestDurationOptions),
+                        propertyType: typeof(global::System.TimeSpan?),
+                        name: "SlidingWindowDuration",
+                        displayName: "SlidingWindowDuration"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetRequestDurationOptions),
+                        propertyType: typeof(string[]),
+                        name: "IncludePaths",
+                        displayName: "IncludePaths"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetRequestDurationOptions),
+                        propertyType: typeof(string[]),
+                        name: "ExcludePaths",
+                        displayName: "ExcludePaths"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateAspNetResponseStatusOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetResponseStatusOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetResponseStatusOptions),
+                        propertyType: typeof(string[]),
+                        name: "StatusCodes",
+                        displayName: "StatusCodes"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetResponseStatusOptions),
+                        propertyType: typeof(int),
+                        name: "ResponseCount",
+                        displayName: "ResponseCount"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetResponseStatusOptions),
+                        propertyType: typeof(global::System.TimeSpan?),
+                        name: "SlidingWindowDuration",
+                        displayName: "SlidingWindowDuration"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetResponseStatusOptions),
+                        propertyType: typeof(string[]),
+                        name: "IncludePaths",
+                        displayName: "IncludePaths"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetResponseStatusOptions),
+                        propertyType: typeof(string[]),
+                        name: "ExcludePaths",
+                        displayName: "ExcludePaths"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateEventCounterOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterOptions),
+                        propertyType: typeof(string),
+                        name: "ProviderName",
+                        displayName: "ProviderName"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterOptions),
+                        propertyType: typeof(string),
+                        name: "CounterName",
+                        displayName: "CounterName"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterOptions),
+                        propertyType: typeof(global::System.TimeSpan?),
+                        name: "SlidingWindowDuration",
+                        displayName: "SlidingWindowDuration"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateCPUUsageOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts.CPUUsageOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts.CPUUsageOptions),
+                        propertyType: typeof(double?),
+                        name: "GreaterThan",
+                        displayName: "GreaterThan"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts.CPUUsageOptions),
+                        propertyType: typeof(double?),
+                        name: "LessThan",
+                        displayName: "LessThan"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts.CPUUsageOptions),
+                        propertyType: typeof(global::System.TimeSpan?),
+                        name: "SlidingWindowDuration",
+                        displayName: "SlidingWindowDuration"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateGCHeapSizeOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts.GCHeapSizeOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts.GCHeapSizeOptions),
+                        propertyType: typeof(double?),
+                        name: "GreaterThan",
+                        displayName: "GreaterThan"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts.GCHeapSizeOptions),
+                        propertyType: typeof(double?),
+                        name: "LessThan",
+                        displayName: "LessThan"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts.GCHeapSizeOptions),
+                        propertyType: typeof(global::System.TimeSpan?),
+                        name: "SlidingWindowDuration",
+                        displayName: "SlidingWindowDuration"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateThreadpoolQueueLengthOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts.ThreadpoolQueueLengthOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts.ThreadpoolQueueLengthOptions),
+                        propertyType: typeof(double?),
+                        name: "GreaterThan",
+                        displayName: "GreaterThan"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts.ThreadpoolQueueLengthOptions),
+                        propertyType: typeof(double?),
+                        name: "LessThan",
+                        displayName: "LessThan"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts.ThreadpoolQueueLengthOptions),
+                        propertyType: typeof(global::System.TimeSpan?),
+                        name: "SlidingWindowDuration",
+                        displayName: "SlidingWindowDuration"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateEventMeterOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventMeterOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventMeterOptions),
+                        propertyType: typeof(string),
+                        name: "MeterName",
+                        displayName: "MeterName"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventMeterOptions),
+                        propertyType: typeof(string),
+                        name: "InstrumentName",
+                        displayName: "InstrumentName"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventMeterOptions),
+                        propertyType: typeof(global::System.TimeSpan?),
+                        name: "SlidingWindowDuration",
+                        displayName: "SlidingWindowDuration"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventMeterOptions),
+                        propertyType: typeof(int?),
+                        name: "HistogramPercentile",
+                        displayName: "HistogramPercentile"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateEventPipeProvider()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.Models.EventPipeProvider),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.Models.EventPipeProvider),
+                        propertyType: typeof(string),
+                        name: "Name",
+                        displayName: "Name"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.Models.EventPipeProvider),
+                        propertyType: typeof(string),
+                        name: "Keywords",
+                        displayName: "Keywords"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.Models.EventPipeProvider),
+                        propertyType: typeof(global::System.Diagnostics.Tracing.EventLevel),
+                        name: "EventLevel",
+                        displayName: "EventLevel"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.Models.EventPipeProvider),
+                        propertyType: typeof(global::System.Collections.Generic.IDictionary<string, string>),
+                        name: "Arguments",
+                        displayName: "Arguments"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateExtensionManifest()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.Extensibility.ExtensionManifest),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.Extensibility.ExtensionManifest),
+                        propertyType: typeof(string),
+                        name: "Name",
+                        displayName: "Name"
+                    ),
+                ]
+            );
+        }
         private ValidatableTypeInfo CreateValidatableTypes()
         {
             return new GeneratedValidatableTypeInfo(
@@ -243,24 +1380,172 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                         name: "AuthenticationOptions",
                         displayName: "AuthenticationOptions"
                     ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.ValidatableTypes),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleOptions),
+                        name: "CollectionRuleOptions",
+                        displayName: "CollectionRuleOptions"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.ValidatableTypes),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectTraceOptions),
+                        name: "CollectTraceOptions",
+                        displayName: "CollectTraceOptions"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.ValidatableTypes),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.ExecuteOptions),
+                        name: "ExecuteOptions",
+                        displayName: "ExecuteOptions"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.ValidatableTypes),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.SetEnvironmentVariableOptions),
+                        name: "SetEnvironmentVariableOptions",
+                        displayName: "SetEnvironmentVariableOptions"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.ValidatableTypes),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.GetEnvironmentVariableOptions),
+                        name: "GetEnvironmentVariableOptions",
+                        displayName: "GetEnvironmentVariableOptions"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.ValidatableTypes),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.GlobalCounterOptions),
+                        name: "GlobalCounterOptions",
+                        displayName: "GlobalCounterOptions"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.ValidatableTypes),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectGCDumpOptions),
+                        name: "CollectGCDumpOptions",
+                        displayName: "CollectGCDumpOptions"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.ValidatableTypes),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectLiveMetricsOptions),
+                        name: "CollectLiveMetricsOptions",
+                        displayName: "CollectLiveMetricsOptions"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.ValidatableTypes),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectStacksOptions),
+                        name: "CollectStacksOptions",
+                        displayName: "CollectStacksOptions"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.ValidatableTypes),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectLogsOptions),
+                        name: "CollectLogsOptions",
+                        displayName: "CollectLogsOptions"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.ValidatableTypes),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.RootOptions),
+                        name: "RootOptions",
+                        displayName: "RootOptions"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.ValidatableTypes),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem.FileSystemEgressProviderOptions),
+                        name: "FileSystemEgressProviderOptions",
+                        displayName: "FileSystemEgressProviderOptions"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.ValidatableTypes),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectDumpOptions),
+                        name: "CollectDumpOptions",
+                        displayName: "CollectDumpOptions"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.ValidatableTypes),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.LoadProfilerOptions),
+                        name: "LoadProfilerOptions",
+                        displayName: "LoadProfilerOptions"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.ValidatableTypes),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectExceptionsOptions),
+                        name: "CollectExceptionsOptions",
+                        displayName: "CollectExceptionsOptions"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.ValidatableTypes),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetRequestCountOptions),
+                        name: "AspNetRequestCountOptions",
+                        displayName: "AspNetRequestCountOptions"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.ValidatableTypes),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetRequestDurationOptions),
+                        name: "AspNetRequestDurationOptions",
+                        displayName: "AspNetRequestDurationOptions"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.ValidatableTypes),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetResponseStatusOptions),
+                        name: "AspNetResponseStatusOptions",
+                        displayName: "AspNetResponseStatusOptions"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.ValidatableTypes),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterOptions),
+                        name: "EventCounterOptions",
+                        displayName: "EventCounterOptions"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.ValidatableTypes),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts.CPUUsageOptions),
+                        name: "CPUUsageOptions",
+                        displayName: "CPUUsageOptions"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.ValidatableTypes),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts.GCHeapSizeOptions),
+                        name: "GCHeapSizeOptions",
+                        displayName: "GCHeapSizeOptions"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.ValidatableTypes),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts.ThreadpoolQueueLengthOptions),
+                        name: "ThreadpoolQueueLengthOptions",
+                        displayName: "ThreadpoolQueueLengthOptions"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.ValidatableTypes),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventMeterOptions),
+                        name: "EventMeterOptions",
+                        displayName: "EventMeterOptions"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.ValidatableTypes),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.Models.EventPipeProvider),
+                        name: "EventPipeProvider",
+                        displayName: "EventPipeProvider"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.ValidatableTypes),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.Extensibility.ExtensionManifest),
+                        name: "ExtensionManifest",
+                        displayName: "ExtensionManifest"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.ValidatableTypes),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.AzureAdOptions),
+                        name: "AzureAdOptions",
+                        displayName: "AzureAdOptions"
+                    ),
                 ]
             );
         }
 
     }
 
-    static class MyExtensions
-    {
-        public static global::Microsoft.Extensions.DependencyInjection.IServiceCollection AddValidation(this global::Microsoft.Extensions.DependencyInjection.IServiceCollection services, global::System.Action<ValidationOptions>? configureOptions = null)
-        {
-            return GeneratedServiceCollectionExtensions.AddValidation(services, configureOptions);
-        }
-    }
-
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.AspNetCore.Http.ValidationsGenerator, Version=10.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60", "10.0.0.0")]
-    file static class GeneratedServiceCollectionExtensions
+    internal static class GeneratedServiceCollectionExtensions
     {
-        // [global::System.Runtime.CompilerServices.InterceptsLocationAttribute(1, "tgKaeQ8w+KgICFY1OfbdmEk4AABWYWxpZGF0YWJsZUluZm9SZXNvbHZlci5jcw==")]
+        // [global::System.Runtime.CompilerServices.InterceptsLocationAttribute(1, "D6nh8/WlpPzAY1xLUbepOblXAQBWYWxpZGF0YWJsZUluZm9SZXNvbHZlci5jcw==")]
         public static global::Microsoft.Extensions.DependencyInjection.IServiceCollection AddValidation(this global::Microsoft.Extensions.DependencyInjection.IServiceCollection services, global::System.Action<global::Microsoft.AspNetCore.Http.Validation.ValidationOptions>? configureOptions = null)
         {
             // Use non-extension method to avoid infinite recursion.
