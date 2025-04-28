@@ -98,9 +98,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
 
         public static void ValidateObject(object options, Type type, ValidationOptions validationOptions, IServiceProvider serviceProvider)
         {
-            if (!TryValidateObject(options, type, validationOptions, serviceProvider, new List<ValidationResult>()))
+            List<ValidationResult> results = new();
+            if (!TryValidateObject(options, type, validationOptions, serviceProvider, results))
             {
-                throw new ValidationException("Validation failed for " + type.FullName);
+                throw new ValidationException(string.Join(Environment.NewLine, results.ConvertAll(r => r.ErrorMessage)));
             }
         }
     }

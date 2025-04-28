@@ -64,7 +64,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             object? settings = originalSettings;
 
-
             foreach (PropertyInfo propertyInfo in GetPropertiesFromSettings(settings))
             {
                 string? originalPropertyValue = (string?)propertyInfo.GetValue(settings);

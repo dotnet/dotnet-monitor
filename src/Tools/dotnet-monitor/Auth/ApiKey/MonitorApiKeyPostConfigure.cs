@@ -56,7 +56,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
             // Some options are configured (but may not be valid)
             options.Configured = true;
 
-            ValidationHelper.TryValidateObject(sourceOptions, typeof(MonitorApiKeyOptions), _validationOptions, _serviceProvider, errors);
+            ValidationHelper.TryValidateObject(
+                sourceOptions,
+                typeof(MonitorApiKeyOptions),
+                _validationOptions,
+                _serviceProvider,
+                errors);
 
             string? jwkJson = null;
             try

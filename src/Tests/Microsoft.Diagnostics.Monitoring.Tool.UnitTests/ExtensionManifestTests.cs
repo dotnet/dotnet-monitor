@@ -179,7 +179,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Equal(ExpectedAssemblyName, manifest.AssemblyFileName);
             Assert.Null(manifest.ExecutableFileName);
 
-    
             var validationOptions = _fixture.Services.GetRequiredService<IOptions<ValidationOptions>>().Value;
             manifest.Validate(_fixture.Services, validationOptions);
         }

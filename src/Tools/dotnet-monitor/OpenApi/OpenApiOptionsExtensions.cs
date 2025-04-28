@@ -119,6 +119,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
                     {
                         includeSchema.Type |= JsonSchemaType.Null;
                     }
+
                     if (schema.Properties["exclude"] is OpenApiSchema excludeSchema)
                     {
                         excludeSchema.Type |= JsonSchemaType.Null;

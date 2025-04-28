@@ -10,8 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
@@ -34,12 +32,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 throw new ArgumentNullException(nameof(options));
             }
 
-            List<ValidationResult> result = new();
-            if (!ValidationHelper.TryValidateObject(options, typeof(CollectExceptionsOptions), _validationOptions, _serviceProvider, result))
-            {
-                throw new ValidationException(
-                    string.Join(Environment.NewLine, result.ConvertAll(r => r.ErrorMessage)));
-            }
+            ValidationHelper.ValidateObject(options, typeof(CollectExceptionsOptions), _validationOptions, _serviceProvider);
 
             return new CollectExceptionsAction(processInfo, options);
         }

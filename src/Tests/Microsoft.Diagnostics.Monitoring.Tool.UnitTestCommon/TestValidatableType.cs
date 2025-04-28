@@ -7,10 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Diagnostics.Monitoring.TestCommon
 {
-    // The Validation source generator doesn't run for libraries that don't call AddValidation,
-    // so we can't generate IValidatableInfo by using [ValidatableType] directly on types defined
-    // in ProjectReferences. This is a workaround to force the generator running in this project to
-    // generate IValidatableInfo for the referenced types. The containing class is not used otherwise.
     [ValidatableType]
     internal sealed class TestValidatableTypes
     {

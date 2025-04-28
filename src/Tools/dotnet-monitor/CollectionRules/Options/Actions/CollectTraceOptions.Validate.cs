@@ -91,8 +91,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
                     ValidationContext providerContext = new(provider, nameof(Providers), validationContext, validationContext.Items);
                     providerContext.MemberName = nameof(Providers) + "[" + index.ToString(CultureInfo.InvariantCulture) + "]";
 
-                    // Note: generated validation logic doesn't recurse into members of T for List<T>, when List<T> is not required.
-                    // Need to do the recursion ourselves.
                     var validationOptions = validationContext.GetRequiredService<IOptions<ValidationOptions>>().Value;
                     ValidationHelper.TryValidateObject(provider, typeof(EventPipeProvider), validationOptions, providerContext, results);
 

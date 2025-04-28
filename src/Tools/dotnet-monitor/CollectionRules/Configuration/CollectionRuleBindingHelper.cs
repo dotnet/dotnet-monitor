@@ -10,33 +10,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 {
     internal static class CollectionRuleBindingHelper
     {
-        // public static object CreateActionSettings(
-        //     string actionType,
-        //     Func<CollectDumpOptions> collectDump,
-        //     Func<CollectExceptionsOptions> collectExceptions
-        // ) => actionType switch {
-        //         KnownCollectionRuleActions.CollectDump => collectDump(),
-        //         KnownCollectionRuleActions.CollectExceptions => collectExceptions(),
-        //         _ => throw new ArgumentException($"Unknown action type: {actionType}", nameof(actionType))
-        // };
-
-        // public static object NewActionSettings(string actionType) => 
-        //     actionType switch {
-        //         KnownCollectionRuleActions.CollectDump => new CollectDumpOptions(),
-        //         KnownCollectionRuleActions.CollectExceptions => new CollectExceptionsOptions(),
-        //         _ => null
-        //     };
-
-        // public static Action SelectAction(
-        //     string actionType,
-        //     Action<CollectDumpOptions> collectDump,
-        //     Action<CollectExceptionsOptions> collectExceptions
-        // ) => actionType switch {
-        //         KnownCollectionRuleActions.CollectDump => collectDump,
-        //         KnownCollectionRuleActions.CollectExceptions => collectExceptions,
-        // };
-
-
         public static void BindActionSettings(IConfigurationSection actionSection, CollectionRuleActionOptions actionOptions, ICollectionRuleActionOperations actionOperations)
         {
             if (null != actionOptions &&
