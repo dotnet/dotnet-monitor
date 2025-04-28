@@ -6,7 +6,7 @@
     <AzureIdentityVersion>1.13.2</AzureIdentityVersion>
     <AzureStorageBlobsVersion>12.24.0</AzureStorageBlobsVersion>
     <AzureStorageQueuesVersion>12.22.0</AzureStorageQueuesVersion>
-    <MicrosoftIdentityWebVersion>3.8.3</MicrosoftIdentityWebVersion>
+    <MicrosoftIdentityWebVersion>3.8.4</MicrosoftIdentityWebVersion>
     <MicrosoftOpenApiReadersVersion>1.6.24</MicrosoftOpenApiReadersVersion>
     <SystemPrivateUriVersion>4.3.2</SystemPrivateUriVersion>
     <SystemSecurityPrincipalWindowsVersion>5.0.0</SystemSecurityPrincipalWindowsVersion>
