@@ -122,13 +122,13 @@ namespace CollectionRuleActions.UnitTests
             });
         }
 
-        [Fact(Skip = "https://github.com/dotnet/aspnetcore/issues/61379")]
+        [Fact]
         public Task ActionListExecutor_FirstActionFail_DeferredCompletion()
         {
             return ActionListExecutor_FirstActionFail(waitForCompletion: false);
         }
 
-        [Fact(Skip = "https://github.com/dotnet/aspnetcore/issues/61379")]
+        [Fact]
         public Task ActionListExecutor_FirstActionFail_WaitedCompletion()
         {
             return ActionListExecutor_FirstActionFail(waitForCompletion: true);
@@ -189,6 +189,7 @@ namespace CollectionRuleActions.UnitTests
                 serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions, PassThroughActionDescriptor>();
             });
         }
+
         private static void VerifyStartCallbackCount(bool waitForCompletion, int callbackCount)
         {
             //Currently, any attempt to wait on completion will automatically trigger the start callback.
