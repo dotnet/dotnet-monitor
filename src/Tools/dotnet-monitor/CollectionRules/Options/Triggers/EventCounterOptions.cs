@@ -3,7 +3,6 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleDefaultsInterfaces;
-using Microsoft.Extensions.Options;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -12,8 +11,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
     /// <summary>
     /// Options for the EventCounter trigger.
     /// </summary>
-    [OptionsValidator]
-    internal sealed partial class EventCounterOptions : IValidateOptions<EventCounterOptions>, ISlidingWindowDurationProperties
+    internal sealed partial class EventCounterOptions : ISlidingWindowDurationProperties
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),

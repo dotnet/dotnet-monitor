@@ -17,10 +17,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
     [NJsonSchema.Annotations.JsonSchemaFlatten]
 #endif
 
-    internal sealed partial record class CollectExceptionsOptions :
-        BaseRecordOptions,
-        // IValidateOptions<CollectExceptionsOptions>,
-        IEgressProviderProperties
+    internal sealed partial record class CollectExceptionsOptions : BaseRecordOptions, IEgressProviderProperties
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),

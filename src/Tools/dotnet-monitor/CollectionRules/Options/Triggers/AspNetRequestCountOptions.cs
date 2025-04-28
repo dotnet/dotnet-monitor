@@ -5,7 +5,6 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleDefaultsInterfaces;
-using Microsoft.Extensions.Options;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -14,10 +13,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
     /// <summary>
     /// Options for the AspNetRequestCount trigger.
     /// </summary>
-    [OptionsValidator]
-    internal sealed partial class AspNetRequestCountOptions :
-        IAspNetActionPathFilters, ISlidingWindowDurationProperties, IRequestCountProperties,
-        IValidateOptions<AspNetRequestCountOptions>
+    internal sealed class AspNetRequestCountOptions :
+        IAspNetActionPathFilters, ISlidingWindowDurationProperties, IRequestCountProperties
     {
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
