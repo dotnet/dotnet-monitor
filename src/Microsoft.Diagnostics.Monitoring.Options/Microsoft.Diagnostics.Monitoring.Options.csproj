@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <!--
@@ -19,7 +19,6 @@
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.UnitTestCommon" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.UnitTests" />
-    <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.Tool.UnitTestsSample" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.WebApi" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.WebApi.UnitTests" />
     <InternalsVisibleTo Include="$(MoqInternalsVisibleTo)" Key="$(MoqInternalsVisibleToKey)" />

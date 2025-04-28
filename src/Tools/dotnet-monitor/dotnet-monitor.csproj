@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-
   <PropertyGroup>
     <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
     <RootNamespace>Microsoft.Diagnostics.Tools.Monitor</RootNamespace>

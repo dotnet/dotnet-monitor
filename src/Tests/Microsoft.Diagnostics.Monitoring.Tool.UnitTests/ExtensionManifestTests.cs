@@ -116,7 +116,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 using Utf8JsonWriter writer = new(stream);
                 writer.WriteStartObject();
-                writer.WriteString(nameof(ExtensionManifest.Name), ExpectedName);writer.WriteEndObject();
+                writer.WriteString(nameof(ExtensionManifest.Name), ExpectedName);
+                writer.WriteEndObject();
                 writer.Flush();
             }
 

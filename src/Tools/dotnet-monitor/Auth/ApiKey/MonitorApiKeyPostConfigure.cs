@@ -44,7 +44,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
 
             List<ValidationResult> errors = new List<ValidationResult>();
 
-
             // If nothing is set, lets not attach an error and instead pass along the blank config
             if (sourceOptions.Subject == null && sourceOptions.PublicKey == null)
             {
