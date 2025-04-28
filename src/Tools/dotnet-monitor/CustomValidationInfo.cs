@@ -193,6 +193,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
                 Name = name;
             }
 
+            [global::System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(global::System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicProperties | global::System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicConstructors)]
             internal Type ContainingType { get; }
             internal string Name { get; }
 
@@ -202,10 +203,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
 
         static class ValidationAttributeCache
         {
-            private sealed record CacheKey(Type ContainingType, string PropertyName);
+            private sealed record CacheKey(
+                [property: global::System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(global::System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicProperties | global::System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicConstructors)]
+                Type ContainingType,
+                string PropertyName);
             private static readonly ConcurrentDictionary<CacheKey, ValidationAttribute[]> _cache = new();
 
             public static ValidationAttribute[] GetValidationAttributes(
+                [param: global::System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(global::System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicProperties | global::System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicConstructors)]
                 Type containingType,
                 string propertyName)
             {
@@ -216,7 +221,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
 
                 // Get attributes from the property
                     var property = k.ContainingType.GetProperty(k.PropertyName);
-                if (property != null)
+                    if (property != null)
                     {
                     var propertyAttributes = CustomAttributeExtensions.GetCustomAttributes<ValidationAttribute>(property, inherit: true);
 

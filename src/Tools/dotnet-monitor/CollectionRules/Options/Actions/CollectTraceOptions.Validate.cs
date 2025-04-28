@@ -88,7 +88,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
                 int index = 0;
                 foreach (EventPipeProvider provider in Providers)
                 {
-                    ValidationContext providerContext = new(provider, validationContext, validationContext.Items);
+                    ValidationContext providerContext = new(provider, nameof(Providers), validationContext, validationContext.Items);
                     providerContext.MemberName = nameof(Providers) + "[" + index.ToString(CultureInfo.InvariantCulture) + "]";
 
                     // Note: generated validation logic doesn't recurse into members of T for List<T>, when List<T> is not required.

@@ -64,7 +64,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _logger = logger;
         }
 
-        public object? SubstituteOptionValues(object? originalSettings, Type settingsType, TokenContext context)
+        public object? SubstituteOptionValues(object? originalSettings, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] Type settingsType, TokenContext context)
         {
             object? settings = originalSettings;
 

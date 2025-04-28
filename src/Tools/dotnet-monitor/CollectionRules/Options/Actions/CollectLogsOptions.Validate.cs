@@ -23,7 +23,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
                 RequiredAttribute requiredAttribute = new();
                 EnumDataTypeAttribute enumValidationAttribute = new(typeof(LogLevel));
 
-                ValidationContext filterSpecsContext = new(FilterSpecs, validationContext, validationContext.Items);
+                ValidationContext filterSpecsContext = new(FilterSpecs, nameof(FilterSpecs), validationContext, validationContext.Items);
                 filterSpecsContext.MemberName = nameof(FilterSpecs);
 
                 // Validate that the category is not null and that the level is a valid level value.
