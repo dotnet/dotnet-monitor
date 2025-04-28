@@ -49,7 +49,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                     Authentication = opts.Authentication,
                     AuthorizationHeader = $"{AuthConstants.ApiKeySchema} {newJwt.Token}" // This is the actual format of the HTTP header and should not be localized
                 };
-                outputBldr.AppendLine(JsonSerializer.Serialize(result, MachineOutputFormatContext.Default.MachineOutputFormat));
+                outputBldr.AppendLine(JsonSerializer.Serialize(result, result.GetType(), new JsonSerializerOptions() { WriteIndented = true }));
             }
             else
             {
@@ -68,8 +68,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                         {
                             // Create configuration from object model.
                             MemoryConfigurationSource source = new();
-                            CommonOptionsMapper optionsMapper = new();
-                            source.InitialData = (IDictionary<string, string?>)optionsMapper.ToConfigurationValues(opts); // Cast the values as nullable, since they are reference types we can safely do this.
+                            source.InitialData = (IDictionary<string, string?>)opts.ToConfigurationValues(); // Cast the values as nullable, since they are reference types we can safely do this.
                             ConfigurationBuilder builder = new();
                             builder.Add(source);
                             IConfigurationRoot configuration = builder.Build();
@@ -101,14 +100,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                     case OutputFormat.Cmd:
                     case OutputFormat.PowerShell:
                     case OutputFormat.Shell:
+                        IDictionary<string, string> optList = opts.ToEnvironmentConfiguration();
+                        foreach ((string name, string value) in optList)
                         {
-                            CommonOptionsMapper optionsMapper = new();
-                            IDictionary<string, string> optList = optionsMapper.ToEnvironmentConfiguration(opts);
-                            foreach ((string name, string value) in optList)
-                            {
-                                outputBldr.AppendFormat(CultureInfo.InvariantCulture, GetFormatString(output), name, value);
-                                outputBldr.AppendLine();
-                            }
+                            outputBldr.AppendFormat(CultureInfo.InvariantCulture, GetFormatString(output), name, value);
+                            outputBldr.AppendLine();
                         }
                         break;
                 }
@@ -149,11 +145,5 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
             public required AuthenticationOptions Authentication { get; set; }
             public required string AuthorizationHeader { get; set; }
         }
-    }
-
-    [JsonSourceGenerationOptions(WriteIndented = true)]
-    [JsonSerializable(typeof(GenerateApiKeyCommandHandler.MachineOutputFormat))]
-    internal partial class MachineOutputFormatContext : JsonSerializerContext
-    {
     }
 }

@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+ // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 #nullable disable
@@ -15,7 +15,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         public IDictionary<string, string> Properties { get; set; }
         public IDictionary<string, string> Configuration { get; set; }
         public string ProviderName { get; set; }
-        [JsonConverter(typeof(JsonStringEnumConverter<LogLevel>))]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public LogLevel LogLevel { get; set; }
     }
 }

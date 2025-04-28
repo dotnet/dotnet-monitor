@@ -6,7 +6,6 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRule
 using Microsoft.Extensions.Options;
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
 {
@@ -42,7 +41,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_EventCounterOptions_SlidingWindowDuration))]
         [Range(typeof(TimeSpan), TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue)]
-        [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Addressed by DynamicDependency on ValidationHelper.TryValidateOptions method")]
         public TimeSpan? SlidingWindowDuration { get; set; }
     }
 }

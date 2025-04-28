@@ -165,8 +165,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             _adapter.Environment.Add("ASPNETCORE_HOSTINGSTARTUPASSEMBLIES", TestHostingStartupAssemblyName);
 
             // Set configuration via environment variables
-            var optionsMapper = new CommonOptionsMapper();
-            var configurationViaEnvironment = optionsMapper.ToEnvironmentConfiguration(ConfigurationFromEnvironment, useDotnetMonitorPrefix: true);
+            var configurationViaEnvironment = ConfigurationFromEnvironment.ToEnvironmentConfiguration(useDotnetMonitorPrefix: true);
             if (configurationViaEnvironment.Count > 0)
             {
                 // Set additional environment variables from configuration
@@ -198,8 +197,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         public void WriteKeyPerValueConfiguration(RootOptions options)
         {
-            CommonOptionsMapper optionsMapper = new();
-            foreach (KeyValuePair<string, string> entry in optionsMapper.ToKeyPerFileConfiguration(options))
+            foreach (KeyValuePair<string, string> entry in options.ToKeyPerFileConfiguration())
             {
                 File.WriteAllText(
                     Path.Combine(SharedConfigDirectoryPath, entry.Key),

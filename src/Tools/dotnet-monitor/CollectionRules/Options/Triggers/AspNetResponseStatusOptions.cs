@@ -8,7 +8,6 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRule
 using Microsoft.Extensions.Options;
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
 {
@@ -29,7 +28,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AspNetResponseStatusOptions_StatusCodes))]
         [Required]
         [MinLength(1)]
-        [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Count of string property is preserved by DynamicDependency.")]
         [RegularExpressions(StatusCodesRegex,
             ErrorMessageResourceType = typeof(OptionsDisplayStrings),
             ErrorMessageResourceName = nameof(OptionsDisplayStrings.ErrorMessage_StatusCodesRegularExpressionDoesNotMatch))]
@@ -50,7 +48,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_AspNetResponseStatusOptions_SlidingWindowDuration))]
         [Range(typeof(TimeSpan), TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue)]
-        [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Addressed by DynamicDependency on ValidationHelper.TryValidateOptions method")]
         public TimeSpan? SlidingWindowDuration { get; set; }
 
         // CONSIDER: Currently described that paths have to exactly match one item in the list.

@@ -217,6 +217,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             // Prevent child processes from inheriting startup hooks
             Environment.SetEnvironmentVariable(ToolIdentifiers.EnvironmentVariables.StartupHooks, null);
 
+            TestAssemblies.SimulateStartupHook();
+
             RootCommand root = new()
             {
                 CollectCommand(),

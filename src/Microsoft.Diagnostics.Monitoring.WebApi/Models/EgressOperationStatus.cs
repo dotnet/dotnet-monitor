@@ -60,7 +60,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         public OperationError? Error { get; set; }
     }
 
-    [JsonConverter(typeof(JsonStringEnumConverter<OperationState>))]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum OperationState
     {
         Starting,

@@ -16,13 +16,13 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {
-    [JsonSerializable(typeof(ExtensionManifest))]
-    internal partial class ExtensionManifestContext : JsonSerializerContext
-    {
-    }
-
     internal class ExtensionManifest : IValidatableObject
     {
+        private static readonly JsonSerializerOptions _serializerOptions = new()
+        {
+            Converters = { new JsonStringEnumConverter() }
+        };
+
         public const string DefaultFileName = "extension.json";
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 
             try
             {
-                return JsonSerializer.Deserialize(stream, ExtensionManifestContext.Default.ExtensionManifest);
+                return JsonSerializer.Deserialize<ExtensionManifest>(stream, _serializerOptions);
             }
             catch (JsonException ex)
             {

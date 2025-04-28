@@ -14,7 +14,6 @@ using System.Collections.Generic;
 using System.IO.Compression;
 using System.Text.Json.Serialization;
 using System.Reflection;
-using Microsoft.AspNetCore.Http.Validation.Generated;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -32,7 +31,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         {
             services.ConfigureHttpJsonOptions(options => {
                 options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
-                options.SerializerOptions.TypeInfoResolverChain.Add(MonitorJsonSerializerContext.Default);
             });
 
             services.Configure<BrotliCompressionProviderOptions>(options =>

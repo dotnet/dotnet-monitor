@@ -41,13 +41,5 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             object options,
             ValidationContext validationContext,
             ICollection<ValidationResult> results);
-
-        /// <summary>
-        /// Attempts to get the type of the options instance
-        /// associated with the registered action name.
-        /// </summary>
-        bool TryGetOptionsType(
-            string actionName,
-            out Type optionsType);
     }
 }

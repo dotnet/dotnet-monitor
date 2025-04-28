@@ -93,20 +93,5 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 return false;
             }
         }
-
-        /// <inheritdoc/>
-        public bool TryGetOptionsType(
-            string actionName,
-            out Type optionsType)
-        {
-            if (_map.TryGetValue(actionName, out ICollectionRuleActionDescriptor descriptor))
-            {
-                optionsType = descriptor.OptionsType;
-                return true;
-            }
-
-            optionsType = null;
-            return false;
-        }
     }
 }

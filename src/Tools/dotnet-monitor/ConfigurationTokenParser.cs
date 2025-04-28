@@ -64,12 +64,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _logger = logger;
         }
 
-        public object? SubstituteOptionValues(object? originalSettings, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] Type settingsType, TokenContext context)
+        public object? SubstituteOptionValues(object? originalSettings, TokenContext context)
         {
             object? settings = originalSettings;
 
 
-            foreach (PropertyInfo propertyInfo in GetPropertiesFromSettings(settingsType))
+            foreach (PropertyInfo propertyInfo in GetPropertiesFromSettings(settings))
             {
                 string? originalPropertyValue = (string?)propertyInfo.GetValue(settings);
                 if (string.IsNullOrEmpty(originalPropertyValue))
@@ -124,12 +124,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return true;
         }
 
-        public static IEnumerable<PropertyInfo> GetPropertiesFromSettings([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] Type type, Predicate<PropertyInfo>? predicate = null)
-        {
-            return type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .Where(p => p.PropertyType == typeof(string) && (predicate?.Invoke(p) ?? true))
-                .ToArray();
-        }
+        public static IEnumerable<PropertyInfo> GetPropertiesFromSettings(object? settings, Predicate<PropertyInfo>? predicate = null) =>
+            settings?.GetType()
+                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(p => p.PropertyType == typeof(string) && (predicate?.Invoke(p) ?? true)) ??
+            Enumerable.Empty<PropertyInfo>();
 
         private static string CreateTokenReference(string category, string token) =>
             FormattableString.Invariant($"{SubstitutionPrefix}{category}{Separator}{token}{SubstitutionSuffix}");

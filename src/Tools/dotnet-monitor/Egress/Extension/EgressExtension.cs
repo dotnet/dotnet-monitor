@@ -180,7 +180,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             };
 
             var parserLogger = mode == ExtensionMode.Execute ? _logger : NullLogger<EgressExtension>.Instance;
-            using OutputParser<EgressArtifactResult> parser = new(p, parserLogger, EgressArtifactResultContext.Default.EgressArtifactResult);
+            using OutputParser<EgressArtifactResult> parser = new(p, parserLogger);
 
             _logger.ExtensionStarting(_manifest.Name);
             if (!p.Start())
@@ -192,7 +192,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
             // p.StandardInput.BaseStream Format: Version (int), Payload Length (long), Payload, Artifact
             using Stream intermediateStream = new MemoryStream();
-            await JsonSerializer.SerializeAsync(intermediateStream, payload, ExtensionEgressPayloadContext.Default.ExtensionEgressPayload, token);
+            await JsonSerializer.SerializeAsync(intermediateStream, payload, options: null, token);
 
             using (BinaryWriter writer = new BinaryWriter(p.StandardInput.BaseStream, Encoding.UTF8, leaveOpen: true))
             {
@@ -292,15 +292,5 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
 
             return configAsDict;
         }
-    }
-
-    [JsonSerializable(typeof(EgressArtifactResult))]
-    partial class EgressArtifactResultContext : JsonSerializerContext
-    {
-    }
-
-    [JsonSerializable(typeof(ExtensionEgressPayload))]
-    partial class ExtensionEgressPayloadContext : JsonSerializerContext
-    {
     }
 }

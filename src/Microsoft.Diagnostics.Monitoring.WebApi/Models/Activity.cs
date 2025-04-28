@@ -12,7 +12,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
         public string Id { get; set; } = string.Empty;
 
         [JsonPropertyName("idFormat")]
-        [JsonConverter(typeof(JsonStringEnumConverter<ActivityIdFormat>))]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public ActivityIdFormat IdFormat { get; set; } = ActivityIdFormat.Unknown;
     }
 }

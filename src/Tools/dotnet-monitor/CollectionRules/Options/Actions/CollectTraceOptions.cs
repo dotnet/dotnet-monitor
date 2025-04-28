@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
 {
@@ -52,7 +51,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectArtifactOptions_Duration))]
         [Range(typeof(TimeSpan), ActionOptionsConstants.Duration_MinValue, ActionOptionsConstants.Duration_MaxValue)]
-        [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Addressed by DynamicDependency on ValidationHelper.TryValidateOptions method")]
         [DefaultValue(CollectTraceOptionsDefaults.Duration)]
         public TimeSpan? Duration { get; set; }
 

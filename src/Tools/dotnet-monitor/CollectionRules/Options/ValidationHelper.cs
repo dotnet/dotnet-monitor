@@ -7,7 +7,6 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Threading;
 
@@ -20,8 +19,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
     internal static class ValidationHelper
     {
 #nullable disable
-        [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(TimeSpan))]
-        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicProperties, typeof(string))]
         public static bool TryValidateOptions(Type optionsType, object options, ValidationContext validationContext, ICollection<ValidationResult> results)
         {
             RequiredAttribute requiredAttribute = new();

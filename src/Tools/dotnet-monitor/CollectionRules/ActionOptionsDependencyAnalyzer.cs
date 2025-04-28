@@ -164,11 +164,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             }
             string? commandLine = _ruleContext.EndpointInfo.CommandLine;
 
-            if (!_actionOperations.TryGetOptionsType(actionOptions.Type, out Type settingsType))
-            {
-                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_UnknownActionType, actionOptions.Name));
-            }
-            settings = _tokenParser.SubstituteOptionValues(settings, settingsType, new TokenContext
+            settings = _tokenParser.SubstituteOptionValues(settings, new TokenContext
             {
                 CloneOnSubstitution = ReferenceEquals(originalSettings, settings),
                 RuntimeId = _ruleContext.EndpointInfo.RuntimeInstanceCookie,
@@ -199,11 +195,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         private void EnsureDependencies(CollectionRuleActionOptions options, int actionIndex)
         {
-            if (!_actionOperations.TryGetOptionsType(options.Type, out Type optionsType))
-            {
-                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_UnknownActionType, options.Name));
-            }
-            foreach (PropertyInfo property in GetDependencyPropertiesFromSettings(optionsType))
+            foreach (PropertyInfo property in GetDependencyPropertiesFromSettings(options))
             {
                 string? originalValue = (string?)property.GetValue(options.Settings);
                 if (string.IsNullOrEmpty(originalValue))
@@ -299,9 +291,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             return true;
         }
 
-        private static IEnumerable<PropertyInfo> GetDependencyPropertiesFromSettings([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] Type optionsType)
+        private static IEnumerable<PropertyInfo> GetDependencyPropertiesFromSettings(CollectionRuleActionOptions options)
         {
-            return ConfigurationTokenParser.GetPropertiesFromSettings(optionsType, p => p.GetCustomAttributes(typeof(ActionOptionsDependencyPropertyAttribute), inherit: true).Any());
+            return ConfigurationTokenParser.GetPropertiesFromSettings(options.Settings, p => p.GetCustomAttributes(typeof(ActionOptionsDependencyPropertyAttribute), inherit: true).Any());
         }
     }
 }
