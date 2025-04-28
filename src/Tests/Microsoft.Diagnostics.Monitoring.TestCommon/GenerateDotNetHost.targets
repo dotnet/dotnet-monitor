@@ -6,6 +6,16 @@
     runtime version. This specifically allows tests to run on a version of the runtime besides whatever was included with Arcade's SDK.
    -->
 
+  <PropertyGroup>
+    <DotNetHostGeneratedFileName>$(IntermediateOutputPath)/$(TargetFramework)/TestDotNetHost.g.cs</DotNetHostGeneratedFileName>
+    <NetCoreAppVersion Condition="'$(TargetFramework)' == 'net8.0'">$(MicrosoftNETCoreApp80Version)</NetCoreAppVersion>
+    <NetCoreAppVersion Condition="'$(TargetFramework)' == 'net9.0'">$(MicrosoftNETCoreApp90Version)</NetCoreAppVersion>
+    <NetCoreAppVersion Condition="'$(TargetFramework)' == 'net10.0'">$(MicrosoftNETCoreApp100Version)</NetCoreAppVersion>
+    <AspNetCoreAppVersion Condition="'$(TargetFramework)' == 'net8.0'">$(MicrosoftAspNetCoreApp80Version)</AspNetCoreAppVersion>
+    <AspNetCoreAppVersion Condition="'$(TargetFramework)' == 'net9.0'">$(MicrosoftAspNetCoreApp90Version)</AspNetCoreAppVersion>
+    <AspNetCoreAppVersion Condition="'$(TargetFramework)' == 'net10.0'">$(MicrosoftAspNetCoreApp100Version)</AspNetCoreAppVersion>
+  </PropertyGroup>
+
   <Target Name="GenerateDotNetHostSourceFile" Inputs="$(VersionsPropsPath)" Outputs="$(DotNetHostGeneratedFileName)">
     <PropertyGroup>
       <TemplateContent>$([System.IO.File]::ReadAllText('TestDotNetHost.cs.template'))</TemplateContent>

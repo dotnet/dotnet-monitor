@@ -12,7 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Threading;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey
 {

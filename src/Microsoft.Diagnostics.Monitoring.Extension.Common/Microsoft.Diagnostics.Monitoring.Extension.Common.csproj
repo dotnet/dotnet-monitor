@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <PackAsTool>false</PackAsTool>
-    <TargetFrameworks>$(LatestTargetFramework)</TargetFrameworks>
+    <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
     <DefineConstants>$(DefineConstants);EXTENSION</DefineConstants>
     <IsPackable>true</IsPackable>
     <IsShippingAssembly>true</IsShippingAssembly>
@@ -38,20 +38,6 @@
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <KnownFrameworkReference
-      Update="Microsoft.NETCore.App"
-      TargetingPackVersion="$(NetCoreAppVersion)"
-      DefaultRuntimeFrameworkVersion="$(NetCoreAppVersion)"
-      LatestRuntimeFrameworkVersion="$(NetCoreAppVersion)" />
-
-    <KnownFrameworkReference
-      Update="Microsoft.AspNetCore.App"
-      TargetingPackVersion="$(AspNetCoreAppVersion)"
-      DefaultRuntimeFrameworkVersion="$(AspNetCoreAppVersion)"
-      LatestRuntimeFrameworkVersion="$(AspNetCoreAppVersion)" />
   </ItemGroup>
 
 </Project>

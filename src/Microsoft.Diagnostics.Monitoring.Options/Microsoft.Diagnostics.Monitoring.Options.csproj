@@ -1,6 +1,4 @@
-﻿<Project>
-
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk.Web" />
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <!--
@@ -11,7 +9,6 @@
     <IsShippingAssembly>true</IsShippingAssembly>
     <OutputType>Library</OutputType>
     <Nullable>enable</Nullable>
-    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
 
   <ItemGroup>
@@ -42,22 +39,6 @@
       <LastGenOutput>OptionsDisplayStrings.Designer.cs</LastGenOutput>
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-  </ItemGroup>
-
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk.Web" />
-
-  <ItemGroup>
-    <KnownFrameworkReference
-      Update="Microsoft.NETCore.App"
-      TargetingPackVersion="$(NetCoreAppVersion)"
-      DefaultRuntimeFrameworkVersion="$(NetCoreAppVersion)"
-      LatestRuntimeFrameworkVersion="$(NetCoreAppVersion)" />
-
-    <KnownFrameworkReference
-      Update="Microsoft.AspNetCore.App"
-      TargetingPackVersion="$(AspNetCoreAppVersion)"
-      DefaultRuntimeFrameworkVersion="$(AspNetCoreAppVersion)"
-      LatestRuntimeFrameworkVersion="$(AspNetCoreAppVersion)" />
   </ItemGroup>
 
 </Project>

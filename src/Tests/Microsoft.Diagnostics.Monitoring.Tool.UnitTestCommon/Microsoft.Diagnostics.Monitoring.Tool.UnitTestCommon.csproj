@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
     <DisableCompileTimeOpenApiXmlGenerator>true</DisableCompileTimeOpenApiXmlGenerator>
-    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <DisableValidationSourceGenerator>true</DisableValidationSourceGenerator>
   </PropertyGroup>
 
   <ItemGroup>
@@ -28,16 +28,5 @@
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests.UnitTests" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.S3StorageTests.UnitTests" />
   </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
-    <KnownFrameworkReference Update="Microsoft.NETCore.App" TargetingPackVersion="$(NetCoreAppVersion)" DefaultRuntimeFrameworkVersion="$(NetCoreAppVersion)" LatestRuntimeFrameworkVersion="$(NetCoreAppVersion)" />
-    <KnownFrameworkReference Update="Microsoft.AspNetCore.App" TargetingPackVersion="$(AspNetCoreAppVersion)" DefaultRuntimeFrameworkVersion="$(AspNetCoreAppVersion)" LatestRuntimeFrameworkVersion="$(AspNetCoreAppVersion)" />
-  </ItemGroup>
-
-  <Target Name="RemoveAnalyzer" BeforeTargets="CoreCompile">
-    <ItemGroup>
-      <Analyzer Remove="@(Analyzer)" Condition="'%(Analyzer.FileName)' == 'Microsoft.AspNetCore.Http.ValidationsGenerator'" />
-    </ItemGroup>
-  </Target>
 
 </Project>

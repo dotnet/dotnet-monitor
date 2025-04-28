@@ -17,7 +17,6 @@ using System.Threading.Tasks;
 using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
 using Models = Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using NameFormatter = Microsoft.Diagnostics.Monitoring.WebApi.Stacks.NameFormatter;
-using System.Text.Json.Serialization;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Exceptions
 {

@@ -3,7 +3,6 @@
   <PropertyGroup>
     <TargetFrameworks>$(TestTargetFrameworks)</TargetFrameworks>
     <DefineConstants>$(DefineConstants);UNITTEST</DefineConstants>
-    <NoWarn>$(NoWarn);NU1603</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

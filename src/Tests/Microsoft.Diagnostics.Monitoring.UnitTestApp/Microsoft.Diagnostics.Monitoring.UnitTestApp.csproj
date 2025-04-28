@@ -1,6 +1,4 @@
-﻿<Project>
-
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk.Web" />
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -24,22 +22,6 @@
 
   <ItemGroup>
     <Compile Include="..\Microsoft.Diagnostics.Monitoring.StartupHook.UnitTests\ParameterCapturing\SampleMethods.cs" Link="Scenarios\FunctionProbes\SampleMethods.cs"/>
-  </ItemGroup>
-
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk.Web" />
-
-  <ItemGroup>
-    <KnownFrameworkReference
-      Update="Microsoft.NETCore.App"
-      TargetingPackVersion="$(NetCoreAppVersion)"
-      DefaultRuntimeFrameworkVersion="$(NetCoreAppVersion)"
-      LatestRuntimeFrameworkVersion="$(NetCoreAppVersion)" />
-
-    <KnownFrameworkReference
-      Update="Microsoft.AspNetCore.App"
-      TargetingPackVersion="$(AspNetCoreAppVersion)"
-      DefaultRuntimeFrameworkVersion="$(AspNetCoreAppVersion)"
-      LatestRuntimeFrameworkVersion="$(AspNetCoreAppVersion)" />
   </ItemGroup>
 
 </Project>

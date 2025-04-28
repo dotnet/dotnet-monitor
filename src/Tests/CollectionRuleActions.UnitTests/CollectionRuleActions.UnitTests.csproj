@@ -1,11 +1,8 @@
-﻿<Project>
-
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk.Web" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
-    <InterceptorsNamespaces>$(InterceptorsNamespaces);Microsoft.AspNetCore.Http.Validation.Generated</InterceptorsNamespaces>
-    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <DisableCompileTimeOpenApiXmlGenerator>true</DisableCompileTimeOpenApiXmlGenerator>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,28 +17,5 @@
     <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.Tool.UnitTestCommon\Microsoft.Diagnostics.Monitoring.Tool.UnitTestCommon.csproj" />
     <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.Tool.UnitTestsSample\Microsoft.Diagnostics.Monitoring.Tool.UnitTestsSample.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <KnownFrameworkReference
-      Update="Microsoft.NETCore.App"
-      TargetingPackVersion="$(NetCoreAppVersion)"
-      DefaultRuntimeFrameworkVersion="$(NetCoreAppVersion)"
-      LatestRuntimeFrameworkVersion="$(NetCoreAppVersion)" />
-
-    <KnownFrameworkReference
-      Update="Microsoft.AspNetCore.App"
-      TargetingPackVersion="$(AspNetCoreAppVersion)"
-      DefaultRuntimeFrameworkVersion="$(AspNetCoreAppVersion)"
-      LatestRuntimeFrameworkVersion="$(AspNetCoreAppVersion)" />
-  </ItemGroup>
-
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk.Web" />
-
-  <Target Name="RemoveAnalyzer" BeforeTargets="CoreCompile">
-    <ItemGroup>
-      <Analyzer Remove="@(Analyzer)" Condition="'%(Analyzer.FileName)' == 'Microsoft.AspNetCore.Http.ValidationsGenerator'" />
-    </ItemGroup>
-  </Target>
-
 
 </Project>
