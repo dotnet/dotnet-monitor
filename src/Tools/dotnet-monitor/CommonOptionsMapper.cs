@@ -111,7 +111,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             // CorsConfigurationOptions
             MapDiagnosticPortOptions(obj.DiagnosticPort, FormattableString.Invariant($"{prefix}{nameof(obj.DiagnosticPort)}"), separator, map);
             MapEgressOptions(obj.Egress, FormattableString.Invariant($"{prefix}{nameof(obj.Egress)}"), separator, map);
-            // MetricsOptions
+            MapMetricsOptions(obj.Metrics, FormattableString.Invariant($"{prefix}{nameof(obj.Metrics)}"), separator, map);
             MapStorageOptions(obj.Storage, FormattableString.Invariant($"{prefix}{nameof(obj.Storage)}"), separator, map);
             // ProcessFilterOptions
             MapCollectionRuleDefaultsOptions(obj.CollectionRuleDefaults, FormattableString.Invariant($"{prefix}{nameof(obj.CollectionRuleDefaults)}"), separator, map);
@@ -981,6 +981,73 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 MapString(obj.IntermediateDirectoryPath, FormattableString.Invariant($"{prefix}{nameof(obj.IntermediateDirectoryPath)}"), map);
                 MapInt(obj.CopyBufferSize, FormattableString.Invariant($"{prefix}{nameof(obj.CopyBufferSize)}"), map);
             }
+        }
+
+        private static void MapMetricsOptions(MetricsOptions? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapBool(obj.Enabled, FormattableString.Invariant($"{prefix}{nameof(obj.Enabled)}"), map);
+                MapString(obj.Endpoints, FormattableString.Invariant($"{prefix}{nameof(obj.Endpoints)}"), map);
+                MapInt(obj.MetricCount, FormattableString.Invariant($"{prefix}{nameof(obj.MetricCount)}"), map);
+                MapBool(obj.IncludeDefaultProviders, FormattableString.Invariant($"{prefix}{nameof(obj.IncludeDefaultProviders)}"), map);
+                MapList_MetricProvider(obj.Providers, FormattableString.Invariant($"{prefix}{nameof(obj.Providers)}"), separator, map);
+                MapList_MeterConfiguration(obj.Meters, FormattableString.Invariant($"{prefix}{nameof(obj.Meters)}"), separator, map);
+            }
+        }
+
+        private static void MapList_MetricProvider(List<MetricProvider>? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                for (int index = 0; index < obj.Count; index++)
+                {
+                    MetricProvider value = obj[index];
+                    MapMetricProvider(value, FormattableString.Invariant($"{prefix}{index}"), separator, map);
+                }
+            }
+        }
+
+        private static void MapMetricProvider(MetricProvider obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            string prefix = FormattableString.Invariant($"{valueName}{separator}");
+            MapString(obj.ProviderName, FormattableString.Invariant($"{prefix}{nameof(obj.ProviderName)}"), map);
+            MapList_String(obj.CounterNames, FormattableString.Invariant($"{prefix}{nameof(obj.CounterNames)}"), separator, map);         
+        }
+
+        private static void MapList_String(List<string>? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                for (int index = 0; index < obj.Count; index++)
+                {
+                    string value = obj[index];
+                    MapString(value, FormattableString.Invariant($"{prefix}{index}"), map);
+                }
+            }
+        }
+
+        private static void MapList_MeterConfiguration(List<MeterConfiguration>? obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                for (int index = 0; index < obj.Count; index++)
+                {
+                    MeterConfiguration value = obj[index];
+                    MapMeterConfiguration(value, FormattableString.Invariant($"{prefix}{index}"), separator, map);
+                }
+            }
+        }
+
+        private static void MapMeterConfiguration(MeterConfiguration obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            string prefix = FormattableString.Invariant($"{valueName}{separator}");
+            MapString(obj.MeterName, FormattableString.Invariant($"{prefix}{nameof(obj.MeterName)}"), map);
+            MapList_String(obj.InstrumentNames, FormattableString.Invariant($"{prefix}{nameof(obj.InstrumentNames)}"), separator, map);
         }
 
         private static void MapStorageOptions(StorageOptions? obj, string valueName, string separator, IDictionary<string, string> map)
