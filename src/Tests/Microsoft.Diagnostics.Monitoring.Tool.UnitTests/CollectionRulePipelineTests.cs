@@ -94,7 +94,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 services =>
                 {
                     services.RegisterTestAction(callbackService);
-                    TestValidatableTypes.AddValidation(services);
                 });
         }
 
@@ -224,7 +223,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 services =>
                 {
                     services.RegisterTestAction(callbackService);
-                    TestValidatableTypes.AddValidation(services);
                 });
         }
 
@@ -400,7 +398,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     services.RegisterManualTrigger(triggerService);
                     services.RegisterTestAction(callbackService);
-                    TestValidatableTypes.AddValidation(services);
                 });
         }
 
@@ -464,7 +461,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     services.AddSingleton<TimeProvider>(timeProvider);
                     services.RegisterManualTrigger(triggerService);
                     services.RegisterTestAction(callbackService);
-                    TestValidatableTypes.AddValidation(services);
                 });
         }
 

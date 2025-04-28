@@ -136,7 +136,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }, serviceCollection =>
             {
                 serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions, PassThroughActionDescriptor>();
-                TestValidatableTypes.AddValidation(serviceCollection);
             });
         }
 
@@ -177,7 +176,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }, serviceCollection =>
             {
                 serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions, PassThroughActionDescriptor>();
-                TestValidatableTypes.AddValidation(serviceCollection);
             });
         }
 
@@ -216,7 +214,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 serviceCollection.AddSingleton<TimeProvider, MockTimeProvider>();
                 serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions, PassThroughActionDescriptor>();
-                TestValidatableTypes.AddValidation(serviceCollection);
             });
         }
 
@@ -261,7 +258,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }, serviceCollection =>
             {
                 serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions, PassThroughActionDescriptor>();
-                TestValidatableTypes.AddValidation(serviceCollection);
             }, loggingBuilder =>
             {
                 loggingBuilder.AddProvider(new TestLoggerProvider(record));
@@ -299,7 +295,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }, serviceCollection =>
             {
                 serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions, PassThroughActionDescriptor>();
-                TestValidatableTypes.AddValidation(serviceCollection);
             });
         }
 
@@ -362,7 +357,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }, serviceCollection =>
             {
                 serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions, PassThroughActionDescriptor>();
-                TestValidatableTypes.AddValidation(serviceCollection);
             });
         }
     }

@@ -73,7 +73,7 @@ namespace CollectionRuleActions.UnitTests
 
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 });
-            }, TestValidatableTypes.AddValidation);
+            });
         }
 
         /// <summary>

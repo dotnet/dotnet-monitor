@@ -111,7 +111,7 @@ namespace CollectionRuleActions.UnitTests
 
                     await runner.SendCommandAsync(TestAppScenarios.AsyncWait.Commands.Continue);
                 });
-            }, TestValidatableTypes.AddValidation);
+            });
         }
 
         [Theory(Skip = "Flaky")]

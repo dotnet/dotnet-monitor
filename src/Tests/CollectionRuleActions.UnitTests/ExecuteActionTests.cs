@@ -41,7 +41,7 @@ namespace CollectionRuleActions.UnitTests
             _fixture = fixture;
         }
 
-        [Fact(Skip = "https://github.com/dotnet/aspnetcore/pull/61402")]
+        [Fact]
         public async Task ExecuteAction_ZeroExitCode()
         {
             await ValidateAction(
@@ -60,7 +60,7 @@ namespace CollectionRuleActions.UnitTests
                 });
         }
 
-        [Fact(Skip = "https://github.com/dotnet/aspnetcore/pull/61402")]
+        [Fact]
         public async Task ExecuteAction_NonzeroExitCode()
         {
             await ValidateAction(
@@ -80,7 +80,7 @@ namespace CollectionRuleActions.UnitTests
                 });
         }
 
-        [Fact(Skip = "https://github.com/dotnet/aspnetcore/pull/61402")]
+        [Fact]
         public async Task ExecuteAction_TokenCancellation()
         {
             // This timeout is much shorter than the default test timeout.
@@ -107,7 +107,7 @@ namespace CollectionRuleActions.UnitTests
                 });
         }
 
-        [Fact(Skip = "https://github.com/dotnet/aspnetcore/pull/61402")]
+        [Fact]
         public async Task ExecuteAction_TextFileOutput()
         {
             using TemporaryDirectory outputDirectory = new(_outputHelper);
@@ -134,7 +134,7 @@ namespace CollectionRuleActions.UnitTests
             Assert.Equal(testMessage, File.ReadAllText(textFileOutputPath));
         }
 
-        [Fact(Skip = "https://github.com/dotnet/aspnetcore/pull/61402")]
+        [Fact]
         public async Task ExecuteAction_InvalidPath()
         {
             string uniquePathName = Guid.NewGuid().ToString();
@@ -154,7 +154,7 @@ namespace CollectionRuleActions.UnitTests
                 });
         }
 
-        [Fact(Skip = "https://github.com/dotnet/aspnetcore/pull/61402")]
+        [Fact]
         public async Task ExecuteAction_IgnoreExitCode()
         {
             await ValidateAction(

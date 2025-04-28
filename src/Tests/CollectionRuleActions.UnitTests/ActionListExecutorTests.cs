@@ -46,7 +46,7 @@ namespace CollectionRuleActions.UnitTests
             _outputHelper = outputHelper;
         }
 
-        [Fact(Skip = "https://github.com/dotnet/aspnetcore/pull/61402")]
+        [Fact]
         public async Task ActionListExecutor_AllActionsSucceed()
         {
             await TestHostHelper.CreateCollectionRulesHost(_outputHelper, rootOptions =>
@@ -73,16 +73,16 @@ namespace CollectionRuleActions.UnitTests
                 await executor.ExecuteActions(context, startCallback, cancellationTokenSource.Token);
 
                 VerifyStartCallbackCount(waitForCompletion: false, callbackCount);
-            }, TestValidatableTypes.AddValidation);
+            });
         }
 
-        [Fact(Skip = "https://github.com/dotnet/aspnetcore/pull/61402")]
+        [Fact]
         public Task ActionListExecutor_SecondActionFail_DeferredCompletion()
         {
             return ActionListExecutor_SecondActionFail(waitForCompletion: false);
         }
 
-        [Fact(Skip = "https://github.com/dotnet/aspnetcore/pull/61402")]
+        [Fact]
         public Task ActionListExecutor_SecondActionFail_WaitedCompletion()
         {
             return ActionListExecutor_SecondActionFail(waitForCompletion: true);
@@ -119,7 +119,7 @@ namespace CollectionRuleActions.UnitTests
                 Assert.Equal(string.Format(Strings.ErrorMessage_NonzeroExitCode, "1"), actionExecutionException.Message);
 
                 VerifyStartCallbackCount(waitForCompletion, callbackCount);
-            }, TestValidatableTypes.AddValidation);
+            });
         }
 
         [Fact(Skip = "https://github.com/dotnet/aspnetcore/issues/61379")]
@@ -165,7 +165,7 @@ namespace CollectionRuleActions.UnitTests
                 Assert.Equal(string.Format(Strings.ErrorMessage_NonzeroExitCode, "1"), actionExecutionException.Message);
 
                 VerifyStartCallbackCount(waitForCompletion, callbackCount);
-            }, TestValidatableTypes.AddValidation);
+            });
         }
 
 
@@ -187,7 +187,6 @@ namespace CollectionRuleActions.UnitTests
             }, serviceCollection =>
             {
                 serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions, PassThroughActionDescriptor>();
-                TestValidatableTypes.AddValidation(serviceCollection);
             });
         }
         private static void VerifyStartCallbackCount(bool waitForCompletion, int callbackCount)

@@ -55,7 +55,7 @@ namespace CollectionRuleActions.UnitTests
             }, async host =>
             {
                 await PerformTrace(host, tfm);
-            }, TestValidatableTypes.AddValidation);
+            });
         }
 
         [Theory]
@@ -79,8 +79,7 @@ namespace CollectionRuleActions.UnitTests
                         options.Duration = TimeSpan.FromSeconds(2);
                     })
                     .SetStartupTrigger();
-            }, host => PerformTrace(host, tfm),
-            TestValidatableTypes.AddValidation);
+            }, host => PerformTrace(host, tfm));
         }
 
         [Fact]
@@ -100,8 +99,7 @@ namespace CollectionRuleActions.UnitTests
                         options.Duration = TimeSpan.FromSeconds(2);
                     })
                     .SetStartupTrigger();
-            }, host => PerformTrace(host, TargetFrameworkMoniker.Current, artifactName),
-            TestValidatableTypes.AddValidation);
+            }, host => PerformTrace(host, TargetFrameworkMoniker.Current, artifactName));
         }
 
         private async Task PerformTrace(IHost host, TargetFrameworkMoniker tfm, string artifactName = null)

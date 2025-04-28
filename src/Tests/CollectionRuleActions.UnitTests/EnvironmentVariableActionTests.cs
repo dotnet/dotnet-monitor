@@ -41,7 +41,7 @@ namespace CollectionRuleActions.UnitTests
         /// <remarks>
         /// The required APIs only exist on .NET 6.0+
         /// </remarks>
-        [Theory(Skip = "https://github.com/dotnet/aspnetcore/pull/61402")]
+        [Theory]
         [MemberData(nameof(ActionTestsHelper.GetTfms), MemberType = typeof(ActionTestsHelper))]
         public async Task TestSetEnvVar(TargetFrameworkMoniker tfm)
         {
@@ -79,7 +79,7 @@ namespace CollectionRuleActions.UnitTests
 
                         await runner.SendCommandAsync(TestAppScenarios.EnvironmentVariables.Commands.ShutdownScenario);
                     });
-                }, TestValidatableTypes.AddValidation);
+                });
         }
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace CollectionRuleActions.UnitTests
         /// <remarks>
         /// The required APIs only exist on .NET 6.0+
         /// </remarks>
-        [Theory(Skip = "https://github.com/dotnet/aspnetcore/pull/61402")]
+        [Theory]
         [MemberData(nameof(ActionTestsHelper.GetTfms), MemberType = typeof(ActionTestsHelper))]
         public async Task TestGetEnvVar(TargetFrameworkMoniker tfm)
         {
@@ -145,7 +145,7 @@ namespace CollectionRuleActions.UnitTests
 
                         await runner.SendCommandAsync(TestAppScenarios.EnvironmentVariables.Commands.ShutdownScenario);
                     });
-                }, TestValidatableTypes.AddValidation);
+                });
         }
 
         /// <summary>
@@ -155,7 +155,7 @@ namespace CollectionRuleActions.UnitTests
         /// <remarks>
         /// The required APIs only exist on .NET 6.0+
         /// </remarks>
-        [Theory(Skip = "https://github.com/dotnet/aspnetcore/pull/61402")]
+        [Theory]
         [MemberData(nameof(ActionTestsHelper.GetTfms), MemberType = typeof(ActionTestsHelper))]
         public async Task TestEnvVarRoundTrip(TargetFrameworkMoniker tfm)
         {
@@ -199,7 +199,7 @@ namespace CollectionRuleActions.UnitTests
                             Assert.True(getResult.OutputValues.TryGetValue(CollectionRuleActionConstants.EnvironmentVariableValueName, out string value));
                             Assert.Equal(DefaultVarValue, value);
                         });
-                }, TestValidatableTypes.AddValidation);
+                });
         }
     }
 }
