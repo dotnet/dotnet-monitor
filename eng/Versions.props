@@ -13,7 +13,7 @@
       - 'daily': sets the blob group release name to 'daily' so a release type does not have to be assigned.
       - 'release': sets the blob group release name to 'release'. Can be used for prereleases and full releases.
     -->
-    <BlobGroupBuildQuality>release</BlobGroupBuildQuality>
+    <BlobGroupBuildQuality>daily</BlobGroupBuildQuality>
     <!--
       This should be set to true for official releases.
     -->
@@ -60,7 +60,7 @@
     <MicrosoftDiagnosticsMonitoringVersion>9.0.0-preview.25220.1</MicrosoftDiagnosticsMonitoringVersion>
     <MicrosoftDiagnosticsMonitoringEventPipeVersion>9.0.0-preview.25220.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <!-- dotnet/roslyn-analyzers -->
-    <MicrosoftCodeAnalysisNetAnalyzersVersion>10.0.0-preview.25076.4</MicrosoftCodeAnalysisNetAnalyzersVersion>
+    <MicrosoftCodeAnalysisNetAnalyzersVersion>9.0.0-preview.25076.3</MicrosoftCodeAnalysisNetAnalyzersVersion>
     <!-- dotnet/runtime references -->
     <MicrosoftNETCoreAppRuntimewinx64Version>10.0.0-preview.4.25217.10</MicrosoftNETCoreAppRuntimewinx64Version>
     <VSRedistCommonNetCoreSharedFrameworkx64100Version>10.0.0-preview.4.25217.10</VSRedistCommonNetCoreSharedFrameworkx64100Version>
