@@ -17,11 +17,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             List<ValidationResult> results = new();
 
             // ErrorList is populated by incorrectly using templates - this will be empty if all templates names can be resolved or if templates are not used.
-            // results.AddRange(ErrorList);
-            foreach (var error in ErrorList)
-            {
-                results.Add(new ValidationResult(error.Error, [error.MemberName]));
-            }
+            results.AddRange(ErrorList);
 
             if (results.Count > 0)
             {

@@ -49,7 +49,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             List<ActionCompletionEntry> deferredCompletions = new(context.Options.Actions.Count);
 
             var actionResults = new Dictionary<string, CollectionRuleActionResult>(StringComparer.Ordinal);
-            var dependencyAnalyzer = ActionOptionsDependencyAnalyzer.Create(context, _actionOperations);
+            var dependencyAnalyzer = ActionOptionsDependencyAnalyzer.Create(context);
 
             try
             {
@@ -91,7 +91,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                                 ));
                         }
 
-                        object? newSettings = dependencyAnalyzer.SubstituteOptionValues(actionResults, actionIndex, actionOption);
+                        object? newSettings = dependencyAnalyzer.SubstituteOptionValues(actionResults, actionIndex, actionOption.Settings);
                         ICollectionRuleAction? action = factory.Create(context.ProcessInfo, newSettings);
 
                         try

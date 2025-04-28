@@ -34,7 +34,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         private readonly CollectionRuleContext _ruleContext;
         private readonly ConfigurationTokenParser _tokenParser;
-        private readonly ICollectionRuleActionOperations _actionOperations;
 
         //Use action index instead of name, since it's possible for an unnamed action to have named dependencies.
 #nullable disable
@@ -78,18 +77,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 Action.Name, ConfigurationTokenParser.Separator, ResultName, ConfigurationTokenParser.SubstitutionSuffix);
         }
 
-        public static ActionOptionsDependencyAnalyzer Create(CollectionRuleContext context, ICollectionRuleActionOperations actionOperations)
+        public static ActionOptionsDependencyAnalyzer Create(CollectionRuleContext context)
         {
-            var analyzer = new ActionOptionsDependencyAnalyzer(context, new ConfigurationTokenParser(context.Logger), actionOperations);
+            var analyzer = new ActionOptionsDependencyAnalyzer(context, new ConfigurationTokenParser(context.Logger));
             analyzer.EnsureDependencies();
             return analyzer;
         }
 
-        private ActionOptionsDependencyAnalyzer(CollectionRuleContext context, ConfigurationTokenParser tokenParser, ICollectionRuleActionOperations actionOperations)
+        private ActionOptionsDependencyAnalyzer(CollectionRuleContext context, ConfigurationTokenParser tokenParser)
         {
             _ruleContext = context ?? throw new ArgumentNullException(nameof(context));
             _tokenParser = tokenParser ?? throw new ArgumentNullException(nameof(tokenParser));
-            _actionOperations = actionOperations ?? throw new ArgumentNullException(nameof(actionOperations));
         }
 
 #nullable disable
@@ -114,9 +112,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         }
 #nullable restore
 
-        public object? SubstituteOptionValues(IDictionary<string, CollectionRuleActionResult> actionResults, int actionIndex, CollectionRuleActionOptions actionOptions)
+        public object? SubstituteOptionValues(IDictionary<string, CollectionRuleActionResult> actionResults, int actionIndex, object? settings)
         {
-            object? settings = actionOptions.Settings;
             //Attempt to substitute context properties.
             object? originalSettings = settings;
 

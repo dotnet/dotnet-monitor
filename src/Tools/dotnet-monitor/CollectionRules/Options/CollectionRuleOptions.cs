@@ -37,6 +37,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleOptions_Limits))]
         public CollectionRuleLimitsOptions? Limits { get; set; }
 
-        internal List<(string Error, string MemberName)> ErrorList { get; } = new List<(string Error, string MemberName)>();
+        internal List<ValidationResult> ErrorList { get; } = new List<ValidationResult>();
     }
 }

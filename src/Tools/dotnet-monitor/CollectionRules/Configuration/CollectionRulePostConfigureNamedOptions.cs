@@ -10,6 +10,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
@@ -132,7 +133,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
             if (!templatesOptions.TryGetValue(templateKey, out templatesValue))
             {
                 templatesValue = new();
-                ruleOptions.ErrorList.Add((string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_TemplateNotFound, templateKey), memberName));
+                ruleOptions.ErrorList.Add(new ValidationResult(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_TemplateNotFound, templateKey), [memberName]));
                 return false;
             }
 
