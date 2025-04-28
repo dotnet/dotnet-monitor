@@ -60,11 +60,19 @@ internal sealed class OpenTelemetryLogRecordLogger : ILogRecordLogger
 
     public Task PipelineStarted(CancellationToken token)
     {
-        _LogRecordProcessor ??= OpenTelemetryFactory.CreateLogRecordBatchExportProcessorAsync(
-            _LoggerFactory,
-            _Resource,
-            _Options.ExporterOptions,
-            _Options.LoggingOptions.BatchOptions);
+        try
+        {
+            _LogRecordProcessor ??= OpenTelemetryFactory.CreateLogRecordBatchExportProcessorAsync(
+                _LoggerFactory,
+                _Resource,
+                _Options.ExporterOptions,
+                _Options.LoggingOptions.BatchOptions);
+        }
+        catch (Exception ex)
+        {
+            _LoggerFactory.CreateLogger<OpenTelemetryLogRecordLogger>()
+                .LogError(ex, "OpenTelemetryLogRecordLogger failed to initialize OpenTelemetry SDK");
+        }
 
         return Task.CompletedTask;
     }

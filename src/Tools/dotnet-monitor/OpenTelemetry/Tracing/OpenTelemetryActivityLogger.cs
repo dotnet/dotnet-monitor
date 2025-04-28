@@ -44,11 +44,19 @@ internal sealed class OpenTelemetryActivityLogger : IActivityLogger
 
     public Task PipelineStarted(CancellationToken token)
     {
-        _SpanProcessor ??= OpenTelemetryFactory.CreateSpanBatchExportProcessorAsync(
-            _LoggerFactory,
-            _Resource,
-            _Options.ExporterOptions,
-            _Options.TracingOptions.BatchOptions);
+        try
+        {
+            _SpanProcessor ??= OpenTelemetryFactory.CreateSpanBatchExportProcessorAsync(
+                _LoggerFactory,
+                _Resource,
+                _Options.ExporterOptions,
+                _Options.TracingOptions.BatchOptions);
+        }
+        catch (Exception ex)
+        {
+            _LoggerFactory.CreateLogger<OpenTelemetryActivityLogger>()
+                .LogError(ex, "OpenTelemetryActivityLogger failed to initialize OpenTelemetry SDK");
+        }
 
         return Task.CompletedTask;
     }

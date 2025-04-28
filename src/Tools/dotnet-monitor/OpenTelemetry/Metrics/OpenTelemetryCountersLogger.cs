@@ -48,12 +48,20 @@ internal sealed class OpenTelemetryCountersLogger : ICountersLogger
 
     public Task PipelineStarted(CancellationToken token)
     {
-        _MetricReader ??= OpenTelemetryFactory.CreatePeriodicExportingMetricReaderAsync(
-            _LoggerFactory,
-            _Resource,
-            _Options.ExporterOptions,
-            _Options.MetricsOptions.PeriodicExportingOptions,
-            [new OpenTelemetryMetricProducerFactory(_MetricsStore)]);
+        try
+        {
+            _MetricReader ??= OpenTelemetryFactory.CreatePeriodicExportingMetricReaderAsync(
+                _LoggerFactory,
+                _Resource,
+                _Options.ExporterOptions,
+                _Options.MetricsOptions.PeriodicExportingOptions,
+                [new OpenTelemetryMetricProducerFactory(_MetricsStore)]);
+        }
+        catch (Exception ex)
+        {
+            _LoggerFactory.CreateLogger<OpenTelemetryCountersLogger>()
+                .LogError(ex, "OpenTelemetryCountersLogger failed to initialize OpenTelemetry SDK");
+        }
 
         return Task.CompletedTask;
     }

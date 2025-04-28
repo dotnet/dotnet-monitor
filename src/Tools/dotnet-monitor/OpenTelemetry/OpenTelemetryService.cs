@@ -5,7 +5,6 @@
 #nullable enable
 
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,8 +28,6 @@ internal sealed class OpenTelemetryService : BackgroundService
         OpenTelemetryEndpointManager openTelemetryEndpointManager,
         IDiagnosticServices diagnosticServices)
     {
-        Debugger.Launch();
-
         _Logger = logger;
         _ProcessOptions = processOptions;
         _OpenTelemetryEndpointManager = openTelemetryEndpointManager;
