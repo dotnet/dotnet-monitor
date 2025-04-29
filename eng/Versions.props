@@ -47,27 +47,21 @@
     See https://github.com/dotnet/arcade/blob/master/Documentation/Darc.md for instructions on using darc.
   -->
   <PropertyGroup Label="Automated">
-    <!-- dotnet/arcade references -->
-    <MicrosoftDotNetBuildTasksArchivesVersion>10.0.0-beta.25228.1</MicrosoftDotNetBuildTasksArchivesVersion>
-    <MicrosoftDotNetCodeAnalysisVersion>10.0.0-beta.25228.1</MicrosoftDotNetCodeAnalysisVersion>
-    <MicrosoftDotNetXUnitExtensionsVersion>10.0.0-beta.25228.1</MicrosoftDotNetXUnitExtensionsVersion>
-    <!-- dotnet/aspnetcore references -->
-    <MicrosoftAspNetCoreAppRuntimewinx64Version>10.0.0-preview.5.25222.16</MicrosoftAspNetCoreAppRuntimewinx64Version>
-    <VSRedistCommonAspNetCoreSharedFrameworkx64100Version>10.0.0-preview.5.25222.16</VSRedistCommonAspNetCoreSharedFrameworkx64100Version>
-    <!-- dotnet/command-line-api references -->
-    <SystemCommandLineVersion>2.0.0-beta5.25222.1</SystemCommandLineVersion>
     <!-- dotnet/diagnostics references -->
     <MicrosoftDiagnosticsMonitoringVersion>9.0.0-preview.25223.1</MicrosoftDiagnosticsMonitoringVersion>
     <MicrosoftDiagnosticsMonitoringEventPipeVersion>9.0.0-preview.25223.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
-    <!-- dotnet/roslyn-analyzers -->
-    <MicrosoftCodeAnalysisNetAnalyzersVersion>9.0.0-preview.25076.3</MicrosoftCodeAnalysisNetAnalyzersVersion>
-    <!-- dotnet/runtime references -->
-    <MicrosoftNETCoreAppRuntimewinx64Version>10.0.0-preview.4.25222.8</MicrosoftNETCoreAppRuntimewinx64Version>
-    <VSRedistCommonNetCoreSharedFrameworkx64100Version>10.0.0-preview.4.25222.8</VSRedistCommonNetCoreSharedFrameworkx64100Version>
-    <!-- dotnet/sdk references -->
-    <VSRedistCommonNetCoreSdkPlaceholderx64100Version>10.0.100-preview.5.25223.19</VSRedistCommonNetCoreSdkPlaceholderx64100Version>
-    <!-- dotnet/symstore references -->
     <MicrosoftFileFormatsVersion>1.0.622301</MicrosoftFileFormatsVersion>
+    <!-- dotnet/dotnet references -->
+    <MicrosoftAspNetCoreAppRuntimewinx64Version>10.0.0-preview.5.25228.101</MicrosoftAspNetCoreAppRuntimewinx64Version>
+    <MicrosoftCodeAnalysisNetAnalyzersVersion>10.0.0-preview.25228.101</MicrosoftCodeAnalysisNetAnalyzersVersion>
+    <MicrosoftDotNetBuildTasksArchivesVersion>10.0.0-beta.25228.101</MicrosoftDotNetBuildTasksArchivesVersion>
+    <MicrosoftDotNetCodeAnalysisVersion>10.0.0-beta.25228.101</MicrosoftDotNetCodeAnalysisVersion>
+    <MicrosoftDotNetXUnitExtensionsVersion>10.0.0-beta.25228.101</MicrosoftDotNetXUnitExtensionsVersion>
+    <MicrosoftNETCoreAppRuntimewinx64Version>10.0.0-preview.5.25228.101</MicrosoftNETCoreAppRuntimewinx64Version>
+    <SystemCommandLineVersion>2.0.0-beta5.25228.101</SystemCommandLineVersion>
+    <VSRedistCommonAspNetCoreSharedFrameworkx64100Version>10.0.0-preview.5.25228.101</VSRedistCommonAspNetCoreSharedFrameworkx64100Version>
+    <VSRedistCommonNetCoreSdkPlaceholderx64100Version>10.0.100-preview.5.25228.101</VSRedistCommonNetCoreSdkPlaceholderx64100Version>
+    <VSRedistCommonNetCoreSharedFrameworkx64100Version>10.0.0-preview.5.25228.101</VSRedistCommonNetCoreSharedFrameworkx64100Version>
   </PropertyGroup>
   <PropertyGroup Label="Runtime Versions">
     <MicrosoftAspNetCoreApp80Version>$(MicrosoftNETCoreApp80Version)</MicrosoftAspNetCoreApp80Version>
