@@ -23,7 +23,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
         {
             if (type == typeof(CollectionRuleOptions))
             {
-                validatableInfo = CreateCollectionRuleOptions();
+                validatableInfo = new CollectionRuleOptionsTypeInfo();
                 return true;
             }
 
@@ -37,49 +37,42 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             return false;
         }
 
-        private static ValidatableTypeInfo CreateCollectionRuleOptions()
+        sealed class CollectionRuleOptionsTypeInfo : ValidatableTypeInfo
         {
-            return new ShortCircuitingValidatableTypeInfo(
-                type: typeof(CollectionRuleOptions),
-                members: [
-                    new CustomValidatablePropertyInfo(
-                        containingType: typeof(CollectionRuleOptions),
-                        propertyType: typeof(CollectionRuleTriggerOptions),
-                        name: "Trigger",
-                        displayName: "Trigger"
-                    ),
-                    new CustomValidatablePropertyInfo(
-                        containingType: typeof(CollectionRuleOptions),
-                        propertyType: typeof(List<CollectionRuleActionOptions>),
-                        name: "Actions",
-                        displayName: "Actions"
-                    ),
-                    new CustomValidatablePropertyInfo(
-                        containingType: typeof(CollectionRuleOptions),
-                        propertyType: typeof(CollectionRuleLimitsOptions),
-                        name: "Limits",
-                        displayName: "Limits"
-                    ),
-                ]
-            );
-        }
+            public CollectionRuleOptionsTypeInfo()
+                : this(
+                    [
+                        new CustomValidatablePropertyInfo(
+                            containingType: typeof(CollectionRuleOptions),
+                            propertyType: typeof(CollectionRuleTriggerOptions),
+                            name: "Trigger",
+                            displayName: "Trigger"
+                        ),
+                        new CustomValidatablePropertyInfo(
+                            containingType: typeof(CollectionRuleOptions),
+                            propertyType: typeof(List<CollectionRuleActionOptions>),
+                            name: "Actions",
+                            displayName: "Actions"
+                        ),
+                        new CustomValidatablePropertyInfo(
+                            containingType: typeof(CollectionRuleOptions),
+                            propertyType: typeof(CollectionRuleLimitsOptions),
+                            name: "Limits",
+                            displayName: "Limits"
+                        )
+                    ])
+            {
+            }
 
-        sealed class ShortCircuitingValidatableTypeInfo : ValidatableTypeInfo
-        {
-            public ShortCircuitingValidatableTypeInfo(
-                [param: DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)]
-                Type type,
-                ValidatablePropertyInfo[] members) : base(type, members) {
-                Type = type;
+            private CollectionRuleOptionsTypeInfo(ValidatablePropertyInfo[] members)
+                : base(typeof(CollectionRuleOptions), members)
+            {
                 Members = members;
                 _membersCount = members.Length;
-                _subTypes = type.GetAllImplementedTypes();
             }
 
             private readonly int _membersCount;
-            private readonly List<Type> _subTypes;
 
-            internal Type Type { get; }
             internal IReadOnlyList<ValidatablePropertyInfo> Members { get; }
 
             public override async Task ValidateAsync(object? value, ValidateContext context, CancellationToken cancellationToken)
@@ -94,7 +87,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
                 if (context.CurrentDepth >= context.ValidationOptions.MaxDepth)
                 {
                     throw new InvalidOperationException(
-                        $"Maximum validation depth of {context.ValidationOptions.MaxDepth} exceeded at '{context.CurrentValidationPath}' in '{Type.Name}'. " +
+                        $"Maximum validation depth of {context.ValidationOptions.MaxDepth} exceeded at '{context.CurrentValidationPath}' in '{nameof(CollectionRuleOptions)}'. " +
                         "This is likely caused by a circular reference in the object graph. " +
                         "Consider increasing the MaxDepth in ValidationOptions if deeper validation is required.");
                 }
@@ -104,7 +97,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
                 try
                 {
                     // Finally validate IValidatableObject if implemented
-                    if (Type.ImplementsInterface(typeof(IValidatableObject)) && value is IValidatableObject validatable)
+                    if (value is IValidatableObject validatable)
                     {
                         // Important: Set the DisplayName to the type name for top-level validations
                         // and restore the original validation context properties
@@ -112,7 +105,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
                         var originalMemberName = context.ValidationContext.MemberName;
 
                         // Set the display name to the class name for IValidatableObject validation
-                        context.ValidationContext.DisplayName = Type.Name;
+                        context.ValidationContext.DisplayName = nameof(CollectionRuleOptions);
                         context.ValidationContext.MemberName = null;
 
                         var validationResults = validatable.Validate(context.ValidationContext);
@@ -140,28 +133,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
                         }
                     }
 
-                    var actualType = value.GetType();
-
-                    // First validate members
+                    // Validate members
                     for (var i = 0; i < _membersCount; i++)
                     {
                         await Members[i].ValidateAsync(value, context, cancellationToken);
                         context.CurrentValidationPath = originalPrefix;
-                    }
-
-                    // Then validate sub-types if any
-                    foreach (var subType in _subTypes)
-                    {
-                        // Check if the actual type is assignable to the sub-type
-                        // and validate it if it is
-                        if (subType.IsAssignableFrom(actualType))
-                        {
-                            if (context.ValidationOptions.TryGetValidatableTypeInfo(subType, out var subTypeInfo))
-                            {
-                                await subTypeInfo.ValidateAsync(value, context, cancellationToken);
-                                context.CurrentValidationPath = originalPrefix;
-                            }
-                        }
                     }
                 }
                 finally
@@ -171,19 +147,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             }
         }
 
-
-        sealed class CustomValidatableTypeInfo : ValidatableTypeInfo
-        {
-            public CustomValidatableTypeInfo(
-                [param: DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)]
-                Type type,
-                ValidatablePropertyInfo[] members) : base(type, members) { }
-        }
-
         sealed class CustomValidatablePropertyInfo : ValidatablePropertyInfo
         {
             public CustomValidatablePropertyInfo(
-                [param: DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)]
                 Type containingType,
                 Type propertyType,
                 string name,
@@ -193,7 +159,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
                 Name = name;
             }
 
-            [global::System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(global::System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicProperties | global::System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicConstructors)]
             internal Type ContainingType { get; }
             internal string Name { get; }
 
@@ -203,16 +168,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
 
         static class ValidationAttributeCache
         {
-            private sealed record CacheKey(
-                [property: global::System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(global::System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicProperties | global::System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicConstructors)]
-                Type ContainingType,
-                string PropertyName);
+            private sealed record CacheKey(Type ContainingType, string PropertyName);
             private static readonly ConcurrentDictionary<CacheKey, ValidationAttribute[]> _cache = new();
 
-            public static ValidationAttribute[] GetValidationAttributes(
-                [param: global::System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(global::System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicProperties | global::System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicConstructors)]
-                Type containingType,
-                string propertyName)
+            public static ValidationAttribute[] GetValidationAttributes(Type containingType, string propertyName)
             {
                 var key = new CacheKey(containingType, propertyName);
                 return _cache.GetOrAdd(key, static k =>
