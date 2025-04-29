@@ -178,35 +178,35 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
                 {
                     var results = new List<ValidationAttribute>();
 
-                // Get attributes from the property
+                    // Get attributes from the property
                     var property = k.ContainingType.GetProperty(k.PropertyName);
                     if (property != null)
                     {
-                    var propertyAttributes = CustomAttributeExtensions.GetCustomAttributes<ValidationAttribute>(property, inherit: true);
+                        var propertyAttributes = CustomAttributeExtensions.GetCustomAttributes<ValidationAttribute>(property, inherit: true);
 
-                    results.AddRange(propertyAttributes);
+                        results.AddRange(propertyAttributes);
                     }
 
-                // Check constructors for parameters that match the property name
-                // to handle record scenarios
-                foreach (var constructor in k.ContainingType.GetConstructors())
-                {
-                    // Look for parameter with matching name (case insensitive)
-                    var parameter = Enumerable.FirstOrDefault(
-                        constructor.GetParameters(),
-                        p => string.Equals(p.Name, k.PropertyName, global::System.StringComparison.OrdinalIgnoreCase));
-
-                    if (parameter != null)
+                    // Check constructors for parameters that match the property name
+                    // to handle record scenarios
+                    foreach (var constructor in k.ContainingType.GetConstructors())
                     {
-                        var paramAttributes = CustomAttributeExtensions.GetCustomAttributes<ValidationAttribute>(parameter, inherit: true);
+                        // Look for parameter with matching name (case insensitive)
+                        var parameter = Enumerable.FirstOrDefault(
+                            constructor.GetParameters(),
+                            p => string.Equals(p.Name, k.PropertyName, global::System.StringComparison.OrdinalIgnoreCase));
 
-                        results.AddRange(paramAttributes);
+                        if (parameter != null)
+                        {
+                            var paramAttributes = CustomAttributeExtensions.GetCustomAttributes<ValidationAttribute>(parameter, inherit: true);
 
-                        break;
+                            results.AddRange(paramAttributes);
+
+                            break;
+                        }
                     }
-                }
 
-                return results.ToArray();
+                    return results.ToArray();
                 });
             }
         }

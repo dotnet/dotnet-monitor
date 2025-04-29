@@ -20,6 +20,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         private const string ArtifactsDirectoryName = "artifacts";
         private const string TestHostingStartupAssemblyName = "Microsoft.Diagnostics.Monitoring.Tool.TestHostingStartup";
         private const string TestStartupHookAssemblyName = "Microsoft.Diagnostics.Monitoring.Tool.TestStartupHook";
+
 #nullable disable
         [Conditional("DEBUG")]
         public static void SimulateStartupHook()

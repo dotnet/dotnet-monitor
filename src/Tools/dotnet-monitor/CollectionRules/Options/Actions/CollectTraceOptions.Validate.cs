@@ -85,6 +85,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
                 }
 
                 // Validate that each provider is valid.
+                // Necessary to work around the generated validation code not recursing into List<T>? members:
+                // https://github.com/dotnet/aspnetcore/issues/61737
                 int index = 0;
                 foreach (EventPipeProvider provider in Providers)
                 {
