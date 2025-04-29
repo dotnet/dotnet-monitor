@@ -40,7 +40,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
 
@@ -50,43 +49,43 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         public static IServiceCollection ConfigureCors(this IServiceCollection services, IConfiguration configuration)
         {
-            return services.Configure<CorsConfigurationOptions>(configuration.GetSection(ConfigurationKeys.CorsConfiguration));
+            return ConfigureOptions<CorsConfigurationOptions>(services, configuration, ConfigurationKeys.CorsConfiguration);
         }
 
         public static IServiceCollection ConfigureDotnetMonitorDebug(this IServiceCollection services, IConfiguration configuration)
         {
-            return services.Configure<DotnetMonitorDebugOptions>(configuration.GetSection(ConfigurationKeys.DotnetMonitorDebug));
+            return ConfigureOptions<DotnetMonitorDebugOptions>(services, configuration, ConfigurationKeys.DotnetMonitorDebug);
         }
 
         public static IServiceCollection ConfigureGlobalCounter(this IServiceCollection services, IConfiguration configuration)
         {
-            return services.Configure<GlobalCounterOptions>(configuration.GetSection(ConfigurationKeys.GlobalCounter))
+            return ConfigureOptions<GlobalCounterOptions>(services, configuration, ConfigurationKeys.GlobalCounter)
                 .AddSingleton<IValidateOptions<GlobalCounterOptions>, DataAnnotationValidateOptions<GlobalCounterOptions>>();
 
         }
 
         public static IServiceCollection ConfigureCollectionRuleDefaults(this IServiceCollection services, IConfiguration configuration)
         {
-            return services.Configure<CollectionRuleDefaultsOptions>(configuration.GetSection(ConfigurationKeys.CollectionRuleDefaults));
+            return ConfigureOptions<CollectionRuleDefaultsOptions>(services, configuration, ConfigurationKeys.CollectionRuleDefaults);
         }
 
         public static IServiceCollection ConfigureTemplates(this IServiceCollection services, IConfiguration configuration)
         {
-            return services.Configure<TemplateOptions>(configuration.GetSection(ConfigurationKeys.Templates));
+            return ConfigureOptions<TemplateOptions>(services, configuration, ConfigurationKeys.Templates);
         }
 
         public static IServiceCollection ConfigureInProcessFeatures(this IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<CallStacksOptions>(configuration.GetSection(ConfigurationKeys.InProcessFeatures_CallStacks))
+            ConfigureOptions<CallStacksOptions>(services, configuration, ConfigurationKeys.InProcessFeatures_CallStacks)
                 .AddSingleton<IPostConfigureOptions<CallStacksOptions>, CallStacksPostConfigureOptions>();
 
-            services.Configure<ExceptionsOptions>(configuration.GetSection(ConfigurationKeys.InProcessFeatures_Exceptions))
+            ConfigureOptions<ExceptionsOptions>(services, configuration, ConfigurationKeys.InProcessFeatures_Exceptions)
                 .AddSingleton<IPostConfigureOptions<ExceptionsOptions>, ExceptionsPostConfigureOptions>();
 
-            services.Configure<ParameterCapturingOptions>(configuration.GetSection(ConfigurationKeys.InProcessFeatures_ParameterCapturing))
-                .AddSingleton<IPostConfigureOptions<ParameterCapturingOptions>, ParameterCapturingPostConfigureOptions>();
+            ConfigureOptions<ParameterCapturingOptions>(services, configuration, ConfigurationKeys.InProcessFeatures_ParameterCapturing)
+             .AddSingleton<IPostConfigureOptions<ParameterCapturingOptions>, ParameterCapturingPostConfigureOptions>();
 
-            services.Configure<InProcessFeaturesOptions>(configuration.GetSection(ConfigurationKeys.InProcessFeatures))
+            ConfigureOptions<InProcessFeaturesOptions>(services, configuration, ConfigurationKeys.InProcessFeatures)
                 .AddSingleton<InProcessFeaturesService>()
                 .AddSingleton<IEndpointInfoSourceCallbacks, InProcessFeaturesEndpointInfoSourceCallbacks>();
 
@@ -95,7 +94,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureMetrics(this IServiceCollection services, IConfiguration configuration)
         {
-            return services.Configure<MetricsOptions>(configuration.GetSection(ConfigurationKeys.Metrics))
+            return ConfigureOptions<MetricsOptions>(services, configuration, ConfigurationKeys.Metrics)
                 .AddSingleton<IValidateOptions<MetricsOptions>, DataAnnotationValidateOptions<MetricsOptions>>()
                 .AddSingleton<MetricsStoreService>()
                 .AddHostedService<MetricsService>()
@@ -104,7 +103,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureMonitorApiKeyOptions(this IServiceCollection services, IConfiguration configuration, bool allowConfigurationUpdates)
         {
-            services.Configure<MonitorApiKeyOptions>(configuration.GetSection(ConfigurationKeys.MonitorApiKey));
+            ConfigureOptions<MonitorApiKeyOptions>(services, configuration, ConfigurationKeys.MonitorApiKey);
 
             // Loads and validates MonitorApiKeyOptions into MonitorApiKeyConfiguration
             services.AddSingleton<IPostConfigureOptions<MonitorApiKeyConfiguration>, MonitorApiKeyPostConfigure>();
@@ -197,7 +196,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return services;
         }
 
-        public static IServiceCollection RegisterCollectionRuleAction<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TFactory, TOptions, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TDescriptor>(this IServiceCollection services)
+        public static IServiceCollection RegisterCollectionRuleAction<TFactory, TOptions, TDescriptor>(this IServiceCollection services)
             where TFactory : class, ICollectionRuleActionFactory<TOptions>
             where TOptions : BaseRecordOptions, new()
             where TDescriptor : class, ICollectionRuleActionDescriptor
@@ -211,7 +210,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return services;
         }
 
-        public static IServiceCollection RegisterCollectionRuleTrigger<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TFactory, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TDescriptor>(this IServiceCollection services)
+        public static IServiceCollection RegisterCollectionRuleTrigger<TFactory, TDescriptor>(this IServiceCollection services)
             where TFactory : class, ICollectionRuleTriggerFactory
             where TDescriptor : class, ICollectionRuleTriggerDescriptor
         {
@@ -221,7 +220,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return services;
         }
 
-        public static IServiceCollection RegisterCollectionRuleTrigger<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TFactory, TOptions, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TDescriptor>(this IServiceCollection services)
+        public static IServiceCollection RegisterCollectionRuleTrigger<TFactory, TOptions, TDescriptor>(this IServiceCollection services)
             where TFactory : class, ICollectionRuleTriggerFactory<TOptions>
             where TOptions : class, new()
             where TDescriptor : class, ICollectionRuleTriggerDescriptor
@@ -238,7 +237,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureStorage(this IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<StorageOptions>(configuration.GetSection(ConfigurationKeys.Storage));
+            ConfigureOptions<StorageOptions>(services, configuration, ConfigurationKeys.Storage);
             services.AddSingleton<IPostConfigureOptions<StorageOptions>, StoragePostConfigureOptions>();
             return services;
         }
@@ -256,7 +255,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureDefaultProcess(this IServiceCollection services, IConfiguration configuration)
         {
-            return services.Configure<ProcessFilterOptions>(configuration.GetSection(ConfigurationKeys.DefaultProcess));
+            return ConfigureOptions<ProcessFilterOptions>(services, configuration, ConfigurationKeys.DefaultProcess);
+        }
+
+        private static IServiceCollection ConfigureOptions<T>(IServiceCollection services, IConfiguration configuration, string key) where T : class
+        {
+            return services.Configure<T>(configuration.GetSection(key));
         }
 
         public static IServiceCollection ConfigureExtensions(this IServiceCollection services)
