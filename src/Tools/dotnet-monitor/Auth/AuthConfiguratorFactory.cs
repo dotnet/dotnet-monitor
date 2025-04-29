@@ -1,10 +1,14 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.AspNetCore.Http.Validation;
 using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey;
 using Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd;
 using Microsoft.Diagnostics.Tools.Monitor.Auth.NoAuth;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
@@ -21,7 +25,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth
 
     internal static class AuthConfiguratorFactory
     {
-        public static IAuthenticationConfigurator Create(StartupAuthenticationMode startupAuthMode, HostBuilderContext context)
+        public static IAuthenticationConfigurator Create(StartupAuthenticationMode startupAuthMode, HostBuilderContext context, IServiceProvider services)
         {
             switch (startupAuthMode)
             {
@@ -46,12 +50,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth
                     if (authConfigSection.Exists())
                     {
                         authConfigSection.Bind(authOptions);
-                        ValidateAuthConfigSection(authOptions, authConfigSection.Path);
+                        ValidateAuthConfigSection(authOptions, authConfigSection.Path, services);
                     }
 
                     if (authOptions.AzureAd != null)
                     {
-                        ValidateAuthConfigSection(authOptions.AzureAd, ConfigurationPath.Combine(authConfigSection.Path, ConfigurationKeys.AzureAd));
+                        ValidateAuthConfigSection(authOptions.AzureAd, ConfigurationPath.Combine(authConfigSection.Path, ConfigurationKeys.AzureAd), services);
                         return new AzureAdAuthConfigurator(authOptions.AzureAd);
                     }
 
@@ -62,10 +66,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth
             }
         }
 
-        private static void ValidateAuthConfigSection<T>(T options, string configurationPath) where T : notnull
+        private static void ValidateAuthConfigSection<T>(T options, string configurationPath, IServiceProvider services) where T : notnull
         {
+            var validationOptions = services.GetRequiredService<IOptions<ValidationOptions>>().Value;
             List<ValidationResult> results = new();
-            if (!Validator.TryValidateObject(options, new ValidationContext(options), results, validateAllProperties: true))
+            if (!ValidationHelper.TryValidateObject(options, typeof(T), validationOptions, services, results))
             {
                 throw new DeferredAuthenticationValidationException(configurationPath, results);
             }

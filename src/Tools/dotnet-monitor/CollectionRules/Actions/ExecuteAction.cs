@@ -1,14 +1,16 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.AspNetCore.Http.Validation;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using Microsoft.Extensions.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -20,6 +22,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
     internal sealed class ExecuteActionFactory :
         ICollectionRuleActionFactory<ExecuteOptions>
     {
+        private readonly IServiceProvider _serviceProvider;
+        private readonly ValidationOptions _validationOptions;
+
+        public ExecuteActionFactory(IServiceProvider serviceProvider, IOptions<ValidationOptions> validationOptions)
+        {
+            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+            _validationOptions = validationOptions?.Value ?? throw new ArgumentNullException(nameof(validationOptions));
+        }
+
         public ICollectionRuleAction Create(IProcessInfo processInfo, ExecuteOptions options)
         {
             if (null == options)
@@ -27,8 +38,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 throw new ArgumentNullException(nameof(options));
             }
 
-            ValidationContext context = new(options, null, items: null);
-            Validator.ValidateObject(options, context, validateAllProperties: true);
+            ValidationHelper.ValidateObject(options, typeof(ExecuteOptions), _validationOptions, _serviceProvider);
 
             return new ExecuteAction(processInfo, options);
         }

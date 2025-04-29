@@ -1,14 +1,17 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.AspNetCore.Http.Validation;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.NETCore.Client;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,11 +22,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<SetEnvironmentVariableActionFactory> _logger;
+        private readonly ValidationOptions _validationOptions;
 
         public SetEnvironmentVariableActionFactory(IServiceProvider serviceProvider, ILogger<SetEnvironmentVariableActionFactory> logger)
         {
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _validationOptions = serviceProvider.GetRequiredService<IOptions<ValidationOptions>>().Value;
         }
 
         public ICollectionRuleAction Create(IProcessInfo processInfo, SetEnvironmentVariableOptions options)
@@ -33,8 +38,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 throw new ArgumentNullException(nameof(options));
             }
 
-            ValidationContext context = new(options, _serviceProvider, items: null);
-            Validator.ValidateObject(options, context, validateAllProperties: true);
+            ValidationHelper.ValidateObject(options, typeof(SetEnvironmentVariableOptions), _validationOptions, _serviceProvider);
 
             return new SetEnvironmentVariableAction(_logger, processInfo, options);
         }

@@ -131,6 +131,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         services.AddSingleton(listenResults);
                         services.AddSingleton<IStartupFilter, AddressListenResultsStartupFilter>();
                         services.AddHostedService<StartupLoggingHostedService>();
+                        ValidatableTypes.AddValidation(services);
                     })
                     .ConfigureKestrel((context, options) =>
                     {

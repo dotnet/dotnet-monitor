@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.E
                     string.Format(
                         Strings.ErrorMessage_FieldMustBeLessThanOtherField,
                         nameof(GreaterThan),
-                        nameof(LessThan))));
+                        nameof(LessThan)), [nameof(GreaterThan), nameof(LessThan)]));
             }
 
             return results;

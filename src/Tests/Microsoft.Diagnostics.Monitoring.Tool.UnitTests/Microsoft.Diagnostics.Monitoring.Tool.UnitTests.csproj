@@ -8,6 +8,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" GeneratePathProperty="true" />
     <PackageReference Include="Moq" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
   </ItemGroup>
 
   <ItemGroup>
@@ -15,6 +16,7 @@
     <ProjectReference Include="..\..\Tools\dotnet-monitor\dotnet-monitor.csproj" />
     <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.TestCommon\Microsoft.Diagnostics.Monitoring.TestCommon.csproj" />
     <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.Tool.UnitTestCommon\Microsoft.Diagnostics.Monitoring.Tool.UnitTestCommon.csproj" />
+    <ProjectReference Include="..\Microsoft.Diagnostics.Monitoring.Tool.UnitTestsSample\Microsoft.Diagnostics.Monitoring.Tool.UnitTestsSample.csproj" />
   </ItemGroup>
 
   <ItemGroup>

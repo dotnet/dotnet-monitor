@@ -3,9 +3,12 @@
 
 #nullable disable
 
+using Microsoft.AspNetCore.Http.Validation;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.Extensibility;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using System;
@@ -29,6 +32,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
         private readonly string _extensionPath;
         private readonly ILogger<EgressExtension> _logger;
         private readonly ExtensionManifest _manifest;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly ValidationOptions _validationOptions;
         private readonly IDictionary<string, string> _processEnvironmentVariables = new Dictionary<string, string>();
         private const int PayloadProtocolVersion = 1;
 
@@ -38,12 +43,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             ExtensionManifest manifest,
             string extensionPath,
             IEgressConfigurationProvider configurationProvider,
-            ILogger<EgressExtension> logger)
+            ILogger<EgressExtension> logger,
+            IServiceProvider serviceProvider)
         {
             _configurationProvider = configurationProvider ?? throw new ArgumentNullException(nameof(configurationProvider));
             _extensionPath = extensionPath ?? throw new ArgumentNullException(nameof(extensionPath));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _manifest = manifest ?? throw new ArgumentNullException(nameof(manifest));
+            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+            _validationOptions = serviceProvider.GetRequiredService<IOptions<ValidationOptions>>().Value;
         }
 
         /// <inheritdoc/>
@@ -107,7 +115,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             ExtensionMode mode,
             CancellationToken token)
         {
-            _manifest.Validate();
+            _manifest.Validate(_serviceProvider, _validationOptions);
 
             ProcessStartInfo pStart = new ProcessStartInfo()
             {

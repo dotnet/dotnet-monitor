@@ -126,4 +126,13 @@
     </ItemGroup>
   </Target>
 
+  <!-- Disable validation source generator to allow working around issues with generated code. -->
+  <Target Name="DisableValidationSourceGenerator"
+          BeforeTargets="CoreCompile"
+          Condition="'$(DisableValidationSourceGenerator)' == 'true'">
+    <ItemGroup>
+      <Analyzer Remove="@(Analyzer)" Condition="'%(Analyzer.FileName)' == 'Microsoft.AspNetCore.Http.ValidationsGenerator'" />
+    </ItemGroup>
+  </Target>
+
 </Project>

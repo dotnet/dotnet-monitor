@@ -7,8 +7,9 @@
     <PackageVersion Include="Azure.Storage.Blobs" Version="$(AzureStorageBlobsVersion)" />
     <PackageVersion Include="Azure.Storage.Queues" Version="$(AzureStorageQueuesVersion)" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(MicrosoftAspNetCoreAuthenticationJwtBearerVersion)" />
-    <PackageVersion Include="Microsoft.AspnetCore.OpenApi" Version="$(MicrosoftAspNetCoreOpenApiVersion)" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.Negotiate" Version="$(MicrosoftAspNetCoreAuthenticationNegotiateVersion)" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(MicrosoftAspNetCoreApp100Version)" />
+    <PackageVersion Include="Microsoft.AspnetCore.OpenApi" Version="$(MicrosoftAspNetCoreOpenApiVersion)" />
     <PackageVersion Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="$(MicrosoftCodeAnalysisNetAnalyzersVersion)" />
     <PackageVersion Include="Microsoft.Diagnostics.Monitoring" Version="$(MicrosoftDiagnosticsMonitoringLibraryVersion)" />
     <PackageVersion Include="Microsoft.Diagnostics.Monitoring.EventPipe" Version="$(MicrosoftDiagnosticsMonitoringEventPipeLibraryVersion)" />

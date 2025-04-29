@@ -89,7 +89,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             }
             else
             {
-                results.Add(new ValidationResult(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_UnknownActionType, actionName)));
+                results.Add(new ValidationResult(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_UnknownActionType, actionName), [actionName]));
                 return false;
             }
         }

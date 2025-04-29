@@ -3,6 +3,8 @@
 
 #nullable disable
 
+using Microsoft.AspNetCore.Http.Validation;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
@@ -10,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
 {
@@ -70,11 +73,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
             }
         }
 
-        public void Validate()
+        public void Validate(IServiceProvider serviceProvider, ValidationOptions validationOptions)
         {
             List<ValidationResult> results = new();
-            if (!Validator.TryValidateObject(this, new ValidationContext(this), results, validateAllProperties: true) &&
-                results.Count > 0)
+            if (!ValidationHelper.TryValidateObject(this, typeof(ExtensionManifest), validationOptions, serviceProvider, results))
             {
                 ExtensionException.ThrowInvalidManifest(results.First().ErrorMessage);
             }
@@ -95,7 +97,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
                             CultureInfo.InvariantCulture,
                             Strings.ErrorMessage_TwoFieldsCannotBeSpecified,
                             nameof(AssemblyFileName),
-                            nameof(ExecutableFileName))));
+                            nameof(ExecutableFileName)),
+                            [nameof(AssemblyFileName), nameof(ExecutableFileName)]));
             }
 
             if (!hasAssemblyFileName && !hasExecutableFileName)
@@ -106,7 +109,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Extensibility
                             CultureInfo.InvariantCulture,
                             Strings.ErrorMessage_TwoFieldsMissing,
                             nameof(AssemblyFileName),
-                            nameof(ExecutableFileName))));
+                            nameof(ExecutableFileName)),
+                            [nameof(AssemblyFileName), nameof(ExecutableFileName)]));
             }
 
             return results;
