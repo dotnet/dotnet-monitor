@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.AspNetCore.Http.Validation;
-using Microsoft.AspNetCore.Http.Validation.Generated;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
@@ -60,8 +59,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static void AddValidation(IServiceCollection services)
         {
-            GeneratedServiceCollectionExtensions.AddValidation(services);
-            ValidationServiceCollectionExtensions.AddValidation(services, options =>
+            services.AddValidation(options =>
             {
                 options.Resolvers.Insert(0, new CustomValidatableInfoResolver());
             });
