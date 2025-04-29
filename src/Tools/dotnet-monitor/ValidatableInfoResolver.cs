@@ -1387,9 +1387,8 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
     }
 
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.AspNetCore.Http.ValidationsGenerator, Version=10.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60", "10.0.0.0")]
-    file static class GeneratedServiceCollectionExtensions
+    internal static class GeneratedServiceCollectionExtensions
     {
-        [global::System.Runtime.CompilerServices.InterceptsLocationAttribute(1, "YPWMHSw2t9m2EKEnnFoL6ysOAABWYWxpZGF0YWJsZVR5cGVzLmNz")]
         public static global::Microsoft.Extensions.DependencyInjection.IServiceCollection AddValidation(this global::Microsoft.Extensions.DependencyInjection.IServiceCollection services, global::System.Action<ValidationOptions>? configureOptions = null)
         {
             // Use non-extension method to avoid infinite recursion.
