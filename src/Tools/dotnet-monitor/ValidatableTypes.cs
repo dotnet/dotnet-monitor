@@ -24,6 +24,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         public required RootOptions RootOptions { get; init; }
 
+        // Necessary to work around the generated validation code not recursing into Dictionary<K, V>? members:
+        // https://github.com/dotnet/aspnetcore/issues/61737
+        public required CollectionRuleOptions CollectionRuleOptions { get; init; }
 
         // Action options
         public required CollectDumpOptions CollectDumpOptions { get; init; }
