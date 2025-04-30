@@ -139,6 +139,111 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                 validatableInfo = CreateRootOptions();
                 return true;
             }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleTriggerOptions))
+            {
+                validatableInfo = CreateCollectionRuleTriggerOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleActionOptions))
+            {
+                validatableInfo = CreateCollectionRuleActionOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleLimitsOptions))
+            {
+                validatableInfo = CreateCollectionRuleLimitsOptions();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleOptions))
+            {
+                validatableInfo = CreateCollectionRuleOptions();
+                return true;
+            }
+            if (type == typeof(global::System.Reflection.MethodBase))
+            {
+                validatableInfo = CreateMethodBase();
+                return true;
+            }
+            if (type == typeof(global::System.Reflection.ConstructorInfo))
+            {
+                validatableInfo = CreateConstructorInfo();
+                return true;
+            }
+            if (type == typeof(global::System.Reflection.CustomAttributeTypedArgument))
+            {
+                validatableInfo = CreateCustomAttributeTypedArgument();
+                return true;
+            }
+            if (type == typeof(global::System.Reflection.CustomAttributeNamedArgument))
+            {
+                validatableInfo = CreateCustomAttributeNamedArgument();
+                return true;
+            }
+            if (type == typeof(global::System.Reflection.CustomAttributeData))
+            {
+                validatableInfo = CreateCustomAttributeData();
+                return true;
+            }
+            if (type == typeof(global::System.Reflection.ParameterInfo))
+            {
+                validatableInfo = CreateParameterInfo();
+                return true;
+            }
+            if (type == typeof(global::System.Reflection.MethodInfo))
+            {
+                validatableInfo = CreateMethodInfo();
+                return true;
+            }
+            if (type == typeof(global::System.Reflection.EventInfo))
+            {
+                validatableInfo = CreateEventInfo();
+                return true;
+            }
+            if (type == typeof(global::System.Reflection.FieldInfo))
+            {
+                validatableInfo = CreateFieldInfo();
+                return true;
+            }
+            if (type == typeof(global::System.Reflection.PropertyInfo))
+            {
+                validatableInfo = CreatePropertyInfo();
+                return true;
+            }
+            if (type == typeof(global::System.Reflection.TypeInfo))
+            {
+                validatableInfo = CreateTypeInfo();
+                return true;
+            }
+            if (type == typeof(global::System.Reflection.Assembly))
+            {
+                validatableInfo = CreateAssembly();
+                return true;
+            }
+            if (type == typeof(global::System.Guid))
+            {
+                validatableInfo = CreateGuid();
+                return true;
+            }
+            if (type == typeof(global::System.Reflection.Module))
+            {
+                validatableInfo = CreateModule();
+                return true;
+            }
+            if (type == typeof(global::System.Reflection.MemberInfo))
+            {
+                validatableInfo = CreateMemberInfo();
+                return true;
+            }
+            if (type == typeof(global::System.Type))
+            {
+                validatableInfo = CreateType();
+                return true;
+            }
+            if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.BaseRecordOptions))
+            {
+                validatableInfo = CreateBaseRecordOptions();
+                return true;
+            }
             if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectDumpOptions))
             {
                 validatableInfo = CreateCollectDumpOptions();
@@ -192,11 +297,6 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
             if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.GetEnvironmentVariableOptions))
             {
                 validatableInfo = CreateGetEnvironmentVariableOptions();
-                return true;
-            }
-            if (type == typeof(global::System.Guid))
-            {
-                validatableInfo = CreateGuid();
                 return true;
             }
             if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.LoadProfilerOptions))
@@ -661,6 +761,580 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                 ]
             );
         }
+        private ValidatableTypeInfo CreateCollectionRuleTriggerOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleTriggerOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleTriggerOptions),
+                        propertyType: typeof(string),
+                        name: "Type",
+                        displayName: "Type"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateCollectionRuleActionOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleActionOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleActionOptions),
+                        propertyType: typeof(string),
+                        name: "Type",
+                        displayName: "Type"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateCollectionRuleLimitsOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleLimitsOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleLimitsOptions),
+                        propertyType: typeof(int?),
+                        name: "ActionCount",
+                        displayName: "ActionCount"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleLimitsOptions),
+                        propertyType: typeof(global::System.TimeSpan?),
+                        name: "ActionCountSlidingWindowDuration",
+                        displayName: "ActionCountSlidingWindowDuration"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleLimitsOptions),
+                        propertyType: typeof(global::System.TimeSpan?),
+                        name: "RuleDuration",
+                        displayName: "RuleDuration"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateCollectionRuleOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleOptions),
+                        propertyType: typeof(global::System.Collections.Generic.List<global::Microsoft.Diagnostics.Monitoring.WebApi.ProcessFilterDescriptor>),
+                        name: "Filters",
+                        displayName: "Filters"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleOptions),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleTriggerOptions),
+                        name: "Trigger",
+                        displayName: "Trigger"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleOptions),
+                        propertyType: typeof(global::System.Collections.Generic.List<global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleActionOptions>),
+                        name: "Actions",
+                        displayName: "Actions"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleOptions),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleLimitsOptions),
+                        name: "Limits",
+                        displayName: "Limits"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateMethodBase()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::System.Reflection.MethodBase),
+                members: []
+            );
+        }
+        private ValidatableTypeInfo CreateConstructorInfo()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::System.Reflection.ConstructorInfo),
+                members: []
+            );
+        }
+        private ValidatableTypeInfo CreateCustomAttributeTypedArgument()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::System.Reflection.CustomAttributeTypedArgument),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.CustomAttributeTypedArgument),
+                        propertyType: typeof(global::System.Type),
+                        name: "ArgumentType",
+                        displayName: "ArgumentType"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateCustomAttributeNamedArgument()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::System.Reflection.CustomAttributeNamedArgument),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.CustomAttributeNamedArgument),
+                        propertyType: typeof(global::System.Reflection.MemberInfo),
+                        name: "MemberInfo",
+                        displayName: "MemberInfo"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.CustomAttributeNamedArgument),
+                        propertyType: typeof(global::System.Reflection.CustomAttributeTypedArgument),
+                        name: "TypedValue",
+                        displayName: "TypedValue"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateCustomAttributeData()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::System.Reflection.CustomAttributeData),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.CustomAttributeData),
+                        propertyType: typeof(global::System.Type),
+                        name: "AttributeType",
+                        displayName: "AttributeType"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.CustomAttributeData),
+                        propertyType: typeof(global::System.Reflection.ConstructorInfo),
+                        name: "Constructor",
+                        displayName: "Constructor"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.CustomAttributeData),
+                        propertyType: typeof(global::System.Collections.Generic.IList<global::System.Reflection.CustomAttributeTypedArgument>),
+                        name: "ConstructorArguments",
+                        displayName: "ConstructorArguments"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.CustomAttributeData),
+                        propertyType: typeof(global::System.Collections.Generic.IList<global::System.Reflection.CustomAttributeNamedArgument>),
+                        name: "NamedArguments",
+                        displayName: "NamedArguments"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateParameterInfo()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::System.Reflection.ParameterInfo),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.ParameterInfo),
+                        propertyType: typeof(global::System.Collections.Generic.IEnumerable<global::System.Reflection.CustomAttributeData>),
+                        name: "CustomAttributes",
+                        displayName: "CustomAttributes"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.ParameterInfo),
+                        propertyType: typeof(global::System.Reflection.MemberInfo),
+                        name: "Member",
+                        displayName: "Member"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.ParameterInfo),
+                        propertyType: typeof(global::System.Type),
+                        name: "ParameterType",
+                        displayName: "ParameterType"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateMethodInfo()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::System.Reflection.MethodInfo),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.MethodInfo),
+                        propertyType: typeof(global::System.Reflection.MemberTypes),
+                        name: "MemberType",
+                        displayName: "MemberType"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.MethodInfo),
+                        propertyType: typeof(global::System.Reflection.ParameterInfo),
+                        name: "ReturnParameter",
+                        displayName: "ReturnParameter"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.MethodInfo),
+                        propertyType: typeof(global::System.Type),
+                        name: "ReturnType",
+                        displayName: "ReturnType"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateEventInfo()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::System.Reflection.EventInfo),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.EventInfo),
+                        propertyType: typeof(global::System.Reflection.MethodInfo),
+                        name: "AddMethod",
+                        displayName: "AddMethod"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.EventInfo),
+                        propertyType: typeof(global::System.Type),
+                        name: "EventHandlerType",
+                        displayName: "EventHandlerType"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.EventInfo),
+                        propertyType: typeof(global::System.Reflection.MemberTypes),
+                        name: "MemberType",
+                        displayName: "MemberType"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.EventInfo),
+                        propertyType: typeof(global::System.Reflection.MethodInfo),
+                        name: "RaiseMethod",
+                        displayName: "RaiseMethod"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.EventInfo),
+                        propertyType: typeof(global::System.Reflection.MethodInfo),
+                        name: "RemoveMethod",
+                        displayName: "RemoveMethod"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateFieldInfo()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::System.Reflection.FieldInfo),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.FieldInfo),
+                        propertyType: typeof(global::System.Type),
+                        name: "FieldType",
+                        displayName: "FieldType"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.FieldInfo),
+                        propertyType: typeof(global::System.Reflection.MemberTypes),
+                        name: "MemberType",
+                        displayName: "MemberType"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreatePropertyInfo()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::System.Reflection.PropertyInfo),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.PropertyInfo),
+                        propertyType: typeof(global::System.Reflection.MethodInfo),
+                        name: "GetMethod",
+                        displayName: "GetMethod"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.PropertyInfo),
+                        propertyType: typeof(global::System.Reflection.MemberTypes),
+                        name: "MemberType",
+                        displayName: "MemberType"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.PropertyInfo),
+                        propertyType: typeof(global::System.Type),
+                        name: "PropertyType",
+                        displayName: "PropertyType"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.PropertyInfo),
+                        propertyType: typeof(global::System.Reflection.MethodInfo),
+                        name: "SetMethod",
+                        displayName: "SetMethod"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateTypeInfo()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::System.Reflection.TypeInfo),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.TypeInfo),
+                        propertyType: typeof(global::System.Collections.Generic.IEnumerable<global::System.Reflection.ConstructorInfo>),
+                        name: "DeclaredConstructors",
+                        displayName: "DeclaredConstructors"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.TypeInfo),
+                        propertyType: typeof(global::System.Collections.Generic.IEnumerable<global::System.Reflection.EventInfo>),
+                        name: "DeclaredEvents",
+                        displayName: "DeclaredEvents"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.TypeInfo),
+                        propertyType: typeof(global::System.Collections.Generic.IEnumerable<global::System.Reflection.FieldInfo>),
+                        name: "DeclaredFields",
+                        displayName: "DeclaredFields"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.TypeInfo),
+                        propertyType: typeof(global::System.Collections.Generic.IEnumerable<global::System.Reflection.MemberInfo>),
+                        name: "DeclaredMembers",
+                        displayName: "DeclaredMembers"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.TypeInfo),
+                        propertyType: typeof(global::System.Collections.Generic.IEnumerable<global::System.Reflection.MethodInfo>),
+                        name: "DeclaredMethods",
+                        displayName: "DeclaredMethods"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.TypeInfo),
+                        propertyType: typeof(global::System.Collections.Generic.IEnumerable<global::System.Reflection.TypeInfo>),
+                        name: "DeclaredNestedTypes",
+                        displayName: "DeclaredNestedTypes"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.TypeInfo),
+                        propertyType: typeof(global::System.Collections.Generic.IEnumerable<global::System.Reflection.PropertyInfo>),
+                        name: "DeclaredProperties",
+                        displayName: "DeclaredProperties"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.TypeInfo),
+                        propertyType: typeof(global::System.Collections.Generic.IEnumerable<global::System.Type>),
+                        name: "ImplementedInterfaces",
+                        displayName: "ImplementedInterfaces"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateAssembly()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::System.Reflection.Assembly),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.Assembly),
+                        propertyType: typeof(global::System.Collections.Generic.IEnumerable<global::System.Reflection.CustomAttributeData>),
+                        name: "CustomAttributes",
+                        displayName: "CustomAttributes"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.Assembly),
+                        propertyType: typeof(global::System.Collections.Generic.IEnumerable<global::System.Reflection.TypeInfo>),
+                        name: "DefinedTypes",
+                        displayName: "DefinedTypes"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.Assembly),
+                        propertyType: typeof(global::System.Reflection.MethodInfo),
+                        name: "EntryPoint",
+                        displayName: "EntryPoint"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.Assembly),
+                        propertyType: typeof(global::System.Collections.Generic.IEnumerable<global::System.Type>),
+                        name: "ExportedTypes",
+                        displayName: "ExportedTypes"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.Assembly),
+                        propertyType: typeof(global::System.Reflection.Module),
+                        name: "ManifestModule",
+                        displayName: "ManifestModule"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.Assembly),
+                        propertyType: typeof(global::System.Collections.Generic.IEnumerable<global::System.Reflection.Module>),
+                        name: "Modules",
+                        displayName: "Modules"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateGuid()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::System.Guid),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Guid),
+                        propertyType: typeof(global::System.Guid),
+                        name: "AllBitsSet",
+                        displayName: "AllBitsSet"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateModule()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::System.Reflection.Module),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.Module),
+                        propertyType: typeof(global::System.Reflection.Assembly),
+                        name: "Assembly",
+                        displayName: "Assembly"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.Module),
+                        propertyType: typeof(global::System.Collections.Generic.IEnumerable<global::System.Reflection.CustomAttributeData>),
+                        name: "CustomAttributes",
+                        displayName: "CustomAttributes"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.Module),
+                        propertyType: typeof(global::System.Guid),
+                        name: "ModuleVersionId",
+                        displayName: "ModuleVersionId"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateMemberInfo()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::System.Reflection.MemberInfo),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.MemberInfo),
+                        propertyType: typeof(global::System.Collections.Generic.IEnumerable<global::System.Reflection.CustomAttributeData>),
+                        name: "CustomAttributes",
+                        displayName: "CustomAttributes"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.MemberInfo),
+                        propertyType: typeof(global::System.Type),
+                        name: "DeclaringType",
+                        displayName: "DeclaringType"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.MemberInfo),
+                        propertyType: typeof(global::System.Reflection.MemberTypes),
+                        name: "MemberType",
+                        displayName: "MemberType"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.MemberInfo),
+                        propertyType: typeof(global::System.Reflection.Module),
+                        name: "Module",
+                        displayName: "Module"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Reflection.MemberInfo),
+                        propertyType: typeof(global::System.Type),
+                        name: "ReflectedType",
+                        displayName: "ReflectedType"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateType()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::System.Type),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Type),
+                        propertyType: typeof(global::System.Reflection.Assembly),
+                        name: "Assembly",
+                        displayName: "Assembly"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Type),
+                        propertyType: typeof(global::System.Type),
+                        name: "BaseType",
+                        displayName: "BaseType"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Type),
+                        propertyType: typeof(global::System.Reflection.MethodBase),
+                        name: "DeclaringMethod",
+                        displayName: "DeclaringMethod"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Type),
+                        propertyType: typeof(global::System.Type),
+                        name: "DeclaringType",
+                        displayName: "DeclaringType"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Type),
+                        propertyType: typeof(global::System.Type[]),
+                        name: "GenericTypeArguments",
+                        displayName: "GenericTypeArguments"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Type),
+                        propertyType: typeof(global::System.Guid),
+                        name: "GUID",
+                        displayName: "GUID"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Type),
+                        propertyType: typeof(global::System.Reflection.MemberTypes),
+                        name: "MemberType",
+                        displayName: "MemberType"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Type),
+                        propertyType: typeof(global::System.Reflection.Module),
+                        name: "Module",
+                        displayName: "Module"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Type),
+                        propertyType: typeof(global::System.Type),
+                        name: "ReflectedType",
+                        displayName: "ReflectedType"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Type),
+                        propertyType: typeof(global::System.Reflection.ConstructorInfo),
+                        name: "TypeInitializer",
+                        displayName: "TypeInitializer"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::System.Type),
+                        propertyType: typeof(global::System.Type),
+                        name: "UnderlyingSystemType",
+                        displayName: "UnderlyingSystemType"
+                    ),
+                ]
+            );
+        }
+        private ValidatableTypeInfo CreateBaseRecordOptions()
+        {
+            return new GeneratedValidatableTypeInfo(
+                type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.BaseRecordOptions),
+                members: [
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.BaseRecordOptions),
+                        propertyType: typeof(global::System.Type),
+                        name: "EqualityContract",
+                        displayName: "EqualityContract"
+                    ),
+                ]
+            );
+        }
         private ValidatableTypeInfo CreateCollectDumpOptions()
         {
             return new GeneratedValidatableTypeInfo(
@@ -907,20 +1581,6 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                         propertyType: typeof(string),
                         name: "Name",
                         displayName: "Name"
-                    ),
-                ]
-            );
-        }
-        private ValidatableTypeInfo CreateGuid()
-        {
-            return new GeneratedValidatableTypeInfo(
-                type: typeof(global::System.Guid),
-                members: [
-                    new GeneratedValidatablePropertyInfo(
-                        containingType: typeof(global::System.Guid),
-                        propertyType: typeof(global::System.Guid),
-                        name: "AllBitsSet",
-                        displayName: "AllBitsSet"
                     ),
                 ]
             );
@@ -1247,6 +1907,12 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                         propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.RootOptions),
                         name: "RootOptions",
                         displayName: "RootOptions"
+                    ),
+                    new GeneratedValidatablePropertyInfo(
+                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.ValidatableTypes),
+                        propertyType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleOptions),
+                        name: "CollectionRuleOptions",
+                        displayName: "CollectionRuleOptions"
                     ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.ValidatableTypes),
