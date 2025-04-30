@@ -1326,12 +1326,6 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
             return new GeneratedValidatableTypeInfo(
                 type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.BaseRecordOptions),
                 members: [
-                    new GeneratedValidatablePropertyInfo(
-                        containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.BaseRecordOptions),
-                        propertyType: typeof(global::System.Type),
-                        name: "EqualityContract",
-                        displayName: "EqualityContract"
-                    ),
                 ]
             );
         }
