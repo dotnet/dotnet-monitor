@@ -196,22 +196,16 @@ bool CommandServer::IsControlCommand(const IpcMessage& message)
 
 HRESULT CommandServer::ReceiveMessage(std::shared_ptr<IpcCommClient> client, IpcMessage& message)
 {
-    HRESULT hr = client->Receive(message);
-    if (FAILED(hr))
-    {
-        _logger->Log(LogLevel::Error, _LS("Unexpected error when receiving data: 0x%08x"), hr);
-    }
-    return hr;
+    HRESULT hr;
+    IfFailLogRet_(_logger, client->Receive(message));
+    return S_OK;
 }
 
 HRESULT CommandServer::SendMessage(std::shared_ptr<IpcCommClient> client, const IpcMessage& message)
 {
-    HRESULT hr = client->Send(message);
-    if (FAILED(hr))
-    {
-        _logger->Log(LogLevel::Error, _LS("Unexpected error when sending data: 0x%08x"), hr);
-    }
-    return hr;
+    HRESULT hr;
+    IfFailLogRet_(_logger, client->Send(message));
+    return S_OK;
 }
 
 HRESULT CommandServer::Shutdown(std::shared_ptr<IpcCommClient> client)
