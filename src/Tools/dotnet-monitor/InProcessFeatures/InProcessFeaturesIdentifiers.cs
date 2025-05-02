@@ -13,6 +13,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.StartupHook
             {
                 private const string Prefix = InProcessFeaturesPrefix + "Exceptions_";
                 public const string IncludeMonitorExceptions = Prefix + nameof(IncludeMonitorExceptions);
+                public const string CollectOnStartup = Prefix + nameof(CollectOnStartup);
             }
 
             public static class ParameterCapturing
