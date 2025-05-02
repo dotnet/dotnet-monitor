@@ -40,6 +40,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
         private readonly ProfilerChannel _profilerChannel;
 
         private readonly TimeSpan AttachTimeout = TimeSpan.FromSeconds(10);
+        private readonly TimeSpan ResetTimeout = TimeSpan.FromSeconds(20);
 
         public ProfilerService(
             ISharedLibraryService sharedLibraryService,
@@ -77,12 +78,35 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
                 // TODO Ideally we would detect that dotnet-monitor was disconnected and cleanup inproc collection
                 // TODO Configuration changes across dotnet-monitor may not be respected if profiler feature are already installed
                 // For example, parameter capture is on, but new config says it's off.
-
                 if (env.TryGetValue(ProfilerIdentifiers.EnvironmentVariables.RuntimeInstanceId, out string? runtimeInstanceId))
                 {
                     // Profiler already applied. We will reset state to discard all previous data collection.
 
-                    await _profilerChannel.SendMessage(endpointInfo, new JsonProfilerMessage(StartupHookCommand.ResetState, new EmptyPayload()), cancellationToken);
+                    // Currently this is a no-op but ideally will interrupt all callstack collections
+                    await _profilerChannel.SendMessage(endpointInfo,
+                        new JsonProfilerMessage((ushort)CommandSet.Profiler, (ushort)ProfilerCommand.Stop, new EmptyPayload()),
+                        cancellationToken, ResetTimeout);
+                    await _profilerChannel.SendMessage(endpointInfo,
+                        new JsonProfilerMessage((ushort)CommandSet.Profiler, (ushort)ProfilerCommand.Start, new EmptyPayload()),
+                        cancellationToken, ResetTimeout);
+
+                    if (_inProcessFeatures.IsStartupHookRequired)
+                    {
+                        // This will stop all exception pipelines from collecting data and request all parameter captures to be uninstrumented
+                        await _profilerChannel.SendMessage(endpointInfo,
+                            new JsonProfilerMessage((ushort)CommandSet.StartupHook, (ushort)StartupHookCommand.Stop, new EmptyPayload()),
+                            cancellationToken, ResetTimeout);
+
+                        //CONSIDER Currently this is granular enough because only exceptions really need starts. If that changes, we will need to be more verbose about
+                        // which features need to be started rather than 1 stop/start for the entire command set.
+                        if (_inProcessFeatures.CollectExceptionsOnStartup)
+                        {
+                            await _profilerChannel.SendMessage(endpointInfo,
+                                new JsonProfilerMessage((ushort)CommandSet.StartupHook, (ushort)StartupHookCommand.Start, new EmptyPayload()),
+                                cancellationToken, ResetTimeout);
+                        }
+                    }
+
                     return;
                 }
 

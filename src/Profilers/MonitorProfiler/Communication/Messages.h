@@ -31,13 +31,6 @@ enum class StartupHookCommand : unsigned short
     // Indicates that all collection should start
     // Reconnects exception handler events
     Start,
-
-    // This is a 'meta' command. It effectively converts to the following commmand sequence:
-    // Profiler::Stop
-    // StartupHook::Stop
-    // Profiler::Start
-    // StartupHook::Start
-    ResetState
 };
 
 enum class ServerResponseCommand : unsigned short

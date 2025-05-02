@@ -143,48 +143,25 @@ void CommandServer::ProcessResetMessage(const IpcMessage& message, std::shared_p
 
     HRESULT hr = S_OK;
 
-    if ((message.CommandSet == static_cast<unsigned short>(CommandSet::StartupHook)) &&
-        (message.Command == static_cast<unsigned short>(StartupHookCommand::Stop) || message.Command == static_cast<unsigned short>(StartupHookCommand::ResetState)))
+    if (message.CommandSet == static_cast<unsigned short>(CommandSet::Profiler))
     {
-        CallbackInfo managedCallbackInfo;
         CallbackInfo nativeCallbackInfo;
 
-        CreateControlMessage(CommandSet::StartupHook, StartupHookCommand::Stop, managedCallbackInfo);
-        CreateControlMessage(CommandSet::Profiler, ProfilerCommand::Stop, nativeCallbackInfo);
+        CreateControlMessage(CommandSet::Profiler, message.Command, nativeCallbackInfo);
 
-        _clientQueue.Enqueue(managedCallbackInfo);
         _unmanagedOnlyQueue.Enqueue(nativeCallbackInfo);
 
-        HRESULT hrManaged = managedCallbackInfo.Promise->get_future().get();
-        HRESULT hrNative = nativeCallbackInfo.Promise->get_future().get();
-
-        //TODO We really should report both errors, but realistically only hrManaged will be set.
-
-        hr = FAILED(hrManaged) ? hrManaged : FAILED(hrNative) ? hrNative : S_OK;
+        hr = nativeCallbackInfo.Promise->get_future().get();
     }
-
-    //TODO Reset requests are a combination of Stop/Start. Currently we issue both commands even if Stop fails.
-    // We should report all the possible error codes to the client.
-
-    if ((message.CommandSet == static_cast<unsigned short>(CommandSet::StartupHook)) &&
-        (message.Command == static_cast<unsigned short>(StartupHookCommand::Start) || message.Command == static_cast<unsigned short>(StartupHookCommand::ResetState)))
+    if (message.CommandSet == static_cast<unsigned short>(CommandSet::StartupHook))
     {
         CallbackInfo managedCallbackInfo;
-        CallbackInfo nativeCallbackInfo;
 
-        CreateControlMessage(CommandSet::StartupHook, StartupHookCommand::Start, managedCallbackInfo);
-        CreateControlMessage(CommandSet::Profiler, ProfilerCommand::Start, nativeCallbackInfo);
+        CreateControlMessage(CommandSet::StartupHook, message.Command, managedCallbackInfo);
 
         _clientQueue.Enqueue(managedCallbackInfo);
-        _unmanagedOnlyQueue.Enqueue(nativeCallbackInfo);
 
-        HRESULT hrManaged = managedCallbackInfo.Promise->get_future().get();
-        HRESULT hrNative = nativeCallbackInfo.Promise->get_future().get();
-
-        if (SUCCEEDED(hr))
-        {
-            hr = FAILED(hrManaged) ? hrManaged : FAILED(hrNative) ? hrNative : S_OK;
-        }
+        hr = managedCallbackInfo.Promise->get_future().get();
     }
 
     *reinterpret_cast<HRESULT*>(response.Payload.data()) = hr;
@@ -195,7 +172,7 @@ void CommandServer::ProcessResetMessage(const IpcMessage& message, std::shared_p
 bool CommandServer::IsControlCommand(const IpcMessage& message)
 {
     switch (message.CommandSet) {
-        case static_cast<int>(CommandSet::Profiler) :
+        case static_cast<int>(CommandSet::Profiler):
             switch (message.Command)
             {
                 case static_cast<int>(ProfilerCommand::Start):
@@ -206,7 +183,6 @@ bool CommandServer::IsControlCommand(const IpcMessage& message)
             }
         case static_cast<int>(CommandSet::StartupHook):
             switch (message.Command) {
-                case static_cast<int>(StartupHookCommand::ResetState):
                 case static_cast<int>(StartupHookCommand::Start):
                 case static_cast<int>(StartupHookCommand::Stop):
                     return true;

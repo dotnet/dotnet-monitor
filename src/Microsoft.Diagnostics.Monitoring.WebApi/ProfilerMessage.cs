@@ -37,7 +37,6 @@ namespace Microsoft.Diagnostics.Monitoring
         StopCapturingParameters,
         Stop,
         Start,
-        ResetState
     };
 
     public interface IProfilerMessage
