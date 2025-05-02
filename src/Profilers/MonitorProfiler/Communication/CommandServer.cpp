@@ -151,7 +151,7 @@ void CommandServer::ProcessResetMessage(const IpcMessage& message, std::shared_p
 
         _unmanagedOnlyQueue.Enqueue(nativeCallbackInfo);
 
-        hr = nativeCallbackInfo.Promise->get_future().get();
+        hr = nativeCallbackInfo.CompletionPromise->get_future().get();
     }
     if (message.CommandSet == static_cast<unsigned short>(CommandSet::StartupHook))
     {
@@ -161,7 +161,7 @@ void CommandServer::ProcessResetMessage(const IpcMessage& message, std::shared_p
 
         _clientQueue.Enqueue(managedCallbackInfo);
 
-        hr = managedCallbackInfo.Promise->get_future().get();
+        hr = managedCallbackInfo.CompletionPromise->get_future().get();
     }
 
     *reinterpret_cast<HRESULT*>(response.Payload.data()) = hr;
@@ -175,16 +175,16 @@ bool CommandServer::IsControlCommand(const IpcMessage& message)
         case static_cast<int>(CommandSet::Profiler):
             switch (message.Command)
             {
-                case static_cast<int>(ProfilerCommand::Start):
-                case static_cast<int>(ProfilerCommand::Stop):
+                case static_cast<int>(ProfilerCommand::StartAllFeatures):
+                case static_cast<int>(ProfilerCommand::StopAllFeatures):
                     return true;
                 default:
                     return false;
             }
         case static_cast<int>(CommandSet::StartupHook):
             switch (message.Command) {
-                case static_cast<int>(StartupHookCommand::Start):
-                case static_cast<int>(StartupHookCommand::Stop):
+                case static_cast<int>(StartupHookCommand::StartAllFeatures):
+                case static_cast<int>(StartupHookCommand::StopAllFeatures):
                     return true;
                 default:
                     return false;
@@ -250,9 +250,9 @@ void CommandServer::ProcessingThread(BlockingQueue<CallbackInfo>& queue)
             _logger->Log(LogLevel::Warning, _LS("IpcMessage callback failed: 0x%08x"), hr);
         }
 
-        if (info.Promise)
+        if (info.CompletionPromise)
         {
-            info.Promise->set_value(hr);
+            info.CompletionPromise->set_value(hr);
         }
     }
 }

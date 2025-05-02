@@ -283,8 +283,8 @@ HRESULT MainProfiler::ProfilerCommandSetCallback(const IpcMessage& message)
     {
     case ProfilerCommand::Callstack:
         return ProcessCallstackMessage();
-    case ProfilerCommand::Start:
-    case ProfilerCommand::Stop:
+    case ProfilerCommand::StartAllFeatures:
+    case ProfilerCommand::StopAllFeatures:
         // TODO We don't do anything here now, but we could interrupt the current stack walk with CORPROF_E_STACKSNAPSHOT_ABORT in the snapshot callback.
         return S_OK;
     default:

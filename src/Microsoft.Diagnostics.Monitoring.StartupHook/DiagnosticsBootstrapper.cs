@@ -40,13 +40,13 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
                         new MessageDispatcher.ProfilerMessageSource(CommandSet.StartupHook));
                     ToolIdentifiers.EnableEnvVar(InProcessFeaturesIdentifiers.EnvironmentVariables.AvailableInfrastructure.ManagedMessaging);
 
-                    SharedInternals.MessageDispatcher.RegisterCallback<EmptyPayload>(StartupHookCommand.Stop, (IpcMessage) =>
+                    SharedInternals.MessageDispatcher.RegisterCallback<EmptyPayload>(StartupHookCommand.StopAllFeatures, (IpcMessage) =>
                     {
                         _exceptionProcessor.Stop();
                         _parameterCapturingService?.RequestStopAll();
                     });
 
-                    SharedInternals.MessageDispatcher.RegisterCallback<EmptyPayload>(StartupHookCommand.Start, (IpcMessage) =>
+                    SharedInternals.MessageDispatcher.RegisterCallback<EmptyPayload>(StartupHookCommand.StartAllFeatures, (IpcMessage) =>
                     {
                         _exceptionProcessor.Start();
                     });

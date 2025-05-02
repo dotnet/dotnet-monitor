@@ -14,10 +14,6 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
     {
         private long _disposedState;
 
-        public CurrentAppDomainUnhandledExceptionSource()
-        {
-        }
-
         public override void Start()
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;

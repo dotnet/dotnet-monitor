@@ -15,10 +15,6 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
     {
         private long _disposedState;
 
-        public CurrentAppDomainFirstChanceExceptionSource()
-        {
-        }
-
         public override void Start()
         {
             AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;

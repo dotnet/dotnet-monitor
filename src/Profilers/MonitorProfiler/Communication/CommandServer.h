@@ -32,7 +32,7 @@ private:
     {
         public:
             IpcMessage Message;
-            std::shared_ptr<std::promise<HRESULT>> Promise;
+            std::shared_ptr<std::promise<HRESULT>> CompletionPromise;
     };
 
     void ListeningThread();
@@ -48,7 +48,7 @@ private:
         // Currently the managed payload always uses json deserialization
         // The native payload ignores this
         info.Message.Payload = std::vector<BYTE>({ (BYTE)'{', (BYTE)'}' });
-        info.Promise = std::make_shared<std::promise<HRESULT>>();
+        info.CompletionPromise = std::make_shared<std::promise<HRESULT>>();
     }
 
     // Wrapper methods for sending and logging
