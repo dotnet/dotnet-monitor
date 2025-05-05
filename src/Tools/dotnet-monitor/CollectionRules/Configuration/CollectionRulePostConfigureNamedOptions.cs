@@ -10,7 +10,6 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
@@ -56,7 +55,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
                 // The Section Key is the action index; the value (if present) is the name of the template
                 if (SectionHasValue(actionSection))
                 {
-                    TryGetTemplate(ruleOptions, _templateOptions.CollectionRuleActions, actionSection.Value, out CollectionRuleActionOptions templateActionOptions);
+                    TryGetTemplate(ruleOptions, nameof(ruleOptions.Actions), _templateOptions.CollectionRuleActions, actionSection.Value, out CollectionRuleActionOptions templateActionOptions);
 
                     ruleOptions.Actions.Add(templateActionOptions);
                 }
@@ -79,7 +78,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 
             if (SectionHasValue(section))
             {
-                TryGetTemplate(ruleOptions, _templateOptions.CollectionRuleTriggers, section.Value, out CollectionRuleTriggerOptions triggerOptions);
+                TryGetTemplate(ruleOptions, nameof(ruleOptions.Trigger), _templateOptions.CollectionRuleTriggers, section.Value, out CollectionRuleTriggerOptions triggerOptions);
 
                 ruleOptions.Trigger = triggerOptions;
             }
@@ -100,7 +99,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
                 // The Section Key is the filter index; the value (if present) is the name of the template
                 if (SectionHasValue(filterSection))
                 {
-                    TryGetTemplate(ruleOptions, _templateOptions.CollectionRuleFilters, filterSection.Value, out ProcessFilterDescriptor templateFilterOptions);
+                    TryGetTemplate(ruleOptions, nameof(ruleOptions.Filters), _templateOptions.CollectionRuleFilters, filterSection.Value, out ProcessFilterDescriptor templateFilterOptions);
 
                     ruleOptions.Filters.Add(templateFilterOptions);
                 }
@@ -121,18 +120,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
 
             if (SectionHasValue(section))
             {
-                TryGetTemplate(ruleOptions, _templateOptions.CollectionRuleLimits, section.Value, out CollectionRuleLimitsOptions limitsOptions);
+                TryGetTemplate(ruleOptions, nameof(ruleOptions.Limits), _templateOptions.CollectionRuleLimits, section.Value, out CollectionRuleLimitsOptions limitsOptions);
 
                 ruleOptions.Limits = limitsOptions;
             }
         }
 
-        private static bool TryGetTemplate<T>(CollectionRuleOptions ruleOptions, IDictionary<string, T> templatesOptions, string templateKey, out T templatesValue) where T : new()
+        private static bool TryGetTemplate<T>(CollectionRuleOptions ruleOptions, string memberName, IDictionary<string, T> templatesOptions, string templateKey, out T templatesValue) where T : new()
         {
             if (!templatesOptions.TryGetValue(templateKey, out templatesValue))
             {
                 templatesValue = new();
-                ruleOptions.ErrorList.Add(new ValidationResult(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_TemplateNotFound, templateKey)));
+                ruleOptions.ErrorList.Add(new ErrorValidationResult(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_TemplateNotFound, templateKey), memberName));
                 return false;
             }
 
