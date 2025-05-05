@@ -43,13 +43,13 @@
       <TestRunName>Windows 11 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
     </HelixAvailableTargetQueue>
     <!-- win-x64 -->
-    <HelixAvailableTargetQueue Include="windows.10.amd64.client$(QueueSuffix)"
+    <HelixAvailableTargetQueue Include="windows.11.amd64.client$(QueueSuffix)"
                                Condition="'$(HelixArchitecture)' == 'x64'">
       <TestRunName>Windows 10 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
     </HelixAvailableTargetQueue>
     <!-- win-x86 -->
     <!-- Windows x64 clients can run dotnet x86 natively -->
-    <HelixAvailableTargetQueue Include="windows.10.amd64.client$(QueueSuffix)"
+    <HelixAvailableTargetQueue Include="windows.11.amd64.client$(QueueSuffix)"
                                Condition="'$(HelixArchitecture)' == 'x86'">
       <TestRunName>Windows 10 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
     </HelixAvailableTargetQueue>
