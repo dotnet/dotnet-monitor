@@ -24,7 +24,9 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
         {
             _exceptionProcessor = new(ToolIdentifiers.IsEnvVarEnabled(InProcessFeaturesIdentifiers.EnvironmentVariables.Exceptions.IncludeMonitorExceptions));
 
-            if (ToolIdentifiers.IsEnvVarEnabled(InProcessFeaturesIdentifiers.EnvironmentVariables.Exceptions.CollectOnStartup))
+            // If collectOnStart is not set, assume the default value (true).
+            string? collectOnStart = Environment.GetEnvironmentVariable(InProcessFeaturesIdentifiers.EnvironmentVariables.Exceptions.CollectOnStartup);
+            if (collectOnStart == null || ToolIdentifiers.IsEnvVarValueEnabled(collectOnStart))
             {
                 _exceptionProcessor.Start();
             }
