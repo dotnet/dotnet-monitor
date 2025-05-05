@@ -74,6 +74,12 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                 validatableInfo = CreateAuthenticationOptions();
                 return true;
             }
+            // https://github.com/dotnet/aspnetcore/issues/61388
+            // if (type == typeof(global::System.Collections.Generic.IDictionary<TKey, TValue>))
+            // {
+            //     validatableInfo = CreateIDictionary`2();
+            //     return true;
+            // }
             if (type == typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.GlobalCounterOptions))
             {
                 validatableInfo = CreateGlobalCounterOptions();
@@ -264,6 +270,12 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                 validatableInfo = CreateCollectLiveMetricsOptions();
                 return true;
             }
+            // https://github.com/dotnet/aspnetcore/issues/61388
+            // if (type == typeof(global::System.Collections.Generic.Dictionary<TKey, TValue>))
+            // {
+            //     validatableInfo = CreateDictionary`2();
+            //     return true;
+            // }
             if (type == typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectLogsOptions))
             {
                 validatableInfo = CreateCollectLogsOptions();
@@ -1174,12 +1186,13 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
             return new GeneratedValidatableTypeInfo(
                 type: typeof(global::System.Guid),
                 members: [
-                    new GeneratedValidatablePropertyInfo(
-                        containingType: typeof(global::System.Guid),
-                        propertyType: typeof(global::System.Guid),
-                        name: "AllBitsSet",
-                        displayName: "AllBitsSet"
-                    ),
+                    // https://github.com/dotnet/aspnetcore/issues/61525
+                    // new GeneratedValidatablePropertyInfo(
+                    //     containingType: typeof(global::System.Guid),
+                    //     propertyType: typeof(global::System.Guid),
+                    //     name: "AllBitsSet",
+                    //     displayName: "AllBitsSet"
+                    // ),
                 ]
             );
         }
@@ -1326,6 +1339,13 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
             return new GeneratedValidatableTypeInfo(
                 type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.BaseRecordOptions),
                 members: [
+                    // https://github.com/dotnet/aspnetcore/issues/61379
+                    // new GeneratedValidatablePropertyInfo(
+                    //     containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.BaseRecordOptions),
+                    //     propertyType: typeof(global::System.Type),
+                    //     name: "EqualityContract",
+                    //     displayName: "EqualityContract"
+                    // ),
                 ]
             );
         }
@@ -1334,6 +1354,13 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
             return new GeneratedValidatableTypeInfo(
                 type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectDumpOptions),
                 members: [
+                    // https://github.com/dotnet/aspnetcore/issues/61379
+                    // new GeneratedValidatablePropertyInfo(
+                    //     containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectDumpOptions),
+                    //     propertyType: typeof(global::System.Type),
+                    //     name: "EqualityContract",
+                    //     displayName: "EqualityContract"
+                    // ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectDumpOptions),
                         propertyType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.Models.DumpType?),
@@ -1354,6 +1381,13 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
             return new GeneratedValidatableTypeInfo(
                 type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectExceptionsOptions),
                 members: [
+                    // https://github.com/dotnet/aspnetcore/issues/61379
+                    // new GeneratedValidatablePropertyInfo(
+                    //     containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectExceptionsOptions),
+                    //     propertyType: typeof(global::System.Type),
+                    //     name: "EqualityContract",
+                    //     displayName: "EqualityContract"
+                    // ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectExceptionsOptions),
                         propertyType: typeof(string),
@@ -1374,6 +1408,13 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
             return new GeneratedValidatableTypeInfo(
                 type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectGCDumpOptions),
                 members: [
+                    // https://github.com/dotnet/aspnetcore/issues/61379
+                    // new GeneratedValidatablePropertyInfo(
+                    //     containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectGCDumpOptions),
+                    //     propertyType: typeof(global::System.Type),
+                    //     name: "EqualityContract",
+                    //     displayName: "EqualityContract"
+                    // ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectGCDumpOptions),
                         propertyType: typeof(string),
@@ -1388,6 +1429,13 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
             return new GeneratedValidatableTypeInfo(
                 type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectLiveMetricsOptions),
                 members: [
+                    // https://github.com/dotnet/aspnetcore/issues/61379
+                    // new GeneratedValidatablePropertyInfo(
+                    //     containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectLiveMetricsOptions),
+                    //     propertyType: typeof(global::System.Type),
+                    //     name: "EqualityContract",
+                    //     displayName: "EqualityContract"
+                    // ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectLiveMetricsOptions),
                         propertyType: typeof(global::System.TimeSpan?),
@@ -1403,11 +1451,51 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
                 ]
             );
         }
+        // https://github.com/dotnet/aspnetcore/issues/61388
+        // private ValidatableTypeInfo CreateDictionary`2()
+        // {
+        //     return new GeneratedValidatableTypeInfo(
+        //         type: typeof(global::System.Collections.Generic.Dictionary<TKey, TValue>),
+        //         members: [
+        //             new GeneratedValidatablePropertyInfo(
+        //                 containingType: typeof(global::System.Collections.Generic.Dictionary<TKey, TValue>),
+        //                 propertyType: typeof(global::System.Collections.Generic.ICollection<TValue>),
+        //                 name: "System.Collections.Generic.IDictionary<TKey,TValue>.Values",
+        //                 displayName: "System.Collections.Generic.IDictionary<TKey,TValue>.Values"
+        //             ),
+        //             new GeneratedValidatablePropertyInfo(
+        //                 containingType: typeof(global::System.Collections.Generic.Dictionary<TKey, TValue>),
+        //                 propertyType: typeof(global::System.Collections.Generic.IEnumerable<TKey>),
+        //                 name: "System.Collections.Generic.IReadOnlyDictionary<TKey,TValue>.Keys",
+        //                 displayName: "System.Collections.Generic.IReadOnlyDictionary<TKey,TValue>.Keys"
+        //             ),
+        //             new GeneratedValidatablePropertyInfo(
+        //                 containingType: typeof(global::System.Collections.Generic.Dictionary<TKey, TValue>),
+        //                 propertyType: typeof(global::System.Collections.Generic.IEnumerable<TValue>),
+        //                 name: "System.Collections.Generic.IReadOnlyDictionary<TKey,TValue>.Values",
+        //                 displayName: "System.Collections.Generic.IReadOnlyDictionary<TKey,TValue>.Values"
+        //             ),
+        //             new GeneratedValidatablePropertyInfo(
+        //                 containingType: typeof(global::System.Collections.Generic.Dictionary<TKey, TValue>),
+        //                 propertyType: typeof(global::System.Collections.ICollection),
+        //                 name: "System.Collections.IDictionary.Values",
+        //                 displayName: "System.Collections.IDictionary.Values"
+        //             ),
+        //         ]
+        //     );
+        // }
         private ValidatableTypeInfo CreateCollectLogsOptions()
         {
             return new GeneratedValidatableTypeInfo(
                 type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectLogsOptions),
                 members: [
+                    // https://github.com/dotnet/aspnetcore/issues/61379
+                    // new GeneratedValidatablePropertyInfo(
+                    //     containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectLogsOptions),
+                    //     propertyType: typeof(global::System.Type),
+                    //     name: "EqualityContract",
+                    //     displayName: "EqualityContract"
+                    // ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectLogsOptions),
                         propertyType: typeof(global::Microsoft.Extensions.Logging.LogLevel?),
@@ -1446,6 +1534,13 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
             return new GeneratedValidatableTypeInfo(
                 type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectStacksOptions),
                 members: [
+                    // https://github.com/dotnet/aspnetcore/issues/61379
+                    // new GeneratedValidatablePropertyInfo(
+                    //     containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectStacksOptions),
+                    //     propertyType: typeof(global::System.Type),
+                    //     name: "EqualityContract",
+                    //     displayName: "EqualityContract"
+                    // ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectStacksOptions),
                         propertyType: typeof(string),
@@ -1460,6 +1555,13 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
             return new GeneratedValidatableTypeInfo(
                 type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.TraceEventFilter),
                 members: [
+                    // https://github.com/dotnet/aspnetcore/issues/61379
+                    // new GeneratedValidatablePropertyInfo(
+                    //     containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.TraceEventFilter),
+                    //     propertyType: typeof(global::System.Type),
+                    //     name: "EqualityContract",
+                    //     displayName: "EqualityContract"
+                    // ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.TraceEventFilter),
                         propertyType: typeof(string),
@@ -1486,6 +1588,13 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
             return new GeneratedValidatableTypeInfo(
                 type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectTraceOptions),
                 members: [
+                    // https://github.com/dotnet/aspnetcore/issues/61379
+                    // new GeneratedValidatablePropertyInfo(
+                    //     containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectTraceOptions),
+                    //     propertyType: typeof(global::System.Type),
+                    //     name: "EqualityContract",
+                    //     displayName: "EqualityContract"
+                    // ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.CollectTraceOptions),
                         propertyType: typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.Models.TraceProfile?),
@@ -1556,6 +1665,13 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
             return new GeneratedValidatableTypeInfo(
                 type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.ExecuteOptions),
                 members: [
+                    // https://github.com/dotnet/aspnetcore/issues/61379
+                    // new GeneratedValidatablePropertyInfo(
+                    //     containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.ExecuteOptions),
+                    //     propertyType: typeof(global::System.Type),
+                    //     name: "EqualityContract",
+                    //     displayName: "EqualityContract"
+                    // ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.ExecuteOptions),
                         propertyType: typeof(string),
@@ -1570,6 +1686,13 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
             return new GeneratedValidatableTypeInfo(
                 type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.GetEnvironmentVariableOptions),
                 members: [
+                    // https://github.com/dotnet/aspnetcore/issues/61379
+                    // new GeneratedValidatablePropertyInfo(
+                    //     containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.GetEnvironmentVariableOptions),
+                    //     propertyType: typeof(global::System.Type),
+                    //     name: "EqualityContract",
+                    //     displayName: "EqualityContract"
+                    // ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.GetEnvironmentVariableOptions),
                         propertyType: typeof(string),
@@ -1584,6 +1707,13 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
             return new GeneratedValidatableTypeInfo(
                 type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.LoadProfilerOptions),
                 members: [
+                    // https://github.com/dotnet/aspnetcore/issues/61379
+                    // new GeneratedValidatablePropertyInfo(
+                    //     containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.LoadProfilerOptions),
+                    //     propertyType: typeof(global::System.Type),
+                    //     name: "EqualityContract",
+                    //     displayName: "EqualityContract"
+                    // ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.LoadProfilerOptions),
                         propertyType: typeof(string),
@@ -1604,6 +1734,13 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
             return new GeneratedValidatableTypeInfo(
                 type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.SetEnvironmentVariableOptions),
                 members: [
+                    // https://github.com/dotnet/aspnetcore/issues/61379
+                    // new GeneratedValidatablePropertyInfo(
+                    //     containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.SetEnvironmentVariableOptions),
+                    //     propertyType: typeof(global::System.Type),
+                    //     name: "EqualityContract",
+                    //     displayName: "EqualityContract"
+                    // ),
                     new GeneratedValidatablePropertyInfo(
                         containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.SetEnvironmentVariableOptions),
                         propertyType: typeof(string),
@@ -2047,9 +2184,14 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
     }
 
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.AspNetCore.Http.ValidationsGenerator, Version=10.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60", "10.0.0.0")]
+    // file static class GeneratedServiceCollectionExtensions
+    // Made internal to allow access within the same assembly
     internal static class GeneratedServiceCollectionExtensions
     {
-        public static global::Microsoft.Extensions.DependencyInjection.IServiceCollection AddValidation(this global::Microsoft.Extensions.DependencyInjection.IServiceCollection services, global::System.Action<ValidationOptions>? configureOptions = null)
+        // [global::System.Runtime.CompilerServices.InterceptsLocationAttribute(1, "o8z0Jzavd3bSTijvzqPfl8tVAQBWYWxpZGF0YWJsZUluZm9SZXNvbHZlci5jcw==")]
+        // Removed InterceptsLocation since we are calling the extension method directly from a checked-in copy of the
+        // generated code, and interceptors are not designed for use in checked-in code.
+        public static global::Microsoft.Extensions.DependencyInjection.IServiceCollection AddValidation(this global::Microsoft.Extensions.DependencyInjection.IServiceCollection services, global::System.Action<global::Microsoft.AspNetCore.Http.Validation.ValidationOptions>? configureOptions = null)
         {
             // Use non-extension method to avoid infinite recursion.
             return global::Microsoft.Extensions.DependencyInjection.ValidationServiceCollectionExtensions.AddValidation(services, options =>
@@ -2076,39 +2218,13 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
             var key = new CacheKey(containingType, propertyName);
             return _cache.GetOrAdd(key, static k =>
             {
-                var results = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationAttribute>();
-
-                // Get attributes from the property
                 var property = k.ContainingType.GetProperty(k.PropertyName);
-                if (property != null)
+                if (property == null)
                 {
-                    var propertyAttributes = global::System.Reflection.CustomAttributeExtensions
-                        .GetCustomAttributes<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(property, inherit: true);
-
-                    results.AddRange(propertyAttributes);
+                    return [];
                 }
 
-                // Check constructors for parameters that match the property name
-                // to handle record scenarios
-                foreach (var constructor in k.ContainingType.GetConstructors())
-                {
-                    // Look for parameter with matching name (case insensitive)
-                    var parameter = global::System.Linq.Enumerable.FirstOrDefault(
-                        constructor.GetParameters(),
-                        p => string.Equals(p.Name, k.PropertyName, global::System.StringComparison.OrdinalIgnoreCase));
-
-                    if (parameter != null)
-                    {
-                        var paramAttributes = global::System.Reflection.CustomAttributeExtensions
-                            .GetCustomAttributes<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(parameter, inherit: true);
-
-                        results.AddRange(paramAttributes);
-
-                        break;
-                    }
-                }
-
-                return results.ToArray();
+                return [.. global::System.Reflection.CustomAttributeExtensions.GetCustomAttributes<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(property, inherit: true)];
             });
         }
     }
