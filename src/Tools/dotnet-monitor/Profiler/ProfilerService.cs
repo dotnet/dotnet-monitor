@@ -84,17 +84,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
 
                     // Currently this is a no-op but ideally will interrupt all callstack collections
                     await _profilerChannel.SendMessage(endpointInfo,
-                        new JsonProfilerMessage((ushort)CommandSet.Profiler, (ushort)ProfilerCommand.StopAllFeatures, new EmptyPayload()),
+                        new CommandOnlyProfilerMessage(ProfilerCommand.StopAllFeatures),
                         cancellationToken, ResetTimeout);
                     await _profilerChannel.SendMessage(endpointInfo,
-                        new JsonProfilerMessage((ushort)CommandSet.Profiler, (ushort)ProfilerCommand.StartAllFeatures, new EmptyPayload()),
+                        new CommandOnlyProfilerMessage(ProfilerCommand.StartAllFeatures),
                         cancellationToken, ResetTimeout);
 
                     if (_inProcessFeatures.IsStartupHookRequired)
                     {
                         // This will stop all exception pipelines from collecting data and request all parameter captures to be uninstrumented
                         await _profilerChannel.SendMessage(endpointInfo,
-                            new JsonProfilerMessage((ushort)CommandSet.StartupHook, (ushort)StartupHookCommand.StopAllFeatures, new EmptyPayload()),
+                            new CommandOnlyProfilerMessage(StartupHookCommand.StopAllFeatures),
                             cancellationToken, ResetTimeout);
 
                         //CONSIDER Currently this is granular enough because only exceptions really need starts. If that changes, we will need to be more verbose about
@@ -102,7 +102,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
                         if (_inProcessFeatures.CollectExceptionsOnStartup)
                         {
                             await _profilerChannel.SendMessage(endpointInfo,
-                                new JsonProfilerMessage((ushort)CommandSet.StartupHook, (ushort)StartupHookCommand.StartAllFeatures, new EmptyPayload()),
+                                new CommandOnlyProfilerMessage(StartupHookCommand.StartAllFeatures),
                                 cancellationToken, ResetTimeout);
                         }
                     }

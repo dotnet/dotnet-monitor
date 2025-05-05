@@ -214,8 +214,9 @@ HRESULT CommandServer::Shutdown(std::shared_ptr<IpcCommClient> client)
     if (FAILED(hr))
     {
         _logger->Log(LogLevel::Warning, _LS("Unexpected error during shutdown: 0x%08x"), hr);
+        return hr;
     }
-    return hr;
+    return S_OK;
 }
 
 void CommandServer::ProcessingThread(BlockingQueue<CallbackInfo>& queue)
