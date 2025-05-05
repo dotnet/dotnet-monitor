@@ -781,6 +781,6 @@
     <comment>The description provided for the ManagedEntryPointAssemblyName parameter on ProcessFilterDescriptor.</comment>
   </data>
   <data name="DisplayAttributeDescription_ExceptionsOptions_CollectOnStartup" xml:space="preserve">
-    <value>True if exception collection should begin immediately</value>
+    <value>[Experimental] Determines if exception collection should begin immediately</value>
   </data>
 </root>
