@@ -9,8 +9,6 @@
 //------------------------------------------------------------------------------
 #nullable enable
 
-using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
-
 namespace System.Runtime.CompilerServices
 {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.AspNetCore.Http.ValidationsGenerator, Version=10.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60", "10.0.0.0")]
@@ -647,6 +645,13 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
             return new GeneratedValidatableTypeInfo(
                 type: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.BaseRecordOptions),
                 members: [
+                    // https://github.com/dotnet/aspnetcore/issues/61379
+                    // new GeneratedValidatablePropertyInfo(
+                    //     containingType: typeof(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions.BaseRecordOptions),
+                    //     propertyType: typeof(global::System.Type),
+                    //     name: "EqualityContract",
+                    //     displayName: "EqualityContract"
+                    // ),
                 ]
             );
         }
@@ -654,7 +659,15 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
         {
             return new GeneratedValidatableTypeInfo(
                 type: typeof(global::Microsoft.Diagnostics.Monitoring.TestCommon.PassThroughOptions),
-                members: []
+                members: [
+                    // https://github.com/dotnet/aspnetcore/issues/61379
+                    // new GeneratedValidatablePropertyInfo(
+                    //     containingType: typeof(global::Microsoft.Diagnostics.Monitoring.TestCommon.PassThroughOptions),
+                    //     propertyType: typeof(global::System.Type),
+                    //     name: "EqualityContract",
+                    //     displayName: "EqualityContract"
+                    // ),
+                ]
             );
         }
         private ValidatableTypeInfo CreateTestValidatableTypes()
@@ -674,6 +687,8 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
 
     }
 
+    // Added internal wrapper to let the generated extension method be accessed from test code
+    // without conflicting with GeneratedServiceCollectionExtensions in product code.
     internal static class TestGeneratedServiceCollectionExtensions
     {
         public static global::Microsoft.Extensions.DependencyInjection.IServiceCollection AddValidation(global::Microsoft.Extensions.DependencyInjection.IServiceCollection services)
@@ -685,13 +700,15 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.AspNetCore.Http.ValidationsGenerator, Version=10.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60", "10.0.0.0")]
     file static class GeneratedServiceCollectionExtensions
     {
-        public static global::Microsoft.Extensions.DependencyInjection.IServiceCollection AddValidation(this global::Microsoft.Extensions.DependencyInjection.IServiceCollection services, global::System.Action<global::Microsoft.AspNetCore.Http.Validation.ValidationOptions>? configureOptions = null)
+        // [global::System.Runtime.CompilerServices.InterceptsLocationAttribute(1, "8vl1G447Wi3Pc94851ZKGx+IAABWYWxpZGF0YWJsZUluZm9SZXNvbHZlci5jcw==")]
+        // Removed InterceptsLocation since we are calling the extension method directly from a checked-in copy of the
+        // generated code, and interceptors are not designed for use in checked-in code.
+        public static global::Microsoft.Extensions.DependencyInjection.IServiceCollection AddValidation(this global::Microsoft.Extensions.DependencyInjection.IServiceCollection services, global::System.Action<ValidationOptions>? configureOptions = null)
         {
             // Use non-extension method to avoid infinite recursion.
             return global::Microsoft.Extensions.DependencyInjection.ValidationServiceCollectionExtensions.AddValidation(services, options =>
             {
                 options.Resolvers.Insert(0, new GeneratedValidatableInfoResolver());
-                options.Resolvers.Add(new CustomValidatableInfoResolver());
                 if (configureOptions is not null)
                 {
                     configureOptions(options);
@@ -713,39 +730,13 @@ namespace Microsoft.AspNetCore.Http.Validation.Generated
             var key = new CacheKey(containingType, propertyName);
             return _cache.GetOrAdd(key, static k =>
             {
-            var results = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationAttribute>();
-
-            // Get attributes from the property
                 var property = k.ContainingType.GetProperty(k.PropertyName);
-            if (property != null)
+                if (property == null)
                 {
-                var propertyAttributes = global::System.Reflection.CustomAttributeExtensions
-                    .GetCustomAttributes<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(property, inherit: true);
-
-                results.AddRange(propertyAttributes);
+                    return [];
                 }
 
-            // Check constructors for parameters that match the property name
-            // to handle record scenarios
-            foreach (var constructor in k.ContainingType.GetConstructors())
-            {
-                // Look for parameter with matching name (case insensitive)
-                var parameter = global::System.Linq.Enumerable.FirstOrDefault(
-                    constructor.GetParameters(),
-                    p => string.Equals(p.Name, k.PropertyName, global::System.StringComparison.OrdinalIgnoreCase));
-
-                if (parameter != null)
-                {
-                    var paramAttributes = global::System.Reflection.CustomAttributeExtensions
-                        .GetCustomAttributes<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(parameter, inherit: true);
-
-                    results.AddRange(paramAttributes);
-
-                    break;
-                }
-            }
-
-            return results.ToArray();
+                return [.. global::System.Reflection.CustomAttributeExtensions.GetCustomAttributes<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(property, inherit: true)];
             });
         }
     }
