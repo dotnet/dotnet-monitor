@@ -33,7 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Test that the pipeline works with the Startup trigger.
         /// </summary>
         [Theory]
-        [MemberData(nameof(GetTfmsSupportingPortListener))]
+        [MemberData(nameof(ActionTestsHelper.GetTfms), MemberType = typeof(ActionTestsHelper))]
         public Task CollectionRulePipeline_StartupTriggerTest(TargetFrameworkMoniker appTfm)
         {
             CallbackActionService callbackService = new(_outputHelper);
@@ -101,7 +101,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Test that the pipeline works with the EventCounter trigger.
         /// </summary>
         [Theory(Skip = "Nondeterministic")]
-        [MemberData(nameof(GetTfmsSupportingPortListener))]
+        [MemberData(nameof(ActionTestsHelper.GetTfms), MemberType = typeof(ActionTestsHelper))]
         public Task CollectionRulePipeline_EventCounterTriggerTest(TargetFrameworkMoniker appTfm)
         {
             CallbackActionService callbackService = new(_outputHelper);
@@ -364,7 +364,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Test that the CollectionRulePipeline completes to due to rule duration limit.
         /// </summary>
         [Theory]
-        [MemberData(nameof(GetTfmsSupportingPortListener))]
+        [MemberData(nameof(ActionTestsHelper.GetTfms), MemberType = typeof(ActionTestsHelper))]
         public Task CollectionRulePipeline_DurationLimitTest(TargetFrameworkMoniker appTfm)
         {
             ManualTriggerService triggerService = new();
@@ -405,7 +405,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Test that the CollectionRulePipeline completes to due to action count limit.
         /// </summary>
         [Theory]
-        [MemberData(nameof(GetTfmsSupportingPortListener))]
+        [MemberData(nameof(ActionTestsHelper.GetTfms), MemberType = typeof(ActionTestsHelper))]
         public Task CollectionRulePipeline_ActionCountLimitUnlimitedDurationTest(TargetFrameworkMoniker appTfm)
         {
             const int ExpectedActionExecutionCount = 3;
@@ -468,7 +468,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         /// Test that the CollectionRulePipeline throttles actions when action count limit is reached within window.
         /// </summary>
         [Theory]
-        [MemberData(nameof(GetTfmsSupportingPortListener))]
+        [MemberData(nameof(ActionTestsHelper.GetTfms), MemberType = typeof(ActionTestsHelper))]
         public Task CollectionRulePipeline_ActionCountLimitSlidingDurationTest(TargetFrameworkMoniker appTfm)
         {
             const int IterationCount = 5;
@@ -570,14 +570,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 service.NotifyTriggerSubscribers();
                 await Task.Delay(TimeSpan.FromMilliseconds(100));
             }
-        }
-
-        public static IEnumerable<object[]> GetTfmsSupportingPortListener()
-        {
-            yield return new object[] { TargetFrameworkMoniker.Net60 };
-            yield return new object[] { TargetFrameworkMoniker.Net70 };
-            yield return new object[] { TargetFrameworkMoniker.Net80 };
-            yield return new object[] { TargetFrameworkMoniker.Net90 };
         }
 
         public static IEnumerable<object[]> GetCurrentTfm()

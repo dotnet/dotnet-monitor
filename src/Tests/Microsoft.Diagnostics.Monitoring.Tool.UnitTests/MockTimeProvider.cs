@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
-#if !NET8_0_OR_GREATER
-#endif
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {

@@ -23,7 +23,13 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
         public DiagnosticsBootstrapper()
         {
             _exceptionProcessor = new(ToolIdentifiers.IsEnvVarEnabled(InProcessFeaturesIdentifiers.EnvironmentVariables.Exceptions.IncludeMonitorExceptions));
-            _exceptionProcessor.Start();
+
+            // If collectOnStart is not set, assume the default value (true).
+            string? collectOnStart = Environment.GetEnvironmentVariable(InProcessFeaturesIdentifiers.EnvironmentVariables.Exceptions.CollectOnStartup);
+            if (collectOnStart == null || ToolIdentifiers.IsEnvVarValueEnabled(collectOnStart))
+            {
+                _exceptionProcessor.Start();
+            }
 
             using IDisposable _ = MonitorExecutionContextTracker.MonitorScope();
 
@@ -35,6 +41,17 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook
                     SharedInternals.MessageDispatcher = new MessageDispatcher.MonitorMessageDispatcher(
                         new MessageDispatcher.ProfilerMessageSource(CommandSet.StartupHook));
                     ToolIdentifiers.EnableEnvVar(InProcessFeaturesIdentifiers.EnvironmentVariables.AvailableInfrastructure.ManagedMessaging);
+
+                    SharedInternals.MessageDispatcher.RegisterCallback<EmptyPayload>(StartupHookCommand.StopAllFeatures, (IpcMessage) =>
+                    {
+                        _exceptionProcessor.Stop();
+                        _parameterCapturingService?.RequestStopAll();
+                    });
+
+                    SharedInternals.MessageDispatcher.RegisterCallback<EmptyPayload>(StartupHookCommand.StartAllFeatures, (IpcMessage) =>
+                    {
+                        _exceptionProcessor.Start();
+                    });
                 }
 
                 if (ToolIdentifiers.IsEnvVarEnabled(InProcessFeaturesIdentifiers.EnvironmentVariables.ParameterCapturing.Enable))

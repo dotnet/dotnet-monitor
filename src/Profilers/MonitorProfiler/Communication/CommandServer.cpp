@@ -40,8 +40,8 @@ HRESULT CommandServer::Start(
 
     IfFailLogRet_(_logger, _server.Bind(path));
     _listeningThread = std::thread(&CommandServer::ListeningThread, this);
-    _clientThread = std::thread(&CommandServer::ClientProcessingThread, this);
-    _unmanagedOnlyThread = std::thread(&CommandServer::UnmanagedOnlyProcessingThread, this);
+    _clientThread = std::thread(&CommandServer::ProcessingThread, this, std::ref(_clientQueue));
+    _unmanagedOnlyThread = std::thread(&CommandServer::ProcessingThread, this, std::ref(_unmanagedOnlyQueue));
     return S_OK;
 }
 
@@ -80,10 +80,9 @@ void CommandServer::ListeningThread()
         IpcMessage message;
 
         //Note this can timeout if the client doesn't send anything
-        hr = client->Receive(message);
+        hr = ReceiveMessage(client, message);
         if (FAILED(hr))
         {
-            _logger->Log(LogLevel::Error, _LS("Unexpected error when receiving data: 0x%08x"), hr);
             // Best-effort shutdown, ignore the result.
             client->Shutdown();
             continue;
@@ -94,41 +93,133 @@ void CommandServer::ListeningThread()
         if (FAILED(hr))
         {
             _logger->Log(LogLevel::Error, _LS("Failed to validate message: 0x%08x"), hr);
-            doEnqueueMessage = false;
+            *reinterpret_cast<HRESULT*>(response.Payload.data()) = hr;
+            SendMessage(client, response);
+            Shutdown(client);
+            continue;
         }
 
-        *reinterpret_cast<HRESULT*>(response.Payload.data()) = hr;
-
-        hr = client->Send(response);
-        if (FAILED(hr))
+        if (!IsControlCommand(message))
         {
-            _logger->Log(LogLevel::Error, _LS("Unexpected error when sending data: 0x%08x"), hr);
-            doEnqueueMessage = false;
+            ProcessMessage(message, client);
         }
-
-        hr = client->Shutdown();
-        if (FAILED(hr))
+        else
         {
-            _logger->Log(LogLevel::Warning, _LS("Unexpected error during shutdown: 0x%08x"), hr);
-            // Not fatal, keep processing the message
-        }
-
-        if (doEnqueueMessage)
-        {
-            bool unmanagedOnly = false;
-            if (SUCCEEDED(_unmanagedOnlyCallback(message.CommandSet, unmanagedOnly)) && unmanagedOnly)
-            {
-                _unmanagedOnlyQueue.Enqueue(message);
-            }
-            else
-            {
-                _clientQueue.Enqueue(message);
-            }
+            ProcessResetMessage(message, client);
         }
     }
 }
 
-void CommandServer::ClientProcessingThread()
+void CommandServer::ProcessMessage(const IpcMessage& message, std::shared_ptr<IpcCommClient> client)
+{
+    IpcMessage response;
+    response.CommandSet = static_cast<unsigned short>(CommandSet::ServerResponse);
+    response.Command = static_cast<unsigned short>(ServerResponseCommand::Status);
+    response.Payload.resize(sizeof(HRESULT));
+
+    *reinterpret_cast<HRESULT*>(response.Payload.data()) = S_OK;
+    SendMessage(client, response);
+    Shutdown(client);
+
+    CallbackInfo info;
+    info.Message = message;
+    bool unmanagedOnly = false;
+    if (SUCCEEDED(_unmanagedOnlyCallback(info.Message.CommandSet, unmanagedOnly)) && unmanagedOnly)
+    {
+        _unmanagedOnlyQueue.Enqueue(info);
+    }
+    else
+    {
+        _clientQueue.Enqueue(info);
+    }
+}
+
+void CommandServer::ProcessResetMessage(const IpcMessage& message, std::shared_ptr<IpcCommClient> client)
+{
+    IpcMessage response;
+    response.CommandSet = static_cast<unsigned short>(CommandSet::ServerResponse);
+    response.Command = static_cast<unsigned short>(ServerResponseCommand::Status);
+    response.Payload.resize(sizeof(HRESULT));
+
+    HRESULT hr = S_OK;
+
+    if (message.CommandSet == static_cast<unsigned short>(CommandSet::Profiler))
+    {
+        CallbackInfo nativeCallbackInfo;
+
+        CreateControlMessage(CommandSet::Profiler, message.Command, nativeCallbackInfo);
+
+        _unmanagedOnlyQueue.Enqueue(nativeCallbackInfo);
+
+        hr = nativeCallbackInfo.CompletionPromise->get_future().get();
+    }
+    if (message.CommandSet == static_cast<unsigned short>(CommandSet::StartupHook))
+    {
+        CallbackInfo managedCallbackInfo;
+
+        CreateControlMessage(CommandSet::StartupHook, message.Command, managedCallbackInfo);
+
+        _clientQueue.Enqueue(managedCallbackInfo);
+
+        hr = managedCallbackInfo.CompletionPromise->get_future().get();
+    }
+
+    *reinterpret_cast<HRESULT*>(response.Payload.data()) = hr;
+    SendMessage(client, response);
+    Shutdown(client);
+}
+
+bool CommandServer::IsControlCommand(const IpcMessage& message)
+{
+    switch (message.CommandSet) {
+        case static_cast<int>(CommandSet::Profiler):
+            switch (message.Command)
+            {
+                case static_cast<int>(ProfilerCommand::StartAllFeatures):
+                case static_cast<int>(ProfilerCommand::StopAllFeatures):
+                    return true;
+                default:
+                    return false;
+            }
+        case static_cast<int>(CommandSet::StartupHook):
+            switch (message.Command) {
+                case static_cast<int>(StartupHookCommand::StartAllFeatures):
+                case static_cast<int>(StartupHookCommand::StopAllFeatures):
+                    return true;
+                default:
+                    return false;
+            }
+        default:
+            return false;
+    }
+}
+
+HRESULT CommandServer::ReceiveMessage(std::shared_ptr<IpcCommClient> client, IpcMessage& message)
+{
+    HRESULT hr;
+    IfFailLogRet_(_logger, client->Receive(message));
+    return S_OK;
+}
+
+HRESULT CommandServer::SendMessage(std::shared_ptr<IpcCommClient> client, const IpcMessage& message)
+{
+    HRESULT hr;
+    IfFailLogRet_(_logger, client->Send(message));
+    return S_OK;
+}
+
+HRESULT CommandServer::Shutdown(std::shared_ptr<IpcCommClient> client)
+{
+    HRESULT hr = client->Shutdown();
+    if (FAILED(hr))
+    {
+        _logger->Log(LogLevel::Warning, _LS("Unexpected error during shutdown: 0x%08x"), hr);
+        return hr;
+    }
+    return S_OK;
+}
+
+void CommandServer::ProcessingThread(BlockingQueue<CallbackInfo>& queue)
 {
     HRESULT hr = _profilerInfo->InitializeCurrentThread();
 
@@ -140,47 +231,23 @@ void CommandServer::ClientProcessingThread()
 
     while (true)
     {
-        IpcMessage message;
-        hr = _clientQueue.BlockingDequeue(message);
+        CallbackInfo info;
+        hr = queue.BlockingDequeue(info);
         if (hr != S_OK)
         {
             //We are complete, discard all messages
             break;
         }
 
-        // DispatchMessage in the callback serializes all callbacks.
-        hr = _callback(message);
+        hr = _callback(info.Message);
         if (hr != S_OK)
         {
             _logger->Log(LogLevel::Warning, _LS("IpcMessage callback failed: 0x%08x"), hr);
         }
-    }
-}
 
-void CommandServer::UnmanagedOnlyProcessingThread()
-{
-    HRESULT hr = _profilerInfo->InitializeCurrentThread();
-
-    if (FAILED(hr))
-    {
-        _logger->Log(LogLevel::Error, _LS("Unable to initialize thread: 0x%08x"), hr);
-        return;
-    }
-
-    while (true)
-    {
-        IpcMessage message;
-        hr = _unmanagedOnlyQueue.BlockingDequeue(message);
-        if (hr != S_OK)
+        if (info.CompletionPromise)
         {
-            // We are complete, discard all messages
-            break;
-        }
-
-        hr = _callback(message);
-        if (hr != S_OK)
-        {
-            _logger->Log(LogLevel::Warning, _LS("IpcMessage callback failed: 0x%08x"), hr);
+            info.CompletionPromise->set_value(hr);
         }
     }
 }
