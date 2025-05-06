@@ -27,5 +27,11 @@ namespace Microsoft.Diagnostics.Monitoring.Options
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ExceptionsOptions_CollectionFilters))]
         public ExceptionsConfiguration? CollectionFilters { get; set; }
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_ExceptionsOptions_CollectOnStartup))]
+        [DefaultValue(ExceptionsOptionsDefaults.CollectOnStartup)]
+        public bool? CollectOnStartup { get; set; }
     }
 }

@@ -928,6 +928,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to True if exception collection should begin immediately.
+        /// </summary>
+        public static string DisplayAttributeDescription_ExceptionsOptions_CollectOnStartup {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_ExceptionsOptions_CollectOnStartup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enables or disables the exceptions feature. By default, this feature is enabled if in-process features are enabled..
         /// </summary>
         public static string DisplayAttributeDescription_ExceptionsOptions_Enabled {

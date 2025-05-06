@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.Diagnostics.Monitoring;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Diagnostics.Tools.Monitor.LibrarySharing;
@@ -36,19 +37,23 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
         private readonly ISharedLibraryService _sharedLibraryService;
         private readonly IOptions<StorageOptions> _storageOptions;
         private readonly ILogger<ProfilerService> _logger;
+        private readonly ProfilerChannel _profilerChannel;
 
         private readonly TimeSpan AttachTimeout = TimeSpan.FromSeconds(10);
+        private readonly TimeSpan ResetTimeout = TimeSpan.FromSeconds(20);
 
         public ProfilerService(
             ISharedLibraryService sharedLibraryService,
             IOptions<StorageOptions> storageOptions,
             IInProcessFeatures inProcessFeatures,
-            ILogger<ProfilerService> logger)
+            ILogger<ProfilerService> logger,
+            ProfilerChannel profilerChannel)
         {
             _inProcessFeatures = inProcessFeatures;
             _logger = logger;
             _sharedLibraryService = sharedLibraryService;
             _storageOptions = storageOptions;
+            _profilerChannel = profilerChannel;
         }
 
         public async Task ApplyProfilersAsync(IEndpointInfo endpointInfo, CancellationToken cancellationToken)
@@ -68,7 +73,44 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
             {
                 DiagnosticsClient client = new DiagnosticsClient(endpointInfo.Endpoint);
 
-                string runtimeIdentifier = await CalculateRuntimeIdentifierAsync(client, cancellationToken);
+                Dictionary<string, string> env = await client.GetProcessEnvironmentAsync(cancellationToken);
+
+                // TODO Ideally we would detect that dotnet-monitor was disconnected and cleanup inproc collection
+                // TODO Configuration changes across dotnet-monitor may not be respected if profiler feature are already installed
+                // For example, parameter capture is on, but new config says it's off.
+                if (env.TryGetValue(ProfilerIdentifiers.EnvironmentVariables.RuntimeInstanceId, out string? runtimeInstanceId))
+                {
+                    // Profiler already applied. We will reset state to discard all previous data collection.
+
+                    // Currently this is a no-op but ideally will interrupt all callstack collections
+                    await _profilerChannel.SendMessage(endpointInfo,
+                        new CommandOnlyProfilerMessage(ProfilerCommand.StopAllFeatures),
+                        cancellationToken, ResetTimeout);
+                    await _profilerChannel.SendMessage(endpointInfo,
+                        new CommandOnlyProfilerMessage(ProfilerCommand.StartAllFeatures),
+                        cancellationToken, ResetTimeout);
+
+                    if (_inProcessFeatures.IsStartupHookRequired)
+                    {
+                        // This will stop all exception pipelines from collecting data and request all parameter captures to be uninstrumented
+                        await _profilerChannel.SendMessage(endpointInfo,
+                            new CommandOnlyProfilerMessage(StartupHookCommand.StopAllFeatures),
+                            cancellationToken, ResetTimeout);
+
+                        //CONSIDER Currently this is granular enough because only exceptions really need starts. If that changes, we will need to be more verbose about
+                        // which features need to be started rather than 1 stop/start for the entire command set.
+                        if (_inProcessFeatures.CollectExceptionsOnStartup)
+                        {
+                            await _profilerChannel.SendMessage(endpointInfo,
+                                new CommandOnlyProfilerMessage(StartupHookCommand.StartAllFeatures),
+                                cancellationToken, ResetTimeout);
+                        }
+                    }
+
+                    return;
+                }
+
+                string runtimeIdentifier = await CalculateRuntimeIdentifierAsync(env, client, cancellationToken);
 
                 IFileProviderFactory fileProviderFactory = await _sharedLibraryService.GetFactoryAsync(cancellationToken);
                 IFileProvider nativeFileProvider = fileProviderFactory.CreateNative(runtimeIdentifier);
@@ -110,10 +152,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Profiler
             }
         }
 
-        private async Task<string> CalculateRuntimeIdentifierAsync(DiagnosticsClient client, CancellationToken cancellationToken)
+        private async Task<string> CalculateRuntimeIdentifierAsync(IReadOnlyDictionary<string, string> env, DiagnosticsClient client, CancellationToken cancellationToken)
         {
-            Dictionary<string, string> env = await client.GetProcessEnvironmentAsync(cancellationToken);
-
             string runtimeIdentifierSource = RuntimeIdentifierSource.ProcessEnvironment;
             if (!env.TryGetValue(ToolIdentifiers.EnvironmentVariables.RuntimeIdentifier, out string? runtimeIdentifier))
             {
