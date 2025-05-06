@@ -33,6 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
             Exception thrownException = new();
             using (CurrentAppDomainFirstChanceExceptionSource source = new())
             {
+                source.Start();
                 source.ExceptionAvailable += CreateHandler(reportedExceptions);
                 try
                 {
@@ -54,6 +55,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
 
             using (CurrentAppDomainFirstChanceExceptionSource source = new())
             {
+                source.Start();
                 source.ExceptionAvailable += CreateHandler(reportedExceptions);
             }
 
@@ -86,6 +88,7 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
             Exception thrownException = new();
             using (CurrentAppDomainFirstChanceExceptionSource source = new())
             {
+                source.Start();
                 source.ExceptionAvailable += handler;
                 try
                 {

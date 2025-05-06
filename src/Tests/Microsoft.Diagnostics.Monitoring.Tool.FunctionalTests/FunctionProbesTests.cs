@@ -15,13 +15,6 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-#if !NET7_0_OR_GREATER
-using Microsoft.Diagnostics.Monitoring.TestCommon.Options;
-using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
-using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.Extensions.Logging;
-#endif
-
 namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 {
     [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
@@ -62,11 +55,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             return arguments;
         }
 
-#if !NET7_0_OR_GREATER
-        [Theory(Skip ="This test installs the mutating profiler which is not enabled on net6 or lower.")]
-#else
         [Theory]
-#endif
         [MemberData(nameof(FunctionProbesTests.GetAllTestScenarios), MemberType = typeof(FunctionProbesTests))]
         public async Task RunTestScenario(Architecture targetArchitecture, string subScenario)
         {
@@ -92,33 +81,5 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             Assert.Equal(0, appRunner.ExitCode);
         }
-
-#if !NET7_0_OR_GREATER
-        [Theory]
-        [MemberData(nameof(ProfilerHelper.GetArchitecture), MemberType = typeof(ProfilerHelper))]
-        public async Task ValidateProfilerIsNotInstalledOnNet6(Architecture targetArchitecture)
-        {
-            await ScenarioRunner.SingleTarget(
-                _outputHelper,
-                _httpClientFactory,
-                DiagnosticPortConnectionMode.Listen,
-                TestAppScenarios.FunctionProbes.Name,
-                appValidate: (runner, client) => { return Task.CompletedTask; },
-                configureApp: runner =>
-                {
-                    runner.Architecture = targetArchitecture;
-                },
-                configureTool: runner =>
-                {
-                    runner.ConfigurationFromEnvironment.EnableInProcessFeatures();
-                    runner.ConfigurationFromEnvironment.InProcessFeatures.ParameterCapturing = new()
-                    {
-                        Enabled = true
-                    };
-                },
-                profilerLogLevel: LogLevel.Trace,
-                subScenarioName: TestAppScenarios.FunctionProbes.SubScenarios.ValidateNoMutatingProfiler);
-        }
-#endif // NET7_0_OR_GREATER
     }
 }

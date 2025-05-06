@@ -35,5 +35,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public bool IsStartupHookRequired => IsParameterCapturingEnabled || IsExceptionsEnabled;
 
         public bool IsLibrarySharingRequired => IsProfilerRequired || IsStartupHookRequired;
+
+        public bool CollectExceptionsOnStartup => _exceptionsOptions.CollectOnStartup();
     }
 }

@@ -133,7 +133,7 @@ if ($null -ne $properties) {
 
 if (!(Test-Path $ManifestPath))
 {
-    Write-Error "Error: unable to find maifest at $ManifestPath."
+    Write-Error "Error: unable to find manifest at $ManifestPath."
     exit 1
 }
 
