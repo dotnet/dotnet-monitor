@@ -892,6 +892,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 toolRunner.DiagnosticPortPath = diagnosticPortPath;
                 toolRunner.DisableAuthentication = true;
                 toolRunner.ConfigurationFromEnvironment.EnableInProcessFeatures();
+                toolRunner.ConfigurationFromEnvironment.DiagnosticPort = new DiagnosticPortOptions
+                {
+                    DeleteEndpointOnStartup = true
+                };
 
                 await toolRunner.StartAsync();
                 HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
