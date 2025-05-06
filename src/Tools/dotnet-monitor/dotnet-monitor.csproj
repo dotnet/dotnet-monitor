@@ -9,8 +9,9 @@
     <ServerGarbageCollection>false</ServerGarbageCollection>
     <OpenApiGenerateDocuments>false</OpenApiGenerateDocuments>
     <Nullable>enable</Nullable>
-    <EnableConfigurationBindingGenerator>true</EnableConfigurationBindingGenerator>
+    <EnableConfigurationBindingGenerator>false</EnableConfigurationBindingGenerator>
     <DisableCompileTimeOpenApiXmlGenerator>true</DisableCompileTimeOpenApiXmlGenerator>
+    <InterceptorsNamespaces>$(InterceptorsNamespaces);Microsoft.Extensions.Configuration.Binder.SourceGeneration</InterceptorsNamespaces>
   </PropertyGroup>
 
   <ItemGroup>
