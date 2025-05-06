@@ -27,6 +27,13 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             _storageOptions = storageOptions;
         }
 
+        public async Task SendMessage(IEndpointInfo endpointInfo, IProfilerMessage message, CancellationToken token, TimeSpan timeout)
+        {
+            using CancellationTokenSource cancellationTokenSource = new(timeout);
+            using CancellationTokenSource linkedCts = CancellationTokenSource.CreateLinkedTokenSource(token, cancellationTokenSource.Token);
+            await SendMessage(endpointInfo, message, linkedCts.Token);
+        }
+
         public async Task SendMessage(IEndpointInfo endpointInfo, IProfilerMessage message, CancellationToken token)
         {
             if (message.Payload.Length > MaxPayloadSize)

@@ -1123,6 +1123,14 @@
               "$ref": "#/definitions/ExceptionsConfiguration"
             }
           ]
+        },
+        "CollectOnStartup": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "[Experimental] Determines if exception collection should begin immediately",
+          "default": true
         }
       }
     },
