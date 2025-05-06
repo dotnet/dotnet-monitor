@@ -68,6 +68,9 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             Command hiddenFramesExceptionCommand = new(TestAppScenarios.Exceptions.SubScenarios.HiddenFramesExceptionCommand);
             hiddenFramesExceptionCommand.SetAction(HiddenFramesExceptionAsync);
 
+            Command multiPhaseCommand = new(TestAppScenarios.Exceptions.SubScenarios.MultiPhase);
+            multiPhaseCommand.SetAction(MultiPhase);
+
             Command scenarioCommand = new(TestAppScenarios.Exceptions.Name);
             scenarioCommand.Subcommands.Add(singleExceptionCommand);
             scenarioCommand.Subcommands.Add(multipleExceptionsCommand);
@@ -86,6 +89,7 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
             scenarioCommand.Subcommands.Add(aggregateExceptionCommand);
             scenarioCommand.Subcommands.Add(reflectionTypeLoadExceptionCommand);
             scenarioCommand.Subcommands.Add(hiddenFramesExceptionCommand);
+            scenarioCommand.Subcommands.Add(multiPhaseCommand);
             return scenarioCommand;
         }
 
@@ -99,6 +103,23 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios
 
                 await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.End, logger);
 
+                return 0;
+            }, token);
+        }
+
+        public static Task<int> MultiPhase(ParseResult result, CancellationToken token)
+        {
+            return ScenarioHelpers.RunScenarioAsync(async logger =>
+            {
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.Begin, logger);
+                ThrowAndCatchInvalidOperationException();
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.End, logger);
+
+                // This subscenario is designed for a situation where the tool runner is terminated and restarted.
+
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.Begin, logger);
+                ThrowAndCatchInvalidOperationException();
+                await ScenarioHelpers.WaitForCommandAsync(TestAppScenarios.Exceptions.Commands.End, logger);
                 return 0;
             }, token);
         }
