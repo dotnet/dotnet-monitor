@@ -8,6 +8,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Binder.SourceGeneration;
 using System;
 using System.Globalization;
 using System.Linq;
@@ -71,7 +72,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         public bool TryBindOptions(IConfigurationSection settingsSection, out object? settings)
         {
             var options = new AspNetResponseStatusOptions();
-            settingsSection.Bind(options);
+            settingsSection.Bind_AspNetResponseStatusOptions(options);
             settings = options;
             return true;
         }

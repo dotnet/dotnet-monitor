@@ -6,21 +6,6 @@
 // Suppress warnings about [Obsolete] member usage in generated code.
 #pragma warning disable CS0612, CS0618
 
-namespace System.Runtime.CompilerServices
-{
-    using System;
-    using System.CodeDom.Compiler;
-
-    [GeneratedCode("Microsoft.Extensions.Configuration.Binder.SourceGeneration", "10.0.12.20601")]
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-    file sealed class InterceptsLocationAttribute : Attribute
-    {
-        public InterceptsLocationAttribute(int version, string data)
-        {
-        }
-    }
-}
-
 namespace Microsoft.Extensions.Configuration.Binder.SourceGeneration
 {
     using Microsoft.Extensions.Configuration;
@@ -34,16 +19,15 @@ namespace Microsoft.Extensions.Configuration.Binder.SourceGeneration
     using System.Runtime.CompilerServices;
 
     [GeneratedCode("Microsoft.Extensions.Configuration.Binder.SourceGeneration", "10.0.12.20601")]
-    file static class BindingExtensions
+    // file static class BindingExtensions
+    // Made internal to allow access from outside this file
+    internal static class BindingExtensions
     {
         #region IConfiguration extensions.
         /// <summary>Attempts to bind the configuration instance to a new instance of type T.</summary>
-        [InterceptsLocation(1, "I96Drq0CORXYT2z7nNcQFdoDAABJblByb2Nlc3NGZWF0dXJlT3B0aW9uc0JpbmRlci5jcw==")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/InProcessFeatures/InProcessFeatureOptionsBinder.cs(19,18)
-        [InterceptsLocation(1, "I96Drq0CORXYT2z7nNcQFawFAABJblByb2Nlc3NGZWF0dXJlT3B0aW9uc0JpbmRlci5jcw==")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/InProcessFeatures/InProcessFeatureOptionsBinder.cs(27,18)
         public static T? Get<T>(this IConfiguration configuration) => (T?)(GetCore(configuration, typeof(T), configureOptions: null) ?? default(T));
 
         /// <summary>Attempts to bind the given object instance to configuration values by matching property names against configuration keys recursively.</summary>
-        [InterceptsLocation(1, "Di9ommLxURAFvwtn+rC7ebAHAABBdXRoQ29uZmlndXJhdG9yRmFjdG9yeS5jcw==")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/Auth/AuthConfiguratorFactory.cs(48,43)
         public static void Bind_AuthenticationOptions(this IConfiguration configuration, object? instance)
         {
             ArgumentNullException.ThrowIfNull(configuration);
@@ -58,7 +42,6 @@ namespace Microsoft.Extensions.Configuration.Binder.SourceGeneration
         }
 
         /// <summary>Attempts to bind the given object instance to configuration values by matching property names against configuration keys recursively.</summary>
-        [InterceptsLocation(1, "oDvmSaV52BVqkQ3ucsBhi1gNAABDb2xsZWN0RHVtcEFjdGlvbi5jcw==")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/CollectionRules/Actions/CollectDumpAction.cs(81,29)
         public static void Bind_CollectDumpOptions(this IConfiguration configuration, object? instance)
         {
             ArgumentNullException.ThrowIfNull(configuration);
@@ -73,7 +56,6 @@ namespace Microsoft.Extensions.Configuration.Binder.SourceGeneration
         }
 
         /// <summary>Attempts to bind the given object instance to configuration values by matching property names against configuration keys recursively.</summary>
-        [InterceptsLocation(1, "2wH8lqKF5ZoiulfqI/jLz7YLAABDb2xsZWN0RXhjZXB0aW9uc0FjdGlvbi5jcw==")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/CollectionRules/Actions/CollectExceptionsAction.cs(70,29)
         public static void Bind_CollectExceptionsOptions(this IConfiguration configuration, object? instance)
         {
             ArgumentNullException.ThrowIfNull(configuration);
@@ -88,7 +70,6 @@ namespace Microsoft.Extensions.Configuration.Binder.SourceGeneration
         }
 
         /// <summary>Attempts to bind the given object instance to configuration values by matching property names against configuration keys recursively.</summary>
-        [InterceptsLocation(1, "FNMFa+Wlj4cJTzhaRBpnhzQMAABDb2xsZWN0R0NEdW1wQWN0aW9uLmNz")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/CollectionRules/Actions/CollectGCDumpAction.cs(74,29)
         public static void Bind_CollectGCDumpOptions(this IConfiguration configuration, object? instance)
         {
             ArgumentNullException.ThrowIfNull(configuration);
@@ -103,7 +84,6 @@ namespace Microsoft.Extensions.Configuration.Binder.SourceGeneration
         }
 
         /// <summary>Attempts to bind the given object instance to configuration values by matching property names against configuration keys recursively.</summary>
-        [InterceptsLocation(1, "Y9gyzYSghCDpZvYiSqNjWwgTAABDb2xsZWN0TGl2ZU1ldHJpY3NBY3Rpb24uY3M=")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/CollectionRules/Actions/CollectLiveMetricsAction.cs(110,29)
         public static void Bind_CollectLiveMetricsOptions(this IConfiguration configuration, object? instance)
         {
             ArgumentNullException.ThrowIfNull(configuration);
@@ -118,7 +98,6 @@ namespace Microsoft.Extensions.Configuration.Binder.SourceGeneration
         }
 
         /// <summary>Attempts to bind the given object instance to configuration values by matching property names against configuration keys recursively.</summary>
-        [InterceptsLocation(1, "OK+xSbsfBcQzumkpC6TMdo8QAABDb2xsZWN0TG9nc0FjdGlvbi5jcw==")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/CollectionRules/Actions/CollectLogsAction.cs(98,29)
         public static void Bind_CollectLogsOptions(this IConfiguration configuration, object? instance)
         {
             ArgumentNullException.ThrowIfNull(configuration);
@@ -133,7 +112,6 @@ namespace Microsoft.Extensions.Configuration.Binder.SourceGeneration
         }
 
         /// <summary>Attempts to bind the given object instance to configuration values by matching property names against configuration keys recursively.</summary>
-        [InterceptsLocation(1, "tjLDw/iH+oA0qwiY5g8ldRUOAABDb2xsZWN0U3RhY2tzQWN0aW9uLmNz")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/CollectionRules/Actions/CollectStacksAction.cs(86,29)
         public static void Bind_CollectStacksOptions(this IConfiguration configuration, object? instance)
         {
             ArgumentNullException.ThrowIfNull(configuration);
@@ -148,7 +126,6 @@ namespace Microsoft.Extensions.Configuration.Binder.SourceGeneration
         }
 
         /// <summary>Attempts to bind the given object instance to configuration values by matching property names against configuration keys recursively.</summary>
-        [InterceptsLocation(1, "Ec0ljSF1pOPDalvIIjY1KHUUAABDb2xsZWN0VHJhY2VBY3Rpb24uY3M=")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/CollectionRules/Actions/CollectTraceAction.cs(122,29)
         public static void Bind_CollectTraceOptions(this IConfiguration configuration, object? instance)
         {
             ArgumentNullException.ThrowIfNull(configuration);
@@ -163,7 +140,6 @@ namespace Microsoft.Extensions.Configuration.Binder.SourceGeneration
         }
 
         /// <summary>Attempts to bind the given object instance to configuration values by matching property names against configuration keys recursively.</summary>
-        [InterceptsLocation(1, "xZ7JDNl5DzLKIEkXdklKxAMTAABFeGVjdXRlQWN0aW9uLmNz")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/CollectionRules/Actions/ExecuteAction.cs(120,29)
         public static void Bind_ExecuteOptions(this IConfiguration configuration, object? instance)
         {
             ArgumentNullException.ThrowIfNull(configuration);
@@ -178,7 +154,6 @@ namespace Microsoft.Extensions.Configuration.Binder.SourceGeneration
         }
 
         /// <summary>Attempts to bind the given object instance to configuration values by matching property names against configuration keys recursively.</summary>
-        [InterceptsLocation(1, "/wPLhhfrfCQT5RnqdaslM+YQAABHZXRFbnZpcm9ubWVudFZhcmlhYmxlQWN0aW9uLmNz")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/CollectionRules/Actions/GetEnvironmentVariableAction.cs(98,29)
         public static void Bind_GetEnvironmentVariableOptions(this IConfiguration configuration, object? instance)
         {
             ArgumentNullException.ThrowIfNull(configuration);
@@ -193,7 +168,6 @@ namespace Microsoft.Extensions.Configuration.Binder.SourceGeneration
         }
 
         /// <summary>Attempts to bind the given object instance to configuration values by matching property names against configuration keys recursively.</summary>
-        [InterceptsLocation(1, "m0QjkBF/MRtVMGNWbR/p5K4NAABMb2FkUHJvZmlsZXJBY3Rpb24uY3M=")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/CollectionRules/Actions/LoadProfilerAction.cs(83,29)
         public static void Bind_LoadProfilerOptions(this IConfiguration configuration, object? instance)
         {
             ArgumentNullException.ThrowIfNull(configuration);
@@ -208,7 +182,6 @@ namespace Microsoft.Extensions.Configuration.Binder.SourceGeneration
         }
 
         /// <summary>Attempts to bind the given object instance to configuration values by matching property names against configuration keys recursively.</summary>
-        [InterceptsLocation(1, "0ArUc1bsWChovMDWzBxET1YOAABTZXRFbnZpcm9ubWVudFZhcmlhYmxlQWN0aW9uLmNz")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/CollectionRules/Actions/SetEnvironmentVariableAction.cs(83,29)
         public static void Bind_SetEnvironmentVariableOptions(this IConfiguration configuration, object? instance)
         {
             ArgumentNullException.ThrowIfNull(configuration);
@@ -223,7 +196,6 @@ namespace Microsoft.Extensions.Configuration.Binder.SourceGeneration
         }
 
         /// <summary>Attempts to bind the given object instance to configuration values by matching property names against configuration keys recursively.</summary>
-        [InterceptsLocation(1, "Cbu0QosCYnV3SZLW25BjRzUEAABDb2xsZWN0aW9uUnVsZUNvbmZpZ3VyZU5hbWVkT3B0aW9ucy5jcw==")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/CollectionRules/Configuration/CollectionRuleConfigureNamedOptions.cs(28,29)
         public static void Bind_CollectionRuleOptions(this IConfiguration configuration, object? instance)
         {
             ArgumentNullException.ThrowIfNull(configuration);
@@ -238,7 +210,6 @@ namespace Microsoft.Extensions.Configuration.Binder.SourceGeneration
         }
 
         /// <summary>Attempts to bind the given object instance to configuration values by matching property names against configuration keys recursively.</summary>
-        [InterceptsLocation(1, "yxTXb6jQqRs+zwaS/kFPDI8LAABDb2xsZWN0aW9uUnVsZVBvc3RDb25maWd1cmVOYW1lZE9wdGlvbnMuY3M=")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/CollectionRules/Configuration/CollectionRulePostConfigureNamedOptions.cs(66,35)
         public static void Bind_CollectionRuleActionOptions(this IConfiguration configuration, object? instance)
         {
             ArgumentNullException.ThrowIfNull(configuration);
@@ -253,7 +224,6 @@ namespace Microsoft.Extensions.Configuration.Binder.SourceGeneration
         }
 
         /// <summary>Attempts to bind the given object instance to configuration values by matching property names against configuration keys recursively.</summary>
-        [InterceptsLocation(1, "yxTXb6jQqRs+zwaS/kFPDAwTAABDb2xsZWN0aW9uUnVsZVBvc3RDb25maWd1cmVOYW1lZE9wdGlvbnMuY3M=")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/CollectionRules/Configuration/CollectionRulePostConfigureNamedOptions.cs(110,35)
         public static void Bind_ProcessFilterDescriptor(this IConfiguration configuration, object? instance)
         {
             ArgumentNullException.ThrowIfNull(configuration);
@@ -268,7 +238,6 @@ namespace Microsoft.Extensions.Configuration.Binder.SourceGeneration
         }
 
         /// <summary>Attempts to bind the given object instance to configuration values by matching property names against configuration keys recursively.</summary>
-        [InterceptsLocation(1, "4GAhNvS3M1ipulWdTteYJwgLAABBc3BOZXRSZXF1ZXN0Q291bnRUcmlnZ2VyRmFjdG9yeS5jcw==")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/CollectionRules/Triggers/AspNetRequestCountTriggerFactory.cs(59,29)
         public static void Bind_AspNetRequestCountOptions(this IConfiguration configuration, object? instance)
         {
             ArgumentNullException.ThrowIfNull(configuration);
@@ -283,7 +252,6 @@ namespace Microsoft.Extensions.Configuration.Binder.SourceGeneration
         }
 
         /// <summary>Attempts to bind the given object instance to configuration values by matching property names against configuration keys recursively.</summary>
-        [InterceptsLocation(1, "ZnJwmkiq/VyQCKEoVL33kY4NAABBc3BOZXRSZXF1ZXN0RHVyYXRpb25UcmlnZ2VyRmFjdG9yeS5jcw==")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/CollectionRules/Triggers/AspNetRequestDurationTriggerFactory.cs(65,29)
         public static void Bind_AspNetRequestDurationOptions(this IConfiguration configuration, object? instance)
         {
             ArgumentNullException.ThrowIfNull(configuration);
@@ -298,7 +266,6 @@ namespace Microsoft.Extensions.Configuration.Binder.SourceGeneration
         }
 
         /// <summary>Attempts to bind the given object instance to configuration values by matching property names against configuration keys recursively.</summary>
-        [InterceptsLocation(1, "G5LXWFc+N7x2MUTokweBNBANAABBc3BOZXRSZXNwb25zZVN0YXR1c1RyaWdnZXJGYWN0b3J5LmNz")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/CollectionRules/Triggers/AspNetResponseStatusTriggerFactory.cs(74,29)
         public static void Bind_AspNetResponseStatusOptions(this IConfiguration configuration, object? instance)
         {
             ArgumentNullException.ThrowIfNull(configuration);
@@ -313,7 +280,6 @@ namespace Microsoft.Extensions.Configuration.Binder.SourceGeneration
         }
 
         /// <summary>Attempts to bind the given object instance to configuration values by matching property names against configuration keys recursively.</summary>
-        [InterceptsLocation(1, "E2OoVWf2ZZDaHVdi+R15hmYYAABFdmVudENvdW50ZXJUcmlnZ2VyRmFjdG9yeS5jcw==")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/CollectionRules/Triggers/EventCounterTriggerFactory.cs(124,29)
         public static void Bind_EventCounterOptions(this IConfiguration configuration, object? instance)
         {
             ArgumentNullException.ThrowIfNull(configuration);
@@ -328,7 +294,6 @@ namespace Microsoft.Extensions.Configuration.Binder.SourceGeneration
         }
 
         /// <summary>Attempts to bind the given object instance to configuration values by matching property names against configuration keys recursively.</summary>
-        [InterceptsLocation(1, "E2OoVWf2ZZDaHVdi+R15hqMaAABFdmVudENvdW50ZXJUcmlnZ2VyRmFjdG9yeS5jcw==")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/CollectionRules/Triggers/EventCounterTriggerFactory.cs(139,29)
         public static void Bind_CPUUsageOptions(this IConfiguration configuration, object? instance)
         {
             ArgumentNullException.ThrowIfNull(configuration);
@@ -343,7 +308,6 @@ namespace Microsoft.Extensions.Configuration.Binder.SourceGeneration
         }
 
         /// <summary>Attempts to bind the given object instance to configuration values by matching property names against configuration keys recursively.</summary>
-        [InterceptsLocation(1, "E2OoVWf2ZZDaHVdi+R15hugcAABFdmVudENvdW50ZXJUcmlnZ2VyRmFjdG9yeS5jcw==")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/CollectionRules/Triggers/EventCounterTriggerFactory.cs(154,29)
         public static void Bind_GCHeapSizeOptions(this IConfiguration configuration, object? instance)
         {
             ArgumentNullException.ThrowIfNull(configuration);
@@ -358,7 +322,6 @@ namespace Microsoft.Extensions.Configuration.Binder.SourceGeneration
         }
 
         /// <summary>Attempts to bind the given object instance to configuration values by matching property names against configuration keys recursively.</summary>
-        [InterceptsLocation(1, "E2OoVWf2ZZDaHVdi+R15hlkfAABFdmVudENvdW50ZXJUcmlnZ2VyRmFjdG9yeS5jcw==")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/CollectionRules/Triggers/EventCounterTriggerFactory.cs(169,29)
         public static void Bind_ThreadpoolQueueLengthOptions(this IConfiguration configuration, object? instance)
         {
             ArgumentNullException.ThrowIfNull(configuration);
@@ -373,7 +336,6 @@ namespace Microsoft.Extensions.Configuration.Binder.SourceGeneration
         }
 
         /// <summary>Attempts to bind the given object instance to configuration values by matching property names against configuration keys recursively.</summary>
-        [InterceptsLocation(1, "OlVaHJbsbj94nJg+XQAR4CENAABFdmVudE1ldGVyVHJpZ2dlckZhY3RvcnkuY3M=")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/CollectionRules/Triggers/EventMeterTriggerFactory.cs(70,29)
         public static void Bind_EventMeterOptions(this IConfiguration configuration, object? instance)
         {
             ArgumentNullException.ThrowIfNull(configuration);
@@ -388,7 +350,6 @@ namespace Microsoft.Extensions.Configuration.Binder.SourceGeneration
         }
 
         /// <summary>Attempts to bind the given object instance to configuration values by matching property names against configuration keys recursively.</summary>
-        [InterceptsLocation(1, "/q4g6OhQ4rcux+CnacLb92IdAABGaWxlU3lzdGVtRWdyZXNzRXh0ZW5zaW9uLmNz")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/Egress/FileSystem/FileSystemEgressExtension.cs(207,27)
         public static void Bind_FileSystemEgressProviderOptions(this IConfiguration configuration, object? instance)
         {
             ArgumentNullException.ThrowIfNull(configuration);
@@ -403,7 +364,6 @@ namespace Microsoft.Extensions.Configuration.Binder.SourceGeneration
         }
 
         /// <summary>Attempts to bind the given object instance to configuration values by matching property names against configuration keys recursively.</summary>
-        [InterceptsLocation(1, "2LjELtbVgdI6PWCzEuQSKV4jAABIb3N0QnVpbGRlckhlbHBlci5jcw==")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/HostBuilder/HostBuilderHelper.cs(161,47)
         public static void Bind_MetricsOptions(this IConfiguration configuration, string key, object? instance)
         {
             ArgumentNullException.ThrowIfNull(configuration);
@@ -420,20 +380,6 @@ namespace Microsoft.Extensions.Configuration.Binder.SourceGeneration
 
         #region IServiceCollection extensions.
         /// <summary>Registers a configuration instance which TOptions will bind against.</summary>
-        [InterceptsLocation(1, "iWBotKOjhpVDEKrhLYy2u3YKAABTZXJ2aWNlQ29sbGVjdGlvbkV4dGVuc2lvbnMuY3M=")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/ServiceCollectionExtensions.cs(52,29)
-        [InterceptsLocation(1, "iWBotKOjhpVDEKrhLYy2u5ALAABTZXJ2aWNlQ29sbGVjdGlvbkV4dGVuc2lvbnMuY3M=")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/ServiceCollectionExtensions.cs(57,29)
-        [InterceptsLocation(1, "iWBotKOjhpVDEKrhLYy2u6cMAABTZXJ2aWNlQ29sbGVjdGlvbkV4dGVuc2lvbnMuY3M=")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/ServiceCollectionExtensions.cs(62,29)
-        [InterceptsLocation(1, "iWBotKOjhpVDEKrhLYy2uzsOAABTZXJ2aWNlQ29sbGVjdGlvbkV4dGVuc2lvbnMuY3M=")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/ServiceCollectionExtensions.cs(69,29)
-        [InterceptsLocation(1, "iWBotKOjhpVDEKrhLYy2u1YPAABTZXJ2aWNlQ29sbGVjdGlvbkV4dGVuc2lvbnMuY3M=")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/ServiceCollectionExtensions.cs(74,29)
-        [InterceptsLocation(1, "iWBotKOjhpVDEKrhLYy2u1cQAABTZXJ2aWNlQ29sbGVjdGlvbkV4dGVuc2lvbnMuY3M=")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/ServiceCollectionExtensions.cs(79,22)
-        [InterceptsLocation(1, "iWBotKOjhpVDEKrhLYy2uz8RAABTZXJ2aWNlQ29sbGVjdGlvbkV4dGVuc2lvbnMuY3M=")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/ServiceCollectionExtensions.cs(82,22)
-        [InterceptsLocation(1, "iWBotKOjhpVDEKrhLYy2uycSAABTZXJ2aWNlQ29sbGVjdGlvbkV4dGVuc2lvbnMuY3M=")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/ServiceCollectionExtensions.cs(85,22)
-        [InterceptsLocation(1, "iWBotKOjhpVDEKrhLYy2uy8TAABTZXJ2aWNlQ29sbGVjdGlvbkV4dGVuc2lvbnMuY3M=")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/ServiceCollectionExtensions.cs(88,22)
-        [InterceptsLocation(1, "iWBotKOjhpVDEKrhLYy2uwIVAABTZXJ2aWNlQ29sbGVjdGlvbkV4dGVuc2lvbnMuY3M=")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/ServiceCollectionExtensions.cs(97,29)
-        [InterceptsLocation(1, "iWBotKOjhpVDEKrhLYy2u0oXAABTZXJ2aWNlQ29sbGVjdGlvbkV4dGVuc2lvbnMuY3M=")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/ServiceCollectionExtensions.cs(106,22)
-        [InterceptsLocation(1, "iWBotKOjhpVDEKrhLYy2u5c/AABTZXJ2aWNlQ29sbGVjdGlvbkV4dGVuc2lvbnMuY3M=")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/ServiceCollectionExtensions.cs(240,22)
-        [InterceptsLocation(1, "iWBotKOjhpVDEKrhLYy2u19DAABTZXJ2aWNlQ29sbGVjdGlvbkV4dGVuc2lvbnMuY3M=")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/ServiceCollectionExtensions.cs(258,29)
-        [InterceptsLocation(1, "iWBotKOjhpVDEKrhLYy2u+RQAABTZXJ2aWNlQ29sbGVjdGlvbkV4dGVuc2lvbnMuY3M=")] // /home/svbomer/src/dotnet-monitor/src/Tools/dotnet-monitor/ServiceCollectionExtensions.cs(336,22)
         public static IServiceCollection Configure<TOptions>(this IServiceCollection services, IConfiguration config) where TOptions : class
         {
             return Configure<TOptions>(services, string.Empty, config, configureOptions: null);

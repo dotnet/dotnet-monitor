@@ -8,6 +8,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Binder.SourceGeneration;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.Globalization;
@@ -63,7 +64,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
                 {
                     CollectionRuleActionOptions actionOptions = new();
 
-                    actionSection.Bind(actionOptions);
+                    actionSection.Bind_CollectionRuleActionOptions(actionOptions);
 
                     CollectionRuleBindingHelper.BindActionSettings(actionSection, actionOptions, _actionOperations);
 
@@ -107,7 +108,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
                 {
                     ProcessFilterDescriptor filterOptions = new();
 
-                    filterSection.Bind(filterOptions);
+                    filterSection.Bind_ProcessFilterDescriptor(filterOptions);
 
                     ruleOptions.Filters.Add(filterOptions);
                 }

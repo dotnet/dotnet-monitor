@@ -3,6 +3,7 @@
 
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Binder.SourceGeneration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -204,7 +205,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
             IConfigurationSection configuration = _configurationProvider.GetProviderConfigurationSection(EgressProviderTypes.FileSystem, providerName);
 
             FileSystemEgressProviderOptions options = new();
-            configuration.Bind(options);
+            configuration.Bind_FileSystemEgressProviderOptions(options);
 
             DataAnnotationValidateOptions<FileSystemEgressProviderOptions> validateOptions = new(_serviceProvider);
             var validationResult = validateOptions.Validate(providerName, options);
