@@ -1129,7 +1129,7 @@
             "boolean",
             "null"
           ],
-          "description": "True if exception collection should begin immediately",
+          "description": "[Experimental] Determines if exception collection should begin immediately",
           "default": true
         }
       }
