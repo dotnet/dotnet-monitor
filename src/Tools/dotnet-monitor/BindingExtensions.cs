@@ -1197,6 +1197,12 @@ namespace Microsoft.Extensions.Configuration.Binder.SourceGeneration
         {
             foreach (IConfigurationSection section in configuration.GetChildren())
             {
+                // Manual implementation of binding logic for LogLevel? values
+                // https://github.com/dotnet/runtime/issues/115343
+                if (section.Value is string value && !string.IsNullOrEmpty(value))
+                {
+                    instance[section.Key] = ParseEnum<global::Microsoft.Extensions.Logging.LogLevel>(value, section.Path);
+                }
             }
         }
 
