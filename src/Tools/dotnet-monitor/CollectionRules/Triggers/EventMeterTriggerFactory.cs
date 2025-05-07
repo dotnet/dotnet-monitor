@@ -8,6 +8,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Binder.SourceGeneration;
 using System;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
@@ -67,7 +68,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         public bool TryBindOptions(IConfigurationSection settingsSection, out object? settings)
         {
             var options = new EventMeterOptions();
-            settingsSection.Bind(options);
+            settingsSection.Bind_EventMeterOptions(options);
             settings = options;
             return true;
         }

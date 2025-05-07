@@ -9,6 +9,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Binder.SourceGeneration;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -95,7 +96,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         public void BindOptions(IConfigurationSection settingsSection, out object settings)
         {
             CollectLogsOptions options = new();
-            settingsSection.Bind(options);
+            settingsSection.Bind_CollectLogsOptions(options);
             settings = options;
         }
     }
