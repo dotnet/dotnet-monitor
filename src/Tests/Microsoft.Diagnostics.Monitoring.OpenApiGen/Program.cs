@@ -69,7 +69,7 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
             var documentService = GetDocumentService(host.Services);
             var methodInfo = documentService.GetType().GetMethod("GetOpenApiDocumentAsync", BindingFlags.Public | BindingFlags.Instance)!;
 
-            object result = methodInfo.Invoke(documentService, new object?[] { host.Services, default(CancellationToken) })!;
+            object result = methodInfo.Invoke(documentService, new object?[] { host.Services, null, default(CancellationToken) })!;
 
             return await (Task<OpenApiDocument>)result;
         }
