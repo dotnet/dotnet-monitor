@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 using Xunit.Abstractions;
 
@@ -73,7 +74,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                     RootOptions options = new();
                     setup(options);
 
-                    IDictionary<string, string> configurationValues = options.ToConfigurationValues();
+                    CommonOptionsMapper optionsMapper = new();
+                    optionsMapper.AddActionSettings<PassThroughOptions>(nameof(PassThroughAction), MapPassThroughOptions);
+                    IDictionary<string, string> configurationValues = optionsMapper.ToConfigurationValues(options);
                     outputHelper.WriteLine("Begin Configuration:");
                     foreach ((string key, string value) in configurationValues)
                     {
@@ -127,6 +130,22 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                     servicesCallback?.Invoke(services);
                 })
                 .Build();
+        }
+
+        private static void MapPassThroughOptions(PassThroughOptions obj, string valueName, string separator, IDictionary<string, string> map)
+        {
+            if (null != obj)
+            {
+                string prefix = FormattableString.Invariant($"{valueName}{separator}");
+                MapString(obj.Input1, FormattableString.Invariant($"{prefix}{nameof(obj.Input1)}"));
+                MapString(obj.Input2, FormattableString.Invariant($"{prefix}{nameof(obj.Input2)}"));
+                MapString(obj.Input3, FormattableString.Invariant($"{prefix}{nameof(obj.Input3)}"));
+            }
+
+            void MapString(string value, string valueName)
+            {
+                map.Add(valueName, ConvertUtils.ToString(value, CultureInfo.InvariantCulture));
+            }
         }
     }
 }

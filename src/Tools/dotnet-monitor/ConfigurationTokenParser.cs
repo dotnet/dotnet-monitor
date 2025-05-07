@@ -60,11 +60,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             _logger = logger;
         }
 
-        public object? SubstituteOptionValues(object? originalSettings, TokenContext context)
+        public object? SubstituteOptionValues(object? originalSettings, Type settingsType, TokenContext context)
         {
             object? settings = originalSettings;
 
-            foreach (PropertyInfo propertyInfo in GetPropertiesFromSettings(settings))
+            foreach (PropertyInfo propertyInfo in GetPropertiesFromSettings(settingsType))
             {
                 string? originalPropertyValue = (string?)propertyInfo.GetValue(settings);
                 if (string.IsNullOrEmpty(originalPropertyValue))
@@ -119,11 +119,12 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return true;
         }
 
-        public static IEnumerable<PropertyInfo> GetPropertiesFromSettings(object? settings, Predicate<PropertyInfo>? predicate = null) =>
-            settings?.GetType()
-                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .Where(p => p.PropertyType == typeof(string) && (predicate?.Invoke(p) ?? true)) ??
-            Enumerable.Empty<PropertyInfo>();
+        public static IEnumerable<PropertyInfo> GetPropertiesFromSettings(Type type, Predicate<PropertyInfo>? predicate = null)
+        {
+            return type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(p => p.PropertyType == typeof(string) && (predicate?.Invoke(p) ?? true))
+                .ToArray();
+        }
 
         private static string CreateTokenReference(string category, string token) =>
             FormattableString.Invariant($"{SubstitutionPrefix}{category}{Separator}{token}{SubstitutionSuffix}");
