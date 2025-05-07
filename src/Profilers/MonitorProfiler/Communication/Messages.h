@@ -7,7 +7,30 @@
 
 enum class ProfilerCommand : unsigned short
 {
-    Callstack
+    Callstack,
+
+    // Indicate that any outstanding collection should be stopped and all data should be flushed
+    // Currently a no-op
+    StopAllFeatures,
+
+    // Indicate that collection should resume again
+    // Currently a no-op
+    StartAllFeatures,
+};
+
+enum class StartupHookCommand : unsigned short
+{
+    StartCapturingParameters,
+    StopCapturingParameters,
+
+    // Indicates that all collection should stop
+    // Request cancellation on all outstanding ParameterCapture requests
+    // Unhooks from exception handling events, drains all the exception state, and resets the pipelines
+    StopAllFeatures,
+
+    // Indicates that all collection should start
+    // Reconnects exception handler events
+    StartAllFeatures,
 };
 
 enum class ServerResponseCommand : unsigned short
