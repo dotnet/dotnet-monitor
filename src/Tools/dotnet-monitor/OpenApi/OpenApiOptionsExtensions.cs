@@ -101,26 +101,26 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
                 var type = context.JsonTypeInfo.Type;
                 if (type == typeof(CaptureParametersConfiguration))
                 {
-                    if (schema.Properties["captureLimit"] is OpenApiSchema captureLimitSchema)
+                    if (schema.Properties?["captureLimit"] is OpenApiSchema captureLimitSchema)
                     {
                         captureLimitSchema.Type |= JsonSchemaType.Null;
                     }
                 }
                 else if (type == typeof(DotnetMonitorInfo))
                 {
-                    if (schema.Properties["capabilities"] is OpenApiSchema capabilitiesSchema)
+                    if (schema.Properties?["capabilities"] is OpenApiSchema capabilitiesSchema)
                     {
                         capabilitiesSchema.Type |= JsonSchemaType.Null;
                     }
                 }
                 else if (type == typeof(ExceptionsConfiguration))
                 {
-                    if (schema.Properties["include"] is OpenApiSchema includeSchema)
+                    if (schema.Properties?["include"] is OpenApiSchema includeSchema)
                     {
                         includeSchema.Type |= JsonSchemaType.Null;
                     }
 
-                    if (schema.Properties["exclude"] is OpenApiSchema excludeSchema)
+                    if (schema.Properties?["exclude"] is OpenApiSchema excludeSchema)
                     {
                         excludeSchema.Type |= JsonSchemaType.Null;
                     }
@@ -128,26 +128,26 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
                 else if (type == typeof(OperationStatus) ||
                          type == typeof(OperationSummary))
                 {
-                    if (schema.Properties["tags"] is OpenApiSchema tagsSchema)
+                    if (schema.Properties?["tags"] is OpenApiSchema tagsSchema)
                     {
                         tagsSchema.UniqueItems = true;
                     }
                 }
                 else if (type == typeof(ProblemDetails))
                 {
-                    if (schema.Properties["status"] is OpenApiSchema statusSchema)
+                    if (schema.Properties?["status"] is OpenApiSchema statusSchema)
                     {
                         statusSchema.Type |= JsonSchemaType.Null;
                     }
                 }
                 else if (type == typeof(ValidationProblemDetails))
                 {
-                    if (schema.Properties["errors"] is OpenApiSchema errorsSchema)
+                    if (schema.Properties?["errors"] is OpenApiSchema errorsSchema)
                     {
                         errorsSchema.Type |= JsonSchemaType.Null;
                     }
 
-                    if (schema.Properties["status"] is OpenApiSchema statusSchema)
+                    if (schema.Properties?["status"] is OpenApiSchema statusSchema)
                     {
                         statusSchema.Type |= JsonSchemaType.Null;
                     }
@@ -292,7 +292,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
                 {
                     {
                         new OpenApiSecuritySchemeReference(securityDefinitionName),
-                        Array.Empty<string>()
+                        []
                     }
                 });
 

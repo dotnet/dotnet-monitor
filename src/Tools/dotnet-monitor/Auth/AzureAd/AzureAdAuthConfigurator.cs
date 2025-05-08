@@ -80,7 +80,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
                 {
                     {
                         new OpenApiSecuritySchemeReference(OAuth2SecurityDefinitionName),
-                        Array.Empty<string>()
+                        []
                     }
                 });
 
