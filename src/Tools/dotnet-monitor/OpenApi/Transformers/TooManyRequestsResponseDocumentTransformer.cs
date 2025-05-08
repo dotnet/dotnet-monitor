@@ -20,6 +20,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers
             OpenApiResponse tooManyRequests = new();
             tooManyRequests.Description = "TooManyRequests";
 
+            tooManyRequests.Content ??= new();
             tooManyRequests.Content.Add(
                  ContentTypes.ApplicationProblemJson,
                  new OpenApiMediaType()
