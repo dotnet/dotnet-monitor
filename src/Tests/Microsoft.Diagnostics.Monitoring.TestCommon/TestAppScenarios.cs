@@ -65,6 +65,7 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                 public const string AggregateException = nameof(AggregateException);
                 public const string ReflectionTypeLoadException = nameof(ReflectionTypeLoadException);
                 public const string HiddenFramesExceptionCommand = nameof(HiddenFramesExceptionCommand);
+                public const string MultiPhase = nameof(MultiPhase);
             }
 
             public static class Commands

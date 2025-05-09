@@ -8,9 +8,9 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Binder.SourceGeneration;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
@@ -65,7 +65,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
                 {
                     CollectionRuleActionOptions actionOptions = new();
 
-                    actionSection.Bind(actionOptions);
+                    actionSection.Bind_CollectionRuleActionOptions(actionOptions);
 
                     CollectionRuleBindingHelper.BindActionSettings(actionSection, actionOptions, _actionOperations);
 
@@ -109,7 +109,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
                 {
                     ProcessFilterDescriptor filterOptions = new();
 
-                    filterSection.Bind(filterOptions);
+                    filterSection.Bind_ProcessFilterDescriptor(filterOptions);
 
                     ruleOptions.Filters.Add(filterOptions);
                 }
@@ -133,7 +133,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
             if (!templatesOptions.TryGetValue(templateKey, out templatesValue))
             {
                 templatesValue = new();
-                ruleOptions.ErrorList.Add(new ValidationResult(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_TemplateNotFound, templateKey), [memberName]));
+                ruleOptions.ErrorList.Add(new ErrorValidationResult(string.Format(CultureInfo.CurrentCulture, Strings.ErrorMessage_TemplateNotFound, templateKey), memberName));
                 return false;
             }
 

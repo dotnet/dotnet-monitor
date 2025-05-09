@@ -9,6 +9,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Binder.SourceGeneration;
 using System;
 using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
 
@@ -86,7 +87,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         public void BindOptions(IConfigurationSection settingsSection, out object settings)
         {
             CollectStacksOptions options = new();
-            settingsSection.Bind(options);
+            settingsSection.Bind_CollectStacksOptions(options);
             settings = options;
         }
     }

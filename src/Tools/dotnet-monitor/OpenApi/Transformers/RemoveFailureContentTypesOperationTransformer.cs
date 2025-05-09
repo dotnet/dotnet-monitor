@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Models.Interfaces;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,11 +19,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers
         {
             if (null != operation.Responses)
             {
-                foreach (KeyValuePair<string, IOpenApiResponse> response in operation.Responses)
+                foreach ((string statusCode, IOpenApiResponse response) in operation.Responses)
                 {
-                    if (response.Key.StartsWith("2"))
+                    if (statusCode.StartsWith("2"))
                     {
-                        response.Value.Content.Remove(ContentTypes.ApplicationProblemJson);
+                        response.Content?.Remove(ContentTypes.ApplicationProblemJson);
                     }
                 }
             }
