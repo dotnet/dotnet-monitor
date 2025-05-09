@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
     <DisableCompileTimeOpenApiXmlGenerator>true</DisableCompileTimeOpenApiXmlGenerator>
+    <DisableValidationSourceGenerator>true</DisableValidationSourceGenerator>
   </PropertyGroup>
 
   <ItemGroup>

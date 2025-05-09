@@ -56,7 +56,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
                 // The Section Key is the action index; the value (if present) is the name of the template
                 if (SectionHasValue(actionSection))
                 {
-                    TryGetTemplate(ruleOptions, nameof(ruleOptions.Actions), _templateOptions.CollectionRuleActions, actionSection.Value, out CollectionRuleActionOptions templateActionOptions);
+                    var memberName = nameof(ruleOptions.Actions) + "[" + ruleOptions.Actions.Count.ToString(CultureInfo.InvariantCulture) + "]";
+                    TryGetTemplate(ruleOptions, memberName, _templateOptions.CollectionRuleActions, actionSection.Value, out CollectionRuleActionOptions templateActionOptions);
 
                     ruleOptions.Actions.Add(templateActionOptions);
                 }
@@ -100,7 +101,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
                 // The Section Key is the filter index; the value (if present) is the name of the template
                 if (SectionHasValue(filterSection))
                 {
-                    TryGetTemplate(ruleOptions, nameof(ruleOptions.Filters), _templateOptions.CollectionRuleFilters, filterSection.Value, out ProcessFilterDescriptor templateFilterOptions);
+                    TryGetTemplate(ruleOptions, nameof(ruleOptions.Filters),  _templateOptions.CollectionRuleFilters, filterSection.Value, out ProcessFilterDescriptor templateFilterOptions);
 
                     ruleOptions.Filters.Add(templateFilterOptions);
                 }

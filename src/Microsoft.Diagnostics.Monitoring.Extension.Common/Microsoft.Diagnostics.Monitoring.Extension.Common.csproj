@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <Compile Include="..\Tools\dotnet-monitor\DataAnnotationValidateOptions.cs" Link="DataAnnotationValidateOptions.cs" />
+    <Compile Include="..\Tools\dotnet-monitor\CollectionRules\Options\ValidationHelper.cs" Link="ValidationHelper.cs" />
   </ItemGroup>
 
   <ItemGroup>
