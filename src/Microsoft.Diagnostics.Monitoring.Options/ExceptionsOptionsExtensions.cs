@@ -14,5 +14,10 @@ namespace Microsoft.Diagnostics.Monitoring.Options
         {
             return options.TopLevelLimit.GetValueOrDefault(ExceptionsOptionsDefaults.TopLevelLimit);
         }
+
+        public static bool CollectOnStartup(this ExceptionsOptions options)
+        {
+            return options.CollectOnStartup.GetValueOrDefault(ExceptionsOptionsDefaults.CollectOnStartup);
+        }
     }
 }

@@ -4,6 +4,7 @@
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Binder.SourceGeneration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
@@ -73,7 +74,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         public void BindOptions(IConfigurationSection settingsSection, out object settings)
         {
             CollectGCDumpOptions options = new();
-            settingsSection.Bind(options);
+            settingsSection.Bind_CollectGCDumpOptions(options);
             settings = options;
         }
     }

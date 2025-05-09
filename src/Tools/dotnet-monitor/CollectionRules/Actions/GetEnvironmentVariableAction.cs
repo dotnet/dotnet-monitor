@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Binder.SourceGeneration;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -99,7 +100,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         public void BindOptions(IConfigurationSection settingsSection, out object settings)
         {
             GetEnvironmentVariableOptions options = new();
-            settingsSection.Bind(options);
+            settingsSection.Bind_GetEnvironmentVariableOptions(options);
             settings = options;
         }
     }

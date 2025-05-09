@@ -220,5 +220,10 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.ParameterCapturing
 
             base.Dispose();
         }
+
+        public void RequestStopAll()
+        {
+            _pipeline?.RequestStopAll();
+        }
     }
 }

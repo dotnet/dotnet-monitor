@@ -206,6 +206,17 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.ParameterCapturing.Pipeli
             }
         }
 
+        public void RequestStopAll()
+        {
+            foreach (var key in _allRequests.Keys)
+            {
+                if (_allRequests.TryRemove(key, out CapturingRequest? request))
+                {
+                    request?.StopRequest?.TrySetResult();
+                }
+            }
+        }
+
         public void RequestStop(Guid requestId)
         {
             if (!_allRequests.TryGetValue(requestId, out CapturingRequest? request))

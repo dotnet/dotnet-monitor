@@ -5,11 +5,12 @@ using Microsoft.AspNetCore.Http.Validation;
 using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey;
 using Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd;
 using Microsoft.Diagnostics.Tools.Monitor.Auth.NoAuth;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Binder.SourceGeneration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -49,7 +50,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth
                     AuthenticationOptions authOptions = new();
                     if (authConfigSection.Exists())
                     {
-                        authConfigSection.Bind(authOptions);
+                        authConfigSection.Bind_AuthenticationOptions(authOptions);
                         ValidateAuthConfigSection(authOptions, authConfigSection.Path, services);
                     }
 
