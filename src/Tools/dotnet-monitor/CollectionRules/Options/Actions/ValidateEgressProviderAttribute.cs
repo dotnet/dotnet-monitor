@@ -14,10 +14,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
     {
         protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
+            if (validationContext.MemberName is null)
+            {
+                throw new ArgumentNullException(nameof(validationContext.MemberName));
+            }
             if (!(value is string))
             {
                 return new ValidationResult(
-                    FormatErrorMessage(validationContext.DisplayName));
+                    FormatErrorMessage(validationContext.DisplayName), [validationContext.MemberName]);
             }
 
             string egressProvider = (string)value;
@@ -33,7 +37,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
                     string.Format(
                         CultureInfo.InvariantCulture,
                         Strings.ErrorMessage_EgressProviderDoesNotExist,
-                        egressProvider));
+                        egressProvider), [validationContext.MemberName]);
             }
 
             return ValidationResult.Success;

@@ -64,7 +64,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     {
                         // We prefix the validation error with the provider.
                         results.AddRange(providerResults.Select(r => new ValidationResult(
-                            string.Format(CultureInfo.CurrentCulture, OptionsDisplayStrings.ErrorMessage_NestedProviderValidationError, provider, r.ErrorMessage))));
+                            string.Format(CultureInfo.CurrentCulture, OptionsDisplayStrings.ErrorMessage_NestedProviderValidationError, provider, r.ErrorMessage),
+                            [nameof(Providers)])));
                     }
                 }
             }
