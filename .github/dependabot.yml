@@ -35,6 +35,23 @@ updates:
   commit-message:
     prefix: '[main] '
 - package-ecosystem: nuget
+  directory: /eng/dependabot/net9.0
+  schedule:
+    interval: daily
+  target-branch: main
+  ignore:
+  - dependency-name: '*'
+    update-types:
+    - version-update:semver-major
+  commit-message:
+    prefix: '[main] '
+  groups:
+    runtime-dependencies:
+      patterns:
+      - Microsoft.Extensions.*
+      - Microsoft.NETCore.DotNetHost
+      - System.Text.Json
+- package-ecosystem: nuget
   directory: /eng/dependabot/net8.0
   schedule:
     interval: daily
