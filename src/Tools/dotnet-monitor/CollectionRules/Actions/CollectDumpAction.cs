@@ -8,6 +8,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Binder.SourceGeneration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System;
 using System.ComponentModel.DataAnnotations;
 using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
@@ -70,17 +71,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         }
     }
 
-    internal sealed class CollectDumpActionDescriptor : ICollectionRuleActionDescriptor
+    [OptionsValidator]
+    internal sealed partial class CollectDumpActionDescriptor : ICollectionRuleActionDescriptor<CollectDumpOptions, CollectDumpActionFactory>
     {
         public string ActionName => KnownCollectionRuleActions.CollectDump;
-        public Type FactoryType => typeof(CollectDumpActionFactory);
-        public Type OptionsType => typeof(CollectDumpOptions);
 
-        public void BindOptions(IConfigurationSection settingsSection, out object settings)
+        public void BindOptions(IConfigurationSection settingsSection, out CollectDumpOptions options)
         {
-            CollectDumpOptions options = new();
+            options = new();
             settingsSection.Bind_CollectDumpOptions(options);
-            settings = options;
         }
     }
 }

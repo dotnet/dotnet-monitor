@@ -6,7 +6,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.Configuration;
-using System;
+using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -56,17 +56,19 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         }
     }
 
-    internal sealed class PassThroughActionDescriptor : ICollectionRuleActionDescriptor
+    internal sealed partial class PassThroughActionDescriptor : ICollectionRuleActionDescriptor<PassThroughOptions, PassThroughActionFactory>
     {
         public string ActionName => nameof(PassThroughAction);
-        public Type OptionsType => typeof(PassThroughOptions);
-        public Type FactoryType => typeof(PassThroughActionFactory);
 
-        public void BindOptions(IConfigurationSection settingsSection, out object settings)
+        public void BindOptions(IConfigurationSection settingsSection, out PassThroughOptions options)
         {
-            PassThroughOptions options = new();
+            options = new();
             settingsSection.Bind(options);
-            settings = options;
+        }
+
+        public ValidateOptionsResult Validate(string name, PassThroughOptions options)
+        {
+            return ValidateOptionsResult.Success;
         }
     }
 

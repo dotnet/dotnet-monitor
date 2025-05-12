@@ -7,7 +7,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Binder.SourceGeneration;
+using Microsoft.Extensions.Options;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading;
@@ -72,17 +72,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         }
     }
 
-    internal sealed class SetEnvironmentVariableActionDescriptor : ICollectionRuleActionDescriptor
+    [OptionsValidator]
+    internal sealed partial class SetEnvironmentVariableActionDescriptor : ICollectionRuleActionDescriptor<SetEnvironmentVariableOptions, SetEnvironmentVariableActionFactory>
     {
         public string ActionName => KnownCollectionRuleActions.SetEnvironmentVariable;
-        public Type FactoryType => typeof(SetEnvironmentVariableActionFactory);
-        public Type OptionsType => typeof(SetEnvironmentVariableOptions);
 
-        public void BindOptions(IConfigurationSection settingsSection, out object settings)
+        public void BindOptions(IConfigurationSection settingsSection, out SetEnvironmentVariableOptions options)
         {
-            SetEnvironmentVariableOptions options = new();
-            settingsSection.Bind_SetEnvironmentVariableOptions(options);
-            settings = options;
+            options = new();
+            settingsSection.Bind(options);
         }
     }
 }

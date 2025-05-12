@@ -206,7 +206,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
             FileSystemEgressProviderOptions options = new();
             configuration.Bind_FileSystemEgressProviderOptions(options);
 
-            DataAnnotationValidateOptions<FileSystemEgressProviderOptions> validateOptions = new(_serviceProvider);
+            IValidateOptions<FileSystemEgressProviderOptions> validateOptions = new FileSystemEgressProviderOptionsValidator(_serviceProvider);
             var validationResult = validateOptions.Validate(providerName, options);
 
             if (validationResult.Failed)

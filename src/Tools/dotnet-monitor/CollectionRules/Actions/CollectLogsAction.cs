@@ -9,7 +9,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Binder.SourceGeneration;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -87,17 +87,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         }
     }
 
-    internal sealed class CollectLogsActionDescriptor : ICollectionRuleActionDescriptor
+    [OptionsValidator]
+    internal sealed partial class CollectLogsActionDescriptor : ICollectionRuleActionDescriptor<CollectLogsOptions, CollectLogsActionFactory>
     {
         public string ActionName => KnownCollectionRuleActions.CollectLogs;
-        public Type FactoryType => typeof(CollectLogsActionFactory);
-        public Type OptionsType => typeof(CollectLogsOptions);
 
-        public void BindOptions(IConfigurationSection settingsSection, out object settings)
+        public void BindOptions(IConfigurationSection settingsSection, out CollectLogsOptions options)
         {
-            CollectLogsOptions options = new();
-            settingsSection.Bind_CollectLogsOptions(options);
-            settings = options;
+            options = new();
+            settingsSection.Bind(options);
         }
     }
 }

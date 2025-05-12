@@ -10,10 +10,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\Tools\dotnet-monitor\DataAnnotationValidateOptions.cs" Link="DataAnnotationValidateOptions.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests.UnitTests" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.S3StorageTests.UnitTests" />
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.EgressExtensibilityApp" />

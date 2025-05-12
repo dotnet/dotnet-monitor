@@ -178,7 +178,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<IConfigureOptions<CollectionRuleOptions>, CollectionRuleConfigureNamedOptions>();
             services.AddSingleton<IPostConfigureOptions<CollectionRuleOptions>, CollectionRulePostConfigureOptions>();
             services.AddSingleton<IPostConfigureOptions<CollectionRuleOptions>, DefaultCollectionRulePostConfigureOptions>();
-            services.AddSingleton<IValidateOptions<CollectionRuleOptions>, DataAnnotationValidateOptions<CollectionRuleOptions>>();
+            services.AddSingleton<IValidateOptions<CollectionRuleOptions>, CollectionRuleOptionsValidator>();
 
             // Register change sources for the options type
             services.AddSingleton<IOptionsChangeTokenSource<CollectionRuleOptions>, CollectionRulesConfigurationChangeTokenSource>();
@@ -199,14 +199,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static IServiceCollection RegisterCollectionRuleAction<TFactory, TOptions, TDescriptor>(this IServiceCollection services)
             where TFactory : class, ICollectionRuleActionFactory<TOptions>
             where TOptions : BaseRecordOptions, new()
-            where TDescriptor : class, ICollectionRuleActionDescriptor
+            where TDescriptor : class, ICollectionRuleActionDescriptor<TOptions, TFactory>
         {
             services.AddSingleton<TFactory>();
             services.AddSingleton<CollectionRuleActionFactoryProxy<TFactory, TOptions>>();
             services.AddSingleton<ICollectionRuleActionDescriptor, TDescriptor>();
             // NOTE: When opening collection rule actions for extensibility, this should not be added for all registered actions.
             // Each action should register its own IValidateOptions<> implementation (if it needs one).
-            services.AddSingleton<IValidateOptions<TOptions>, DataAnnotationValidateOptions<TOptions>>();
+            services.AddSingleton<IValidateOptions<TOptions>, TDescriptor>();
             return services;
         }
 

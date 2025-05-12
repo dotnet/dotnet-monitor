@@ -190,7 +190,6 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
                         .Build()
                         .Bind(options);
                 });
-            services.AddSingleton<IValidateOptions<TOptions>, DataAnnotationValidateOptions<TOptions>>();
 
             services.AddSingleton(new EgressProperties(payload.Properties));
 

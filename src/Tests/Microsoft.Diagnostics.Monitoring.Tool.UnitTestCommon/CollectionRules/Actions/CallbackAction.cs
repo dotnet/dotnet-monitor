@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -75,17 +76,19 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         }
     }
 
-    internal sealed class CallbackActionDescriptor : ICollectionRuleActionDescriptor
+    internal sealed partial class CallbackActionDescriptor : ICollectionRuleActionDescriptor<BaseRecordOptions, CallbackActionFactory>
     {
         public string ActionName => CallbackAction.ActionName;
-        public Type OptionsType => typeof(BaseRecordOptions);
-        public Type FactoryType => typeof(CallbackActionFactory);
 
-        public void BindOptions(IConfigurationSection settingsSection, out object settings)
+        public void BindOptions(IConfigurationSection settingsSection, out BaseRecordOptions options)
         {
-            BaseRecordOptions options = new();
+            options = new();
             settingsSection.Bind(options);
-            settings = options;
+        }
+
+        public ValidateOptionsResult Validate(string name, BaseRecordOptions options)
+        {
+            return ValidateOptionsResult.Success;
         }
     }
 
@@ -127,17 +130,19 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         }
     }
 
-    internal sealed class DelayedCallbackActionDescriptor : ICollectionRuleActionDescriptor
+    internal sealed partial class DelayedCallbackActionDescriptor : ICollectionRuleActionDescriptor<BaseRecordOptions, DelayedCallbackActionFactory>
     {
         public string ActionName => DelayedCallbackAction.ActionName;
-        public Type OptionsType => typeof(BaseRecordOptions);
-        public Type FactoryType => typeof(DelayedCallbackActionFactory);
 
-        public void BindOptions(IConfigurationSection settingsSection, out object settings)
+        public void BindOptions(IConfigurationSection settingsSection, out BaseRecordOptions options)
         {
-            BaseRecordOptions options = new();
+            options = new();
             settingsSection.Bind(options);
-            settings = options;
+        }
+
+        public ValidateOptionsResult Validate(string name, BaseRecordOptions options)
+        {
+            return ValidateOptionsResult.Success;
         }
     }
 

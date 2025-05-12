@@ -9,7 +9,6 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Binder.SourceGeneration;
 using System;
 using System.ComponentModel.DataAnnotations;
 using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
@@ -111,17 +110,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         }
     }
 
-    internal sealed class CollectTraceActionDescriptor : ICollectionRuleActionDescriptor
+    [OptionsValidator]
+    internal sealed partial class CollectTraceActionDescriptor : ICollectionRuleActionDescriptor<CollectTraceOptions, CollectTraceActionFactory>
     {
         public string ActionName => KnownCollectionRuleActions.CollectTrace;
-        public Type FactoryType => typeof(CollectTraceActionFactory);
-        public Type OptionsType => typeof(CollectTraceOptions);
 
-        public void BindOptions(IConfigurationSection settingsSection, out object settings)
+        public void BindOptions(IConfigurationSection settingsSection, out CollectTraceOptions options)
         {
-            CollectTraceOptions options = new();
-            settingsSection.Bind_CollectTraceOptions(options);
-            settings = options;
+            options = new();
+            settingsSection.Bind(options);
         }
     }
 }
