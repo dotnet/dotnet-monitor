@@ -9,6 +9,8 @@
     <MicrosoftExtensionsLoggingAbstractions90Version>9.0.1</MicrosoftExtensionsLoggingAbstractions90Version>
     <!-- Microsoft.Extensions.Logging.Console -->
     <MicrosoftExtensionsLoggingConsole90Version>9.0.1</MicrosoftExtensionsLoggingConsole90Version>
+    <!-- Microsoft.Extensions.Options -->
+    <MicrosoftExtensionsOptions90Version>9.0.4</MicrosoftExtensionsOptions90Version>
     <!-- Microsoft.NETCore.App -->
     <MicrosoftNETCoreApp90Version>9.0.1</MicrosoftNETCoreApp90Version>
     <!-- System.Text.Json -->

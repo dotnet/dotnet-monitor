@@ -126,4 +126,16 @@
     </ItemGroup>
   </Target>
 
+  <!-- Disable options validation source generator, to let us use a checked-in copy
+       of generated sources that include a fix for https://github.com/dotnet/runtime/issues/115347 -->
+  <Target Name="DisableOptionsValidationGenerator"
+          BeforeTargets="CoreCompile"
+          Condition="'$(DisableOptionsValidationGenerator)' == 'true'">
+    <Error Text="Set 'GeneratePathProperty=true' on the Microsoft.Extensions.Options package reference."
+           Condition="'$(PkgMicrosoft_Extensions_Options)' == ''" />
+    <ItemGroup>
+      <Analyzer Remove="$(PkgMicrosoft_Extensions_Options)\analyzers\dotnet\*\cs\Microsoft.Extensions.Options.SourceGeneration.dll" />
+    </ItemGroup>
+  </Target>
+
 </Project>

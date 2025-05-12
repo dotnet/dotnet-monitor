@@ -7,6 +7,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="$(MicrosoftExtensionsLogging80Version)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(MicrosoftExtensionsLoggingAbstractions80Version)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(MicrosoftExtensionsLoggingConsole80Version)" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="$(MicrosoftExtensionsOptions80Version)" />
     <!--
       We want to update "Microsoft.NETCore.App.Runtime.*" but those packages are considered platform packages and cannot be added
       as a package reference. Use Microsoft.NETCore.DotNetHost instead which is released in lockstep with the runtime packages and

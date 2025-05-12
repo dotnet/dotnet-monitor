@@ -11,6 +11,8 @@
     <Nullable>enable</Nullable>
     <EnableConfigurationBindingGenerator>false</EnableConfigurationBindingGenerator>
     <DisableCompileTimeOpenApiXmlGenerator>true</DisableCompileTimeOpenApiXmlGenerator>
+    <DisableOptionsValidationGenerator>true</DisableOptionsValidationGenerator>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,6 +21,7 @@
     <PackageReference Include="Microsoft.Identity.Web" />
     <PackageReference Include="System.CommandLine" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" GeneratePathProperty="true" />
+    <PackageReference Include="Microsoft.Extensions.Options" GeneratePathProperty="true" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(DIAGNOSTICS_REPO_ROOT)' == ''">
