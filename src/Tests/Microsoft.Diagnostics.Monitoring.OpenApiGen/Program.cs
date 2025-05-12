@@ -70,22 +70,5 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen
             var openApiWriter = new OpenApiJsonWriter(writer);
             openApiDocument.SerializeAsV3(openApiWriter);
         }
-
-        private static object GetDocumentService(IServiceProvider serviceProvider)
-        {
-            var serviceType = Type.GetType("Microsoft.AspNetCore.OpenApi.OpenApiDocumentService, Microsoft.AspNetCore.OpenApi", throwOnError: true)!;
-            return serviceProvider.GetRequiredKeyedService(serviceType, "v1")!;
-
-        }
-
-        private static async Task<OpenApiDocument> GetOpenApiDocument(IHost host)
-        {
-            var documentService = GetDocumentService(host.Services);
-            var methodInfo = documentService.GetType().GetMethod("GetOpenApiDocumentAsync", BindingFlags.Public | BindingFlags.Instance)!;
-
-            object result = methodInfo.Invoke(documentService, new object?[] { host.Services, null, default(CancellationToken) })!;
-
-            return await (Task<OpenApiDocument>)result;
-        }
     }
 }
