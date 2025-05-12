@@ -3,6 +3,7 @@
 
 #nullable enable
 
+using System;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
@@ -10,5 +11,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
     [OptionsValidator]
     sealed partial class CollectionRuleActionOptionsValidator : IValidateOptions<CollectionRuleActionOptions>
     {
+        private readonly IServiceProvider _serviceProvider;
+
+        public CollectionRuleActionOptionsValidator(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
     }
 }

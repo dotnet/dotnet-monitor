@@ -747,50 +747,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
 {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Extensions.Options.SourceGeneration", "10.0.12.25812")]
-    internal sealed partial class __CollectionRuleActionOptionsValidator__
-    {
-        /// <summary>
-        /// Validates a specific named options instance (or all when <paramref name="name"/> is <see langword="null" />).
-        /// </summary>
-        /// <param name="name">The name of the options instance being validated.</param>
-        /// <param name="options">The options instance.</param>
-        /// <returns>Validation result.</returns>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Extensions.Options.SourceGeneration", "10.0.12.25812")]
-        #if !NET10_0_OR_GREATER
-        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("Trimming", "IL2026:RequiresUnreferencedCode",
-             Justification = "The created ValidationContext object is used in a way that never call reflection")]
-        #endif
-        public static global::Microsoft.Extensions.Options.ValidateOptionsResult Validate(string? name, global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleActionOptions options)
-        {
-            global::Microsoft.Extensions.Options.ValidateOptionsResultBuilder? builder = null;
-            #if NET10_0_OR_GREATER
-            string displayName = string.IsNullOrEmpty(name) ? "CollectionRuleActionOptions.Validate" : $"{name}.Validate";
-            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options, displayName, null, null);
-            #else
-            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options);
-            #endif
-            var validationResults = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationResult>();
-            var validationAttributes = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(1);
-
-            context.MemberName = "Type";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "CollectionRuleActionOptions.Type" : $"{name}.Type";
-            validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A1);
-            if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.Type, context, validationResults, validationAttributes))
-            {
-                (builder ??= new()).AddResults(validationResults);
-            }
-
-            context.MemberName = "Validate";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "CollectionRuleActionOptions.Validate" : $"{name}.Validate";
-            (builder ??= new()).AddResults(((global::System.ComponentModel.DataAnnotations.IValidatableObject)options).Validate(context));
-
-            return builder is null ? global::Microsoft.Extensions.Options.ValidateOptionsResult.Success : builder.Build();
-        }
-    }
-}
-namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
-{
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Extensions.Options.SourceGeneration", "10.0.12.25812")]
     internal sealed partial class __CollectionRuleLimitsOptionsValidator__
     {
         /// <summary>
@@ -843,50 +799,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             {
                 (builder ??= new()).AddResults(validationResults);
             }
-
-            return builder is null ? global::Microsoft.Extensions.Options.ValidateOptionsResult.Success : builder.Build();
-        }
-    }
-}
-namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
-{
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Extensions.Options.SourceGeneration", "10.0.12.25812")]
-    internal sealed partial class __CollectionRuleTriggerOptionsValidator__
-    {
-        /// <summary>
-        /// Validates a specific named options instance (or all when <paramref name="name"/> is <see langword="null" />).
-        /// </summary>
-        /// <param name="name">The name of the options instance being validated.</param>
-        /// <param name="options">The options instance.</param>
-        /// <returns>Validation result.</returns>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Extensions.Options.SourceGeneration", "10.0.12.25812")]
-        #if !NET10_0_OR_GREATER
-        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("Trimming", "IL2026:RequiresUnreferencedCode",
-             Justification = "The created ValidationContext object is used in a way that never call reflection")]
-        #endif
-        public static global::Microsoft.Extensions.Options.ValidateOptionsResult Validate(string? name, global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleTriggerOptions options)
-        {
-            global::Microsoft.Extensions.Options.ValidateOptionsResultBuilder? builder = null;
-            #if NET10_0_OR_GREATER
-            string displayName = string.IsNullOrEmpty(name) ? "CollectionRuleTriggerOptions.Validate" : $"{name}.Validate";
-            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options, displayName, null, null);
-            #else
-            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options);
-            #endif
-            var validationResults = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationResult>();
-            var validationAttributes = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(1);
-
-            context.MemberName = "Type";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "CollectionRuleTriggerOptions.Type" : $"{name}.Type";
-            validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A1);
-            if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.Type, context, validationResults, validationAttributes))
-            {
-                (builder ??= new()).AddResults(validationResults);
-            }
-
-            context.MemberName = "Validate";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "CollectionRuleTriggerOptions.Validate" : $"{name}.Validate";
-            (builder ??= new()).AddResults(((global::System.ComponentModel.DataAnnotations.IValidatableObject)options).Validate(context));
 
             return builder is null ? global::Microsoft.Extensions.Options.ValidateOptionsResult.Success : builder.Build();
         }
@@ -962,7 +874,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             global::Microsoft.Extensions.Options.ValidateOptionsResultBuilder? builder = null;
             #if NET10_0_OR_GREATER
             string displayName = string.IsNullOrEmpty(name) ? "CollectionRuleActionOptions.Validate" : $"{name}.Validate";
-            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options, displayName, null, null);
+            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options, displayName, _serviceProvider, null);
             #else
             var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options);
             #endif
@@ -1005,7 +917,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             global::Microsoft.Extensions.Options.ValidateOptionsResultBuilder? builder = null;
             #if NET10_0_OR_GREATER
             string displayName = string.IsNullOrEmpty(name) ? "CollectionRuleOptions.Validate" : $"{name}.Validate";
-            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options, displayName, null, null);
+            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options, displayName, _serviceProvider, null);
             #else
             var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options);
             #endif
@@ -1022,7 +934,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
 
             if (options.Trigger is not null)
             {
-                (builder ??= new()).AddResult(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.__CollectionRuleTriggerOptionsValidator__.Validate(string.IsNullOrEmpty(name) ? "CollectionRuleOptions.Trigger" : $"{name}.Trigger", options.Trigger));
+                (builder ??= new()).AddResult(new global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleTriggerOptionsValidator(_serviceProvider).Validate(string.IsNullOrEmpty(name) ? "CollectionRuleOptions.Trigger" : $"{name}.Trigger", options.Trigger));
             }
 
             if (options.Actions is not null)
@@ -1032,7 +944,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
                 {
                     if (o is not null)
                     {
-                        (builder ??= new()).AddResult(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.__CollectionRuleActionOptionsValidator__.Validate(string.IsNullOrEmpty(name) ? $"CollectionRuleOptions.Actions[{count}]" : $"{name}.Actions[{count}]", o));
+                        (builder ??= new()).AddResult(new global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleActionOptionsValidator(_serviceProvider).Validate(string.IsNullOrEmpty(name) ? $"CollectionRuleOptions.Actions[{count}]" : $"{name}.Actions[{count}]", o));
                     }
                     else
                     {
@@ -1075,7 +987,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             global::Microsoft.Extensions.Options.ValidateOptionsResultBuilder? builder = null;
             #if NET10_0_OR_GREATER
             string displayName = string.IsNullOrEmpty(name) ? "CollectionRuleTriggerOptions.Validate" : $"{name}.Validate";
-            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options, displayName, null, null);
+            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options, displayName, _serviceProvider, null);
             #else
             var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options);
             #endif
