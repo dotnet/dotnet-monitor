@@ -5,6 +5,7 @@ using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey;
 using Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd;
 using Microsoft.Diagnostics.Tools.Monitor.Auth.NoAuth;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Binder.SourceGeneration;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
@@ -45,7 +46,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth
                     AuthenticationOptions authOptions = new();
                     if (authConfigSection.Exists())
                     {
-                        authConfigSection.Bind(authOptions);
+                        authConfigSection.Bind_AuthenticationOptions(authOptions);
                         ValidateAuthConfigSection(authOptions, authConfigSection.Path);
                     }
 

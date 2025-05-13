@@ -9,6 +9,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.Event
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Binder.SourceGeneration;
 using System;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
@@ -121,7 +122,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         public bool TryBindOptions(IConfigurationSection settingsSection, out object? settings)
         {
             var options = new EventCounterOptions();
-            settingsSection.Bind(options);
+            settingsSection.Bind_EventCounterOptions(options);
             settings = options;
             return true;
         }
@@ -136,7 +137,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         public bool TryBindOptions(IConfigurationSection settingsSection, out object? settings)
         {
             var options = new CPUUsageOptions();
-            settingsSection.Bind(options);
+            settingsSection.Bind_CPUUsageOptions(options);
             settings = options;
             return true;
         }
@@ -151,7 +152,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         public bool TryBindOptions(IConfigurationSection settingsSection, out object? settings)
         {
             var options = new GCHeapSizeOptions();
-            settingsSection.Bind(options);
+            settingsSection.Bind_GCHeapSizeOptions(options);
             settings = options;
             return true;
         }
@@ -166,7 +167,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         public bool TryBindOptions(IConfigurationSection settingsSection, out object? settings)
         {
             var options = new ThreadpoolQueueLengthOptions();
-            settingsSection.Bind(options);
+            settingsSection.Bind_ThreadpoolQueueLengthOptions(options);
             settings = options;
             return true;
         }

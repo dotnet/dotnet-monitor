@@ -22,6 +22,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers
         {
             OpenApiResponse unauthorizedResponse = new();
             unauthorizedResponse.Description = "Bad Request";
+            unauthorizedResponse.Content ??= new();
             unauthorizedResponse.Content.Add(
                 ContentTypes.ApplicationProblemJson,
                 new OpenApiMediaType()

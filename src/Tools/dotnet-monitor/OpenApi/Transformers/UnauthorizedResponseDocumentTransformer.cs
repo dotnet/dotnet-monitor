@@ -22,6 +22,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers
 
             OpenApiResponse unauthorizedResponse = new();
             unauthorizedResponse.Description = "Unauthorized";
+            unauthorizedResponse.Headers ??= new();
             unauthorizedResponse.Headers.Add("WWW_Authenticate", authenticateHeader);
 
             OpenApiComponents components = openApiDoc.Components ??= new OpenApiComponents();
