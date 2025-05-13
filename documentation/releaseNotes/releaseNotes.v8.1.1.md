@@ -1,6 +1,6 @@
 Today we are releasing the 8.1.1 build of the `dotnet monitor` tool. This release includes:
 
-- Fix an issue where `/stacks` route can fail to collect call stacks after `/parameters` route is used ([#7917](https://github.com/dotnet/dotnet-monitor/pull/7917))
+- Updated dependencies
 
 
 
