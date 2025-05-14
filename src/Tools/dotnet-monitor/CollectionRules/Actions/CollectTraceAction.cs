@@ -113,6 +113,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
     [OptionsValidator]
     internal sealed partial class CollectTraceActionDescriptor : ICollectionRuleActionDescriptor<CollectTraceOptions, CollectTraceActionFactory>
     {
+        private readonly IServiceProvider _serviceProvider;
+
+        public CollectTraceActionDescriptor(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
+
         public string ActionName => KnownCollectionRuleActions.CollectTrace;
 
         public void BindOptions(IConfigurationSection settingsSection, out CollectTraceOptions options)

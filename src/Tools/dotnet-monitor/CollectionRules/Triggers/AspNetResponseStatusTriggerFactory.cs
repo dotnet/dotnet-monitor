@@ -9,6 +9,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Binder.SourceGeneration;
+using Microsoft.Extensions.Options;
 using System;
 using System.Globalization;
 using System.Linq;
@@ -63,17 +64,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         }
     }
 
-    internal sealed class AspNetResponseStatusTriggerDescriptor : ICollectionRuleTriggerDescriptor
+    [OptionsValidator]
+    internal sealed partial class AspNetResponseStatusTriggerDescriptor : ICollectionRuleTriggerDescriptor<AspNetResponseStatusOptions, AspNetResponseStatusTriggerFactory>
     {
-        public Type FactoryType => typeof(AspNetResponseStatusTriggerFactory);
-        public Type? OptionsType => typeof(AspNetResponseStatusOptions);
         public string TriggerName => KnownCollectionRuleTriggers.AspNetResponseStatus;
 
-        public bool TryBindOptions(IConfigurationSection settingsSection, out object? settings)
+        public bool TryBindOptions(IConfigurationSection settingsSection, out AspNetResponseStatusOptions options)
         {
-            var options = new AspNetResponseStatusOptions();
+            options = new AspNetResponseStatusOptions();
             settingsSection.Bind_AspNetResponseStatusOptions(options);
-            settings = options;
             return true;
         }
     }

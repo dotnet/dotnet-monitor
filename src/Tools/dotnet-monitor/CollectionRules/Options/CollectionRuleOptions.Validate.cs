@@ -27,21 +27,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
                 return results;
             }
 
-            ValidationContext filtersContext = new(Filters, validationContext, validationContext.Items);
-            filtersContext.MemberName = nameof(Filters);
-            ValidationHelper.TryValidateItems(Filters, filtersContext, results);
-
-            if (null != Trigger)
-            {
-                ValidationContext triggerContext = new(Trigger, validationContext, validationContext.Items);
-                triggerContext.MemberName = nameof(Trigger);
-                Validator.TryValidateObject(Trigger, triggerContext, results);
-            }
-
-            ValidationContext actionsContext = new(Actions, validationContext, validationContext.Items);
-            actionsContext.MemberName = nameof(Actions);
-            ValidationHelper.TryValidateItems(Actions, actionsContext, results);
-
             var actionNames = new HashSet<string>(StringComparer.Ordinal);
             foreach (CollectionRuleActionOptions option in Actions)
             {

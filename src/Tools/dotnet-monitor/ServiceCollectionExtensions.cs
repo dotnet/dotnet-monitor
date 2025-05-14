@@ -60,7 +60,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static IServiceCollection ConfigureGlobalCounter(this IServiceCollection services, IConfiguration configuration)
         {
             return services.Configure<GlobalCounterOptions>(configuration.GetSection(ConfigurationKeys.GlobalCounter))
-                .AddSingleton<IValidateOptions<GlobalCounterOptions>, DataAnnotationValidateOptions<GlobalCounterOptions>>();
+                .AddSingleton<IValidateOptions<GlobalCounterOptions>, GlobalCounterOptionsValidator>()
+                .AddSingleton<IValidateOptions<GlobalProviderOptions>, GlobalProviderOptionsValidator>();
 
         }
 
@@ -95,7 +96,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static IServiceCollection ConfigureMetrics(this IServiceCollection services, IConfiguration configuration)
         {
             return services.Configure<MetricsOptions>(configuration.GetSection(ConfigurationKeys.Metrics))
-                .AddSingleton<IValidateOptions<MetricsOptions>, DataAnnotationValidateOptions<MetricsOptions>>()
+                .AddSingleton<IValidateOptions<MetricsOptions>, MetricsOptionsValidator>()
                 .AddSingleton<MetricsStoreService>()
                 .AddHostedService<MetricsService>()
                 .AddSingleton<IMetricsPortsProvider, MetricsPortsProvider>();
@@ -223,14 +224,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static IServiceCollection RegisterCollectionRuleTrigger<TFactory, TOptions, TDescriptor>(this IServiceCollection services)
             where TFactory : class, ICollectionRuleTriggerFactory<TOptions>
             where TOptions : class, new()
-            where TDescriptor : class, ICollectionRuleTriggerDescriptor
+            where TDescriptor : class, ICollectionRuleTriggerDescriptor<TOptions, TFactory>
         {
             services.AddSingleton<TFactory>();
             services.AddSingleton<CollectionRuleTriggerFactoryProxy<TFactory, TOptions>>();
             services.AddSingleton<ICollectionRuleTriggerDescriptor, TDescriptor>();
             // NOTE: When opening collection rule triggers for extensibility, this should not be added for all registered triggers.
             // Each trigger should register its own IValidateOptions<> implementation (if it needs one).
-            services.AddSingleton<IValidateOptions<TOptions>, DataAnnotationValidateOptions<TOptions>>();
+            services.AddSingleton<IValidateOptions<TOptions>, TDescriptor>();
 
             return services;
         }

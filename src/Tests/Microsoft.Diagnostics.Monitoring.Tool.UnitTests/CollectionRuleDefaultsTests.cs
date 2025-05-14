@@ -70,9 +70,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }, host =>
             {
                 OptionsValidationException invalidOptionsException = Assert.Throws<OptionsValidationException>(
-                        () => ActionTestsHelper.GetActionOptions<OptionsValidationException>(host, DefaultRuleName));
+                        () => ActionTestsHelper.GetActionOptions<CollectDumpOptions>(host, DefaultRuleName));
 
-                Assert.Equal(string.Format(OptionsDisplayStrings.ErrorMessage_NoDefaultEgressProvider), invalidOptionsException.Message);
+                string message = string.Format(OptionsDisplayStrings.ErrorMessage_NoDefaultEgressProvider);
+
+                Assert.Equal($"{nameof(CollectDumpOptions.Egress)}: {message}", invalidOptionsException.Message);
             });
         }
 
@@ -143,7 +145,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 OptionsValidationException invalidOptionsException = Assert.Throws<OptionsValidationException>(
                         () => TriggerTestsHelper.GetTriggerOptions<AspNetRequestCountOptions>(host, DefaultRuleName));
 
-                VerifyRangeMessage<int>(invalidOptionsException, nameof(AspNetRequestCountOptions.RequestCount), "1", int.MaxValue.ToString());
+                VerifyRangeMessage<int>(invalidOptionsException, nameof(AspNetRequestCountOptions), nameof(AspNetRequestCountOptions.RequestCount), "1", int.MaxValue.ToString());
             });
         }
 
@@ -217,7 +219,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 OptionsValidationException invalidOptionsException = Assert.Throws<OptionsValidationException>(
                         () => TriggerTestsHelper.GetTriggerOptions<AspNetRequestDurationOptions>(host, DefaultRuleName));
 
-                VerifyRangeMessage<int>(invalidOptionsException, nameof(AspNetRequestDurationOptions.RequestCount), "1", int.MaxValue.ToString());
+                VerifyRangeMessage<int>(invalidOptionsException, nameof(AspNetRequestDurationOptions), nameof(AspNetRequestDurationOptions.RequestCount), "1", int.MaxValue.ToString());
             });
         }
 
@@ -297,7 +299,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 OptionsValidationException invalidOptionsException = Assert.Throws<OptionsValidationException>(
                         () => TriggerTestsHelper.GetTriggerOptions<AspNetResponseStatusOptions>(host, DefaultRuleName));
 
-                VerifyRangeMessage<int>(invalidOptionsException, nameof(AspNetResponseStatusOptions.ResponseCount), "1", int.MaxValue.ToString());
+                VerifyRangeMessage<int>(invalidOptionsException, nameof(AspNetResponseStatusOptions), nameof(AspNetResponseStatusOptions.ResponseCount), "1", int.MaxValue.ToString());
             });
         }
 
@@ -550,11 +552,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             });
         }
 
-        private static void VerifyRangeMessage<T>(Exception ex, string fieldName, string min, string max)
+        private static void VerifyRangeMessage<T>(Exception ex, string typeName, string fieldName, string min, string max)
         {
-            string message = (new RangeAttribute(typeof(T), min, max)).FormatErrorMessage(fieldName);
+            string message = (new RangeAttribute(typeof(T), min, max)).FormatErrorMessage($"{typeName}.{fieldName}");
 
-            Assert.Equal(message, ex.Message);
+            Assert.Equal($"{fieldName}: {message}", ex.Message);
         }
     }
 }

@@ -77,7 +77,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     string[] failures = ex.Failures.ToArray();
                     Assert.Single(failures);
-                    VerifyRequiredMessage(failures, 0, nameof(CollectionRuleOptions.Trigger));
+                    VerifyRequiredMessage(failures, 0, nameof(CollectionRuleOptions), nameof(CollectionRuleOptions.Trigger));
                 });
         }
 
@@ -195,14 +195,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 ex =>
                 {
                     string[] failures = ex.Failures.ToArray();
-                    // Property validation failures will short-circuit the remainder of the validation
-                    // rules, thus only observe 3 errors when one might expect 4 (the fourth being that
-                    // either GreaterThan or LessThan should be specified).
-                    Assert.Equal(3, failures.Length);
-                    VerifyRequiredMessage(failures, 0, nameof(EventCounterOptions.ProviderName));
-                    VerifyRequiredMessage(failures, 1, nameof(EventCounterOptions.CounterName));
-                    VerifyRangeMessage<TimeSpan>(failures, 2, nameof(EventCounterOptions.SlidingWindowDuration),
+                    Assert.Equal(4, failures.Length);
+                    VerifyRequiredMessage(failures, 0, nameof(EventCounterOptions), nameof(EventCounterOptions.ProviderName));
+                    VerifyRequiredMessage(failures, 1, nameof(EventCounterOptions), nameof(EventCounterOptions.CounterName));
+                    VerifyRangeMessage<TimeSpan>(failures, 2, nameof(EventCounterOptions), nameof(EventCounterOptions.SlidingWindowDuration),
                         TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
+                    VerifyEitherRequiredMessage(failures, 3, nameof(EventCounterOptions.GreaterThan), nameof(EventCounterOptions.LessThan));
                 });
         }
 
@@ -362,13 +360,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 ex =>
                 {
                     string[] failures = ex.Failures.ToArray();
-                    // Property validation failures will short-circuit the remainder of the validation
-                    // rules, thus only observe 3 errors when one might expect 4 (GreaterThan or LessThan should be specified).
-                    Assert.Equal(3, failures.Length);
-                    VerifyRequiredMessage(failures, 0, nameof(EventMeterOptions.MeterName));
-                    VerifyRequiredMessage(failures, 1, nameof(EventMeterOptions.InstrumentName));
-                    VerifyRangeMessage<TimeSpan>(failures, 2, nameof(EventMeterOptions.SlidingWindowDuration),
+                    Assert.Equal(4, failures.Length);
+                    VerifyRequiredMessage(failures, 0, nameof(EventMeterOptions), nameof(EventMeterOptions.MeterName));
+                    VerifyRequiredMessage(failures, 1, nameof(EventMeterOptions), nameof(EventMeterOptions.InstrumentName));
+                    VerifyRangeMessage<TimeSpan>(failures, 2, nameof(EventMeterOptions), nameof(EventMeterOptions.SlidingWindowDuration),
                         TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
+                    VerifyEitherRequiredMessage(failures, 3, nameof(EventMeterOptions.GreaterThan), nameof(EventMeterOptions.LessThan));
                 });
         }
 
@@ -410,8 +407,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     string[] failures = ex.Failures.ToArray();
                     Assert.Equal(2, failures.Length);
-                    VerifyRequiredMessage(failures, 0, nameof(EventMeterOptions.MeterName));
-                    VerifyRequiredMessage(failures, 1, nameof(EventMeterOptions.InstrumentName));
+                    VerifyRequiredMessage(failures, 0, nameof(EventMeterOptions), nameof(EventMeterOptions.MeterName));
+                    VerifyRequiredMessage(failures, 1, nameof(EventMeterOptions), nameof(EventMeterOptions.InstrumentName));
                 });
         }
 
@@ -460,7 +457,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     string[] failures = ex.Failures.ToArray();
                     Assert.Single(failures);
 
-                    VerifyRangeMessage<int>(failures, 0, nameof(EventMeterOptions.HistogramPercentile),
+                    VerifyRangeMessage<int>(failures, 0, nameof(EventMeterOptions), nameof(EventMeterOptions.HistogramPercentile),
                         TriggerOptionsConstants.Percentage_MinValue.ToString(), TriggerOptionsConstants.Percentage_MaxValue.ToString());
                 });
         }
@@ -550,11 +547,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     string[] failures = ex.Failures.ToArray();
 
                     Assert.Equal(3, failures.Length);
-                    VerifyRangeMessage<double>(failures, 0, nameof(CPUUsageOptions.GreaterThan),
+                    VerifyRangeMessage<double>(failures, 0, nameof(CPUUsageOptions), nameof(CPUUsageOptions.GreaterThan),
                         TriggerOptionsConstants.Percentage_MinValue.ToString(), TriggerOptionsConstants.Percentage_MaxValue.ToString());
-                    VerifyRangeMessage<double>(failures, 1, nameof(CPUUsageOptions.LessThan),
+                    VerifyRangeMessage<double>(failures, 1, nameof(CPUUsageOptions), nameof(CPUUsageOptions.LessThan),
                         TriggerOptionsConstants.Percentage_MinValue.ToString(), TriggerOptionsConstants.Percentage_MaxValue.ToString());
-                    VerifyRangeMessage<TimeSpan>(failures, 2, nameof(CPUUsageOptions.SlidingWindowDuration),
+                    VerifyRangeMessage<TimeSpan>(failures, 2, nameof(CPUUsageOptions), nameof(CPUUsageOptions.SlidingWindowDuration),
                         TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
                 });
         }
@@ -578,11 +575,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     string[] failures = ex.Failures.ToArray();
 
                     Assert.Equal(3, failures.Length);
-                    VerifyRangeMessage<double>(failures, 0, nameof(GCHeapSizeOptions.GreaterThan),
+                    VerifyRangeMessage<double>(failures, 0, nameof(GCHeapSizeOptions), nameof(GCHeapSizeOptions.GreaterThan),
                         "0", double.MaxValue.ToString());
-                    VerifyRangeMessage<double>(failures, 1, nameof(GCHeapSizeOptions.LessThan),
+                    VerifyRangeMessage<double>(failures, 1, nameof(GCHeapSizeOptions), nameof(GCHeapSizeOptions.LessThan),
                         "0", double.MaxValue.ToString());
-                    VerifyRangeMessage<TimeSpan>(failures, 2, nameof(GCHeapSizeOptions.SlidingWindowDuration),
+                    VerifyRangeMessage<TimeSpan>(failures, 2, nameof(GCHeapSizeOptions), nameof(GCHeapSizeOptions.SlidingWindowDuration),
                         TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
                 });
         }
@@ -606,11 +603,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     string[] failures = ex.Failures.ToArray();
 
                     Assert.Equal(3, failures.Length);
-                    VerifyRangeMessage<double>(failures, 0, nameof(ThreadpoolQueueLengthOptions.GreaterThan),
+                    VerifyRangeMessage<double>(failures, 0, nameof(ThreadpoolQueueLengthOptions), nameof(ThreadpoolQueueLengthOptions.GreaterThan),
                         "0", double.MaxValue.ToString());
-                    VerifyRangeMessage<double>(failures, 1, nameof(ThreadpoolQueueLengthOptions.LessThan),
+                    VerifyRangeMessage<double>(failures, 1, nameof(ThreadpoolQueueLengthOptions), nameof(ThreadpoolQueueLengthOptions.LessThan),
                         "0", double.MaxValue.ToString());
-                    VerifyRangeMessage<TimeSpan>(failures, 2, nameof(ThreadpoolQueueLengthOptions.SlidingWindowDuration),
+                    VerifyRangeMessage<TimeSpan>(failures, 2, nameof(ThreadpoolQueueLengthOptions), nameof(ThreadpoolQueueLengthOptions.SlidingWindowDuration),
                         TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
                 });
         }
@@ -703,7 +700,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     string[] failures = ex.Failures.ToArray();
 
                     Assert.Single(failures);
-                    VerifyRangeMessage<int>(failures, 0, nameof(AspNetRequestCountOptions.RequestCount), "1", int.MaxValue.ToString()); // Since non-nullable, defaults to 0
+                    VerifyRangeMessage<int>(failures, 0, nameof(AspNetRequestCountOptions), nameof(AspNetRequestCountOptions.RequestCount), "1", int.MaxValue.ToString()); // Since non-nullable, defaults to 0
                 });
         }
 
@@ -725,8 +722,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     string[] failures = ex.Failures.ToArray();
 
                     Assert.Equal(2, failures.Length);
-                    VerifyRangeMessage<int>(failures, 0, nameof(AspNetRequestCountOptions.RequestCount), "1", int.MaxValue.ToString());
-                    VerifyRangeMessage<TimeSpan>(failures, 1, nameof(AspNetRequestCountOptions.SlidingWindowDuration),
+                    VerifyRangeMessage<int>(failures, 0, nameof(AspNetRequestCountOptions), nameof(AspNetRequestCountOptions.RequestCount), "1", int.MaxValue.ToString());
+                    VerifyRangeMessage<TimeSpan>(failures, 1, nameof(AspNetRequestCountOptions), nameof(AspNetRequestCountOptions.SlidingWindowDuration),
                         TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
                 });
         }
@@ -799,7 +796,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     string[] failures = ex.Failures.ToArray();
 
                     Assert.Single(failures);
-                    VerifyRangeMessage<int>(failures, 0, nameof(AspNetRequestDurationOptions.RequestCount), "1", int.MaxValue.ToString()); // Since non-nullable, defaults to 0
+                    VerifyRangeMessage<int>(failures, 0, nameof(AspNetRequestDurationOptions), nameof(AspNetRequestDurationOptions.RequestCount), "1", int.MaxValue.ToString()); // Since non-nullable, defaults to 0
                 });
         }
 
@@ -822,10 +819,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     string[] failures = ex.Failures.ToArray();
 
                     Assert.Equal(3, failures.Length);
-                    VerifyRangeMessage<int>(failures, 0, nameof(AspNetRequestDurationOptions.RequestCount), "1", int.MaxValue.ToString());
-                    VerifyRangeMessage<TimeSpan>(failures, 1, nameof(AspNetRequestDurationOptions.RequestDuration),
+                    VerifyRangeMessage<int>(failures, 0, nameof(AspNetRequestDurationOptions), nameof(AspNetRequestDurationOptions.RequestCount), "1", int.MaxValue.ToString());
+                    VerifyRangeMessage<TimeSpan>(failures, 1, nameof(AspNetRequestDurationOptions), nameof(AspNetRequestDurationOptions.RequestDuration),
                         AspNetRequestDurationOptions.RequestDuration_MinValue, AspNetRequestDurationOptions.RequestDuration_MaxValue);
-                    VerifyRangeMessage<TimeSpan>(failures, 2, nameof(AspNetRequestDurationOptions.SlidingWindowDuration),
+                    VerifyRangeMessage<TimeSpan>(failures, 2, nameof(AspNetRequestDurationOptions), nameof(AspNetRequestDurationOptions.SlidingWindowDuration),
                         TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
                 });
         }
@@ -901,8 +898,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     string[] failures = ex.Failures.ToArray();
 
                     Assert.Equal(2, failures.Length);
-                    VerifyRequiredMessage(failures, 0, nameof(AspNetResponseStatusOptions.StatusCodes));
-                    VerifyRangeMessage<int>(failures, 1, nameof(AspNetResponseStatusOptions.ResponseCount), "1", int.MaxValue.ToString()); // Since non-nullable, defaults to 0
+                    VerifyRequiredMessage(failures, 0, nameof(AspNetResponseStatusOptions), nameof(AspNetResponseStatusOptions.StatusCodes));
+                    VerifyRangeMessage<int>(failures, 1, nameof(AspNetResponseStatusOptions), nameof(AspNetResponseStatusOptions.ResponseCount), "1", int.MaxValue.ToString()); // Since non-nullable, defaults to 0
                 });
         }
 
@@ -927,9 +924,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                     string[] failures = ex.Failures.ToArray();
 
                     Assert.Equal(3, failures.Length);
-                    VerifyStatusCodesRegexMessage(failures, 0, nameof(AspNetResponseStatusOptions.StatusCodes));
-                    VerifyRangeMessage<int>(failures, 1, nameof(AspNetResponseStatusOptions.ResponseCount), "1", int.MaxValue.ToString());
-                    VerifyRangeMessage<TimeSpan>(failures, 2, nameof(AspNetResponseStatusOptions.SlidingWindowDuration),
+                    VerifyStatusCodesRegexMessage(failures, 0, nameof(AspNetResponseStatusOptions), nameof(AspNetResponseStatusOptions.StatusCodes));
+                    VerifyRangeMessage<int>(failures, 1, nameof(AspNetResponseStatusOptions), nameof(AspNetResponseStatusOptions.ResponseCount), "1", int.MaxValue.ToString());
+                    VerifyRangeMessage<TimeSpan>(failures, 2, nameof(AspNetResponseStatusOptions), nameof(AspNetResponseStatusOptions.SlidingWindowDuration),
                         TriggerOptionsConstants.SlidingWindowDuration_MinValue, TriggerOptionsConstants.SlidingWindowDuration_MaxValue);
                 });
         }
@@ -968,7 +965,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     string[] failures = ex.Failures.ToArray();
                     Assert.Equal(2, failures.Length);
-                    VerifyEnumDataTypeMessage<DumpType>(failures, 0, nameof(CollectDumpOptions.Type));
+                    VerifyEnumDataTypeMessage<DumpType>(failures, 0, nameof(CollectDumpOptions), nameof(CollectDumpOptions.Type));
                     VerifyEgressNotExistMessage(failures, 1, UnknownEgressName);
                 });
         }
@@ -1091,10 +1088,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     string[] failures = ex.Failures.ToArray();
                     Assert.Equal(3, failures.Length);
-                    VerifyEnumDataTypeMessage<LogLevel>(failures, 0, nameof(CollectLogsOptions.DefaultLevel));
-                    VerifyRangeMessage<TimeSpan>(failures, 1, nameof(CollectLogsOptions.Duration),
+                    VerifyEnumDataTypeMessage<LogLevel>(failures, 0, nameof(CollectLogsOptions), nameof(CollectLogsOptions.DefaultLevel));
+                    VerifyRangeMessage<TimeSpan>(failures, 1, nameof(CollectLogsOptions), nameof(CollectLogsOptions.Duration),
                         ActionOptionsConstants.Duration_MinValue, ActionOptionsConstants.Duration_MaxValue);
-                    VerifyRequiredOrDefaultEgressProvider(failures, 2);
+                    VerifyRequiredOrDefaultEgressProvider(failures, 2, nameof(CollectLogsOptions.Egress));
                 });
         }
 
@@ -1122,7 +1119,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     string[] failures = ex.Failures.ToArray();
                     Assert.Single(failures);
-                    VerifyEnumDataTypeMessage<LogLevel>(failures, 0, nameof(CollectLogsOptions.FilterSpecs));
+                    VerifyEnumDataTypeMessage<LogLevel>(failures, 0, nameof(CollectLogsOptions), nameof(CollectLogsOptions.FilterSpecs));
                 });
         }
 
@@ -1259,12 +1256,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     string[] failures = ex.Failures.ToArray();
                     Assert.Equal(4, failures.Length);
-                    VerifyEnumDataTypeMessage<TraceProfile>(failures, 0, nameof(CollectTraceOptions.Profile));
-                    VerifyRangeMessage<int>(failures, 1, nameof(CollectTraceOptions.BufferSizeMegabytes),
+                    VerifyEnumDataTypeMessage<TraceProfile>(failures, 0, nameof(CollectTraceOptions), nameof(CollectTraceOptions.Profile));
+                    VerifyRangeMessage<int>(failures, 1, nameof(CollectTraceOptions), nameof(CollectTraceOptions.BufferSizeMegabytes),
                         ActionOptionsConstants.BufferSizeMegabytes_MinValue_String, ActionOptionsConstants.BufferSizeMegabytes_MaxValue_String);
-                    VerifyRangeMessage<TimeSpan>(failures, 2, nameof(CollectTraceOptions.Duration),
+                    VerifyRangeMessage<TimeSpan>(failures, 2, nameof(CollectTraceOptions), nameof(CollectTraceOptions.Duration),
                         ActionOptionsConstants.Duration_MinValue, ActionOptionsConstants.Duration_MaxValue);
-                    VerifyRequiredOrDefaultEgressProvider(failures, 3);
+                    VerifyRequiredOrDefaultEgressProvider(failures, 3, nameof(CollectTraceOptions.Egress));
                 });
         }
 
@@ -1294,7 +1291,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 ex =>
                 {
                     string failure = Assert.Single(ex.Failures);
-                    VerifyProviderIntervalMessage(failure, MonitoringSourceConfiguration.SystemRuntimeEventSourceName, ExpectedInterval);
+                    VerifyProviderIntervalMessage(failure, nameof(EventPipeProvider.Arguments), MonitoringSourceConfiguration.SystemRuntimeEventSourceName, ExpectedInterval);
                 });
         }
 
@@ -1401,7 +1398,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     string[] failures = ex.Failures.ToArray();
                     Assert.Single(failures);
-                    VerifyRequiredMessage(failures, 0, nameof(EventPipeProvider.Name));
+                    VerifyRequiredMessage(failures, 0, nameof(EventPipeProvider), nameof(EventPipeProvider.Name));
                 });
         }
 
@@ -1586,7 +1583,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     string[] failures = ex.Failures.ToArray();
                     Assert.Equal(2, failures.Length);
-                    VerifyRangeMessage<TimeSpan>(failures, 0, nameof(CollectTraceOptions.Duration),
+                    VerifyRangeMessage<TimeSpan>(failures, 0, nameof(CollectLiveMetricsOptions), nameof(CollectLiveMetricsOptions.Duration),
                         ActionOptionsConstants.Duration_MinValue, ActionOptionsConstants.Duration_MaxValue);
                     VerifyEgressNotExistMessage(failures, 1, UnknownEgressName);
                 });
@@ -1645,7 +1642,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     string[] failures = ex.Failures.ToArray();
                     Assert.Single(failures);
-                    VerifyRequiredMessage(failures, 0, nameof(ExecuteOptions.Path));
+                    VerifyRequiredMessage(failures, 0, nameof(ExecuteOptions), nameof(ExecuteOptions.Path));
                 });
         }
 
@@ -1694,7 +1691,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     string[] failures = ex.Failures.ToArray();
                     Assert.Single(failures);
-                    VerifyRequiredMessage(failures, 0, nameof(LoadProfilerOptions.Path));
+                    VerifyRequiredMessage(failures, 0, nameof(LoadProfilerOptions), nameof(LoadProfilerOptions.Path));
                 });
 
             await ValidateFailure(
@@ -1713,7 +1710,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     string[] failures = ex.Failures.ToArray();
                     Assert.Single(failures);
-                    VerifyRequiredMessage(failures, 0, nameof(LoadProfilerOptions.Path));
+                    VerifyRequiredMessage(failures, 0, nameof(LoadProfilerOptions), nameof(LoadProfilerOptions.Path));
                 });
 
             await ValidateFailure(
@@ -1732,7 +1729,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     string[] failures = ex.Failures.ToArray();
                     Assert.Single(failures);
-                    VerifyRequiredMessage(failures, 0, nameof(LoadProfilerOptions.Path));
+                    VerifyRequiredMessage(failures, 0, nameof(LoadProfilerOptions), nameof(LoadProfilerOptions.Path));
                 });
         }
 
@@ -1756,7 +1753,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     string[] failures = ex.Failures.ToArray();
                     Assert.Single(failures);
-                    VerifyRequiredGuidMessage(failures, 0, nameof(LoadProfilerOptions.Clsid));
+                    VerifyRequiredGuidMessage(failures, 0, nameof(LoadProfilerOptions), nameof(LoadProfilerOptions.Clsid));
                 });
         }
 
@@ -1813,7 +1810,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     string[] failures = ex.Failures.ToArray();
                     Assert.Single(failures);
-                    VerifyRequiredMessage(failures, 0, nameof(SetEnvironmentVariableOptions.Name));
+                    VerifyRequiredMessage(failures, 0, nameof(SetEnvironmentVariableOptions), nameof(SetEnvironmentVariableOptions.Name));
                 });
 
             await ValidateFailure(
@@ -1827,7 +1824,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     string[] failures = ex.Failures.ToArray();
                     Assert.Single(failures);
-                    VerifyRequiredMessage(failures, 0, nameof(SetEnvironmentVariableOptions.Name));
+                    VerifyRequiredMessage(failures, 0, nameof(SetEnvironmentVariableOptions), nameof(SetEnvironmentVariableOptions.Name));
                 });
 
             await ValidateFailure(
@@ -1841,7 +1838,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     string[] failures = ex.Failures.ToArray();
                     Assert.Single(failures);
-                    VerifyRequiredMessage(failures, 0, nameof(SetEnvironmentVariableOptions.Name));
+                    VerifyRequiredMessage(failures, 0, nameof(SetEnvironmentVariableOptions), nameof(SetEnvironmentVariableOptions.Name));
                 });
         }
 
@@ -1878,7 +1875,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     string[] failures = ex.Failures.ToArray();
                     Assert.Single(failures);
-                    VerifyRequiredMessage(failures, 0, nameof(GetEnvironmentVariableOptions.Name));
+                    VerifyRequiredMessage(failures, 0, nameof(GetEnvironmentVariableOptions), nameof(GetEnvironmentVariableOptions.Name));
                 });
 
             await ValidateFailure(
@@ -1892,7 +1889,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     string[] failures = ex.Failures.ToArray();
                     Assert.Single(failures);
-                    VerifyRequiredMessage(failures, 0, nameof(GetEnvironmentVariableOptions.Name));
+                    VerifyRequiredMessage(failures, 0, nameof(GetEnvironmentVariableOptions), nameof(GetEnvironmentVariableOptions.Name));
                 });
 
             await ValidateFailure(
@@ -1906,7 +1903,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 {
                     string[] failures = ex.Failures.ToArray();
                     Assert.Single(failures);
-                    VerifyRequiredMessage(failures, 0, nameof(GetEnvironmentVariableOptions.Name));
+                    VerifyRequiredMessage(failures, 0, nameof(GetEnvironmentVariableOptions), nameof(GetEnvironmentVariableOptions.Name));
                 });
         }
 
@@ -2261,37 +2258,39 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Equal(message, failures[index]);
         }
 
-        private static void VerifyRequiredMessage(string[] failures, int index, string fieldName)
+        private static void VerifyRequiredMessage(string[] failures, int index, string typeName, string fieldName)
         {
-            string message = (new RequiredAttribute()).FormatErrorMessage(fieldName);
+            string message = (new RequiredAttribute()).FormatErrorMessage($"{typeName}.{fieldName}");
+
+            Assert.Equal($"{fieldName}: {message}", failures[index]);
+        }
+
+        private static void VerifyRequiredOrDefaultEgressProvider(string[] failures, int index, string fieldName)
+        {
+            string message = WebApi.OptionsDisplayStrings.ErrorMessage_NoDefaultEgressProvider;
+
+            Assert.Equal($"{fieldName}: {message}", failures[index]);
+        }
+
+        private static void VerifyRequiredGuidMessage(string[] failures, int index, string typeName, string fieldName)
+        {
+            string message = (new RequiredGuidAttribute()).FormatErrorMessage($"{typeName}.{fieldName}");
 
             Assert.Equal(message, failures[index]);
         }
 
-        private static void VerifyRequiredOrDefaultEgressProvider(string[] failures, int index)
+        private static void VerifyEnumDataTypeMessage<T>(string[] failures, int index, string typeName, string fieldName)
         {
-            Assert.Equal(WebApi.OptionsDisplayStrings.ErrorMessage_NoDefaultEgressProvider, failures[index]);
+            string message = (new EnumDataTypeAttribute(typeof(T))).FormatErrorMessage($"{typeName}.{fieldName}");
+
+            Assert.Equal($"{fieldName}: {message}", failures[index]);
         }
 
-        private static void VerifyRequiredGuidMessage(string[] failures, int index, string fieldName)
+        private static void VerifyRangeMessage<T>(string[] failures, int index, string typeName, string fieldName, string min, string max)
         {
-            string message = (new RequiredGuidAttribute()).FormatErrorMessage(fieldName);
+            string message = (new RangeAttribute(typeof(T), min, max)).FormatErrorMessage($"{typeName}.{fieldName}");
 
-            Assert.Equal(message, failures[index]);
-        }
-
-        private static void VerifyEnumDataTypeMessage<T>(string[] failures, int index, string fieldName)
-        {
-            string message = (new EnumDataTypeAttribute(typeof(T))).FormatErrorMessage(fieldName);
-
-            Assert.Equal(message, failures[index]);
-        }
-
-        private static void VerifyRangeMessage<T>(string[] failures, int index, string fieldName, string min, string max)
-        {
-            string message = (new RangeAttribute(typeof(T), min, max)).FormatErrorMessage(fieldName);
-
-            Assert.Equal(message, failures[index]);
+            Assert.Equal($"{fieldName}: {message}", failures[index]);
         }
 
         private static void VerifyEitherRequiredMessage(string[] failures, int index, string fieldName1, string fieldName2)
@@ -2305,14 +2304,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Equal(message, failures[index]);
         }
 
-        private static void VerifyStatusCodesRegexMessage(string[] failures, int index, string fieldName)
+        private static void VerifyStatusCodesRegexMessage(string[] failures, int index, string typeName, string fieldName)
         {
             string message = string.Format(
                 CultureInfo.InvariantCulture,
                 WebApi.OptionsDisplayStrings.ErrorMessage_StatusCodesRegularExpressionDoesNotMatch,
-                fieldName);
+                $"{typeName}.{fieldName}");
 
-            Assert.Equal(message, failures[index]);
+            Assert.Equal($"{fieldName}: {message}", failures[index]);
         }
 
         private static void VerifyBothCannotBeSpecifiedMessage(string[] failures, int index, string fieldName1, string fieldName2)
@@ -2369,11 +2368,11 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Equal(message, failures[index]);
         }
 
-        private static void VerifyProviderIntervalMessage(string failure, string provider, int expectedInterval)
+        private static void VerifyProviderIntervalMessage(string failure, string fieldName, string provider, int expectedInterval)
         {
             string message = string.Format(CultureInfo.CurrentCulture, WebApi.Strings.ErrorMessage_InvalidMetricInterval, provider, expectedInterval);
 
-            Assert.Equal(message, failure);
+            Assert.Equal($"{fieldName}: {message}", failure);
         }
 
         private static void VerifyNestedGlobalInterval(string failure, string provider)
@@ -2381,9 +2380,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             string rangeValidationMessage = typeof(WebApi.GlobalProviderOptions)
                 .GetProperty(nameof(WebApi.GlobalProviderOptions.IntervalSeconds))
                 .GetCustomAttribute<RangeAttribute>()
-                .FormatErrorMessage(nameof(WebApi.GlobalProviderOptions.IntervalSeconds));
+                .FormatErrorMessage($"{nameof(WebApi.GlobalProviderOptions)}.{nameof(WebApi.GlobalProviderOptions.IntervalSeconds)}");
 
-            string message = string.Format(CultureInfo.CurrentCulture, WebApi.OptionsDisplayStrings.ErrorMessage_NestedProviderValidationError, provider, rangeValidationMessage);
+            string message = string.Format(CultureInfo.CurrentCulture, WebApi.OptionsDisplayStrings.ErrorMessage_NestedProviderValidationError, provider, $"{nameof(WebApi.GlobalProviderOptions.IntervalSeconds)}: {rangeValidationMessage}");
             Assert.Equal(message, failure);
         }
     }

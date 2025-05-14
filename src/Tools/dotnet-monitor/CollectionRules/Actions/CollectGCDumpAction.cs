@@ -66,6 +66,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
     [OptionsValidator]
     internal sealed partial class CollectGCDumpActionDescriptor : ICollectionRuleActionDescriptor<CollectGCDumpOptions, CollectGCDumpActionFactory>
     {
+        private readonly IServiceProvider _serviceProvider;
+
+        public CollectGCDumpActionDescriptor(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
+
         public string ActionName => KnownCollectionRuleActions.CollectGCDump;
 
         public void BindOptions(IConfigurationSection settingsSection, out CollectGCDumpOptions options)

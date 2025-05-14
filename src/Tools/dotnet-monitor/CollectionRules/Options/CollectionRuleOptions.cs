@@ -18,6 +18,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleOptions_Filters))]
+        [ValidateEnumeratedItems]
         public List<ProcessFilterDescriptor> Filters { get; set; } = [];
 
 #nullable disable

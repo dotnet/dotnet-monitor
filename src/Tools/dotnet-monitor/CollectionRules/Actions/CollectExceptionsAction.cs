@@ -63,6 +63,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
     [OptionsValidator]
     internal sealed partial class CollectExceptionsActionDescriptor : ICollectionRuleActionDescriptor<CollectExceptionsOptions, CollectExceptionsActionFactory>
     {
+        private readonly IServiceProvider _serviceProvider;
+
+        public CollectExceptionsActionDescriptor(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
+
         public string ActionName => KnownCollectionRuleActions.CollectExceptions;
 
         public void BindOptions(IConfigurationSection settingsSection, out CollectExceptionsOptions options)

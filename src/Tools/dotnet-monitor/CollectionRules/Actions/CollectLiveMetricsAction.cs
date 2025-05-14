@@ -101,6 +101,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
     [OptionsValidator]
     internal sealed partial class CollectLiveMetricsActionDescriptor : ICollectionRuleActionDescriptor<CollectLiveMetricsOptions, CollectLiveMetricsActionFactory>
     {
+        private readonly IServiceProvider _serviceProvider;
+
+        public CollectLiveMetricsActionDescriptor(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
+
         public string ActionName => KnownCollectionRuleActions.CollectLiveMetrics;
 
         public void BindOptions(IConfigurationSection settingsSection, out CollectLiveMetricsOptions options)

@@ -78,6 +78,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
     [OptionsValidator]
     internal sealed partial class CollectStacksActionDescriptor : ICollectionRuleActionDescriptor<CollectStacksOptions, CollectStacksActionFactory>
     {
+        private readonly IServiceProvider _serviceProvider;
+
+        public CollectStacksActionDescriptor(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
+
         public string ActionName => KnownCollectionRuleActions.CollectStacks;
 
         public void BindOptions(IConfigurationSection settingsSection, out CollectStacksOptions options)

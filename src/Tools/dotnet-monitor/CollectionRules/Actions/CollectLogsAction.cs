@@ -90,6 +90,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
     [OptionsValidator]
     internal sealed partial class CollectLogsActionDescriptor : ICollectionRuleActionDescriptor<CollectLogsOptions, CollectLogsActionFactory>
     {
+        private readonly IServiceProvider _serviceProvider;
+
+        public CollectLogsActionDescriptor(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
+
         public string ActionName => KnownCollectionRuleActions.CollectLogs;
 
         public void BindOptions(IConfigurationSection settingsSection, out CollectLogsOptions options)

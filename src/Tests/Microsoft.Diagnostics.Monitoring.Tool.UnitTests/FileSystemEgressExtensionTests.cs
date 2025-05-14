@@ -30,6 +30,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
         const string ExpectedFileContent = "This is egressed data.";
 
         private static readonly string CopyBufferSize_RangeErrorMessage = CreateRangeMessage<int>(
+            nameof(FileSystemEgressProviderOptions),
             nameof(FileSystemEgressProviderOptions.CopyBufferSize),
             FileSystemEgressProviderOptions.CopyBufferSize_MinValue.ToString(),
             FileSystemEgressProviderOptions.CopyBufferSize_MaxValue.ToString());
@@ -51,7 +52,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             OptionsValidationException exception = await Assert.ThrowsAsync<OptionsValidationException>(
                 () => extension.EgressArtifact(ProviderName, CreateSettings(), WriteFileContent, CancellationToken.None));
             string errorMessage = Assert.Single(exception.Failures);
-            Assert.Equal(CreateRequiredMessage(nameof(FileSystemEgressProviderOptions.DirectoryPath)), errorMessage);
+            string message = CreateRequiredMessage(nameof(FileSystemEgressProviderOptions), nameof(FileSystemEgressProviderOptions.DirectoryPath));
+            Assert.Equal($"{nameof(FileSystemEgressProviderOptions.DirectoryPath)}: {message}", errorMessage);
         }
 
         [Fact]
@@ -70,7 +72,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             OptionsValidationException exception = await Assert.ThrowsAsync<OptionsValidationException>(
                 () => extension.EgressArtifact(ProviderName, CreateSettings(), WriteFileContent, CancellationToken.None));
             string errorMessage = Assert.Single(exception.Failures);
-            Assert.Equal(CopyBufferSize_RangeErrorMessage, errorMessage);
+            Assert.Equal($"{nameof(FileSystemEgressProviderOptions.CopyBufferSize)}: {CopyBufferSize_RangeErrorMessage}", errorMessage);
         }
 
         [Fact]
@@ -175,14 +177,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             };
         }
 
-        private static string CreateRangeMessage<T>(string fieldName, string min, string max)
+        private static string CreateRangeMessage<T>(string typeName, string fieldName, string min, string max)
         {
-            return (new RangeAttribute(typeof(T), min, max)).FormatErrorMessage(fieldName);
+            return (new RangeAttribute(typeof(T), min, max)).FormatErrorMessage($"{typeName}.{fieldName}");
         }
 
-        private static string CreateRequiredMessage(string fieldName)
+        private static string CreateRequiredMessage(string typeName, string fieldName)
         {
-            return (new RequiredAttribute()).FormatErrorMessage(fieldName);
+            return (new RequiredAttribute()).FormatErrorMessage($"{typeName}.{fieldName}");
         }
 
         private static async Task WriteFileContent(Stream stream, CancellationToken token)

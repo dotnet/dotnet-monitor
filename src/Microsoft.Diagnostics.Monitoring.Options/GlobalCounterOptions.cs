@@ -7,6 +7,8 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
@@ -48,28 +50,44 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public float? IntervalSeconds { get; set; }
     }
 
+    [OptionsValidator]
+    partial class GlobalProviderOptionsValidator : IValidateOptions<GlobalProviderOptions>
+    {
+    }
+
     partial class GlobalCounterOptions : IValidatableObject
     {
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
+            var providerValidator = validationContext.GetRequiredService<IValidateOptions<GlobalProviderOptions>>();
             var results = new List<ValidationResult>();
 
             if (Providers != null)
             {
-                var providerResults = new List<ValidationResult>();
                 foreach ((string provider, GlobalProviderOptions options) in Providers)
                 {
-                    providerResults.Clear();
-                    if (!Validator.TryValidateObject(options, new ValidationContext(options), providerResults, true))
+                    ValidateOptionsResult providerResults = providerValidator.Validate(provider, options);
+                    if (providerResults.Failed)
                     {
                         // We prefix the validation error with the provider.
-                        results.AddRange(providerResults.Select(r => new ValidationResult(
-                            string.Format(CultureInfo.CurrentCulture, OptionsDisplayStrings.ErrorMessage_NestedProviderValidationError, provider, r.ErrorMessage))));
+                        results.AddRange(providerResults.Failures.Select(r => new ValidationResult(
+                            string.Format(CultureInfo.CurrentCulture, OptionsDisplayStrings.ErrorMessage_NestedProviderValidationError, provider, r))));
                     }
                 }
             }
 
             return results;
+        }
+    }
+
+    [OptionsValidator]
+    partial class GlobalCounterOptionsValidator : IValidateOptions<GlobalCounterOptions>
+    {
+        private readonly IServiceProvider _serviceProvider;
+
+        public GlobalCounterOptionsValidator(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
         }
     }
 

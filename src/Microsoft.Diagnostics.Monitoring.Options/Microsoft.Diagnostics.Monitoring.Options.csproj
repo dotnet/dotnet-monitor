@@ -9,6 +9,7 @@
     <IsShippingAssembly>true</IsShippingAssembly>
     <OutputType>Library</OutputType>
     <Nullable>enable</Nullable>
+    <DisableOptionsValidationGenerator>true</DisableOptionsValidationGenerator>
   </PropertyGroup>
 
   <ItemGroup>

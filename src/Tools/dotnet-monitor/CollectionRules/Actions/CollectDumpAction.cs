@@ -74,6 +74,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
     [OptionsValidator]
     internal sealed partial class CollectDumpActionDescriptor : ICollectionRuleActionDescriptor<CollectDumpOptions, CollectDumpActionFactory>
     {
+        private readonly IServiceProvider _serviceProvider;
+
+        public CollectDumpActionDescriptor(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
+
         public string ActionName => KnownCollectionRuleActions.CollectDump;
 
         public void BindOptions(IConfigurationSection settingsSection, out CollectDumpOptions options)

@@ -31,7 +31,7 @@
             var validationAttributes = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(2);
 
             context.MemberName = "MeterName";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "EventMetricsMeter.MeterName" : $"{name}.MeterName";
+            context.DisplayName = "EventMetricsMeter.MeterName";
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A1);
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A2);
             if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.MeterName, context, validationResults, validationAttributes))
@@ -72,7 +72,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
             var validationAttributes = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(2);
 
             context.MemberName = "ProviderName";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "EventMetricsProvider.ProviderName" : $"{name}.ProviderName";
+            context.DisplayName = "EventMetricsProvider.ProviderName";
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A1);
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A2);
             if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.ProviderName, context, validationResults, validationAttributes))
@@ -113,7 +113,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
             var validationAttributes = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(2);
 
             context.MemberName = "Name";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "EventPipeProvider.Name" : $"{name}.Name";
+            context.DisplayName = "EventPipeProvider.Name";
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A1);
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A2);
             if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.Name, context, validationResults, validationAttributes))
@@ -122,7 +122,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
             }
 
             context.MemberName = "Keywords";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "EventPipeProvider.Keywords" : $"{name}.Keywords";
+            context.DisplayName = "EventPipeProvider.Keywords";
             validationResults.Clear();
             validationAttributes.Clear();
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A3);
@@ -132,7 +132,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Models
             }
 
             context.MemberName = "EventLevel";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "EventPipeProvider.EventLevel" : $"{name}.EventLevel";
+            context.DisplayName = "EventPipeProvider.EventLevel";
             validationResults.Clear();
             validationAttributes.Clear();
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A4);
@@ -165,7 +165,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             global::Microsoft.Extensions.Options.ValidateOptionsResultBuilder? builder = null;
             #if NET10_0_OR_GREATER
             string displayName = string.IsNullOrEmpty(name) ? "CollectDumpOptions.Validate" : $"{name}.Validate";
-            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options, displayName, null, null);
+            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options, displayName, _serviceProvider, null);
             #else
             var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options);
             #endif
@@ -173,7 +173,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             var validationAttributes = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(2);
 
             context.MemberName = "Type";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "CollectDumpOptions.Type" : $"{name}.Type";
+            context.DisplayName = "CollectDumpOptions.Type";
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A5);
             if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.Type, context, validationResults, validationAttributes))
             {
@@ -181,7 +181,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             }
 
             context.MemberName = "Egress";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "CollectDumpOptions.Egress" : $"{name}.Egress";
+            context.DisplayName = "CollectDumpOptions.Egress";
             validationResults.Clear();
             validationAttributes.Clear();
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A6);
@@ -215,7 +215,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             global::Microsoft.Extensions.Options.ValidateOptionsResultBuilder? builder = null;
             #if NET10_0_OR_GREATER
             string displayName = string.IsNullOrEmpty(name) ? "CollectExceptionsOptions.Validate" : $"{name}.Validate";
-            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options, displayName, null, null);
+            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options, displayName, _serviceProvider, null);
             #else
             var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options);
             #endif
@@ -223,7 +223,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             var validationAttributes = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(2);
 
             context.MemberName = "Egress";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "CollectExceptionsOptions.Egress" : $"{name}.Egress";
+            context.DisplayName = "CollectExceptionsOptions.Egress";
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A6);
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A7);
             if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.Egress, context, validationResults, validationAttributes))
@@ -232,7 +232,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             }
 
             context.MemberName = "Validate";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "CollectExceptionsOptions.Validate" : $"{name}.Validate";
+            context.DisplayName = "CollectExceptionsOptions.Validate";
             (builder ??= new()).AddResults(((global::System.ComponentModel.DataAnnotations.IValidatableObject)options).Validate(context));
 
             return builder is null ? global::Microsoft.Extensions.Options.ValidateOptionsResult.Success : builder.Build();
@@ -259,7 +259,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             global::Microsoft.Extensions.Options.ValidateOptionsResultBuilder? builder = null;
             #if NET10_0_OR_GREATER
             string displayName = string.IsNullOrEmpty(name) ? "CollectGCDumpOptions.Validate" : $"{name}.Validate";
-            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options, displayName, null, null);
+            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options, displayName, _serviceProvider, null);
             #else
             var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options);
             #endif
@@ -267,7 +267,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             var validationAttributes = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(2);
 
             context.MemberName = "Egress";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "CollectGCDumpOptions.Egress" : $"{name}.Egress";
+            context.DisplayName = "CollectGCDumpOptions.Egress";
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A6);
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A7);
             if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.Egress, context, validationResults, validationAttributes))
@@ -299,7 +299,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             global::Microsoft.Extensions.Options.ValidateOptionsResultBuilder? builder = null;
             #if NET10_0_OR_GREATER
             string displayName = string.IsNullOrEmpty(name) ? "CollectLiveMetricsOptions.Validate" : $"{name}.Validate";
-            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options, displayName, null, null);
+            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options, displayName, _serviceProvider, null);
             #else
             var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options);
             #endif
@@ -341,7 +341,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             }
 
             context.MemberName = "Duration";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "CollectLiveMetricsOptions.Duration" : $"{name}.Duration";
+            context.DisplayName = "CollectLiveMetricsOptions.Duration";
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A8);
             if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.Duration, context, validationResults, validationAttributes))
             {
@@ -349,7 +349,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             }
 
             context.MemberName = "Egress";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "CollectLiveMetricsOptions.Egress" : $"{name}.Egress";
+            context.DisplayName = "CollectLiveMetricsOptions.Egress";
             validationResults.Clear();
             validationAttributes.Clear();
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A6);
@@ -383,7 +383,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             global::Microsoft.Extensions.Options.ValidateOptionsResultBuilder? builder = null;
             #if NET10_0_OR_GREATER
             string displayName = string.IsNullOrEmpty(name) ? "CollectLogsOptions.Validate" : $"{name}.Validate";
-            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options, displayName, null, null);
+            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options, displayName, _serviceProvider, null);
             #else
             var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options);
             #endif
@@ -391,7 +391,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             var validationAttributes = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(2);
 
             context.MemberName = "DefaultLevel";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "CollectLogsOptions.DefaultLevel" : $"{name}.DefaultLevel";
+            context.DisplayName = "CollectLogsOptions.DefaultLevel";
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A9);
             if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.DefaultLevel, context, validationResults, validationAttributes))
             {
@@ -399,7 +399,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             }
 
             context.MemberName = "Duration";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "CollectLogsOptions.Duration" : $"{name}.Duration";
+            context.DisplayName = "CollectLogsOptions.Duration";
             validationResults.Clear();
             validationAttributes.Clear();
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A8);
@@ -409,7 +409,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             }
 
             context.MemberName = "Egress";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "CollectLogsOptions.Egress" : $"{name}.Egress";
+            context.DisplayName = "CollectLogsOptions.Egress";
             validationResults.Clear();
             validationAttributes.Clear();
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A6);
@@ -420,7 +420,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             }
 
             context.MemberName = "Format";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "CollectLogsOptions.Format" : $"{name}.Format";
+            context.DisplayName = "CollectLogsOptions.Format";
             validationResults.Clear();
             validationAttributes.Clear();
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A10);
@@ -430,7 +430,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             }
 
             context.MemberName = "Validate";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "CollectLogsOptions.Validate" : $"{name}.Validate";
+            context.DisplayName = "CollectLogsOptions.Validate";
             (builder ??= new()).AddResults(((global::System.ComponentModel.DataAnnotations.IValidatableObject)options).Validate(context));
 
             return builder is null ? global::Microsoft.Extensions.Options.ValidateOptionsResult.Success : builder.Build();
@@ -457,7 +457,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             global::Microsoft.Extensions.Options.ValidateOptionsResultBuilder? builder = null;
             #if NET10_0_OR_GREATER
             string displayName = string.IsNullOrEmpty(name) ? "CollectStacksOptions.Validate" : $"{name}.Validate";
-            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options, displayName, null, null);
+            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options, displayName, _serviceProvider, null);
             #else
             var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options);
             #endif
@@ -465,7 +465,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             var validationAttributes = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(2);
 
             context.MemberName = "Egress";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "CollectStacksOptions.Egress" : $"{name}.Egress";
+            context.DisplayName = "CollectStacksOptions.Egress";
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A6);
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A7);
             if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.Egress, context, validationResults, validationAttributes))
@@ -474,7 +474,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             }
 
             context.MemberName = "Validate";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "CollectStacksOptions.Validate" : $"{name}.Validate";
+            context.DisplayName = "CollectStacksOptions.Validate";
             (builder ??= new()).AddResults(((global::System.ComponentModel.DataAnnotations.IValidatableObject)options).Validate(context));
 
             return builder is null ? global::Microsoft.Extensions.Options.ValidateOptionsResult.Success : builder.Build();
@@ -501,7 +501,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             global::Microsoft.Extensions.Options.ValidateOptionsResultBuilder? builder = null;
             #if NET10_0_OR_GREATER
             string displayName = string.IsNullOrEmpty(name) ? "CollectTraceOptions.Validate" : $"{name}.Validate";
-            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options, displayName, null, null);
+            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options, displayName, _serviceProvider, null);
             #else
             var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options);
             #endif
@@ -509,7 +509,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             var validationAttributes = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(2);
 
             context.MemberName = "Profile";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "CollectTraceOptions.Profile" : $"{name}.Profile";
+            context.DisplayName = "CollectTraceOptions.Profile";
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A11);
             if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.Profile, context, validationResults, validationAttributes))
             {
@@ -534,7 +534,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             }
 
             context.MemberName = "BufferSizeMegabytes";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "CollectTraceOptions.BufferSizeMegabytes" : $"{name}.BufferSizeMegabytes";
+            context.DisplayName = "CollectTraceOptions.BufferSizeMegabytes";
             validationResults.Clear();
             validationAttributes.Clear();
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A12);
@@ -544,7 +544,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             }
 
             context.MemberName = "Duration";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "CollectTraceOptions.Duration" : $"{name}.Duration";
+            context.DisplayName = "CollectTraceOptions.Duration";
             validationResults.Clear();
             validationAttributes.Clear();
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A8);
@@ -554,7 +554,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             }
 
             context.MemberName = "Egress";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "CollectTraceOptions.Egress" : $"{name}.Egress";
+            context.DisplayName = "CollectTraceOptions.Egress";
             validationResults.Clear();
             validationAttributes.Clear();
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A6);
@@ -570,7 +570,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             }
 
             context.MemberName = "Validate";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "CollectTraceOptions.Validate" : $"{name}.Validate";
+            context.DisplayName = "CollectTraceOptions.Validate";
             (builder ??= new()).AddResults(((global::System.ComponentModel.DataAnnotations.IValidatableObject)options).Validate(context));
 
             return builder is null ? global::Microsoft.Extensions.Options.ValidateOptionsResult.Success : builder.Build();
@@ -605,7 +605,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             var validationAttributes = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(1);
 
             context.MemberName = "Path";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "ExecuteOptions.Path" : $"{name}.Path";
+            context.DisplayName = "ExecuteOptions.Path";
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A1);
             if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.Path, context, validationResults, validationAttributes))
             {
@@ -644,7 +644,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             var validationAttributes = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(1);
 
             context.MemberName = "Name";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "GetEnvironmentVariableOptions.Name" : $"{name}.Name";
+            context.DisplayName = "GetEnvironmentVariableOptions.Name";
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A1);
             if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.Name, context, validationResults, validationAttributes))
             {
@@ -683,7 +683,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             var validationAttributes = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(2);
 
             context.MemberName = "Path";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "LoadProfilerOptions.Path" : $"{name}.Path";
+            context.DisplayName = "LoadProfilerOptions.Path";
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A1);
             if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.Path, context, validationResults, validationAttributes))
             {
@@ -691,7 +691,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             }
 
             context.MemberName = "Clsid";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "LoadProfilerOptions.Clsid" : $"{name}.Clsid";
+            context.DisplayName = "LoadProfilerOptions.Clsid";
             validationResults.Clear();
             validationAttributes.Clear();
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A1);
@@ -733,7 +733,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             var validationAttributes = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(1);
 
             context.MemberName = "Name";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "SetEnvironmentVariableOptions.Name" : $"{name}.Name";
+            context.DisplayName = "SetEnvironmentVariableOptions.Name";
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A1);
             if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.Name, context, validationResults, validationAttributes))
             {
@@ -773,7 +773,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             var validationAttributes = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(1);
 
             context.MemberName = "ActionCount";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "CollectionRuleLimitsOptions.ActionCount" : $"{name}.ActionCount";
+            context.DisplayName = "CollectionRuleLimitsOptions.ActionCount";
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A14);
             if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.ActionCount, context, validationResults, validationAttributes))
             {
@@ -781,7 +781,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             }
 
             context.MemberName = "ActionCountSlidingWindowDuration";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "CollectionRuleLimitsOptions.ActionCountSlidingWindowDuration" : $"{name}.ActionCountSlidingWindowDuration";
+            context.DisplayName = "CollectionRuleLimitsOptions.ActionCountSlidingWindowDuration";
             validationResults.Clear();
             validationAttributes.Clear();
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A8);
@@ -791,7 +791,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             }
 
             context.MemberName = "RuleDuration";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "CollectionRuleLimitsOptions.RuleDuration" : $"{name}.RuleDuration";
+            context.DisplayName = "CollectionRuleLimitsOptions.RuleDuration";
             validationResults.Clear();
             validationAttributes.Clear();
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A15);
@@ -833,7 +833,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
             var validationAttributes = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(1);
 
             context.MemberName = "ProviderName";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "TraceEventFilter.ProviderName" : $"{name}.ProviderName";
+            context.DisplayName = "TraceEventFilter.ProviderName";
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A1);
             if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.ProviderName, context, validationResults, validationAttributes))
             {
@@ -841,7 +841,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
             }
 
             context.MemberName = "EventName";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "TraceEventFilter.EventName" : $"{name}.EventName";
+            context.DisplayName = "TraceEventFilter.EventName";
             validationResults.Clear();
             validationAttributes.Clear();
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A1);
@@ -882,7 +882,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             var validationAttributes = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(1);
 
             context.MemberName = "Type";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "CollectionRuleActionOptions.Type" : $"{name}.Type";
+            context.DisplayName = "CollectionRuleActionOptions.Type";
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A1);
             if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.Type, context, validationResults, validationAttributes))
             {
@@ -890,77 +890,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             }
 
             context.MemberName = "Validate";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "CollectionRuleActionOptions.Validate" : $"{name}.Validate";
-            (builder ??= new()).AddResults(((global::System.ComponentModel.DataAnnotations.IValidatableObject)options).Validate(context));
-
-            return builder is null ? global::Microsoft.Extensions.Options.ValidateOptionsResult.Success : builder.Build();
-        }
-    }
-}
-namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
-{
-    partial class CollectionRuleOptionsValidator
-    {
-        /// <summary>
-        /// Validates a specific named options instance (or all when <paramref name="name"/> is <see langword="null" />).
-        /// </summary>
-        /// <param name="name">The name of the options instance being validated.</param>
-        /// <param name="options">The options instance.</param>
-        /// <returns>Validation result.</returns>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Extensions.Options.SourceGeneration", "10.0.12.25812")]
-        #if !NET10_0_OR_GREATER
-        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("Trimming", "IL2026:RequiresUnreferencedCode",
-             Justification = "The created ValidationContext object is used in a way that never call reflection")]
-        #endif
-        public global::Microsoft.Extensions.Options.ValidateOptionsResult Validate(string? name, global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleOptions options)
-        {
-            global::Microsoft.Extensions.Options.ValidateOptionsResultBuilder? builder = null;
-            #if NET10_0_OR_GREATER
-            string displayName = string.IsNullOrEmpty(name) ? "CollectionRuleOptions.Validate" : $"{name}.Validate";
-            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options, displayName, _serviceProvider, null);
-            #else
-            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options);
-            #endif
-            var validationResults = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationResult>();
-            var validationAttributes = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(1);
-
-            context.MemberName = "Trigger";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "CollectionRuleOptions.Trigger" : $"{name}.Trigger";
-            validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A1);
-            if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.Trigger, context, validationResults, validationAttributes))
-            {
-                (builder ??= new()).AddResults(validationResults);
-            }
-
-            if (options.Trigger is not null)
-            {
-                (builder ??= new()).AddResult(new global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleTriggerOptionsValidator(_serviceProvider).Validate(string.IsNullOrEmpty(name) ? "CollectionRuleOptions.Trigger" : $"{name}.Trigger", options.Trigger));
-            }
-
-            if (options.Actions is not null)
-            {
-                var count = 0;
-                foreach (var o in options.Actions)
-                {
-                    if (o is not null)
-                    {
-                        (builder ??= new()).AddResult(new global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleActionOptionsValidator(_serviceProvider).Validate(string.IsNullOrEmpty(name) ? $"CollectionRuleOptions.Actions[{count}]" : $"{name}.Actions[{count}]", o));
-                    }
-                    else
-                    {
-                        (builder ??= new()).AddError(string.IsNullOrEmpty(name) ? $"CollectionRuleOptions.Actions[{count}] is null" : $"{name}.Actions[{count}] is null");
-                    }
-                    count++;
-                }
-            }
-
-            if (options.Limits is not null)
-            {
-                (builder ??= new()).AddResult(global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.__CollectionRuleLimitsOptionsValidator__.Validate(string.IsNullOrEmpty(name) ? "CollectionRuleOptions.Limits" : $"{name}.Limits", options.Limits));
-            }
-
-            context.MemberName = "Validate";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "CollectionRuleOptions.Validate" : $"{name}.Validate";
+            context.DisplayName = "CollectionRuleActionOptions.Validate";
             (builder ??= new()).AddResults(((global::System.ComponentModel.DataAnnotations.IValidatableObject)options).Validate(context));
 
             return builder is null ? global::Microsoft.Extensions.Options.ValidateOptionsResult.Success : builder.Build();
@@ -995,7 +925,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             var validationAttributes = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(1);
 
             context.MemberName = "Type";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "CollectionRuleTriggerOptions.Type" : $"{name}.Type";
+            context.DisplayName = "CollectionRuleTriggerOptions.Type";
             validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A1);
             if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.Type, context, validationResults, validationAttributes))
             {
@@ -1003,7 +933,567 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             }
 
             context.MemberName = "Validate";
-            context.DisplayName = string.IsNullOrEmpty(name) ? "CollectionRuleTriggerOptions.Validate" : $"{name}.Validate";
+            context.DisplayName = "CollectionRuleTriggerOptions.Validate";
+            (builder ??= new()).AddResults(((global::System.ComponentModel.DataAnnotations.IValidatableObject)options).Validate(context));
+
+            return builder is null ? global::Microsoft.Extensions.Options.ValidateOptionsResult.Success : builder.Build();
+        }
+    }
+}
+namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
+{
+    partial class EventCounterOptions
+    {
+        /// <summary>
+        /// Validates a specific named options instance (or all when <paramref name="name"/> is <see langword="null" />).
+        /// </summary>
+        /// <param name="name">The name of the options instance being validated.</param>
+        /// <param name="options">The options instance.</param>
+        /// <returns>Validation result.</returns>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Extensions.Options.SourceGeneration", "10.0.12.25812")]
+        #if !NET10_0_OR_GREATER
+        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("Trimming", "IL2026:RequiresUnreferencedCode",
+             Justification = "The created ValidationContext object is used in a way that never call reflection")]
+        #endif
+        public global::Microsoft.Extensions.Options.ValidateOptionsResult Validate(string? name, global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterOptions options)
+        {
+            global::Microsoft.Extensions.Options.ValidateOptionsResultBuilder? builder = null;
+            #if NET10_0_OR_GREATER
+            string displayName = string.IsNullOrEmpty(name) ? "EventCounterOptions.Validate" : $"{name}.Validate";
+            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options, displayName, null, null);
+            #else
+            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options);
+            #endif
+            var validationResults = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationResult>();
+            var validationAttributes = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(1);
+
+            context.MemberName = "ProviderName";
+            context.DisplayName = "EventCounterOptions.ProviderName";
+            validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A1);
+            if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.ProviderName, context, validationResults, validationAttributes))
+            {
+                (builder ??= new()).AddResults(validationResults);
+            }
+
+            context.MemberName = "CounterName";
+            context.DisplayName = "EventCounterOptions.CounterName";
+            validationResults.Clear();
+            validationAttributes.Clear();
+            validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A1);
+            if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.CounterName, context, validationResults, validationAttributes))
+            {
+                (builder ??= new()).AddResults(validationResults);
+            }
+
+            context.MemberName = "SlidingWindowDuration";
+            context.DisplayName = "EventCounterOptions.SlidingWindowDuration";
+            validationResults.Clear();
+            validationAttributes.Clear();
+            validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A8);
+            if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.SlidingWindowDuration, context, validationResults, validationAttributes))
+            {
+                (builder ??= new()).AddResults(validationResults);
+            }
+
+            context.MemberName = "Validate";
+            context.DisplayName = "EventCounterOptions.Validate";
+            (builder ??= new()).AddResults(((global::System.ComponentModel.DataAnnotations.IValidatableObject)options).Validate(context));
+
+            return builder is null ? global::Microsoft.Extensions.Options.ValidateOptionsResult.Success : builder.Build();
+        }
+    }
+}
+namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
+{
+    partial class AspNetRequestCountTriggerDescriptor
+    {
+        /// <summary>
+        /// Validates a specific named options instance (or all when <paramref name="name"/> is <see langword="null" />).
+        /// </summary>
+        /// <param name="name">The name of the options instance being validated.</param>
+        /// <param name="options">The options instance.</param>
+        /// <returns>Validation result.</returns>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Extensions.Options.SourceGeneration", "10.0.12.25812")]
+        #if !NET10_0_OR_GREATER
+        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("Trimming", "IL2026:RequiresUnreferencedCode",
+             Justification = "The created ValidationContext object is used in a way that never call reflection")]
+        #endif
+        public global::Microsoft.Extensions.Options.ValidateOptionsResult Validate(string? name, global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetRequestCountOptions options)
+        {
+            global::Microsoft.Extensions.Options.ValidateOptionsResultBuilder? builder = null;
+            #if NET10_0_OR_GREATER
+            string displayName = string.IsNullOrEmpty(name) ? "AspNetRequestCountOptions.Validate" : $"{name}.Validate";
+            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options, displayName, null, null);
+            #else
+            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options);
+            #endif
+            var validationResults = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationResult>();
+            var validationAttributes = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(2);
+
+            context.MemberName = "RequestCount";
+            context.DisplayName = "AspNetRequestCountOptions.RequestCount";
+            validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A16);
+            validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A14);
+            if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.RequestCount, context, validationResults, validationAttributes))
+            {
+                (builder ??= new()).AddResults(validationResults);
+            }
+
+            context.MemberName = "SlidingWindowDuration";
+            context.DisplayName = "AspNetRequestCountOptions.SlidingWindowDuration";
+            validationResults.Clear();
+            validationAttributes.Clear();
+            validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A8);
+            if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.SlidingWindowDuration, context, validationResults, validationAttributes))
+            {
+                (builder ??= new()).AddResults(validationResults);
+            }
+
+            return builder is null ? global::Microsoft.Extensions.Options.ValidateOptionsResult.Success : builder.Build();
+        }
+    }
+}
+namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
+{
+    partial class AspNetRequestDurationTriggerDescriptor
+    {
+        /// <summary>
+        /// Validates a specific named options instance (or all when <paramref name="name"/> is <see langword="null" />).
+        /// </summary>
+        /// <param name="name">The name of the options instance being validated.</param>
+        /// <param name="options">The options instance.</param>
+        /// <returns>Validation result.</returns>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Extensions.Options.SourceGeneration", "10.0.12.25812")]
+        #if !NET10_0_OR_GREATER
+        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("Trimming", "IL2026:RequiresUnreferencedCode",
+             Justification = "The created ValidationContext object is used in a way that never call reflection")]
+        #endif
+        public global::Microsoft.Extensions.Options.ValidateOptionsResult Validate(string? name, global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetRequestDurationOptions options)
+        {
+            global::Microsoft.Extensions.Options.ValidateOptionsResultBuilder? builder = null;
+            #if NET10_0_OR_GREATER
+            string displayName = string.IsNullOrEmpty(name) ? "AspNetRequestDurationOptions.Validate" : $"{name}.Validate";
+            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options, displayName, null, null);
+            #else
+            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options);
+            #endif
+            var validationResults = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationResult>();
+            var validationAttributes = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(2);
+
+            context.MemberName = "RequestCount";
+            context.DisplayName = "AspNetRequestDurationOptions.RequestCount";
+            validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A16);
+            validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A14);
+            if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.RequestCount, context, validationResults, validationAttributes))
+            {
+                (builder ??= new()).AddResults(validationResults);
+            }
+
+            context.MemberName = "RequestDuration";
+            context.DisplayName = "AspNetRequestDurationOptions.RequestDuration";
+            validationResults.Clear();
+            validationAttributes.Clear();
+            validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A17);
+            if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.RequestDuration, context, validationResults, validationAttributes))
+            {
+                (builder ??= new()).AddResults(validationResults);
+            }
+
+            context.MemberName = "SlidingWindowDuration";
+            context.DisplayName = "AspNetRequestDurationOptions.SlidingWindowDuration";
+            validationResults.Clear();
+            validationAttributes.Clear();
+            validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A8);
+            if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.SlidingWindowDuration, context, validationResults, validationAttributes))
+            {
+                (builder ??= new()).AddResults(validationResults);
+            }
+
+            return builder is null ? global::Microsoft.Extensions.Options.ValidateOptionsResult.Success : builder.Build();
+        }
+    }
+}
+namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
+{
+    partial class AspNetResponseStatusTriggerDescriptor
+    {
+        /// <summary>
+        /// Validates a specific named options instance (or all when <paramref name="name"/> is <see langword="null" />).
+        /// </summary>
+        /// <param name="name">The name of the options instance being validated.</param>
+        /// <param name="options">The options instance.</param>
+        /// <returns>Validation result.</returns>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Extensions.Options.SourceGeneration", "10.0.12.25812")]
+        #if !NET10_0_OR_GREATER
+        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("Trimming", "IL2026:RequiresUnreferencedCode",
+             Justification = "The created ValidationContext object is used in a way that never call reflection")]
+        #endif
+        public global::Microsoft.Extensions.Options.ValidateOptionsResult Validate(string? name, global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.AspNetResponseStatusOptions options)
+        {
+            global::Microsoft.Extensions.Options.ValidateOptionsResultBuilder? builder = null;
+            #if NET10_0_OR_GREATER
+            string displayName = string.IsNullOrEmpty(name) ? "AspNetResponseStatusOptions.Validate" : $"{name}.Validate";
+            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options, displayName, null, null);
+            #else
+            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options);
+            #endif
+            var validationResults = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationResult>();
+            var validationAttributes = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(3);
+
+            context.MemberName = "StatusCodes";
+            context.DisplayName = "AspNetResponseStatusOptions.StatusCodes";
+            validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A1);
+            validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A2);
+            validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A18);
+            if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.StatusCodes, context, validationResults, validationAttributes))
+            {
+                (builder ??= new()).AddResults(validationResults);
+            }
+
+            context.MemberName = "ResponseCount";
+            context.DisplayName = "AspNetResponseStatusOptions.ResponseCount";
+            validationResults.Clear();
+            validationAttributes.Clear();
+            validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A19);
+            validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A14);
+            if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.ResponseCount, context, validationResults, validationAttributes))
+            {
+                (builder ??= new()).AddResults(validationResults);
+            }
+
+            context.MemberName = "SlidingWindowDuration";
+            context.DisplayName = "AspNetResponseStatusOptions.SlidingWindowDuration";
+            validationResults.Clear();
+            validationAttributes.Clear();
+            validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A8);
+            if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.SlidingWindowDuration, context, validationResults, validationAttributes))
+            {
+                (builder ??= new()).AddResults(validationResults);
+            }
+
+            return builder is null ? global::Microsoft.Extensions.Options.ValidateOptionsResult.Success : builder.Build();
+        }
+    }
+}
+namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
+{
+    partial class CPUUsageTriggerDescriptor
+    {
+        /// <summary>
+        /// Validates a specific named options instance (or all when <paramref name="name"/> is <see langword="null" />).
+        /// </summary>
+        /// <param name="name">The name of the options instance being validated.</param>
+        /// <param name="options">The options instance.</param>
+        /// <returns>Validation result.</returns>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Extensions.Options.SourceGeneration", "10.0.12.25812")]
+        #if !NET10_0_OR_GREATER
+        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("Trimming", "IL2026:RequiresUnreferencedCode",
+             Justification = "The created ValidationContext object is used in a way that never call reflection")]
+        #endif
+        public global::Microsoft.Extensions.Options.ValidateOptionsResult Validate(string? name, global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts.CPUUsageOptions options)
+        {
+            global::Microsoft.Extensions.Options.ValidateOptionsResultBuilder? builder = null;
+            #if NET10_0_OR_GREATER
+            string displayName = string.IsNullOrEmpty(name) ? "CPUUsageOptions.Validate" : $"{name}.Validate";
+            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options, displayName, null, null);
+            #else
+            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options);
+            #endif
+            var validationResults = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationResult>();
+            var validationAttributes = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(1);
+
+            context.MemberName = "GreaterThan";
+            context.DisplayName = "CPUUsageOptions.GreaterThan";
+            validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A20);
+            if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.GreaterThan, context, validationResults, validationAttributes))
+            {
+                (builder ??= new()).AddResults(validationResults);
+            }
+
+            context.MemberName = "LessThan";
+            context.DisplayName = "CPUUsageOptions.LessThan";
+            validationResults.Clear();
+            validationAttributes.Clear();
+            validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A20);
+            if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.LessThan, context, validationResults, validationAttributes))
+            {
+                (builder ??= new()).AddResults(validationResults);
+            }
+
+            context.MemberName = "SlidingWindowDuration";
+            context.DisplayName = "CPUUsageOptions.SlidingWindowDuration";
+            validationResults.Clear();
+            validationAttributes.Clear();
+            validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A8);
+            if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.SlidingWindowDuration, context, validationResults, validationAttributes))
+            {
+                (builder ??= new()).AddResults(validationResults);
+            }
+
+            context.MemberName = "Validate";
+            context.DisplayName = "CPUUsageOptions.Validate";
+            (builder ??= new()).AddResults(((global::System.ComponentModel.DataAnnotations.IValidatableObject)options).Validate(context));
+
+            return builder is null ? global::Microsoft.Extensions.Options.ValidateOptionsResult.Success : builder.Build();
+        }
+    }
+}
+namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
+{
+    partial class EventCounterTriggerDescriptor
+    {
+        /// <summary>
+        /// Validates a specific named options instance (or all when <paramref name="name"/> is <see langword="null" />).
+        /// </summary>
+        /// <param name="name">The name of the options instance being validated.</param>
+        /// <param name="options">The options instance.</param>
+        /// <returns>Validation result.</returns>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Extensions.Options.SourceGeneration", "10.0.12.25812")]
+        #if !NET10_0_OR_GREATER
+        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("Trimming", "IL2026:RequiresUnreferencedCode",
+             Justification = "The created ValidationContext object is used in a way that never call reflection")]
+        #endif
+        public global::Microsoft.Extensions.Options.ValidateOptionsResult Validate(string? name, global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterOptions options)
+        {
+            global::Microsoft.Extensions.Options.ValidateOptionsResultBuilder? builder = null;
+            #if NET10_0_OR_GREATER
+            string displayName = string.IsNullOrEmpty(name) ? "EventCounterOptions.Validate" : $"{name}.Validate";
+            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options, displayName, null, null);
+            #else
+            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options);
+            #endif
+            var validationResults = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationResult>();
+            var validationAttributes = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(1);
+
+            context.MemberName = "ProviderName";
+            context.DisplayName = "EventCounterOptions.ProviderName";
+            validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A1);
+            if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.ProviderName, context, validationResults, validationAttributes))
+            {
+                (builder ??= new()).AddResults(validationResults);
+            }
+
+            context.MemberName = "CounterName";
+            context.DisplayName = "EventCounterOptions.CounterName";
+            validationResults.Clear();
+            validationAttributes.Clear();
+            validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A1);
+            if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.CounterName, context, validationResults, validationAttributes))
+            {
+                (builder ??= new()).AddResults(validationResults);
+            }
+
+            context.MemberName = "SlidingWindowDuration";
+            context.DisplayName = "EventCounterOptions.SlidingWindowDuration";
+            validationResults.Clear();
+            validationAttributes.Clear();
+            validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A8);
+            if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.SlidingWindowDuration, context, validationResults, validationAttributes))
+            {
+                (builder ??= new()).AddResults(validationResults);
+            }
+
+            context.MemberName = "Validate";
+            context.DisplayName = "EventCounterOptions.Validate";
+            (builder ??= new()).AddResults(((global::System.ComponentModel.DataAnnotations.IValidatableObject)options).Validate(context));
+
+            return builder is null ? global::Microsoft.Extensions.Options.ValidateOptionsResult.Success : builder.Build();
+        }
+    }
+}
+namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
+{
+    partial class EventMeterTriggerDescriptor
+    {
+        /// <summary>
+        /// Validates a specific named options instance (or all when <paramref name="name"/> is <see langword="null" />).
+        /// </summary>
+        /// <param name="name">The name of the options instance being validated.</param>
+        /// <param name="options">The options instance.</param>
+        /// <returns>Validation result.</returns>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Extensions.Options.SourceGeneration", "10.0.12.25812")]
+        #if !NET10_0_OR_GREATER
+        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("Trimming", "IL2026:RequiresUnreferencedCode",
+             Justification = "The created ValidationContext object is used in a way that never call reflection")]
+        #endif
+        public global::Microsoft.Extensions.Options.ValidateOptionsResult Validate(string? name, global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventMeterOptions options)
+        {
+            global::Microsoft.Extensions.Options.ValidateOptionsResultBuilder? builder = null;
+            #if NET10_0_OR_GREATER
+            string displayName = string.IsNullOrEmpty(name) ? "EventMeterOptions.Validate" : $"{name}.Validate";
+            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options, displayName, null, null);
+            #else
+            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options);
+            #endif
+            var validationResults = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationResult>();
+            var validationAttributes = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(1);
+
+            context.MemberName = "MeterName";
+            context.DisplayName = "EventMeterOptions.MeterName";
+            validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A1);
+            if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.MeterName, context, validationResults, validationAttributes))
+            {
+                (builder ??= new()).AddResults(validationResults);
+            }
+
+            context.MemberName = "InstrumentName";
+            context.DisplayName = "EventMeterOptions.InstrumentName";
+            validationResults.Clear();
+            validationAttributes.Clear();
+            validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A1);
+            if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.InstrumentName, context, validationResults, validationAttributes))
+            {
+                (builder ??= new()).AddResults(validationResults);
+            }
+
+            context.MemberName = "SlidingWindowDuration";
+            context.DisplayName = "EventMeterOptions.SlidingWindowDuration";
+            validationResults.Clear();
+            validationAttributes.Clear();
+            validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A8);
+            if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.SlidingWindowDuration, context, validationResults, validationAttributes))
+            {
+                (builder ??= new()).AddResults(validationResults);
+            }
+
+            context.MemberName = "HistogramPercentile";
+            context.DisplayName = "EventMeterOptions.HistogramPercentile";
+            validationResults.Clear();
+            validationAttributes.Clear();
+            validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A20);
+            if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.HistogramPercentile, context, validationResults, validationAttributes))
+            {
+                (builder ??= new()).AddResults(validationResults);
+            }
+
+            context.MemberName = "Validate";
+            context.DisplayName = "EventMeterOptions.Validate";
+            (builder ??= new()).AddResults(((global::System.ComponentModel.DataAnnotations.IValidatableObject)options).Validate(context));
+
+            return builder is null ? global::Microsoft.Extensions.Options.ValidateOptionsResult.Success : builder.Build();
+        }
+    }
+}
+namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
+{
+    partial class GCHeapSizeTriggerDescriptor
+    {
+        /// <summary>
+        /// Validates a specific named options instance (or all when <paramref name="name"/> is <see langword="null" />).
+        /// </summary>
+        /// <param name="name">The name of the options instance being validated.</param>
+        /// <param name="options">The options instance.</param>
+        /// <returns>Validation result.</returns>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Extensions.Options.SourceGeneration", "10.0.12.25812")]
+        #if !NET10_0_OR_GREATER
+        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("Trimming", "IL2026:RequiresUnreferencedCode",
+             Justification = "The created ValidationContext object is used in a way that never call reflection")]
+        #endif
+        public global::Microsoft.Extensions.Options.ValidateOptionsResult Validate(string? name, global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts.GCHeapSizeOptions options)
+        {
+            global::Microsoft.Extensions.Options.ValidateOptionsResultBuilder? builder = null;
+            #if NET10_0_OR_GREATER
+            string displayName = string.IsNullOrEmpty(name) ? "GCHeapSizeOptions.Validate" : $"{name}.Validate";
+            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options, displayName, null, null);
+            #else
+            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options);
+            #endif
+            var validationResults = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationResult>();
+            var validationAttributes = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(1);
+
+            context.MemberName = "GreaterThan";
+            context.DisplayName = "GCHeapSizeOptions.GreaterThan";
+            validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A21);
+            if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.GreaterThan, context, validationResults, validationAttributes))
+            {
+                (builder ??= new()).AddResults(validationResults);
+            }
+
+            context.MemberName = "LessThan";
+            context.DisplayName = "GCHeapSizeOptions.LessThan";
+            validationResults.Clear();
+            validationAttributes.Clear();
+            validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A21);
+            if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.LessThan, context, validationResults, validationAttributes))
+            {
+                (builder ??= new()).AddResults(validationResults);
+            }
+
+            context.MemberName = "SlidingWindowDuration";
+            context.DisplayName = "GCHeapSizeOptions.SlidingWindowDuration";
+            validationResults.Clear();
+            validationAttributes.Clear();
+            validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A8);
+            if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.SlidingWindowDuration, context, validationResults, validationAttributes))
+            {
+                (builder ??= new()).AddResults(validationResults);
+            }
+
+            context.MemberName = "Validate";
+            context.DisplayName = "GCHeapSizeOptions.Validate";
+            (builder ??= new()).AddResults(((global::System.ComponentModel.DataAnnotations.IValidatableObject)options).Validate(context));
+
+            return builder is null ? global::Microsoft.Extensions.Options.ValidateOptionsResult.Success : builder.Build();
+        }
+    }
+}
+namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
+{
+    partial class ThreadpoolQueueLengthTriggerDescriptor
+    {
+        /// <summary>
+        /// Validates a specific named options instance (or all when <paramref name="name"/> is <see langword="null" />).
+        /// </summary>
+        /// <param name="name">The name of the options instance being validated.</param>
+        /// <param name="options">The options instance.</param>
+        /// <returns>Validation result.</returns>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Extensions.Options.SourceGeneration", "10.0.12.25812")]
+        #if !NET10_0_OR_GREATER
+        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("Trimming", "IL2026:RequiresUnreferencedCode",
+             Justification = "The created ValidationContext object is used in a way that never call reflection")]
+        #endif
+        public global::Microsoft.Extensions.Options.ValidateOptionsResult Validate(string? name, global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts.ThreadpoolQueueLengthOptions options)
+        {
+            global::Microsoft.Extensions.Options.ValidateOptionsResultBuilder? builder = null;
+            #if NET10_0_OR_GREATER
+            string displayName = string.IsNullOrEmpty(name) ? "ThreadpoolQueueLengthOptions.Validate" : $"{name}.Validate";
+            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options, displayName, null, null);
+            #else
+            var context = new global::System.ComponentModel.DataAnnotations.ValidationContext(options);
+            #endif
+            var validationResults = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationResult>();
+            var validationAttributes = new global::System.Collections.Generic.List<global::System.ComponentModel.DataAnnotations.ValidationAttribute>(1);
+
+            context.MemberName = "GreaterThan";
+            context.DisplayName = "ThreadpoolQueueLengthOptions.GreaterThan";
+            validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A21);
+            if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.GreaterThan, context, validationResults, validationAttributes))
+            {
+                (builder ??= new()).AddResults(validationResults);
+            }
+
+            context.MemberName = "LessThan";
+            context.DisplayName = "ThreadpoolQueueLengthOptions.LessThan";
+            validationResults.Clear();
+            validationAttributes.Clear();
+            validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A21);
+            if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.LessThan, context, validationResults, validationAttributes))
+            {
+                (builder ??= new()).AddResults(validationResults);
+            }
+
+            context.MemberName = "SlidingWindowDuration";
+            context.DisplayName = "ThreadpoolQueueLengthOptions.SlidingWindowDuration";
+            validationResults.Clear();
+            validationAttributes.Clear();
+            validationAttributes.Add(global::__OptionValidationStaticInstances.__Attributes.A8);
+            if (!global::System.ComponentModel.DataAnnotations.Validator.TryValidateValue(options.SlidingWindowDuration, context, validationResults, validationAttributes))
+            {
+                (builder ??= new()).AddResults(validationResults);
+            }
+
+            context.MemberName = "Validate";
+            context.DisplayName = "ThreadpoolQueueLengthOptions.Validate";
             (builder ??= new()).AddResults(((global::System.ComponentModel.DataAnnotations.IValidatableObject)options).Validate(context));
 
             return builder is null ? global::Microsoft.Extensions.Options.ValidateOptionsResult.Success : builder.Build();
@@ -1064,6 +1554,38 @@ namespace __OptionValidationStaticInstances
             typeof(global::System.TimeSpan),
             "00:00:01",
             "365.00:00:00");
+
+        internal static readonly global::System.ComponentModel.DataAnnotations.RequiredAttribute A16 = new global::System.ComponentModel.DataAnnotations.RequiredAttribute()
+        {
+            ErrorMessageResourceName = "ErrorMessage_NoDefaultRequestCount",
+            ErrorMessageResourceType = typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings)
+        };
+
+        internal static readonly __OptionValidationGeneratedAttributes.__SourceGen__RangeAttribute A17 = new __OptionValidationGeneratedAttributes.__SourceGen__RangeAttribute(
+            typeof(global::System.TimeSpan),
+            "00:00:00",
+            "01:00:00");
+
+        internal static readonly global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.RegularExpressionsAttribute A18 = new global::Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.RegularExpressionsAttribute(
+            "[1-5][0-9]{2}(-[1-5][0-9]{2})?")
+        {
+            ErrorMessageResourceName = "ErrorMessage_StatusCodesRegularExpressionDoesNotMatch",
+            ErrorMessageResourceType = typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings)
+        };
+
+        internal static readonly global::System.ComponentModel.DataAnnotations.RequiredAttribute A19 = new global::System.ComponentModel.DataAnnotations.RequiredAttribute()
+        {
+            ErrorMessageResourceName = "ErrorMessage_NoDefaultResponseCount",
+            ErrorMessageResourceType = typeof(global::Microsoft.Diagnostics.Monitoring.WebApi.OptionsDisplayStrings)
+        };
+
+        internal static readonly __OptionValidationGeneratedAttributes.__SourceGen__RangeAttribute A20 = new __OptionValidationGeneratedAttributes.__SourceGen__RangeAttribute(
+            (double)0,
+            (double)100);
+
+        internal static readonly __OptionValidationGeneratedAttributes.__SourceGen__RangeAttribute A21 = new __OptionValidationGeneratedAttributes.__SourceGen__RangeAttribute(
+            (double)0,
+            (double)1.7976931348623157E+308);
     }
 }
 namespace __OptionValidationStaticInstances

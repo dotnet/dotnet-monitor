@@ -12,20 +12,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
 {
     internal static class ValidationHelper
     {
-        public static void TryValidateItems(IEnumerable<object> items, ValidationContext validationContext, ICollection<ValidationResult> results)
-        {
-            int index = 0;
-            foreach (object item in items)
-            {
-                ValidationContext itemContext = new(item, validationContext, validationContext.Items);
-                itemContext.MemberName = validationContext.MemberName + "[" + index.ToString() + "]";
-
-                Validator.TryValidateObject(item, itemContext, results);
-
-                index++;
-            }
-        }
-
 #nullable disable
         public static bool TryValidateOptions(Type optionsType, object options, ValidationContext validationContext, ICollection<ValidationResult> results)
         {
