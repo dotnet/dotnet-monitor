@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 #nullable enable
@@ -6,6 +6,7 @@
 #if UNITTEST
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 #endif
+using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections;
@@ -15,7 +16,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace Microsoft.Diagnostics.Tools.Monitor
+namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
     internal static class CommonOptionsExtensions
     {
@@ -118,7 +119,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     valueType.IsEnum ||
                     typeof(Guid) == valueType ||
                     typeof(string) == valueType ||
-                    typeof(TimeSpan) == valueType)
+                    typeof(TimeSpan) == valueType ||
+                    typeof(Uri) == valueType)
                 {
                     map.Add(
                         valueName,
