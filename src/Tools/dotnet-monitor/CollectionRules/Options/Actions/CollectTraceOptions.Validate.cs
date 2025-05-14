@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.AspNetCore.Http.Validation;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Monitoring.WebApi.Validation;
@@ -53,7 +54,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
                             CultureInfo.InvariantCulture,
                             Strings.ErrorMessage_TwoFieldsCannotBeSpecified,
                             nameof(Profile),
-                            nameof(StoppingEvent))));
+                            nameof(StoppingEvent)), [nameof(Profile), nameof(StoppingEvent)]));
                 }
 
                 if (HasProviders())
@@ -66,7 +67,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
                             CultureInfo.InvariantCulture,
                             Strings.ErrorMessage_TwoFieldsCannotBeSpecified,
                             nameof(Profile),
-                            nameof(Providers))));
+                            nameof(Providers)), [nameof(Profile), nameof(Providers)]));
                 }
             }
             else if (HasProviders())
@@ -80,17 +81,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
                 }
                 catch (OptionsValidationException e)
                 {
-                    results.AddRange(e.Failures.Select((string failure) => new ValidationResult(e.Message)));
+                    results.AddRange(e.Failures.Select((string failure) => new ValidationResult(e.Message, [e.OptionsType.Name])));
                 }
 
                 // Validate that each provider is valid.
+                // Necessary to work around the generated validation code not recursing into List<T>? members:
+                // https://github.com/dotnet/aspnetcore/issues/61737
                 int index = 0;
                 foreach (EventPipeProvider provider in Providers)
                 {
-                    ValidationContext providerContext = new(provider, validationContext, validationContext.Items);
+                    ValidationContext providerContext = new(provider, nameof(Providers), validationContext, validationContext.Items);
                     providerContext.MemberName = nameof(Providers) + "[" + index.ToString(CultureInfo.InvariantCulture) + "]";
 
-                    Validator.TryValidateObject(provider, providerContext, results, validateAllProperties: true);
+                    var validationOptions = validationContext.GetRequiredService<IOptions<ValidationOptions>>().Value;
+                    ValidationHelper.TryValidateObject(provider, typeof(EventPipeProvider), validationOptions, providerContext, results);
 
                     if (counterOptions != null && !CounterValidator.ValidateProvider(counterOptions, provider, out string? errorMessage))
                     {
@@ -108,7 +112,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
                         CultureInfo.InvariantCulture,
                         Strings.ErrorMessage_TwoFieldsMissing,
                         nameof(Profile),
-                        nameof(Providers))));
+                        nameof(Providers)), [nameof(Profile), nameof(Providers)]));
             }
 
             if (HasStoppingEvent())
@@ -124,7 +128,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
                             Strings.ErrorMessage_MissingStoppingEventProvider,
                             nameof(StoppingEvent),
                             StoppingEvent.ProviderName,
-                            nameof(Providers))));
+                            nameof(Providers)), [nameof(StoppingEvent), nameof(Providers)]));
                 }
             }
 
