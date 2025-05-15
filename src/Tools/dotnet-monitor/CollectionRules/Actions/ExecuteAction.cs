@@ -7,6 +7,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Binder.SourceGeneration;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -109,17 +110,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         }
     }
 
-    internal sealed class ExecuteActionDescriptor : ICollectionRuleActionDescriptor
+    [OptionsValidator]
+    internal sealed partial class ExecuteActionDescriptor : ICollectionRuleActionDescriptor<ExecuteOptions, ExecuteActionFactory>
     {
         public string ActionName => KnownCollectionRuleActions.Execute;
-        public Type FactoryType => typeof(ExecuteActionFactory);
-        public Type OptionsType => typeof(ExecuteOptions);
 
-        public void BindOptions(IConfigurationSection settingsSection, out object settings)
+        public void BindOptions(IConfigurationSection settingsSection, out ExecuteOptions options)
         {
-            ExecuteOptions options = new();
+            options = new();
             settingsSection.Bind_ExecuteOptions(options);
-            settings = options;
         }
     }
 }

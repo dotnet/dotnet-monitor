@@ -9,6 +9,8 @@
     <MicrosoftExtensionsLoggingAbstractions80Version>8.0.3</MicrosoftExtensionsLoggingAbstractions80Version>
     <!-- Microsoft.Extensions.Logging.Console -->
     <MicrosoftExtensionsLoggingConsole80Version>8.0.1</MicrosoftExtensionsLoggingConsole80Version>
+    <!-- Microsoft.Extensions.Options -->
+    <MicrosoftExtensionsOptions80Version>8.0.2</MicrosoftExtensionsOptions80Version>
     <!-- Microsoft.NETCore.App -->
     <MicrosoftNETCoreApp80Version>8.0.15</MicrosoftNETCoreApp80Version>
     <!-- System.Text.Json -->

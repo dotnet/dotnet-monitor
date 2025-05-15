@@ -7,6 +7,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Binder.SourceGeneration;
+using Microsoft.Extensions.Options;
 using System;
 using System.ComponentModel.DataAnnotations;
 using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
@@ -75,17 +76,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
             };
     }
 
-    internal sealed class CollectStacksActionDescriptor : ICollectionRuleActionDescriptor
+    [OptionsValidator]
+    internal sealed partial class CollectStacksActionDescriptor : ICollectionRuleActionDescriptor<CollectStacksOptions, CollectStacksActionFactory>
     {
-        public string ActionName => KnownCollectionRuleActions.CollectStacks;
-        public Type FactoryType => typeof(CollectStacksActionFactory);
-        public Type OptionsType => typeof(CollectStacksOptions);
+        private readonly IServiceProvider _serviceProvider;
 
-        public void BindOptions(IConfigurationSection settingsSection, out object settings)
+        public CollectStacksActionDescriptor(IServiceProvider serviceProvider)
         {
-            CollectStacksOptions options = new();
+            _serviceProvider = serviceProvider;
+        }
+
+        public string ActionName => KnownCollectionRuleActions.CollectStacks;
+
+        public void BindOptions(IConfigurationSection settingsSection, out CollectStacksOptions options)
+        {
+            options = new();
             settingsSection.Bind_CollectStacksOptions(options);
-            settings = options;
         }
     }
 }

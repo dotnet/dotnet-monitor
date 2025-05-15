@@ -54,17 +54,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         }
     }
 
-    internal sealed class AspNetRequestDurationTriggerDescriptor : ICollectionRuleTriggerDescriptor
+    [OptionsValidator]
+    internal sealed partial class AspNetRequestDurationTriggerDescriptor : ICollectionRuleTriggerDescriptor<AspNetRequestDurationOptions, AspNetRequestDurationTriggerFactory>
     {
-        public Type FactoryType => typeof(AspNetRequestDurationTriggerFactory);
-        public Type? OptionsType => typeof(AspNetRequestDurationOptions);
         public string TriggerName => KnownCollectionRuleTriggers.AspNetRequestDuration;
 
-        public bool TryBindOptions(IConfigurationSection settingsSection, out object? settings)
+        public bool TryBindOptions(IConfigurationSection settingsSection, out AspNetRequestDurationOptions options)
         {
-            var options = new AspNetRequestDurationOptions();
+            options = new AspNetRequestDurationOptions();
             settingsSection.Bind_AspNetRequestDurationOptions(options);
-            settings = options;
             return true;
         }
     }

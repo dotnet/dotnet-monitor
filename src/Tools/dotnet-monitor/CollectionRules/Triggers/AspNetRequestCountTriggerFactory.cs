@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Binder.SourceGeneration;
 using System;
 using System.Globalization;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
 {
@@ -48,17 +49,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         }
     }
 
-    internal sealed class AspNetRequestCountTriggerDescriptor : ICollectionRuleTriggerDescriptor
+    [OptionsValidator]
+    internal sealed partial class AspNetRequestCountTriggerDescriptor : ICollectionRuleTriggerDescriptor<AspNetRequestCountOptions, AspNetRequestCountTriggerFactory>
     {
-        public Type FactoryType => typeof(AspNetRequestCountTriggerFactory);
-        public Type? OptionsType => typeof(AspNetRequestCountOptions);
         public string TriggerName => KnownCollectionRuleTriggers.AspNetRequestCount;
 
-        public bool TryBindOptions(IConfigurationSection settingsSection, out object? settings)
+        public bool TryBindOptions(IConfigurationSection settingsSection, out AspNetRequestCountOptions options)
         {
-            var options = new AspNetRequestCountOptions();
+            options = new AspNetRequestCountOptions();
             settingsSection.Bind_AspNetRequestCountOptions(options);
-            settings = options;
             return true;
         }
     }
