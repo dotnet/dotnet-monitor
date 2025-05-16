@@ -2,16 +2,16 @@
   <!-- Import references updated by Dependabot. -->
   <PropertyGroup>
     <!-- Microsoft.Extensions.Configuration.Abstractions -->
-    <MicrosoftExtensionsConfigurationAbstractions90Version>9.0.4</MicrosoftExtensionsConfigurationAbstractions90Version>
+    <MicrosoftExtensionsConfigurationAbstractions90Version>9.0.5</MicrosoftExtensionsConfigurationAbstractions90Version>
     <!-- Microsoft.Extensions.Logging -->
-    <MicrosoftExtensionsLogging90Version>9.0.4</MicrosoftExtensionsLogging90Version>
+    <MicrosoftExtensionsLogging90Version>9.0.5</MicrosoftExtensionsLogging90Version>
     <!-- Microsoft.Extensions.Logging.Abstractions -->
-    <MicrosoftExtensionsLoggingAbstractions90Version>9.0.4</MicrosoftExtensionsLoggingAbstractions90Version>
+    <MicrosoftExtensionsLoggingAbstractions90Version>9.0.5</MicrosoftExtensionsLoggingAbstractions90Version>
     <!-- Microsoft.Extensions.Logging.Console -->
-    <MicrosoftExtensionsLoggingConsole90Version>9.0.4</MicrosoftExtensionsLoggingConsole90Version>
+    <MicrosoftExtensionsLoggingConsole90Version>9.0.5</MicrosoftExtensionsLoggingConsole90Version>
     <!-- Microsoft.NETCore.App -->
-    <MicrosoftNETCoreApp90Version>9.0.4</MicrosoftNETCoreApp90Version>
+    <MicrosoftNETCoreApp90Version>9.0.5</MicrosoftNETCoreApp90Version>
     <!-- System.Text.Json -->
-    <SystemTextJson90Version>9.0.4</SystemTextJson90Version>
+    <SystemTextJson90Version>9.0.5</SystemTextJson90Version>
   </PropertyGroup>
 </Project>
