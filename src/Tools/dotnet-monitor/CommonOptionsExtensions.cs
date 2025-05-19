@@ -118,7 +118,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     valueType.IsEnum ||
                     typeof(Guid) == valueType ||
                     typeof(string) == valueType ||
-                    typeof(TimeSpan) == valueType)
+                    typeof(TimeSpan) == valueType ||
+                    typeof(Uri) == valueType)
                 {
                     map.Add(
                         valueName,
