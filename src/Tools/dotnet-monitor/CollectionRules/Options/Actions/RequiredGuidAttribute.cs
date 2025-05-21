@@ -20,10 +20,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
 
         protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
+            if (validationContext.MemberName is null)
+            {
+                throw new ArgumentNullException(nameof(validationContext.MemberName));
+            }
             if (!(value is Guid))
             {
                 return new ValidationResult(
-                    FormatErrorMessage(validationContext.DisplayName));
+                    FormatErrorMessage(validationContext.DisplayName), [validationContext.MemberName]);
             }
 
             Guid guidVal = (Guid)value;
@@ -31,7 +35,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
             if (guidVal == Guid.Empty)
             {
                 return new ValidationResult(
-                    FormatErrorMessage(validationContext.DisplayName));
+                    FormatErrorMessage(validationContext.DisplayName), [validationContext.MemberName]);
             }
 
             return ValidationResult.Success;

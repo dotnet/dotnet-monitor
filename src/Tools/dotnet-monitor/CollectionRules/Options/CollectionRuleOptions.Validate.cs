@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 #nullable disable
@@ -26,21 +26,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             {
                 return results;
             }
-
-            ValidationContext filtersContext = new(Filters, validationContext, validationContext.Items);
-            filtersContext.MemberName = nameof(Filters);
-            ValidationHelper.TryValidateItems(Filters, filtersContext, results);
-
-            if (null != Trigger)
-            {
-                ValidationContext triggerContext = new(Trigger, validationContext, validationContext.Items);
-                triggerContext.MemberName = nameof(Trigger);
-                Validator.TryValidateObject(Trigger, triggerContext, results);
-            }
-
-            ValidationContext actionsContext = new(Actions, validationContext, validationContext.Items);
-            actionsContext.MemberName = nameof(Actions);
-            ValidationHelper.TryValidateItems(Actions, actionsContext, results);
 
             var actionNames = new HashSet<string>(StringComparer.Ordinal);
             foreach (CollectionRuleActionOptions option in Actions)

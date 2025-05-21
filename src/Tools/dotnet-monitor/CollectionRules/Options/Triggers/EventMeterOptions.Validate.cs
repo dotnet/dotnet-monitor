@@ -19,7 +19,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
                     string.Format(
                         Strings.ErrorMessage_TwoFieldsMissing,
                         nameof(GreaterThan),
-                        nameof(LessThan))));
+                        nameof(LessThan)), [nameof(GreaterThan), nameof(LessThan)]));
             }
             else if (GreaterThan.HasValue && LessThan.HasValue && LessThan.Value < GreaterThan.Value)
             {
@@ -28,7 +28,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers
                     string.Format(
                         Strings.ErrorMessage_FieldMustBeLessThanOtherField,
                         nameof(GreaterThan),
-                        nameof(LessThan))));
+                        nameof(LessThan)), [nameof(GreaterThan), nameof(LessThan)]));
             }
 
             return results;
