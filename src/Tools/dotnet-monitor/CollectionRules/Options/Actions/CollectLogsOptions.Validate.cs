@@ -25,6 +25,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
 
                 ValidationContext filterSpecsContext = new(FilterSpecs, validationContext, validationContext.Items);
                 filterSpecsContext.MemberName = nameof(FilterSpecs);
+                filterSpecsContext.DisplayName = $"{nameof(CollectLogsOptions)}.{nameof(FilterSpecs)}";
 
                 // Validate that the category is not null and that the level is a valid level value.
                 foreach ((string category, LogLevel? level) in FilterSpecs)

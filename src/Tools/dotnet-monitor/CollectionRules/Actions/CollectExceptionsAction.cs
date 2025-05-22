@@ -7,6 +7,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Binder.SourceGeneration;
+using Microsoft.Extensions.Options;
 using System;
 using System.ComponentModel.DataAnnotations;
 using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
@@ -59,17 +60,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         }
     }
 
-    internal sealed class CollectExceptionsActionDescriptor : ICollectionRuleActionDescriptor
+    [OptionsValidator]
+    internal sealed partial class CollectExceptionsActionDescriptor : ICollectionRuleActionDescriptor<CollectExceptionsOptions, CollectExceptionsActionFactory>
     {
-        public string ActionName => KnownCollectionRuleActions.CollectExceptions;
-        public Type FactoryType => typeof(CollectExceptionsActionFactory);
-        public Type OptionsType => typeof(CollectExceptionsOptions);
+        private readonly IServiceProvider _serviceProvider;
 
-        public void BindOptions(IConfigurationSection settingsSection, out object settings)
+        public CollectExceptionsActionDescriptor(IServiceProvider serviceProvider)
         {
-            CollectExceptionsOptions options = new();
+            _serviceProvider = serviceProvider;
+        }
+
+        public string ActionName => KnownCollectionRuleActions.CollectExceptions;
+
+        public void BindOptions(IConfigurationSection settingsSection, out CollectExceptionsOptions options)
+        {
+            options = new();
             settingsSection.Bind_CollectExceptionsOptions(options);
-            settings = options;
         }
     }
 }

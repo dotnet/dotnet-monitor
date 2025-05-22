@@ -98,8 +98,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
                 string[] failures = ex.Failures.ToArray();
                 Assert.Equal(2, failures.Length);
 
-                Assert.Equal(string.Format(TemplateNotFoundErrorMessage, "TriggerTemplateINVALID"), failures[0]);
-                Assert.Equal(string.Format(TemplateNotFoundErrorMessage, "FilterTemplateINVALID"), failures[1]);
+                Assert.Equal(string.Format($"{nameof(CollectionRuleOptions.Trigger)}: {TemplateNotFoundErrorMessage}", "TriggerTemplateINVALID"), failures[0]);
+                Assert.Equal(string.Format($"{nameof(CollectionRuleOptions.Filters)}: {TemplateNotFoundErrorMessage}", "FilterTemplateINVALID"), failures[1]);
 
             }, overrideSource: GetConfigurationSources());
         }

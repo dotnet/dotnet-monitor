@@ -4,6 +4,7 @@
 #nullable enable
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -17,6 +18,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleOptions_Filters))]
+        [ValidateEnumeratedItems]
         public List<ProcessFilterDescriptor> Filters { get; set; } = [];
 
 #nullable disable
@@ -24,17 +26,20 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleOptions_Trigger))]
         [Required]
+        [ValidateObjectMembers]
         public CollectionRuleTriggerOptions Trigger { get; set; }
 #nullable enable
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleOptions_Actions))]
+        [ValidateEnumeratedItems]
         public List<CollectionRuleActionOptions> Actions { get; set; } = [];
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleOptions_Limits))]
+        [ValidateObjectMembers]
         public CollectionRuleLimitsOptions? Limits { get; set; }
 
         // Configuration bindig source generator doesn't support ValidationResult
