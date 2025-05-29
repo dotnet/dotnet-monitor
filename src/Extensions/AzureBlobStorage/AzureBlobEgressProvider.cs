@@ -408,7 +408,6 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
                 ExcludeEnvironmentCredential = true,
                 ExcludeInteractiveBrowserCredential = true,
                 ExcludeSharedTokenCacheCredential = true,
-                ExcludeVisualStudioCodeCredential = true,
                 ExcludeVisualStudioCredential = true,
             };
     }
