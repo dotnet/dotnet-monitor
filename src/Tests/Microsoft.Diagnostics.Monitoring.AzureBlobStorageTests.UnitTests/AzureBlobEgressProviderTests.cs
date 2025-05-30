@@ -249,7 +249,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests.UnitTests
                 nameof(DefaultAzureCredentialOptions.ExcludeInteractiveBrowserCredential),
                 nameof(DefaultAzureCredentialOptions.ExcludeAzureCliCredential),
                 nameof(DefaultAzureCredentialOptions.ExcludeVisualStudioCredential),
-                nameof(DefaultAzureCredentialOptions.ExcludeVisualStudioCodeCredential),
+                "ExcludeVisualStudioCodeCredential", // Don't use nameof for an Obsolete member
                 nameof(DefaultAzureCredentialOptions.ExcludeAzurePowerShellCredential),
             };
 
