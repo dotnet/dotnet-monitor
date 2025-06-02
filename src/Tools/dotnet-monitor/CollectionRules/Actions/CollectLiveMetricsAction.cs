@@ -99,17 +99,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         }
     }
 
-    internal sealed class CollectLiveMetricsActionDescriptor : ICollectionRuleActionDescriptor
+    [OptionsValidator]
+    internal sealed partial class CollectLiveMetricsActionDescriptor : ICollectionRuleActionDescriptor<CollectLiveMetricsOptions, CollectLiveMetricsActionFactory>
     {
-        public string ActionName => KnownCollectionRuleActions.CollectLiveMetrics;
-        public Type FactoryType => typeof(CollectLiveMetricsActionFactory);
-        public Type OptionsType => typeof(CollectLiveMetricsOptions);
+        private readonly IServiceProvider _serviceProvider;
 
-        public void BindOptions(IConfigurationSection settingsSection, out object settings)
+        public CollectLiveMetricsActionDescriptor(IServiceProvider serviceProvider)
         {
-            CollectLiveMetricsOptions options = new();
+            _serviceProvider = serviceProvider;
+        }
+
+        public string ActionName => KnownCollectionRuleActions.CollectLiveMetrics;
+
+        public void BindOptions(IConfigurationSection settingsSection, out CollectLiveMetricsOptions options)
+        {
+            options = new();
             settingsSection.Bind_CollectLiveMetricsOptions(options);
-            settings = options;
         }
     }
 }

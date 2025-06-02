@@ -113,62 +113,54 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         }
     }
 
-    internal sealed class EventCounterTriggerDescriptor : ICollectionRuleTriggerDescriptor
+    [OptionsValidator]
+    internal sealed partial class EventCounterTriggerDescriptor : ICollectionRuleTriggerDescriptor<EventCounterOptions, EventCounterTriggerFactory>
     {
-        public Type FactoryType => typeof(EventCounterTriggerFactory);
-        public Type? OptionsType => typeof(EventCounterOptions);
         public string TriggerName => KnownCollectionRuleTriggers.EventCounter;
 
-        public bool TryBindOptions(IConfigurationSection settingsSection, out object? settings)
+        public bool TryBindOptions(IConfigurationSection settingsSection, out EventCounterOptions options)
         {
-            var options = new EventCounterOptions();
+            options = new EventCounterOptions();
             settingsSection.Bind_EventCounterOptions(options);
-            settings = options;
             return true;
         }
     }
 
-    internal sealed class CPUUsageTriggerDescriptor : ICollectionRuleTriggerDescriptor
+    [OptionsValidator]
+    internal sealed partial class CPUUsageTriggerDescriptor : ICollectionRuleTriggerDescriptor<CPUUsageOptions, EventCounterTriggerFactory>
     {
-        public Type FactoryType => typeof(EventCounterTriggerFactory);
-        public Type? OptionsType => typeof(CPUUsageOptions);
         public string TriggerName => KnownCollectionRuleTriggers.CPUUsage;
 
-        public bool TryBindOptions(IConfigurationSection settingsSection, out object? settings)
+        public bool TryBindOptions(IConfigurationSection settingsSection, out CPUUsageOptions options)
         {
-            var options = new CPUUsageOptions();
+            options = new CPUUsageOptions();
             settingsSection.Bind_CPUUsageOptions(options);
-            settings = options;
             return true;
         }
     }
 
-    internal sealed class GCHeapSizeTriggerDescriptor : ICollectionRuleTriggerDescriptor
+    [OptionsValidator]
+    internal sealed partial class GCHeapSizeTriggerDescriptor : ICollectionRuleTriggerDescriptor<GCHeapSizeOptions, EventCounterTriggerFactory>
     {
-        public Type FactoryType => typeof(EventCounterTriggerFactory);
-        public Type? OptionsType => typeof(GCHeapSizeOptions);
         public string TriggerName => KnownCollectionRuleTriggers.GCHeapSize;
 
-        public bool TryBindOptions(IConfigurationSection settingsSection, out object? settings)
+        public bool TryBindOptions(IConfigurationSection settingsSection, out GCHeapSizeOptions options)
         {
-            var options = new GCHeapSizeOptions();
+            options = new GCHeapSizeOptions();
             settingsSection.Bind_GCHeapSizeOptions(options);
-            settings = options;
             return true;
         }
     }
 
-    internal sealed class ThreadpoolQueueLengthTriggerDescriptor : ICollectionRuleTriggerDescriptor
+    [OptionsValidator]
+    internal sealed partial class ThreadpoolQueueLengthTriggerDescriptor : ICollectionRuleTriggerDescriptor<ThreadpoolQueueLengthOptions, EventCounterTriggerFactory>
     {
-        public Type FactoryType => typeof(EventCounterTriggerFactory);
-        public Type? OptionsType => typeof(ThreadpoolQueueLengthOptions);
         public string TriggerName => KnownCollectionRuleTriggers.ThreadpoolQueueLength;
 
-        public bool TryBindOptions(IConfigurationSection settingsSection, out object? settings)
+        public bool TryBindOptions(IConfigurationSection settingsSection, out ThreadpoolQueueLengthOptions options)
         {
-            var options = new ThreadpoolQueueLengthOptions();
+            options = new ThreadpoolQueueLengthOptions();
             settingsSection.Bind_ThreadpoolQueueLengthOptions(options);
-            settings = options;
             return true;
         }
     }
