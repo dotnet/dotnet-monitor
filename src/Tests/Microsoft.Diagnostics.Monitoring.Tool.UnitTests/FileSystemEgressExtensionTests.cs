@@ -1,12 +1,15 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.AspNetCore.Http.Validation;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.Egress;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -22,8 +25,12 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 {
+    public class FileSystemEgressExtensionFixture : WebApplicationFactory<Program>
+    {
+    }
+
     [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
-    public sealed class FileSystemEgressExtensionTests
+    public sealed class FileSystemEgressExtensionTests : IClassFixture<FileSystemEgressExtensionFixture>
     {
         const string ProviderName = "TestProvider";
         const string ExpectedFileName = "EgressedData.txt";
@@ -35,10 +42,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             FileSystemEgressProviderOptions.CopyBufferSize_MaxValue.ToString());
 
         private readonly ITestOutputHelper _outputHelper;
+        private readonly FileSystemEgressExtensionFixture _fixture;
 
-        public FileSystemEgressExtensionTests(ITestOutputHelper outputHelper)
+        public FileSystemEgressExtensionTests(ITestOutputHelper outputHelper, FileSystemEgressExtensionFixture fixture)
         {
             _outputHelper = outputHelper;
+            _fixture = fixture;
         }
 
         [Fact]
@@ -145,7 +154,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.False(intermediateDirInfo.EnumerateFiles().Any(), "Intermediate directory should not contain any files.");
         }
 
-        private static IEgressExtension CreateExtension(Action<ConfigurationSection> callback = null)
+        private IEgressExtension CreateExtension(Action<ConfigurationSection> callback = null)
         {
             List<IConfigurationProvider> configProviders = new()
             {
@@ -163,6 +172,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             Mock<ILogger<FileSystemEgressExtension>> mockLogger = new();
             Mock<IServiceProvider> mockServiceProvider = new();
+            mockServiceProvider.Setup(provider => provider.GetService(typeof(IOptions<ValidationOptions>)))
+                .Returns(_fixture.Services.GetRequiredService<IOptions<ValidationOptions>>());
 
             return new FileSystemEgressExtension(mockServiceProvider.Object, mockConfigurationProvider.Object, mockLogger.Object);
         }
