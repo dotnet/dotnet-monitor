@@ -1,9 +1,11 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.AspNetCore.Http.Validation;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,7 +13,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Binder.SourceGeneration;
 using System;
-using System.ComponentModel.DataAnnotations;
 using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
@@ -20,6 +21,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         ICollectionRuleActionFactory<CollectTraceOptions>
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly ValidationOptions _validationOptions;
 
         public ICollectionRuleAction Create(IProcessInfo processInfo, CollectTraceOptions options)
         {
@@ -28,8 +30,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
                 throw new ArgumentNullException(nameof(options));
             }
 
-            ValidationContext context = new(options, _serviceProvider, items: null);
-            Validator.ValidateObject(options, context, validateAllProperties: true);
+            ValidationHelper.ValidateObject(options, typeof(CollectTraceOptions), _validationOptions, _serviceProvider);
 
             return new CollectTraceAction(_serviceProvider, processInfo, options);
         }
@@ -37,6 +38,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         public CollectTraceActionFactory(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+            _validationOptions = serviceProvider.GetRequiredService<IOptions<ValidationOptions>>().Value;
         }
 
         private sealed class CollectTraceAction :

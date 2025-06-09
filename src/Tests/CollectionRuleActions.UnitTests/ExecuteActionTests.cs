@@ -1,11 +1,15 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.AspNetCore.Http.Validation;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Exceptions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System;
 using System.Globalization;
 using System.IO;
@@ -18,17 +22,23 @@ using DisposableHelper = Microsoft.Diagnostics.Monitoring.TestCommon.DisposableH
 
 namespace CollectionRuleActions.UnitTests
 {
+    public class ExecuteActionFixture : WebApplicationFactory<Program>
+    {
+    }
+
     [TargetFrameworkMonikerTrait(TargetFrameworkMonikerExtensions.CurrentTargetFrameworkMoniker)]
     [Collection(TestCollections.CollectionRuleActions)]
-    public sealed class ExecuteActionTests
+    public sealed class ExecuteActionTests : IClassFixture<ExecuteActionFixture>
     {
         private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(30);
 
         private readonly ITestOutputHelper _outputHelper;
+        private readonly ExecuteActionFixture _fixture;
 
-        public ExecuteActionTests(ITestOutputHelper outputHelper)
+        public ExecuteActionTests(ITestOutputHelper outputHelper, ExecuteActionFixture fixture)
         {
             _outputHelper = outputHelper;
+            _fixture = fixture;
         }
 
         [Fact]
@@ -173,9 +183,10 @@ namespace CollectionRuleActions.UnitTests
             Assert.Equal(expectedExitCode, actualExitCode);
         }
 
-        private static async Task ValidateAction(Action<ExecuteOptions> optionsCallback, Func<ICollectionRuleAction, CancellationToken, Task> actionCallback)
+        private async Task ValidateAction(Action<ExecuteOptions> optionsCallback, Func<ICollectionRuleAction, CancellationToken, Task> actionCallback)
         {
-            ExecuteActionFactory factory = new();
+            var validationOptions = _fixture.Services.GetService<IOptions<ValidationOptions>>();
+            ExecuteActionFactory factory = new(_fixture.Services, validationOptions);
 
             ExecuteOptions options = new();
 
