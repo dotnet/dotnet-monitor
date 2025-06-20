@@ -4,6 +4,7 @@
 using Amazon;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
+using Amazon.Runtime.Credentials;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
@@ -72,16 +73,10 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
                     throw new AmazonClientException("AWS profile not found");
             }
 
-            awsCredentials ??= FallbackCredentialsFactory.GetCredentials();
+            awsCredentials ??= DefaultAWSCredentialsIdentityResolver.GetCredentials();
 
             if (awsCredentials == null)
                 throw new AmazonClientException("Failed to find AWS Credentials for constructing AWS service client");
-
-            if (options.UseKmsEncryption)
-            {
-                // Required for generating pre-signed URLs with KMS encryption
-                AWSConfigsS3.UseSignatureVersion4 = true;
-            }
 
             IAmazonS3 s3Client = new AmazonS3Client(awsCredentials, configuration);
             bool exists = await AmazonS3Util.DoesS3BucketExistV2Async(s3Client, options.BucketName);
@@ -173,7 +168,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
                 PartNumber = partNumber
             };
             var response = await _s3Client.UploadPartAsync(uploadRequest, token);
-            return new PartETag(response.PartNumber, response.ETag);
+            return new PartETag(response.PartNumber ?? partNumber, response.ETag);
         }
 
         public string GetTemporaryResourceUrl(DateTime expires)
