@@ -472,9 +472,6 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         [Theory]
         // Guids that don't match should get rejected
         [InlineData("980d2b17-71e1-4313-a084-c077e962680c", "10253b7a-454d-41bb-a3f5-5f2e6b26ed93", HttpStatusCode.Forbidden)]
-        // Empty string isn't valid even when signed and configured correctly
-        [InlineData("", "", HttpStatusCode.Unauthorized)]
-        [InlineData("10253b7a-454d-41bb-a3f5-5f2e6b26ed93", "", HttpStatusCode.Unauthorized)]
         [InlineData("", "10253b7a-454d-41bb-a3f5-5f2e6b26ed93", HttpStatusCode.Forbidden)]
         public async Task RejectsBadSubject(string jwtSubject, string configSubject, HttpStatusCode expectedError)
         {
@@ -499,6 +496,25 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             var statusCodeException = await Assert.ThrowsAsync<ApiStatusCodeException>(
                 apiClient.GetProcessesAsync);
             Assert.Equal(expectedError, statusCodeException.StatusCode);
+        }
+
+        /// <summary>
+        /// This tests that an empty configured subject fails on startup.
+        /// </summary>
+        [Fact]
+        public async Task DoesNotStart_With_EmptySubject()
+        {
+            var configSubject = "";
+            await using MonitorCollectRunner toolRunner = new(_outputHelper);
+            toolRunner.DisableMetricsViaCommandLine = true;
+
+            _outputHelper.WriteLine("Generating API key.");
+
+            JwtPayload newPayload = GetJwtPayload(AuthConstants.ApiKeyJwtAudience, configSubject, AuthConstants.ApiKeyJwtInternalIssuer, AuthConstants.ApiKeyJwtDefaultExpiration);
+
+            toolRunner.ConfigurationFromEnvironment.UseApiKey(SecurityAlgorithms.EcdsaSha384, configSubject, newPayload, out string token);
+
+            await Assert.ThrowsAsync<InvalidOperationException>(toolRunner.StartAsync);
         }
 
         [Fact]
