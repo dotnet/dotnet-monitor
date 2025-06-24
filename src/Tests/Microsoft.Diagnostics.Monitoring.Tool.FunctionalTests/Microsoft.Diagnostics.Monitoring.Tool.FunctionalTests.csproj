@@ -70,7 +70,7 @@
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\EventMeterOptions.cs" Link="Options\CollectionRules\Triggers\EventMeterOptions.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\IAspNetActionPathFilters.cs" Link="Options\CollectionRules\Triggers\IAspNetActionPathFilters.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\CollectionRules\Options\Triggers\TriggerOptionsConstants.cs" Link="Options\CollectionRules\Triggers\TriggerOptionsConstants.cs" />
-    <Compile Include="..\..\Tools\dotnet-monitor\CommonOptionsExtensions.cs" Link="Options\CommonOptionsExtensions.cs" />
+    <Compile Include="..\..\Tools\dotnet-monitor\CommonOptionsMapper.cs" Link="Options\CommonOptionsMapper.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\LoggingEventIds.cs" Link="LoggingEventIds.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\OutputFormat.cs" Link="Options\OutputFormat.cs" />
     <Compile Include="..\..\Tools\dotnet-monitor\RootOptions.cs" Link="Options\RootOptions.cs" />
