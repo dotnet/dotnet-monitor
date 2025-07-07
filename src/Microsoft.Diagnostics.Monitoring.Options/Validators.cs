@@ -4,7 +4,6 @@
     #pragma warning disable CS1591 // Compensate for https://github.com/dotnet/roslyn/issues/54103
     namespace Microsoft.Diagnostics.Monitoring.WebApi
 {
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Extensions.Options.SourceGeneration", "10.0.12.25812")]
     internal sealed partial class __MetricProviderValidator__
     {
         /// <summary>
@@ -13,7 +12,6 @@
         /// <param name="name">The name of the options instance being validated.</param>
         /// <param name="options">The options instance.</param>
         /// <returns>Validation result.</returns>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Extensions.Options.SourceGeneration", "10.0.12.25812")]
         public static global::Microsoft.Extensions.Options.ValidateOptionsResult Validate(string? name, global::Microsoft.Diagnostics.Monitoring.WebApi.MetricProvider options)
         {
             global::Microsoft.Extensions.Options.ValidateOptionsResultBuilder? builder = null;
@@ -44,7 +42,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         /// <param name="name">The name of the options instance being validated.</param>
         /// <param name="options">The options instance.</param>
         /// <returns>Validation result.</returns>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Extensions.Options.SourceGeneration", "10.0.12.25812")]
         public global::Microsoft.Extensions.Options.ValidateOptionsResult Validate(string? name, global::Microsoft.Diagnostics.Monitoring.WebApi.GlobalCounterOptions options)
         {
             global::Microsoft.Extensions.Options.ValidateOptionsResultBuilder? builder = null;
@@ -99,7 +96,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         /// <param name="name">The name of the options instance being validated.</param>
         /// <param name="options">The options instance.</param>
         /// <returns>Validation result.</returns>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Extensions.Options.SourceGeneration", "10.0.12.25812")]
         public global::Microsoft.Extensions.Options.ValidateOptionsResult Validate(string? name, global::Microsoft.Diagnostics.Monitoring.WebApi.GlobalProviderOptions options)
         {
             global::Microsoft.Extensions.Options.ValidateOptionsResultBuilder? builder = null;
@@ -130,7 +126,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         /// <param name="name">The name of the options instance being validated.</param>
         /// <param name="options">The options instance.</param>
         /// <returns>Validation result.</returns>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Extensions.Options.SourceGeneration", "10.0.12.25812")]
         public global::Microsoft.Extensions.Options.ValidateOptionsResult Validate(string? name, global::Microsoft.Diagnostics.Monitoring.WebApi.MetricsOptions options)
         {
             global::Microsoft.Extensions.Options.ValidateOptionsResultBuilder? builder = null;
@@ -178,7 +173,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
         /// <param name="name">The name of the options instance being validated.</param>
         /// <param name="options">The options instance.</param>
         /// <returns>Validation result.</returns>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Extensions.Options.SourceGeneration", "10.0.12.25812")]
         public global::Microsoft.Extensions.Options.ValidateOptionsResult Validate(string? name, global::Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem.FileSystemEgressProviderOptions options)
         {
             global::Microsoft.Extensions.Options.ValidateOptionsResultBuilder? builder = null;
@@ -211,7 +205,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress.FileSystem
 }
 namespace __OptionValidationStaticInstances
 {
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Extensions.Options.SourceGeneration", "10.0.12.25812")]
     file static class __Attributes
     {
         internal static readonly global::System.ComponentModel.DataAnnotations.RequiredAttribute A1 = new global::System.ComponentModel.DataAnnotations.RequiredAttribute();
@@ -227,14 +220,12 @@ namespace __OptionValidationStaticInstances
 }
 namespace __OptionValidationStaticInstances
 {
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Extensions.Options.SourceGeneration", "10.0.12.25812")]
     file static class __Validators
     {
     }
 }
 namespace __OptionValidationGeneratedAttributes
 {
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Extensions.Options.SourceGeneration", "10.0.12.25812")]
     [global::System.AttributeUsage(global::System.AttributeTargets.Property | global::System.AttributeTargets.Field | global::System.AttributeTargets.Parameter, AllowMultiple = false)]
     file class __SourceGen__RangeAttribute : global::System.ComponentModel.DataAnnotations.ValidationAttribute
     {
