@@ -87,11 +87,6 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
                 int index = 0;
                 foreach (EventPipeProvider provider in Providers)
                 {
-                    ValidationContext providerContext = new(provider, validationContext, validationContext.Items);
-                    providerContext.MemberName = nameof(Providers) + "[" + index.ToString(CultureInfo.InvariantCulture) + "]";
-
-                    Validator.TryValidateObject(provider, providerContext, results, validateAllProperties: true);
-
                     if (counterOptions != null && !CounterValidator.ValidateProvider(counterOptions, provider, out string? errorMessage))
                     {
                         results.Add(new ValidationResult(errorMessage, new[] { nameof(EventPipeProvider.Arguments) }));

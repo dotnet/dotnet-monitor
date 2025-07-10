@@ -111,17 +111,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         }
     }
 
-    internal sealed class CollectTraceActionDescriptor : ICollectionRuleActionDescriptor
+    [OptionsValidator]
+    internal sealed partial class CollectTraceActionDescriptor : ICollectionRuleActionDescriptor<CollectTraceOptions, CollectTraceActionFactory>
     {
-        public string ActionName => KnownCollectionRuleActions.CollectTrace;
-        public Type FactoryType => typeof(CollectTraceActionFactory);
-        public Type OptionsType => typeof(CollectTraceOptions);
+        private readonly IServiceProvider _serviceProvider;
 
-        public void BindOptions(IConfigurationSection settingsSection, out object settings)
+        public CollectTraceActionDescriptor(IServiceProvider serviceProvider)
         {
-            CollectTraceOptions options = new();
+            _serviceProvider = serviceProvider;
+        }
+
+        public string ActionName => KnownCollectionRuleActions.CollectTrace;
+
+        public void BindOptions(IConfigurationSection settingsSection, out CollectTraceOptions options)
+        {
+            options = new();
             settingsSection.Bind_CollectTraceOptions(options);
-            settings = options;
         }
     }
 }

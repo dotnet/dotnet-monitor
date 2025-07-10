@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Binder.SourceGeneration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System;
 using System.ComponentModel.DataAnnotations;
 using Utils = Microsoft.Diagnostics.Monitoring.WebApi.Utilities;
@@ -63,17 +64,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         }
     }
 
-    internal sealed class CollectGCDumpActionDescriptor : ICollectionRuleActionDescriptor
+    [OptionsValidator]
+    internal sealed partial class CollectGCDumpActionDescriptor : ICollectionRuleActionDescriptor<CollectGCDumpOptions, CollectGCDumpActionFactory>
     {
-        public string ActionName => KnownCollectionRuleActions.CollectGCDump;
-        public Type FactoryType => typeof(CollectGCDumpActionFactory);
-        public Type OptionsType => typeof(CollectGCDumpOptions);
+        private readonly IServiceProvider _serviceProvider;
 
-        public void BindOptions(IConfigurationSection settingsSection, out object settings)
+        public CollectGCDumpActionDescriptor(IServiceProvider serviceProvider)
         {
-            CollectGCDumpOptions options = new();
+            _serviceProvider = serviceProvider;
+        }
+
+        public string ActionName => KnownCollectionRuleActions.CollectGCDump;
+
+        public void BindOptions(IConfigurationSection settingsSection, out CollectGCDumpOptions options)
+        {
+            options = new();
             settingsSection.Bind_CollectGCDumpOptions(options);
-            settings = options;
         }
     }
 }

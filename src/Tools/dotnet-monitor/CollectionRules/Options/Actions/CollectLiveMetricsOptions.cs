@@ -6,6 +6,7 @@
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleDefaultsInterfaces;
+using Microsoft.Extensions.Options;
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -31,11 +32,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectLiveMetricsOptions_Providers))]
+        [ValidateEnumeratedItems]
         public EventMetricsProvider[]? Providers { get; set; }
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectLiveMetricsOptions_Meters))]
+        [ValidateEnumeratedItems]
         public EventMetricsMeter[]? Meters { get; set; }
 
         [Display(

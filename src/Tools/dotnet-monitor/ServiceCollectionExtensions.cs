@@ -61,7 +61,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static IServiceCollection ConfigureGlobalCounter(this IServiceCollection services, IConfiguration configuration)
         {
             return BindingExtensions.Configure<GlobalCounterOptions>(services, configuration.GetSection(ConfigurationKeys.GlobalCounter))
-                .AddSingleton<IValidateOptions<GlobalCounterOptions>, DataAnnotationValidateOptions<GlobalCounterOptions>>();
+                .AddSingleton<IValidateOptions<GlobalCounterOptions>, GlobalCounterOptionsValidator>()
+                .AddSingleton<IValidateOptions<GlobalProviderOptions>, GlobalProviderOptionsValidator>();
 
         }
 
@@ -96,7 +97,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static IServiceCollection ConfigureMetrics(this IServiceCollection services, IConfiguration configuration)
         {
             return BindingExtensions.Configure<MetricsOptions>(services, configuration.GetSection(ConfigurationKeys.Metrics))
-                .AddSingleton<IValidateOptions<MetricsOptions>, DataAnnotationValidateOptions<MetricsOptions>>()
+                .AddSingleton<IValidateOptions<MetricsOptions>, MetricsOptionsValidator>()
                 .AddSingleton<MetricsStoreService>()
                 .AddHostedService<MetricsService>()
                 .AddSingleton<IMetricsPortsProvider, MetricsPortsProvider>();
@@ -179,7 +180,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             services.AddSingleton<IConfigureOptions<CollectionRuleOptions>, CollectionRuleConfigureNamedOptions>();
             services.AddSingleton<IPostConfigureOptions<CollectionRuleOptions>, CollectionRulePostConfigureOptions>();
             services.AddSingleton<IPostConfigureOptions<CollectionRuleOptions>, DefaultCollectionRulePostConfigureOptions>();
-            services.AddSingleton<IValidateOptions<CollectionRuleOptions>, DataAnnotationValidateOptions<CollectionRuleOptions>>();
+            services.AddSingleton<IValidateOptions<CollectionRuleOptions>, CollectionRuleOptionsValidator>();
 
             // Register change sources for the options type
             services.AddSingleton<IOptionsChangeTokenSource<CollectionRuleOptions>, CollectionRulesConfigurationChangeTokenSource>();
@@ -200,14 +201,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static IServiceCollection RegisterCollectionRuleAction<TFactory, TOptions, TDescriptor>(this IServiceCollection services)
             where TFactory : class, ICollectionRuleActionFactory<TOptions>
             where TOptions : BaseRecordOptions, new()
-            where TDescriptor : class, ICollectionRuleActionDescriptor
+            where TDescriptor : class, ICollectionRuleActionDescriptor<TOptions, TFactory>
         {
             services.AddSingleton<TFactory>();
             services.AddSingleton<CollectionRuleActionFactoryProxy<TFactory, TOptions>>();
             services.AddSingleton<ICollectionRuleActionDescriptor, TDescriptor>();
             // NOTE: When opening collection rule actions for extensibility, this should not be added for all registered actions.
             // Each action should register its own IValidateOptions<> implementation (if it needs one).
-            services.AddSingleton<IValidateOptions<TOptions>, DataAnnotationValidateOptions<TOptions>>();
+            services.AddSingleton<IValidateOptions<TOptions>, TDescriptor>();
             return services;
         }
 
@@ -224,14 +225,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         public static IServiceCollection RegisterCollectionRuleTrigger<TFactory, TOptions, TDescriptor>(this IServiceCollection services)
             where TFactory : class, ICollectionRuleTriggerFactory<TOptions>
             where TOptions : class, new()
-            where TDescriptor : class, ICollectionRuleTriggerDescriptor
+            where TDescriptor : class, ICollectionRuleTriggerDescriptor<TOptions, TFactory>
         {
             services.AddSingleton<TFactory>();
             services.AddSingleton<CollectionRuleTriggerFactoryProxy<TFactory, TOptions>>();
             services.AddSingleton<ICollectionRuleTriggerDescriptor, TDescriptor>();
             // NOTE: When opening collection rule triggers for extensibility, this should not be added for all registered triggers.
             // Each trigger should register its own IValidateOptions<> implementation (if it needs one).
-            services.AddSingleton<IValidateOptions<TOptions>, DataAnnotationValidateOptions<TOptions>>();
+            services.AddSingleton<IValidateOptions<TOptions>, TDescriptor>();
 
             return services;
         }

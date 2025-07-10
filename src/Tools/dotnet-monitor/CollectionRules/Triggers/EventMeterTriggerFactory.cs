@@ -59,17 +59,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
         }
     }
 
-    internal sealed class EventMeterTriggerDescriptor : ICollectionRuleTriggerDescriptor
+    [OptionsValidator]
+    internal sealed partial class EventMeterTriggerDescriptor : ICollectionRuleTriggerDescriptor<EventMeterOptions, EventMeterTriggerFactory>
     {
-        public Type FactoryType => typeof(EventMeterTriggerFactory);
-        public Type? OptionsType => typeof(EventMeterOptions);
         public string TriggerName => KnownCollectionRuleTriggers.EventMeter;
 
-        public bool TryBindOptions(IConfigurationSection settingsSection, out object? settings)
+        public bool TryBindOptions(IConfigurationSection settingsSection, out EventMeterOptions options)
         {
-            var options = new EventMeterOptions();
+            options = new EventMeterOptions();
             settingsSection.Bind_EventMeterOptions(options);
-            settings = options;
             return true;
         }
     }
