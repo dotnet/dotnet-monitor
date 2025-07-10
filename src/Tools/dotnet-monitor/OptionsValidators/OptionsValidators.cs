@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Extensions.Options;
@@ -224,12 +224,6 @@ namespace __OptionValidationStaticInstances
         internal static readonly __OptionValidationGeneratedAttributes.__SourceGen__RangeAttribute A3 = new __OptionValidationGeneratedAttributes.__SourceGen__RangeAttribute(
             (int)1,
             (int)2147483647);
-    }
-}
-namespace __OptionValidationStaticInstances
-{
-    static class __Validators
-    {
     }
 }
 namespace __OptionValidationGeneratedAttributes

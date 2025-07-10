@@ -1359,12 +1359,6 @@ namespace __OptionValidationStaticInstances
             (double)1.7976931348623157E+308);
     }
 }
-namespace __OptionValidationStaticInstances
-{
-    static class __Validators
-    {
-    }
-}
 namespace __OptionValidationGeneratedAttributes
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = false)]

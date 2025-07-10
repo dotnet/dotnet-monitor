@@ -50,11 +50,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         public float? IntervalSeconds { get; set; }
     }
 
-    [OptionsValidator]
-    partial class GlobalProviderOptionsValidator : IValidateOptions<GlobalProviderOptions>
-    {
-    }
-
     partial class GlobalCounterOptions : IValidatableObject
     {
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
@@ -77,17 +72,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
 
             return results;
-        }
-    }
-
-    [OptionsValidator]
-    partial class GlobalCounterOptionsValidator : IValidateOptions<GlobalCounterOptions>
-    {
-        private readonly IServiceProvider _serviceProvider;
-
-        public GlobalCounterOptionsValidator(IServiceProvider serviceProvider)
-        {
-            _serviceProvider = serviceProvider;
         }
     }
 
