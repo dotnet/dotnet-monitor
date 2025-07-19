@@ -107,7 +107,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
             }
             else
             {
-                results.Add(new ValidationResult(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_UnknownTriggerType, triggerName)));
+                results.Add(new ValidationResult(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_UnknownTriggerType, triggerName), [validationContext.MemberName]));
                 return false;
             }
         }
