@@ -4,11 +4,11 @@
       <Uri>https://github.com/dotnet/dotnet</Uri>
       <Sha>170498a9429a5553fe7ac0ec2341d19bbb97cbe8</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="9.0.0-preview.25368.1">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="9.0.0-preview.25369.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
       <Sha>fcaeae336c70cc9af2f7627c4b785c5eade0787f</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="9.0.0-preview.25368.1">
+    <Dependency Name="Microsoft.Diagnostics.Monitoring.EventPipe" Version="9.0.0-preview.25369.1">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
       <Sha>fcaeae336c70cc9af2f7627c4b785c5eade0787f</Sha>
     </Dependency>
@@ -42,7 +42,7 @@
       <Uri>https://github.com/dotnet/dotnet</Uri>
       <Sha>170498a9429a5553fe7ac0ec2341d19bbb97cbe8</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.FileFormats" Version="1.0.636801">
+    <Dependency Name="Microsoft.FileFormats" Version="1.0.636901">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
       <Sha>fcaeae336c70cc9af2f7627c4b785c5eade0787f</Sha>
     </Dependency>
