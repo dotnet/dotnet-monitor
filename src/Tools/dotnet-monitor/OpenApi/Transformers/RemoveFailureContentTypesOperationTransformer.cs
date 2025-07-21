@@ -3,8 +3,7 @@
 
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.OpenApi.Models;
-using Microsoft.OpenApi.Models.Interfaces;
+using Microsoft.OpenApi;
 using System.Threading;
 using System.Threading.Tasks;
 
