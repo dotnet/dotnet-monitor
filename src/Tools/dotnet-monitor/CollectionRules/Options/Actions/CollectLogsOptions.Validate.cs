@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Extensions.Logging;
@@ -23,7 +23,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions
                 RequiredAttribute requiredAttribute = new();
                 EnumDataTypeAttribute enumValidationAttribute = new(typeof(LogLevel));
 
-                ValidationContext filterSpecsContext = new(FilterSpecs, validationContext, validationContext.Items);
+                ValidationContext filterSpecsContext = new(FilterSpecs, nameof(FilterSpecs), validationContext, validationContext.Items);
                 filterSpecsContext.MemberName = nameof(FilterSpecs);
 
                 // Validate that the category is not null and that the level is a valid level value.
