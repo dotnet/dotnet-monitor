@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.Auth;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -361,6 +362,132 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
                 return configString;
             }
+        }
+
+        [Theory]
+        [MemberData(nameof(GetTriggerOptionsTestData))]
+        public void ConfigurationMappingTriggerTest(Type triggerOptionsType, string triggerTypeName)
+        {
+            var actionData = GetActionOptionsTestData().First();
+            var actionType = (Type)actionData[0]; 
+            var actionName = (string)actionData[1];
+            
+            var optionsFactory = new TestOptionsFactory(
+                triggerOptionsType,
+                actionType,
+                triggerTypeName,
+                actionName);
+
+            var rootOptions = optionsFactory.CreateRootOptions();
+
+            ValidateOptionsMapping(rootOptions);
+        }
+        
+        [Theory]
+        [MemberData(nameof(GetActionOptionsTestData))]
+        public void ConfigurationMappingActionTest(Type actionOptionsType, string actionTypeName)
+        {
+            var triggerData = GetTriggerOptionsTestData().First();
+            var triggerType = (Type)triggerData[0];
+            var triggerName = (string)triggerData[1];
+
+            var optionsFactory = new TestOptionsFactory(
+                triggerType,
+                actionOptionsType,
+                triggerName,
+                actionTypeName);
+
+            var rootOptions = optionsFactory.CreateRootOptions();
+
+            ValidateOptionsMapping(rootOptions);
+        }
+        
+        private static void ValidateOptionsMapping(RootOptions rootOptions)
+        {
+            var optionsMapper = new CommonOptionsMapper();
+
+            IDictionary<string, string> expectedConfigurationValues = rootOptions.ToConfigurationValues();
+            var configurationValues = optionsMapper.ToConfigurationValues(rootOptions);
+            ValidateMapping(expectedConfigurationValues, configurationValues);
+
+            IDictionary<string, string> expectedEnvironmentConfiguration = rootOptions.ToEnvironmentConfiguration();
+            var environmentConfiguration = optionsMapper.ToEnvironmentConfiguration(rootOptions);
+            ValidateMapping(expectedEnvironmentConfiguration, environmentConfiguration);
+            
+            Assert.Equal(expectedEnvironmentConfiguration.Count, environmentConfiguration.Count);
+            IDictionary<string, string> expectedKeyPerFileConfiguration = rootOptions.ToKeyPerFileConfiguration();
+            var keyPerFileConfiguration = optionsMapper.ToKeyPerFileConfiguration(rootOptions);
+
+            ValidateMapping(expectedKeyPerFileConfiguration, keyPerFileConfiguration);
+
+            static void ValidateMapping(IDictionary<string, string> expected, IDictionary<string, string> actual)
+            {
+                foreach (var kvp in expected)
+                {
+                    Assert.True(actual.TryGetValue(kvp.Key, out string value), 
+                        $"Key {kvp.Key} not found in configuration values.");
+                    Assert.Equal(kvp.Value, value);
+                }
+                
+                Assert.Equal(expected.Count, actual.Count);
+            }
+        }
+        
+        public static IEnumerable<object[]> GetTriggerOptionsTestData()
+        {
+            var triggerConstants = typeof(KnownCollectionRuleTriggers)
+                .GetFields(BindingFlags.Public | BindingFlags.Static)
+                .Select(f => (string)f.GetValue(null));
+
+            foreach (var triggerName in triggerConstants)
+            {
+                if (triggerName == KnownCollectionRuleTriggers.Startup)
+                    continue;
+                
+                string expectedTypeName = $"{triggerName}Options";
+
+                Type optionsType = FindOptionsType(expectedTypeName, 
+                    "Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts",
+                    "Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers");
+
+                Assert.NotNull(optionsType);
+                yield return new object[] { optionsType, triggerName };
+            }
+        }
+        
+        public static IEnumerable<object[]> GetActionOptionsTestData()
+        {
+            var actionConstants = typeof(KnownCollectionRuleActions)
+                .GetFields(BindingFlags.Public | BindingFlags.Static)
+                .Select(f => (string)f.GetValue(null));
+
+            foreach (var actionName in actionConstants)
+            {               
+                string expectedTypeName = $"{actionName}Options";
+                
+                Type optionsType = FindOptionsType(expectedTypeName, 
+                    "Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions");
+                
+                Assert.NotNull(optionsType);
+                yield return new object[] { optionsType, actionName };
+            }
+        }
+
+        private static Type FindOptionsType(string typeName, params string[] namespaces)
+        {
+            var assembly = typeof(KnownCollectionRuleActions).Assembly;
+
+            foreach (var ns in namespaces)
+            {
+                string fullTypeName = $"{ns}.{typeName}";
+                Type type = assembly.GetType(fullTypeName);
+                if (type != null)
+                {
+                    return type;
+                }
+            }
+
+            return null;
         }
 
         private static string CleanWhitespace(string rawText)
