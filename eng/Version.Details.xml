@@ -12,9 +12,9 @@
       <Uri>https://github.com/dotnet/diagnostics</Uri>
       <Sha>790647464027d129ad72b901d25ecaba8474e9c6</Sha>
     </Dependency>
-    <Dependency Name="System.CommandLine" Version="2.0.0-beta7.25365.1">
+    <Dependency Name="System.CommandLine" Version="2.0.0-rc.1.25374.1">
       <Uri>https://github.com/dotnet/command-line-api</Uri>
-      <Sha>dbc3781d3398b69cd9ffe24f60a7b77110bdadbf</Sha>
+      <Sha>00d2b3bb1c6b31037cf2c72443b7042a58fd536d</Sha>
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
