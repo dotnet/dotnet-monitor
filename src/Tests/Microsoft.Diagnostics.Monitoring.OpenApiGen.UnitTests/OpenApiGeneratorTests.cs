@@ -100,7 +100,7 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen.UnitTests
 
         private async Task<FileStream> GenerateDocumentAsync()
         {
-            string path = Path.GetTempFileName();
+            string path = Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString()), ".json");
 
             DotNetRunner runner = new();
             runner.EntrypointAssemblyPath = OpenApiGenPath;
