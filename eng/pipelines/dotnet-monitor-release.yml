@@ -117,7 +117,7 @@ extends:
           - name: DestinationAccountName
             value: dotnetcli
           - name: ChecksumsAccountName
-            value: dotnetclichecksums
+            value: dotnetcli
 
         workspace:
           clean: all
