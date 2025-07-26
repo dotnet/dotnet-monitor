@@ -4,9 +4,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.OpenApi.Models;
-using Microsoft.OpenApi.Models.Interfaces;
-using Microsoft.OpenApi.Models.References;
+using Microsoft.OpenApi;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,7 +18,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers
             OpenApiResponse tooManyRequests = new();
             tooManyRequests.Description = "TooManyRequests";
 
-            tooManyRequests.Content ??= new();
+            tooManyRequests.Content ??= new Dictionary<string, OpenApiMediaType>();
             tooManyRequests.Content.Add(
                  ContentTypes.ApplicationProblemJson,
                  new OpenApiMediaType()
