@@ -27,7 +27,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 GenerateApiKeyCommandHandler.Invoke(
                     result.GetValue(OutputOption),
                     result.GetValue(ExpirationOption),
-                    result.Configuration.Output);
+                    result.InvocationConfiguration.Output);
             });
 
             return command;

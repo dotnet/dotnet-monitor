@@ -80,6 +80,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             await toolRunner.StartAsync();
 
+            await Task.Delay(TimeSpan.FromSeconds(10)); // Allow some time for the socket to be created.
+
             AssertDefaultDiagnosticPortExists(defaultSharedTempDir);
         }
 

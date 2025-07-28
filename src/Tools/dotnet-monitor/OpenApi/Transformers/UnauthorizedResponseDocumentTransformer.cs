@@ -2,8 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.AspNetCore.OpenApi;
-using Microsoft.OpenApi.Models;
-using Microsoft.OpenApi.Models.Interfaces;
+using Microsoft.OpenApi;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,7 +21,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers
 
             OpenApiResponse unauthorizedResponse = new();
             unauthorizedResponse.Description = "Unauthorized";
-            unauthorizedResponse.Headers ??= new();
+            unauthorizedResponse.Headers ??= new Dictionary<string, IOpenApiHeader>();
             unauthorizedResponse.Headers.Add("WWW_Authenticate", authenticateHeader);
 
             OpenApiComponents components = openApiDoc.Components ??= new OpenApiComponents();
