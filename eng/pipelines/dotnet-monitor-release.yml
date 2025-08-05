@@ -207,7 +207,7 @@ extends:
           runOnce:
             deploy:
               steps:
-              - checkout: self
+              # - checkout: self
               - download: none
 
               - task: PowerShell@2
