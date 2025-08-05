@@ -72,10 +72,17 @@ variables:
     $TaskVariableName = 'ReleaseVersion'
     
     try {
-        # Get build data from Maestro API without authentication
+        # Get access token for Maestro API using specific resource
+        $accessToken = az account get-access-token --resource "api://54c17f3d-7325-4eca-9db7-f090bfc765a8/Maestro.User" --query accessToken -o tsv
+        if ([string]::IsNullOrEmpty($accessToken)) {
+            Write-Error "Failed to get access token for Maestro API"
+        }
+        
+        # Get build data from Maestro API with authentication and API version
         $buildUri = "$MaestroApiEndPoint/api/builds/$BarId" + "?api-version=2020-02-20"
         $headers = @{ 
             'accept' = 'application/json'
+            'Authorization' = "Bearer $accessToken"
         }
         $buildData = Invoke-RestMethod -Uri $buildUri -Method 'GET' -Headers $headers
         
@@ -107,10 +114,17 @@ variables:
     $TaskVariableName = 'BuildVersion'
     
     try {
-        # Get build data from Maestro API without authentication
+        # Get access token for Maestro API using specific resource
+        $accessToken = az account get-access-token --resource "api://54c17f3d-7325-4eca-9db7-f090bfc765a8/Maestro.User" --query accessToken -o tsv
+        if ([string]::IsNullOrEmpty($accessToken)) {
+            Write-Error "Failed to get access token for Maestro API"
+        }
+        
+        # Get build data from Maestro API with authentication and API version
         $buildUri = "$MaestroApiEndPoint/api/builds/$BarId" + "?api-version=2020-02-20"
         $headers = @{ 
             'accept' = 'application/json'
+            'Authorization' = "Bearer $accessToken"
         }
         $buildData = Invoke-RestMethod -Uri $buildUri -Method 'GET' -Headers $headers
         
