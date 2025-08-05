@@ -21,6 +21,131 @@ variables:
 - name: IsTestRun
   value: ${{ parameters.IsTestRun }}
   readonly: true
+- name: GetBarIdScript
+  value: |
+    $ErrorActionPreference = 'Stop'
+    Set-StrictMode -Version 2.0
+    
+    $BuildId = "$(resources.pipeline.Build.runID)"
+    $TaskVariableName = 'BarId'
+    
+    if ([String]::IsNullOrEmpty($env:System_AccessToken)) {
+        Write-Error 'System access token missing, this script needs access.'
+    }
+    
+    $tagsUri = "${env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}${env:SYSTEM_TEAMPROJECT}/_apis/build/builds/$BuildId/tags?api-version=6.0"
+    $buildData = Invoke-RestMethod `
+        -Uri $tagsUri `
+        -Method 'GET' `
+        -Headers @{ 'accept' = 'application/json'; 'Authorization' = "Bearer ${env:System_AccessToken}" }
+    
+    Write-Verbose 'BuildData:'
+    $buildDataJson = $buildData | ConvertTo-Json
+    Write-Verbose $buildDataJson
+    
+    $barId = -1;
+    $buildData.Value | Foreach-Object {
+        if ($_.StartsWith('BAR ID - ')) {
+            if ($barId -ne -1) {
+                Write-Error 'Multiple BAR IDs found in tags.'
+            }
+            $barId = $_.SubString(9)
+        }
+    }
+    
+    if ($barId -eq -1) {
+        Write-Error 'Failed to get BAR ID from tags.'
+    }
+    
+    Write-Verbose "BAR ID: $barId"
+    
+    Write-Host "##vso[task.setvariable variable=$TaskVariableName]$barId"
+    Write-Output $barId
+  readonly: true
+- name: GetReleaseVersionScript
+  value: |
+    $ErrorActionPreference = 'Stop'
+    Set-StrictMode -Version 2.0
+    
+    $BarId = "$(BarId)"
+    $MaestroApiEndPoint = 'https://maestro.dot.net'
+    $TaskVariableName = 'ReleaseVersion'
+    
+    try {
+        # Get access token for Maestro API from environment variable
+        $accessToken = $env:MaestroAccessToken
+        if ([string]::IsNullOrEmpty($accessToken)) {
+            Write-Error "MaestroAccessToken environment variable is not set"
+        }
+        
+        # Get build data from Maestro API with authentication and API version
+        $buildUri = "$MaestroApiEndPoint/api/builds/$BarId" + "?api-version=2020-02-20"
+        $headers = @{ 
+            'accept' = 'application/json'
+            'Authorization' = "Bearer $accessToken"
+        }
+        $buildData = Invoke-RestMethod -Uri $buildUri -Method 'GET' -Headers $headers
+        
+        [array]$matchingData = $buildData.assets | Where-Object { $_.name -match '^dotnet-monitor$' }
+        
+        if (!$matchingData -or $matchingData.Length -ne 1) {
+            Write-Error 'Unable to obtain release version'
+        }
+        
+        $version = $matchingData[0].version
+        
+        Write-Host "Release Version: $version"
+        
+        Write-Host "##vso[task.setvariable variable=$TaskVariableName]$version"
+        Write-Output $version
+    }
+    catch {
+        Write-Error "Failed to get release version: $($_.Exception.Message)"
+        throw
+    }
+  readonly: true
+- name: GetBuildVersionScript
+  value: |
+    $ErrorActionPreference = 'Stop'
+    Set-StrictMode -Version 2.0
+    
+    $BarId = "$(BarId)"
+    $MaestroApiEndPoint = 'https://maestro.dot.net'
+    $TaskVariableName = 'BuildVersion'
+    
+    try {
+        # Get access token for Maestro API from environment variable
+        $accessToken = $env:MaestroAccessToken
+        if ([string]::IsNullOrEmpty($accessToken)) {
+            Write-Error "MaestroAccessToken environment variable is not set"
+        }
+        
+        # Get build data from Maestro API with authentication and API version
+        $buildUri = "$MaestroApiEndPoint/api/builds/$BarId" + "?api-version=2020-02-20"
+        $headers = @{ 
+            'accept' = 'application/json'
+            'Authorization' = "Bearer $accessToken"
+        }
+        $buildData = Invoke-RestMethod -Uri $buildUri -Method 'GET' -Headers $headers
+        
+        [array]$matchingData = $buildData.assets | Where-Object { $_.name -match 'MergedManifest.xml$' -and $_.nonShipping }
+        
+        if (!$matchingData -or $matchingData.Length -ne 1) {
+            Write-Error 'Unable to obtain build version.'
+        }
+        
+        $version = $matchingData[0].version
+        
+        Write-Host "Build Version: $version"
+        
+        Write-Host "##vso[task.setvariable variable=$TaskVariableName]$version"
+        Write-Output $version
+    }
+    catch {
+        Write-Error "Failed to get build version: $($_.Exception.Message)"
+        throw
+    }
+  readonly: true
 
 resources:
   pipelines:
@@ -56,45 +181,7 @@ extends:
           displayName: Get BAR ID
           inputs:
             targetType: 'inline'
-            script: |
-              $ErrorActionPreference = 'Stop'
-              Set-StrictMode -Version 2.0
-              
-              $BuildId = "$(resources.pipeline.Build.runID)"
-              $TaskVariableName = 'BarId'
-              
-              if ([String]::IsNullOrEmpty($env:System_AccessToken)) {
-                  Write-Error 'System access token missing, this script needs access.'
-              }
-              
-              $tagsUri = "${env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}${env:SYSTEM_TEAMPROJECT}/_apis/build/builds/$BuildId/tags?api-version=6.0"
-              $buildData = Invoke-RestMethod `
-                  -Uri $tagsUri `
-                  -Method 'GET' `
-                  -Headers @{ 'accept' = 'application/json'; 'Authorization' = "Bearer ${env:System_AccessToken}" }
-              
-              Write-Verbose 'BuildData:'
-              $buildDataJson = $buildData | ConvertTo-Json
-              Write-Verbose $buildDataJson
-              
-              $barId = -1;
-              $buildData.Value | Foreach-Object {
-                  if ($_.StartsWith('BAR ID - ')) {
-                      if ($barId -ne -1) {
-                          Write-Error 'Multiple BAR IDs found in tags.'
-                      }
-                      $barId = $_.SubString(9)
-                  }
-              }
-              
-              if ($barId -eq -1) {
-                  Write-Error 'Failed to get BAR ID from tags.'
-              }
-              
-              Write-Verbose "BAR ID: $barId"
-              
-              Write-Host "##vso[task.setvariable variable=$TaskVariableName]$barId"
-              Write-Output $barId
+            script: $(GetBarIdScript)
           env:
             SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
@@ -104,26 +191,7 @@ extends:
             azureSubscription: "Darc: Maestro Production"
             scriptType: ps
             scriptLocation: inlineScript
-            inlineScript: |
-              $ErrorActionPreference = 'Stop'
-              Set-StrictMode -Version 2.0
-              
-              $BarId = "$(BarId)"
-              $MaestroApiEndPoint = 'https://maestro.dot.net'
-              $TaskVariableName = 'ReleaseVersion'
-              
-              try {
-                  $version = '9.0.4'
-                  
-                  Write-Verbose "Release Version: $version"
-                  
-                  Write-Host "##vso[task.setvariable variable=$TaskVariableName]$version"
-                  Write-Output $version
-              }
-              catch {
-                  Write-Error "Failed to get release version: $($_.Exception.Message)"
-                  throw
-              }
+            inlineScript: $(GetReleaseVersionScript)
 
         - task: AzureCLI@2
           displayName: Get Build Version
@@ -131,29 +199,7 @@ extends:
             azureSubscription: "Darc: Maestro Production"
             scriptType: ps
             scriptLocation: inlineScript
-            inlineScript: |
-              $ErrorActionPreference = 'Stop'
-              Set-StrictMode -Version 2.0
-              
-              $BarId = "$(BarId)"
-              $MaestroApiEndPoint = 'https://maestro.dot.net'
-              $TaskVariableName = 'BuildVersion'
-              
-              try {
-                  # Get access token for Maestro API
-
-                  
-                  $version = '9.0.4-servicing.25381.4'
-                  
-                  Write-Verbose "Build Version: $version"
-                  
-                  Write-Host "##vso[task.setvariable variable=$TaskVariableName]$version"
-                  Write-Output $version
-              }
-              catch {
-                  Write-Error "Failed to get build version: $($_.Exception.Message)"
-                  throw
-              }
+            inlineScript: $(GetBuildVersionScript)
 
         - powershell: |
             $buildName = "${env:ReleaseVersion} [${env:BuildVersion}]"
@@ -255,45 +301,7 @@ extends:
                 displayName: Get BAR ID
                 inputs:
                   targetType: 'inline'
-                  script: |
-                    $ErrorActionPreference = 'Stop'
-                    Set-StrictMode -Version 2.0
-                    
-                    $BuildId = "$(resources.pipeline.Build.runID)"
-                    $TaskVariableName = 'BarId'
-                    
-                    if ([String]::IsNullOrEmpty($env:System_AccessToken)) {
-                        Write-Error 'System access token missing, this script needs access.'
-                    }
-                    
-                    $tagsUri = "${env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}${env:SYSTEM_TEAMPROJECT}/_apis/build/builds/$BuildId/tags?api-version=6.0"
-                    $buildData = Invoke-RestMethod `
-                        -Uri $tagsUri `
-                        -Method 'GET' `
-                        -Headers @{ 'accept' = 'application/json'; 'Authorization' = "Bearer ${env:System_AccessToken}" }
-                    
-                    Write-Verbose 'BuildData:'
-                    $buildDataJson = $buildData | ConvertTo-Json
-                    Write-Verbose $buildDataJson
-                    
-                    $barId = -1;
-                    $buildData.Value | Foreach-Object {
-                        if ($_.StartsWith('BAR ID - ')) {
-                            if ($barId -ne -1) {
-                                Write-Error 'Multiple BAR IDs found in tags.'
-                            }
-                            $barId = $_.SubString(9)
-                        }
-                    }
-                    
-                    if ($barId -eq -1) {
-                        Write-Error 'Failed to get BAR ID from tags.'
-                    }
-                    
-                    Write-Verbose "BAR ID: $barId"
-                    
-                    Write-Host "##vso[task.setvariable variable=$TaskVariableName]$barId"
-                    Write-Output $barId
+                  script: $(GetBarIdScript)
                 env:
                   SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
@@ -303,29 +311,7 @@ extends:
                   azureSubscription: "Darc: Maestro Production"
                   scriptType: ps
                   scriptLocation: inlineScript
-                  inlineScript: |
-                    $ErrorActionPreference = 'Stop'
-                    Set-StrictMode -Version 2.0
-                    
-                    $BarId = "$(BarId)"
-                    $MaestroApiEndPoint = 'https://maestro.dot.net'
-                    $TaskVariableName = 'ReleaseVersion'
-                    
-                    try {
-                        # Get access token for Maestro API
-                       
-                        
-                        $version = '9.0.4'
-                        
-                        Write-Verbose "Release Version: $version"
-                        
-                        Write-Host "##vso[task.setvariable variable=$TaskVariableName]$version"
-                        Write-Output $version
-                    }
-                    catch {
-                        Write-Error "Failed to get release version: $($_.Exception.Message)"
-                        throw
-                    }
+                  inlineScript: $(GetReleaseVersionScript)
 
               - task: AzureCLI@2
                 displayName: Get Build Version
@@ -333,29 +319,7 @@ extends:
                   azureSubscription: "Darc: Maestro Production"
                   scriptType: ps
                   scriptLocation: inlineScript
-                  inlineScript: |
-                    $ErrorActionPreference = 'Stop'
-                    Set-StrictMode -Version 2.0
-                    
-                    $BarId = "$(BarId)"
-                    $MaestroApiEndPoint = 'https://maestro.dot.net'
-                    $TaskVariableName = 'BuildVersion'
-                    
-                    try {
-                        # Get access token for Maestro API
-       
-                        
-                        $version = '9.0.4-servicing.25381.4'
-                        
-                        Write-Verbose "Build Version: $version"
-                        
-                        Write-Host "##vso[task.setvariable variable=$TaskVariableName]$version"
-                        Write-Output $version
-                    }
-                    catch {
-                        Write-Error "Failed to get build version: $($_.Exception.Message)"
-                        throw
-                    }
+                  inlineScript: $(GetBuildVersionScript)
 
               - powershell: Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
                 displayName: Install NuGet PowerShell Package Provider
