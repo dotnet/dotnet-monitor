@@ -100,6 +100,9 @@ extends:
 
       jobs:
       - deployment: PublishToStorageAccounts
+        templateContext:
+          type: releaseJob
+          isProduction: true      
         displayName: Publish to Storage Accounts
 
         ${{ if eq(parameters.IsTestRun, 'true') }}:
