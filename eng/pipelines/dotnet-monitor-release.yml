@@ -72,17 +72,10 @@ variables:
     $TaskVariableName = 'ReleaseVersion'
     
     try {
-        # Get access token for Maestro API from pipeline variable
-        $accessToken = "$(MaestroAccessToken)"
-        if ([string]::IsNullOrEmpty($accessToken)) {
-            Write-Error "MaestroAccessToken pipeline variable is not set"
-        }
-        
-        # Get build data from Maestro API with authentication and API version
+        # Get build data from Maestro API without authentication
         $buildUri = "$MaestroApiEndPoint/api/builds/$BarId" + "?api-version=2020-02-20"
         $headers = @{ 
             'accept' = 'application/json'
-            'Authorization' = "Bearer $accessToken"
         }
         $buildData = Invoke-RestMethod -Uri $buildUri -Method 'GET' -Headers $headers
         
@@ -114,17 +107,10 @@ variables:
     $TaskVariableName = 'BuildVersion'
     
     try {
-        # Get access token for Maestro API from pipeline variable
-        $accessToken = "$(MaestroAccessToken)"
-        if ([string]::IsNullOrEmpty($accessToken)) {
-            Write-Error "MaestroAccessToken pipeline variable is not set"
-        }
-        
-        # Get build data from Maestro API with authentication and API version
+        # Get build data from Maestro API without authentication
         $buildUri = "$MaestroApiEndPoint/api/builds/$BarId" + "?api-version=2020-02-20"
         $headers = @{ 
             'accept' = 'application/json'
-            'Authorization' = "Bearer $accessToken"
         }
         $buildData = Invoke-RestMethod -Uri $buildUri -Method 'GET' -Headers $headers
         
