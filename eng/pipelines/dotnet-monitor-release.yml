@@ -55,10 +55,46 @@ extends:
         - task: PowerShell@2
           displayName: Get BAR ID
           inputs:
-            filePath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBarId.ps1
-            arguments: >-
-              -BuildId $(resources.pipeline.Build.runID)
-              -TaskVariableName 'BarId'
+            targetType: 'inline'
+            script: |
+              $ErrorActionPreference = 'Stop'
+              Set-StrictMode -Version 2.0
+              
+              $BuildId = "$(resources.pipeline.Build.runID)"
+              $TaskVariableName = 'BarId'
+              
+              if ([String]::IsNullOrEmpty($env:System_AccessToken)) {
+                  Write-Error 'System access token missing, this script needs access.'
+              }
+              
+              $tagsUri = "${env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}${env:SYSTEM_TEAMPROJECT}/_apis/build/builds/$BuildId/tags?api-version=6.0"
+              $buildData = Invoke-RestMethod `
+                  -Uri $tagsUri `
+                  -Method 'GET' `
+                  -Headers @{ 'accept' = 'application/json'; 'Authorization' = "Bearer ${env:System_AccessToken}" }
+              
+              Write-Verbose 'BuildData:'
+              $buildDataJson = $buildData | ConvertTo-Json
+              Write-Verbose $buildDataJson
+              
+              $barId = -1;
+              $buildData.Value | Foreach-Object {
+                  if ($_.StartsWith('BAR ID - ')) {
+                      if ($barId -ne -1) {
+                          Write-Error 'Multiple BAR IDs found in tags.'
+                      }
+                      $barId = $_.SubString(9)
+                  }
+              }
+              
+              if ($barId -eq -1) {
+                  Write-Error 'Failed to get BAR ID from tags.'
+              }
+              
+              Write-Verbose "BAR ID: $barId"
+              
+              Write-Host "##vso[task.setvariable variable=$TaskVariableName]$barId"
+              Write-Output $barId
           env:
             SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
@@ -67,20 +103,62 @@ extends:
           inputs:
             azureSubscription: "Darc: Maestro Production"
             scriptType: ps
-            scriptPath: $(Build.SourcesDirectory)/eng/release/Scripts/GetReleaseVersion.ps1
-            arguments: >-
-              -BarId $(BarId)
-              -TaskVariableName 'ReleaseVersion'
+            scriptLocation: inlineScript
+            inlineScript: |
+              $ErrorActionPreference = 'Stop'
+              Set-StrictMode -Version 2.0
+              
+              $BarId = "$(BarId)"
+              $MaestroApiEndPoint = 'https://maestro.dot.net'
+              $TaskVariableName = 'ReleaseVersion'
+              
+              # Get build data from Maestro API
+              $buildUri = "$MaestroApiEndPoint/api/builds/$BarId"
+              $buildData = Invoke-RestMethod -Uri $buildUri -Method 'GET' -Headers @{ 'accept' = 'application/json' }
+              
+              [array]$matchingData = $buildData.assets | Where-Object { $_.name -match '^dotnet-monitor$' }
+              
+              if (!$matchingData -or $matchingData.Length -ne 1) {
+                  Write-Error 'Unable to obtain release version'
+              }
+              
+              $version = $matchingData[0].version
+              
+              Write-Verbose "Release Version: $version"
+              
+              Write-Host "##vso[task.setvariable variable=$TaskVariableName]$version"
+              Write-Output $version
 
         - task: AzureCLI@2
           displayName: Get Build Version
           inputs:
             azureSubscription: "Darc: Maestro Production"
             scriptType: ps
-            scriptPath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBuildVersion.ps1
-            arguments: >-
-              -BarId $(BarId)
-              -TaskVariableName 'BuildVersion'
+            scriptLocation: inlineScript
+            inlineScript: |
+              $ErrorActionPreference = 'Stop'
+              Set-StrictMode -Version 2.0
+              
+              $BarId = "$(BarId)"
+              $MaestroApiEndPoint = 'https://maestro.dot.net'
+              $TaskVariableName = 'BuildVersion'
+              
+              # Get build data from Maestro API
+              $buildUri = "$MaestroApiEndPoint/api/builds/$BarId"
+              $buildData = Invoke-RestMethod -Uri $buildUri -Method 'GET' -Headers @{ 'accept' = 'application/json' }
+              
+              [array]$matchingData = $buildData.assets | Where-Object { $_.name -match 'MergedManifest.xml$' -and $_.nonShipping }
+              
+              if (!$matchingData -or $matchingData.Length -ne 1) {
+                  Write-Error 'Unable to obtain build version.'
+              }
+              
+              $version = $matchingData[0].version
+              
+              Write-Verbose "Build Version: $version"
+              
+              Write-Host "##vso[task.setvariable variable=$TaskVariableName]$version"
+              Write-Output $version
 
         - powershell: |
             $buildName = "${env:ReleaseVersion} [${env:BuildVersion}]"
@@ -102,7 +180,7 @@ extends:
       - deployment: PublishToStorageAccounts
         templateContext:
           type: releaseJob
-          isProduction: true      
+          isProduction: true
         displayName: Publish to Storage Accounts
 
         ${{ if eq(parameters.IsTestRun, 'true') }}:
@@ -135,18 +213,92 @@ extends:
               - task: PowerShell@2
                 displayName: Install AzCopy
                 inputs:
-                  filePath: $(Build.SourcesDirectory)/eng/release/Scripts/InstallAzCopy.ps1
-                  arguments: >-
-                    -ToolsDirectory $(Agent.ToolsDirectory)
-                    -TaskVariableName 'AzCopyPath'
+                  targetType: 'inline'
+                  script: |
+                    $ErrorActionPreference = 'Stop'
+                    Set-StrictMode -Version 2.0
+                    
+                    $ToolsDirectory = "$(Agent.ToolsDirectory)"
+                    $TaskVariableName = 'AzCopyPath'
+                    
+                    $url = 'https://aka.ms/downloadazcopy-v10-windows'
+                    $basePath = Join-Path $ToolsDirectory 'azcopy'
+                    
+                    $zipPath = Join-Path $basePath 'azcopy.zip'
+                    $toolDirPath = Join-Path $basePath 'azcopy'
+                    $azCopyPath = Join-Path $toolDirPath 'azcopy.exe'
+                    
+                    if (Test-Path $azCopyPath) {
+                        Write-Verbose 'Already installed'
+                    } else {
+                        if (!(Test-Path $basePath)) {
+                            New-Item -ItemType 'Directory' -Path $basePath | Out-Null
+                        }
+                    
+                        Write-Verbose 'Fetching...'
+                        Invoke-WebRequest -Uri $url -OutFile $zipPath
+                    
+                        Write-Verbose 'Unzipping...'
+                        Expand-Archive -LiteralPath $zipPath -Force -DestinationPath $basePath
+                    
+                        # There should only be one directory that is named like 'azcopy_windows_amd64_<version>'
+                        Write-Verbose 'Renaming...'
+                        $unpackDirName = Get-ChildItem -Path $basePath -Directory -Name
+                        $unpackDirPath = Join-Path $basePath $unpackDirName
+                        Rename-Item -Path $unpackDirPath -NewName 'azcopy'
+                    
+                        # Delete zip
+                        Remove-Item -Path $zipPath
+                    
+                        Write-Verbose 'Finished'
+                    }
+                    
+                    Write-Host "##vso[task.setvariable variable=$TaskVariableName]$azCopyPath"
+                    Write-Output $azCopyPath
 
               - task: PowerShell@2
                 displayName: Get BAR ID
                 inputs:
-                  filePath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBarId.ps1
-                  arguments: >-
-                    -BuildId $(resources.pipeline.Build.runID)
-                    -TaskVariableName 'BarId'
+                  targetType: 'inline'
+                  script: |
+                    $ErrorActionPreference = 'Stop'
+                    Set-StrictMode -Version 2.0
+                    
+                    $BuildId = "$(resources.pipeline.Build.runID)"
+                    $TaskVariableName = 'BarId'
+                    
+                    if ([String]::IsNullOrEmpty($env:System_AccessToken)) {
+                        Write-Error 'System access token missing, this script needs access.'
+                    }
+                    
+                    $tagsUri = "${env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}${env:SYSTEM_TEAMPROJECT}/_apis/build/builds/$BuildId/tags?api-version=6.0"
+                    $buildData = Invoke-RestMethod `
+                        -Uri $tagsUri `
+                        -Method 'GET' `
+                        -Headers @{ 'accept' = 'application/json'; 'Authorization' = "Bearer ${env:System_AccessToken}" }
+                    
+                    Write-Verbose 'BuildData:'
+                    $buildDataJson = $buildData | ConvertTo-Json
+                    Write-Verbose $buildDataJson
+                    
+                    $barId = -1;
+                    $buildData.Value | Foreach-Object {
+                        if ($_.StartsWith('BAR ID - ')) {
+                            if ($barId -ne -1) {
+                                Write-Error 'Multiple BAR IDs found in tags.'
+                            }
+                            $barId = $_.SubString(9)
+                        }
+                    }
+                    
+                    if ($barId -eq -1) {
+                        Write-Error 'Failed to get BAR ID from tags.'
+                    }
+                    
+                    Write-Verbose "BAR ID: $barId"
+                    
+                    Write-Host "##vso[task.setvariable variable=$TaskVariableName]$barId"
+                    Write-Output $barId
                 env:
                   SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
@@ -155,20 +307,62 @@ extends:
                 inputs:
                   azureSubscription: "Darc: Maestro Production"
                   scriptType: ps
-                  scriptPath: $(Build.SourcesDirectory)/eng/release/Scripts/GetReleaseVersion.ps1
-                  arguments: >-
-                    -BarId $(BarId)
-                    -TaskVariableName 'ReleaseVersion'
+                  scriptLocation: inlineScript
+                  inlineScript: |
+                    $ErrorActionPreference = 'Stop'
+                    Set-StrictMode -Version 2.0
+                    
+                    $BarId = "$(BarId)"
+                    $MaestroApiEndPoint = 'https://maestro.dot.net'
+                    $TaskVariableName = 'ReleaseVersion'
+                    
+                    # Get build data from Maestro API
+                    $buildUri = "$MaestroApiEndPoint/api/builds/$BarId"
+                    $buildData = Invoke-RestMethod -Uri $buildUri -Method 'GET' -Headers @{ 'accept' = 'application/json' }
+                    
+                    [array]$matchingData = $buildData.assets | Where-Object { $_.name -match '^dotnet-monitor$' }
+                    
+                    if (!$matchingData -or $matchingData.Length -ne 1) {
+                        Write-Error 'Unable to obtain release version'
+                    }
+                    
+                    $version = $matchingData[0].version
+                    
+                    Write-Verbose "Release Version: $version"
+                    
+                    Write-Host "##vso[task.setvariable variable=$TaskVariableName]$version"
+                    Write-Output $version
 
               - task: AzureCLI@2
                 displayName: Get Build Version
                 inputs:
                   azureSubscription: "Darc: Maestro Production"
                   scriptType: ps
-                  scriptPath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBuildVersion.ps1
-                  arguments: >-
-                    -BarId $(BarId)
-                    -TaskVariableName 'BuildVersion'
+                  scriptLocation: inlineScript
+                  inlineScript: |
+                    $ErrorActionPreference = 'Stop'
+                    Set-StrictMode -Version 2.0
+                    
+                    $BarId = "$(BarId)"
+                    $MaestroApiEndPoint = 'https://maestro.dot.net'
+                    $TaskVariableName = 'BuildVersion'
+                    
+                    # Get build data from Maestro API
+                    $buildUri = "$MaestroApiEndPoint/api/builds/$BarId"
+                    $buildData = Invoke-RestMethod -Uri $buildUri -Method 'GET' -Headers @{ 'accept' = 'application/json' }
+                    
+                    [array]$matchingData = $buildData.assets | Where-Object { $_.name -match 'MergedManifest.xml$' -and $_.nonShipping }
+                    
+                    if (!$matchingData -or $matchingData.Length -ne 1) {
+                        Write-Error 'Unable to obtain build version.'
+                    }
+                    
+                    $version = $matchingData[0].version
+                    
+                    Write-Verbose "Build Version: $version"
+                    
+                    Write-Host "##vso[task.setvariable variable=$TaskVariableName]$version"
+                    Write-Output $version
 
               - powershell: Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
                 displayName: Install NuGet PowerShell Package Provider
