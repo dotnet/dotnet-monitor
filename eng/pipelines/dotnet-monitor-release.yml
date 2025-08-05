@@ -72,10 +72,10 @@ variables:
     $TaskVariableName = 'ReleaseVersion'
     
     try {
-        # Get access token for Maestro API from environment variable
-        $accessToken = $env:MaestroAccessToken
+        # Get access token for Maestro API from pipeline variable
+        $accessToken = "$(MaestroAccessToken)"
         if ([string]::IsNullOrEmpty($accessToken)) {
-            Write-Error "MaestroAccessToken environment variable is not set"
+            Write-Error "MaestroAccessToken pipeline variable is not set"
         }
         
         # Get build data from Maestro API with authentication and API version
@@ -114,10 +114,10 @@ variables:
     $TaskVariableName = 'BuildVersion'
     
     try {
-        # Get access token for Maestro API from environment variable
-        $accessToken = $env:MaestroAccessToken
+        # Get access token for Maestro API from pipeline variable
+        $accessToken = "$(MaestroAccessToken)"
         if ([string]::IsNullOrEmpty($accessToken)) {
-            Write-Error "MaestroAccessToken environment variable is not set"
+            Write-Error "MaestroAccessToken pipeline variable is not set"
         }
         
         # Get build data from Maestro API with authentication and API version
