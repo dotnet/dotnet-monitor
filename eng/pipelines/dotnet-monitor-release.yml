@@ -486,11 +486,11 @@ extends:
                 env:
                   DestinationSasTokenBase64: $(DotNetCliDelegationSasTokenBase64)
 
-              - task: 1ES.PublishBuildArtifacts@1
-                displayName: Publish Logs
-                inputs:
-                  PathtoPublish: '$(USERPROFILE)\.azcopy'
-                  PublishLocation: Container
-                  ArtifactName: AzCopyLogs
-                continueOnError: true
-                condition: succeededOrFailed()
+              # - task: 1ES.PublishBuildArtifacts@1
+              #   displayName: Publish Logs
+              #   inputs:
+              #     PathtoPublish: '$(USERPROFILE)\.azcopy'
+              #     PublishLocation: Container
+              #     ArtifactName: AzCopyLogs
+              #   continueOnError: true
+              #   condition: succeededOrFailed()
