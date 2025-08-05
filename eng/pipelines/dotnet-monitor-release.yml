@@ -193,7 +193,7 @@ extends:
           - name: DestinationAccountName
             value: dotnetcli
           - name: ChecksumsAccountName
-            value: dotnetcli
+            value: dotnetclichecksums
 
         workspace:
           clean: all
@@ -479,11 +479,52 @@ extends:
                 env:
                   DestinationSasTokenBase64: $(DotNetCliDelegationSasTokenBase64)
 
-              # - task: 1ES.PublishBuildArtifacts@1
-              #   displayName: Publish Logs
-              #   inputs:
-              #     PathtoPublish: '$(USERPROFILE)\.azcopy'
-              #     PublishLocation: Container
-              #     ArtifactName: AzCopyLogs
-              #   continueOnError: true
-              #   condition: succeededOrFailed()
+              - task: PowerShell@2
+                displayName: Display AzCopy Logs
+                inputs:
+                  targetType: 'inline'
+                  script: |
+                    $ErrorActionPreference = 'Continue'
+                    
+                    $azCopyLogDir = Join-Path $env:USERPROFILE '.azcopy'
+                    
+                    Write-Host "Checking AzCopy logs directory: $azCopyLogDir"
+                    
+                    if (Test-Path $azCopyLogDir) {
+                        Write-Host "AzCopy logs directory exists."
+                        
+                        # Get all log files
+                        $logFiles = Get-ChildItem -Path $azCopyLogDir -File -Recurse | Sort-Object LastWriteTime -Descending
+                        
+                        if ($logFiles.Count -eq 0) {
+                            Write-Host "No log files found in AzCopy directory."
+                        } else {
+                            Write-Host "Found $($logFiles.Count) log file(s):"
+                            
+                            foreach ($logFile in $logFiles) {
+                                Write-Host ""
+                                Write-Host "========================================="
+                                Write-Host "Log File: $($logFile.FullName)"
+                                Write-Host "Size: $($logFile.Length) bytes"
+                                Write-Host "Last Modified: $($logFile.LastWriteTime)"
+                                Write-Host "========================================="
+                                
+                                try {
+                                    $content = Get-Content -Path $logFile.FullName -Raw
+                                    if ([string]::IsNullOrWhiteSpace($content)) {
+                                        Write-Host "Log file is empty."
+                                    } else {
+                                        Write-Host $content
+                                    }
+                                } catch {
+                                    Write-Host "Error reading log file: $($_.Exception.Message)"
+                                }
+                                
+                                Write-Host ""
+                            }
+                        }
+                    } else {
+                        Write-Host "AzCopy logs directory does not exist: $azCopyLogDir"
+                    }
+                continueOnError: true
+                condition: succeededOrFailed()
