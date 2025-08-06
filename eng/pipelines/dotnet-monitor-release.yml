@@ -73,7 +73,7 @@ variables:
     
     try {
         # Login to Azure CLI using service connection
-        az login --service-principal
+        az login
         
         # Get access token for Maestro API using specific resource
         $accessToken = az account get-access-token --resource "api://54c17f3d-7325-4eca-9db7-f090bfc765a8/Maestro.User" --query accessToken -o tsv
@@ -118,7 +118,7 @@ variables:
     
     try {
         # Login to Azure CLI using service connection
-        az login --service-principal
+        az login
         
         # Get access token for Maestro API using specific resource
         $accessToken = az account get-access-token --resource "api://54c17f3d-7325-4eca-9db7-f090bfc765a8/Maestro.User" --query accessToken -o tsv
