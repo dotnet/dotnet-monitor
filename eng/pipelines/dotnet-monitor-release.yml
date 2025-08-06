@@ -79,7 +79,7 @@ variables:
         }
         
         # Get build information using DARC
-        $buildInfo = & $darcPath get-build --id $BarId --output-format json --extended
+        $buildInfo = & $darcPath get-build --id $BarId --output-format json --extended --ci
         if ($LASTEXITCODE -ne 0) {
             Write-Error "DARC get-build command failed with exit code $LASTEXITCODE"
         }
@@ -121,7 +121,7 @@ variables:
         }
         
         # Get build information using DARC
-        $buildInfo = & $darcPath get-build --id $BarId --output-format json --extended
+        $buildInfo = & $darcPath get-build --id $BarId --output-format json --extended --ci
         if ($LASTEXITCODE -ne 0) {
             Write-Error "DARC get-build command failed with exit code $LASTEXITCODE"
         }
