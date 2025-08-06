@@ -21,6 +21,19 @@ variables:
 - name: IsTestRun
   value: ${{ parameters.IsTestRun }}
   readonly: true
+
+  # There are restrictions on what we can do in a release pipeline.
+  # - We cannot publish artifacts (which means the azcopy logs are now not published just written out)
+  # - We cannot checkout the source code
+  #   - All powershell scripts were inlined in the pipeline.
+  #   - Darc installation is done via tasks instead of darc-init.
+  # - We share scripts between the validation and publish stages as variables.
+
+  # Future improvements / TODO
+  # - Move the scripts into yaml template assuming the release job allows it
+  # - Save the results of build version / release version from the validation job and use it in the release job
+  # - Validate that dotnetcli can be used for checksums
+
 - name: GetBarIdScript
   value: |
     $ErrorActionPreference = 'Stop'
@@ -255,7 +268,7 @@ extends:
           - name: DestinationAccountName
             value: dotnetcli
           - name: ChecksumsAccountName
-            value: dotnetclichecksums
+            value: dotnetcli
 
         workspace:
           clean: all
@@ -264,7 +277,6 @@ extends:
           runOnce:
             deploy:
               steps:
-              # - checkout: self
               - download: none
 
               - task: UseDotNet@2
