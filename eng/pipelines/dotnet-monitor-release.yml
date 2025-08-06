@@ -68,26 +68,23 @@ variables:
     Set-StrictMode -Version 2.0
     
     $BarId = "$(BarId)"
-    $MaestroApiEndPoint = 'https://maestro.dot.net'
     $TaskVariableName = 'ReleaseVersion'
     
     try {
-        # Login to Azure CLI using service connection
-        az login
+        # Use DARC tool to get build information
+        $darcPath = "$(Agent.ToolsDirectory)/darc/darc.exe"
         
-        # Get access token for Maestro API using specific resource
-        $accessToken = az account get-access-token --resource "api://54c17f3d-7325-4eca-9db7-f090bfc765a8/Maestro.User" --query accessToken -o tsv
-        if ([string]::IsNullOrEmpty($accessToken)) {
-            Write-Error "Failed to get access token for Maestro API"
+        if (!(Test-Path $darcPath)) {
+            Write-Error "DARC tool not found at $darcPath"
         }
         
-        # Get build data from Maestro API with authentication and API version
-        $buildUri = "$MaestroApiEndPoint/api/builds/$BarId" + "?api-version=2020-02-20"
-        $headers = @{ 
-            'accept' = 'application/json'
-            'Authorization' = "Bearer $accessToken"
+        # Get build information using DARC
+        $buildInfo = & $darcPath get-build --id $BarId --output-format json --extended
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error "DARC get-build command failed with exit code $LASTEXITCODE"
         }
-        $buildData = Invoke-RestMethod -Uri $buildUri -Method 'GET' -Headers $headers
+        
+        $buildData = $buildInfo | ConvertFrom-Json
         
         [array]$matchingData = $buildData.assets | Where-Object { $_.name -match '^dotnet-monitor$' }
         
@@ -113,26 +110,23 @@ variables:
     Set-StrictMode -Version 2.0
     
     $BarId = "$(BarId)"
-    $MaestroApiEndPoint = 'https://maestro.dot.net'
     $TaskVariableName = 'BuildVersion'
     
     try {
-        # Login to Azure CLI using service connection
-        az login
+        # Use DARC tool to get build information
+        $darcPath = "$(Agent.ToolsDirectory)/darc/darc.exe"
         
-        # Get access token for Maestro API using specific resource
-        $accessToken = az account get-access-token --resource "api://54c17f3d-7325-4eca-9db7-f090bfc765a8/Maestro.User" --query accessToken -o tsv
-        if ([string]::IsNullOrEmpty($accessToken)) {
-            Write-Error "Failed to get access token for Maestro API"
+        if (!(Test-Path $darcPath)) {
+            Write-Error "DARC tool not found at $darcPath"
         }
         
-        # Get build data from Maestro API with authentication and API version
-        $buildUri = "$MaestroApiEndPoint/api/builds/$BarId" + "?api-version=2020-02-20"
-        $headers = @{ 
-            'accept' = 'application/json'
-            'Authorization' = "Bearer $accessToken"
+        # Get build information using DARC
+        $buildInfo = & $darcPath get-build --id $BarId --output-format json --extended
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error "DARC get-build command failed with exit code $LASTEXITCODE"
         }
-        $buildData = Invoke-RestMethod -Uri $buildUri -Method 'GET' -Headers $headers
+        
+        $buildData = $buildInfo | ConvertFrom-Json
         
         [array]$matchingData = $buildData.assets | Where-Object { $_.name -match 'MergedManifest.xml$' -and $_.nonShipping }
         
@@ -182,6 +176,22 @@ extends:
 
         steps:
         - download: none
+
+        - task: UseDotNet@2
+          displayName: Install .NET 9
+          inputs:
+            packageType: 'sdk'
+            version: '9.x'
+            installationPath: $(Agent.ToolsDirectory)/dotnet
+
+        - task: AzureCLI@2
+          displayName: Install DARC Tool
+          inputs:
+            azureSubscription: "Darc: Maestro Production"
+            scriptType: ps
+            scriptLocation: inlineScript
+            inlineScript: |
+              dotnet tool install microsoft.dotnet.darc --tool-path "$(Agent.ToolsDirectory)/darc" --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-eng/nuget/v3/index.json --prerelease
 
         - task: PowerShell@2
           displayName: Get BAR ID
@@ -256,6 +266,22 @@ extends:
               steps:
               # - checkout: self
               - download: none
+
+              - task: UseDotNet@2
+                displayName: Install .NET 9
+                inputs:
+                  packageType: 'sdk'
+                  version: '9.x'
+                  installationPath: $(Agent.ToolsDirectory)/dotnet
+
+              - task: AzureCLI@2
+                displayName: Install DARC Tool
+                inputs:
+                  azureSubscription: "Darc: Maestro Production"
+                  scriptType: ps
+                  scriptLocation: inlineScript
+                  inlineScript: |
+                    dotnet tool install microsoft.dotnet.darc --tool-path "$(Agent.ToolsDirectory)/darc" --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-eng/nuget/v3/index.json --prerelease
 
               - task: PowerShell@2
                 displayName: Install AzCopy
