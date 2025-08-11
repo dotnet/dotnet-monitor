@@ -22,6 +22,144 @@ variables:
   value: ${{ parameters.IsTestRun }}
   readonly: true
 
+  # There are restrictions on what we can do in a release pipeline.
+  # - We cannot publish artifacts (which means the azcopy logs are now not published just written out)
+  # - We cannot checkout the source code
+  #   - All powershell scripts were inlined in the pipeline.
+  #   - Darc installation is done via tasks instead of darc-init.
+  # - We share scripts between the validation and publish stages as variables.
+
+  # Future improvements / TODO
+  # - Move the scripts into yaml template assuming the release job allows it
+  # - Save the results of build version / release version from the validation job and use it in the release job
+  # - Validate that dotnetcli can be used for checksums
+
+- name: GetBarIdScript
+  value: |
+    $ErrorActionPreference = 'Stop'
+    Set-StrictMode -Version 2.0
+    
+    $BuildId = "$(resources.pipeline.Build.runID)"
+    $TaskVariableName = 'BarId'
+    
+    if ([String]::IsNullOrEmpty($env:System_AccessToken)) {
+        Write-Error 'System access token missing, this script needs access.'
+    }
+    
+    $tagsUri = "${env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}${env:SYSTEM_TEAMPROJECT}/_apis/build/builds/$BuildId/tags?api-version=6.0"
+    $buildData = Invoke-RestMethod `
+        -Uri $tagsUri `
+        -Method 'GET' `
+        -Headers @{ 'accept' = 'application/json'; 'Authorization' = "Bearer ${env:System_AccessToken}" }
+    
+    Write-Verbose 'BuildData:'
+    $buildDataJson = $buildData | ConvertTo-Json
+    Write-Verbose $buildDataJson
+    
+    $barId = -1;
+    $buildData.Value | Foreach-Object {
+        if ($_.StartsWith('BAR ID - ')) {
+            if ($barId -ne -1) {
+                Write-Error 'Multiple BAR IDs found in tags.'
+            }
+            $barId = $_.SubString(9)
+        }
+    }
+    
+    if ($barId -eq -1) {
+        Write-Error 'Failed to get BAR ID from tags.'
+    }
+    
+    Write-Verbose "BAR ID: $barId"
+    
+    Write-Host "##vso[task.setvariable variable=$TaskVariableName]$barId"
+    Write-Output $barId
+  readonly: true
+- name: GetReleaseVersionScript
+  value: |
+    $ErrorActionPreference = 'Stop'
+    Set-StrictMode -Version 2.0
+    
+    $BarId = "$(BarId)"
+    $TaskVariableName = 'ReleaseVersion'
+    
+    try {
+        # Use DARC tool to get build information
+        $darcPath = "$(Agent.ToolsDirectory)/darc/darc.exe"
+        
+        if (!(Test-Path $darcPath)) {
+            Write-Error "DARC tool not found at $darcPath"
+        }
+        
+        # Get build information using DARC
+        $buildInfo = & $darcPath get-build --id $BarId --output-format json --extended --ci
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error "DARC get-build command failed with exit code $LASTEXITCODE"
+        }
+        
+        $buildData = $buildInfo | ConvertFrom-Json
+        
+        [array]$matchingData = $buildData.assets | Where-Object { $_.name -match '^dotnet-monitor$' }
+        
+        if (!$matchingData -or $matchingData.Length -ne 1) {
+            Write-Error 'Unable to obtain release version'
+        }
+        
+        $version = $matchingData[0].version
+        
+        Write-Host "Release Version: $version"
+        
+        Write-Host "##vso[task.setvariable variable=$TaskVariableName]$version"
+        Write-Output $version
+    }
+    catch {
+        Write-Error "Failed to get release version: $($_.Exception.Message)"
+        throw
+    }
+  readonly: true
+- name: GetBuildVersionScript
+  value: |
+    $ErrorActionPreference = 'Stop'
+    Set-StrictMode -Version 2.0
+    
+    $BarId = "$(BarId)"
+    $TaskVariableName = 'BuildVersion'
+    
+    try {
+        # Use DARC tool to get build information
+        $darcPath = "$(Agent.ToolsDirectory)/darc/darc.exe"
+        
+        if (!(Test-Path $darcPath)) {
+            Write-Error "DARC tool not found at $darcPath"
+        }
+        
+        # Get build information using DARC
+        $buildInfo = & $darcPath get-build --id $BarId --output-format json --extended --ci
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error "DARC get-build command failed with exit code $LASTEXITCODE"
+        }
+        
+        $buildData = $buildInfo | ConvertFrom-Json
+        
+        [array]$matchingData = $buildData.assets | Where-Object { $_.name -match 'MergedManifest.xml$' -and $_.nonShipping }
+        
+        if (!$matchingData -or $matchingData.Length -ne 1) {
+            Write-Error 'Unable to obtain build version.'
+        }
+        
+        $version = $matchingData[0].version
+        
+        Write-Host "Build Version: $version"
+        
+        Write-Host "##vso[task.setvariable variable=$TaskVariableName]$version"
+        Write-Output $version
+    }
+    catch {
+        Write-Error "Failed to get build version: $($_.Exception.Message)"
+        throw
+    }
+  readonly: true
+
 resources:
   pipelines:
   - pipeline: Build
@@ -52,13 +190,27 @@ extends:
         steps:
         - download: none
 
+        - task: UseDotNet@2
+          displayName: Install .NET 9
+          inputs:
+            packageType: 'sdk'
+            version: '9.x'
+            installationPath: $(Agent.ToolsDirectory)/dotnet
+
+        - task: AzureCLI@2
+          displayName: Install DARC Tool
+          inputs:
+            azureSubscription: "Darc: Maestro Production"
+            scriptType: ps
+            scriptLocation: inlineScript
+            inlineScript: |
+              dotnet tool install microsoft.dotnet.darc --tool-path "$(Agent.ToolsDirectory)/darc" --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-eng/nuget/v3/index.json --prerelease
+
         - task: PowerShell@2
           displayName: Get BAR ID
           inputs:
-            filePath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBarId.ps1
-            arguments: >-
-              -BuildId $(resources.pipeline.Build.runID)
-              -TaskVariableName 'BarId'
+            targetType: 'inline'
+            script: $(GetBarIdScript)
           env:
             SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
@@ -67,20 +219,16 @@ extends:
           inputs:
             azureSubscription: "Darc: Maestro Production"
             scriptType: ps
-            scriptPath: $(Build.SourcesDirectory)/eng/release/Scripts/GetReleaseVersion.ps1
-            arguments: >-
-              -BarId $(BarId)
-              -TaskVariableName 'ReleaseVersion'
+            scriptLocation: inlineScript
+            inlineScript: $(GetReleaseVersionScript)
 
         - task: AzureCLI@2
           displayName: Get Build Version
           inputs:
             azureSubscription: "Darc: Maestro Production"
             scriptType: ps
-            scriptPath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBuildVersion.ps1
-            arguments: >-
-              -BarId $(BarId)
-              -TaskVariableName 'BuildVersion'
+            scriptLocation: inlineScript
+            inlineScript: $(GetBuildVersionScript)
 
         - powershell: |
             $buildName = "${env:ReleaseVersion} [${env:BuildVersion}]"
@@ -100,6 +248,9 @@ extends:
 
       jobs:
       - deployment: PublishToStorageAccounts
+        templateContext:
+          type: releaseJob
+          isProduction: true
         displayName: Publish to Storage Accounts
 
         ${{ if eq(parameters.IsTestRun, 'true') }}:
@@ -126,24 +277,75 @@ extends:
           runOnce:
             deploy:
               steps:
-              - checkout: self
               - download: none
+
+              - task: UseDotNet@2
+                displayName: Install .NET 9
+                inputs:
+                  packageType: 'sdk'
+                  version: '9.x'
+                  installationPath: $(Agent.ToolsDirectory)/dotnet
+
+              - task: AzureCLI@2
+                displayName: Install DARC Tool
+                inputs:
+                  azureSubscription: "Darc: Maestro Production"
+                  scriptType: ps
+                  scriptLocation: inlineScript
+                  inlineScript: |
+                    dotnet tool install microsoft.dotnet.darc --tool-path "$(Agent.ToolsDirectory)/darc" --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-eng/nuget/v3/index.json --prerelease
 
               - task: PowerShell@2
                 displayName: Install AzCopy
                 inputs:
-                  filePath: $(Build.SourcesDirectory)/eng/release/Scripts/InstallAzCopy.ps1
-                  arguments: >-
-                    -ToolsDirectory $(Agent.ToolsDirectory)
-                    -TaskVariableName 'AzCopyPath'
+                  targetType: 'inline'
+                  script: |
+                    $ErrorActionPreference = 'Stop'
+                    Set-StrictMode -Version 2.0
+                    
+                    $ToolsDirectory = "$(Agent.ToolsDirectory)"
+                    $TaskVariableName = 'AzCopyPath'
+                    
+                    $url = 'https://aka.ms/downloadazcopy-v10-windows'
+                    $basePath = Join-Path $ToolsDirectory 'azcopy'
+                    
+                    $zipPath = Join-Path $basePath 'azcopy.zip'
+                    $toolDirPath = Join-Path $basePath 'azcopy'
+                    $azCopyPath = Join-Path $toolDirPath 'azcopy.exe'
+                    
+                    if (Test-Path $azCopyPath) {
+                        Write-Verbose 'Already installed'
+                    } else {
+                        if (!(Test-Path $basePath)) {
+                            New-Item -ItemType 'Directory' -Path $basePath | Out-Null
+                        }
+                    
+                        Write-Verbose 'Fetching...'
+                        Invoke-WebRequest -Uri $url -OutFile $zipPath
+                    
+                        Write-Verbose 'Unzipping...'
+                        Expand-Archive -LiteralPath $zipPath -Force -DestinationPath $basePath
+                    
+                        # There should only be one directory that is named like 'azcopy_windows_amd64_<version>'
+                        Write-Verbose 'Renaming...'
+                        $unpackDirName = Get-ChildItem -Path $basePath -Directory -Name
+                        $unpackDirPath = Join-Path $basePath $unpackDirName
+                        Rename-Item -Path $unpackDirPath -NewName 'azcopy'
+                    
+                        # Delete zip
+                        Remove-Item -Path $zipPath
+                    
+                        Write-Verbose 'Finished'
+                    }
+                    
+                    Write-Host "##vso[task.setvariable variable=$TaskVariableName]$azCopyPath"
+                    Write-Output $azCopyPath
 
               - task: PowerShell@2
                 displayName: Get BAR ID
                 inputs:
-                  filePath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBarId.ps1
-                  arguments: >-
-                    -BuildId $(resources.pipeline.Build.runID)
-                    -TaskVariableName 'BarId'
+                  targetType: 'inline'
+                  script: $(GetBarIdScript)
                 env:
                   SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
@@ -152,20 +354,16 @@ extends:
                 inputs:
                   azureSubscription: "Darc: Maestro Production"
                   scriptType: ps
-                  scriptPath: $(Build.SourcesDirectory)/eng/release/Scripts/GetReleaseVersion.ps1
-                  arguments: >-
-                    -BarId $(BarId)
-                    -TaskVariableName 'ReleaseVersion'
+                  scriptLocation: inlineScript
+                  inlineScript: $(GetReleaseVersionScript)
 
               - task: AzureCLI@2
                 displayName: Get Build Version
                 inputs:
                   azureSubscription: "Darc: Maestro Production"
                   scriptType: ps
-                  scriptPath: $(Build.SourcesDirectory)/eng/release/Scripts/GetBuildVersion.ps1
-                  arguments: >-
-                    -BarId $(BarId)
-                    -TaskVariableName 'BuildVersion'
+                  scriptLocation: inlineScript
+                  inlineScript: $(GetBuildVersionScript)
 
               - powershell: Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
                 displayName: Install NuGet PowerShell Package Provider
@@ -194,24 +392,147 @@ extends:
                   # Save the service principal details to the environment so that azcopy can use them
                   addSpnToEnvironment: true
                   scriptType: ps
-                  scriptLocation: scriptPath
-                  scriptPath: $(Build.SourcesDirectory)/eng/release/Scripts/PublishToBlobAccounts.ps1
-                  arguments: >-
-                    -AzCopyPath $(AzCopyPath)
-                    -BuildVersion $(BuildVersion)
-                    -ReleaseVersion $(ReleaseVersion)
-                    -DestinationAccountName $(DestinationAccountName)
-                    -DestinationSasTokenBase64 $Env:DestinationSasTokenBase64
-                    -ChecksumsAccountName $(ChecksumsAccountName)
-                    -WhatIf:${{ format('${0}', parameters.IsDryRun) }}
+                  scriptLocation: inlineScript
+                  inlineScript: |
+                    $ErrorActionPreference = 'Stop'
+                    Set-StrictMode -Version 2.0
+                    
+                    $AzCopyPath = "$(AzCopyPath)"
+                    $BuildVersion = "$(BuildVersion)"
+                    $ReleaseVersion = "$(ReleaseVersion)"
+                    $DestinationAccountName = "$(DestinationAccountName)"
+                    $DestinationSasTokenBase64 = $Env:DestinationSasTokenBase64
+                    $ChecksumsAccountName = "$(ChecksumsAccountName)"
+                    $WhatIfPreference = $${{ parameters.IsDryRun }}
+                    
+                    # Use the OAuth token that was obtained by the az cli when it logged in.
+                    $Env:AZCOPY_AUTO_LOGIN_TYPE="AZCLI"
+                    
+                    $sourceAccountName = 'dotnetstage'
+                    $sourceContainerName = 'dotnet-monitor'
+                    $destinationContainerName = 'dotnet'
+                    
+                    function Generate-Source-Uri{
+                        [CmdletBinding()]
+                        Param(
+                            [Parameter(Mandatory=$true)][string]$AssetType
+                        )
+                    
+                        return "https://$sourceAccountName.blob.core.windows.net/$sourceContainerName/$BuildVersion/${AssetType}Assets/*"
+                    }
+                    
+                    function Generate-Destination-Uri{
+                        [CmdletBinding()]
+                        Param(
+                            [Parameter(Mandatory=$true)][string]$AccountName
+                        )
+                    
+                        return "https://$AccountName.blob.core.windows.net/$destinationContainerName/diagnostics/monitor/$ReleaseVersion"
+                    }
+                    
+                    function Transfer-File{
+                        [CmdletBinding(SupportsShouldProcess)]
+                        Param(
+                            [Parameter(Mandatory=$true)][string]$From,
+                            [Parameter(Mandatory=$true)][string]$To,
+                            [Parameter(Mandatory=$false)][string]$ToToken = $null
+                        )
+                    
+                        if ($ToToken -and ($ToToken[0] -ne '?')) {
+                            $ToToken = '?' + $ToToken
+                        }
+                    
+                        Write-Host "Copy $From -> $To"
+                    
+                        if ($From -eq $to) {
+                            Write-Host 'Skipping copy because source and destination are the same.'
+                        } else {
+                            [array]$azCopyArgs = "$From"
+                            $azCopyArgs += "$To$ToToken"
+                            $azCopyArgs += "--s2s-preserve-properties"
+                            $azCopyArgs += "--s2s-preserve-access-tier=false"
+                            if ($WhatIfPreference) {
+                                $azCopyArgs += "--dry-run"
+                            }
+                            & $AzCopyPath cp @azCopyArgs
+                        }
+                    }
+                    
+                    # Create source URI
+                    $sourceUri = Generate-Source-Uri `
+                        -AssetType 'Blob'
+                    
+                    # Create destination URI
+                    $destinationUri = Generate-Destination-Uri `
+                        -AccountName $DestinationAccountName
+                    
+                    # Copy files to destination account
+                    Transfer-File `
+                        -From $sourceUri `
+                        -To $destinationUri `
+                        -ToToken ([Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($DestinationSasTokenBase64)))
+                    
+                    # Create source checksums URI
+                    $checksumsSourceUri = Generate-Source-Uri `
+                        -AssetType 'Checksum'
+                    
+                    # Create checksums destination URI
+                    $checksumsDestinationUri = Generate-Destination-Uri `
+                        -AccountName $ChecksumsAccountName
+                    
+                    # Copy checksums to checksum account
+                    Transfer-File `
+                        -From $checksumsSourceUri `
+                        -To $checksumsDestinationUri
                 env:
                   DestinationSasTokenBase64: $(DotNetCliDelegationSasTokenBase64)
 
-              - task: 1ES.PublishBuildArtifacts@1
-                displayName: Publish Logs
+              - task: PowerShell@2
+                displayName: Display AzCopy Logs
                 inputs:
-                  PathtoPublish: '$(USERPROFILE)\.azcopy'
-                  PublishLocation: Container
-                  ArtifactName: AzCopyLogs
+                  targetType: 'inline'
+                  script: |
+                    $ErrorActionPreference = 'Continue'
+                    
+                    $azCopyLogDir = Join-Path $env:USERPROFILE '.azcopy'
+                    
+                    Write-Host "Checking AzCopy logs directory: $azCopyLogDir"
+                    
+                    if (Test-Path $azCopyLogDir) {
+                        Write-Host "AzCopy logs directory exists."
+                        
+                        # Get all log files
+                        $logFiles = Get-ChildItem -Path $azCopyLogDir -File -Recurse | Sort-Object LastWriteTime -Descending
+                        
+                        if ($logFiles.Count -eq 0) {
+                            Write-Host "No log files found in AzCopy directory."
+                        } else {
+                            Write-Host "Found $($logFiles.Count) log file(s):"
+                            
+                            foreach ($logFile in $logFiles) {
+                                Write-Host ""
+                                Write-Host "========================================="
+                                Write-Host "Log File: $($logFile.FullName)"
+                                Write-Host "Size: $($logFile.Length) bytes"
+                                Write-Host "Last Modified: $($logFile.LastWriteTime)"
+                                Write-Host "========================================="
+                                
+                                try {
+                                    $content = Get-Content -Path $logFile.FullName -Raw
+                                    if ([string]::IsNullOrWhiteSpace($content)) {
+                                        Write-Host "Log file is empty."
+                                    } else {
+                                        Write-Host $content
+                                    }
+                                } catch {
+                                    Write-Host "Error reading log file: $($_.Exception.Message)"
+                                }
+                                
+                                Write-Host ""
+                            }
+                        }
+                    } else {
+                        Write-Host "AzCopy logs directory does not exist: $azCopyLogDir"
+                    }
                 continueOnError: true
                 condition: succeededOrFailed()
