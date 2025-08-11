@@ -4,8 +4,8 @@
 
 | Version | Original Release Date | Latest Patch Version | Patch Release Date | End of Support | Runtime Frameworks |
 | --- | --- | --- | --- | --- | --- |
-| 9.0 | November 12, 2024 | [9.0.3](https://github.com/dotnet/dotnet-monitor/releases/tag/v9.0.3) | May 13, 2025 |  | net9.0 |
-| 8.1 | February 11, 2025 | [8.1.1](https://github.com/dotnet/dotnet-monitor/releases/tag/v8.1.1) | May 14, 2025 |  | net8.0 |
+| 9.0 | November 12, 2024 | [9.0.4](https://github.com/dotnet/dotnet-monitor/releases/tag/v9.0.4) | August 6, 2025 |  | net9.0 |
+| 8.1 | February 11, 2025 | [8.1.2](https://github.com/dotnet/dotnet-monitor/releases/tag/v8.1.2) | August 6, 2025 |  | net8.0 |
 
 
 ## Out of support versions
