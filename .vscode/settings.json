@@ -29,7 +29,6 @@
     "omnisharp.enableAsyncCompletion": true,
     "omnisharp.enableEditorConfigSupport": true,
     "omnisharp.enableRoslynAnalyzers": true,
-    "omnisharp.organizeImportsOnFormat": true,
     "omnisharp.autoStart": true,
 
     // ms-vscode.powershell settings
@@ -47,5 +46,6 @@
         "xml",
         "msbuild",
         "javascript"
-    ]
+    ],
+    "dotnet.formatting.organizeImportsOnFormat": true
 }
