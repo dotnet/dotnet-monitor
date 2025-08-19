@@ -7,6 +7,7 @@ using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -34,6 +35,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         private readonly CollectionRuleContext _ruleContext;
         private readonly ConfigurationTokenParser _tokenParser;
+        private readonly ICollectionRuleActionOperations _actionOperations;
 
         //Use action index instead of name, since it's possible for an unnamed action to have named dependencies.
 #nullable disable
@@ -77,17 +79,18 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
                 Action.Name, ConfigurationTokenParser.Separator, ResultName, ConfigurationTokenParser.SubstitutionSuffix);
         }
 
-        public static ActionOptionsDependencyAnalyzer Create(CollectionRuleContext context)
+        public static ActionOptionsDependencyAnalyzer Create(CollectionRuleContext context, ICollectionRuleActionOperations actionOperations)
         {
-            var analyzer = new ActionOptionsDependencyAnalyzer(context, new ConfigurationTokenParser(context.Logger));
+            var analyzer = new ActionOptionsDependencyAnalyzer(context, new ConfigurationTokenParser(context.Logger), actionOperations);
             analyzer.EnsureDependencies();
             return analyzer;
         }
 
-        private ActionOptionsDependencyAnalyzer(CollectionRuleContext context, ConfigurationTokenParser tokenParser)
+        private ActionOptionsDependencyAnalyzer(CollectionRuleContext context, ConfigurationTokenParser tokenParser, ICollectionRuleActionOperations actionOperations)
         {
             _ruleContext = context ?? throw new ArgumentNullException(nameof(context));
             _tokenParser = tokenParser ?? throw new ArgumentNullException(nameof(tokenParser));
+            _actionOperations = actionOperations ?? throw new ArgumentNullException(nameof(actionOperations));
         }
 
 #nullable disable
@@ -112,8 +115,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
         }
 #nullable restore
 
-        public object? SubstituteOptionValues(IDictionary<string, CollectionRuleActionResult> actionResults, int actionIndex, object? settings)
+        public object? SubstituteOptionValues(IDictionary<string, CollectionRuleActionResult> actionResults, int actionIndex, CollectionRuleActionOptions actionOptions)
         {
+            object? settings = actionOptions.Settings;
             //Attempt to substitute context properties.
             object? originalSettings = settings;
 
@@ -160,7 +164,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             }
             string? commandLine = _ruleContext.EndpointInfo.CommandLine;
 
-            settings = _tokenParser.SubstituteOptionValues(settings, new TokenContext
+            if (!_actionOperations.TryGetOptionsType(actionOptions.Type, out Type settingsType))
+            {
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_UnknownActionType, actionOptions.Name));
+            }
+            settings = _tokenParser.SubstituteOptionValues(settings, settingsType, new TokenContext
             {
                 CloneOnSubstitution = ReferenceEquals(originalSettings, settings),
                 RuntimeId = _ruleContext.EndpointInfo.RuntimeInstanceCookie,
@@ -191,7 +199,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
 
         private void EnsureDependencies(CollectionRuleActionOptions options, int actionIndex)
         {
-            foreach (PropertyInfo property in GetDependencyPropertiesFromSettings(options))
+            if (!_actionOperations.TryGetOptionsType(options.Type, out Type optionsType))
+            {
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Strings.ErrorMessage_UnknownActionType, options.Name));
+            }
+            foreach (PropertyInfo property in GetDependencyPropertiesFromSettings(optionsType))
             {
                 string? originalValue = (string?)property.GetValue(options.Settings);
                 if (string.IsNullOrEmpty(originalValue))
@@ -287,9 +299,9 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules
             return true;
         }
 
-        private static IEnumerable<PropertyInfo> GetDependencyPropertiesFromSettings(CollectionRuleActionOptions options)
+        private static IEnumerable<PropertyInfo> GetDependencyPropertiesFromSettings(Type optionsType)
         {
-            return ConfigurationTokenParser.GetPropertiesFromSettings(options.Settings, p => p.GetCustomAttributes(typeof(ActionOptionsDependencyPropertyAttribute), inherit: true).Any());
+            return ConfigurationTokenParser.GetPropertiesFromSettings(optionsType, p => p.GetCustomAttributes(typeof(ActionOptionsDependencyPropertyAttribute), inherit: true).Any());
         }
     }
 }
