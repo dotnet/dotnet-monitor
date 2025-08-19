@@ -20,7 +20,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 results.Add(
                     new ValidationResult(
                         string.Format(
-                            OptionsDisplayStrings.ErrorMessage_MultipleAuthenticationModesSpecified)));
+                            OptionsDisplayStrings.ErrorMessage_MultipleAuthenticationModesSpecified), [nameof(MonitorApiKey), nameof(AzureAd)]));
             }
 
             return results;

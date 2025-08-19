@@ -124,6 +124,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                     services.AddSingleton<IMetricsOperationFactory, MetricsOperationFactory>();
                     services.AddSingleton<ITraceOperationFactory, TraceOperationFactory>();
                     services.AddSingleton<IGCDumpOperationFactory, GCDumpOperationFactory>();
+                    ValidatableTypes.AddValidation(services);
+                    TestValidatableTypes.AddValidation(services);
                     servicesCallback?.Invoke(services);
                 })
                 .Build();
