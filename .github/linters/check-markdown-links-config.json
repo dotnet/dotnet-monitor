@@ -14,7 +14,17 @@
         },
         {
             "pattern": "^https://hub\\.docker\\.com/.*"
+        },
+        {
+            "pattern": "^https://eng\\.ms/.*"
+        },
+        {
+            "pattern": "^\\.\\./\\.\\./azure-pipelines\\.yml"
+        },
+        {
+            "pattern": "^\\.\\./\\.\\./azure-pipelines-pr\\.yml"
         }
+
     ],
     "aliveStatusCodes": [
         0,
