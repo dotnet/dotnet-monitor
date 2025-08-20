@@ -53,6 +53,20 @@ steps:
       $portableBuildArgs \
   displayName: Build
 
+# Upload build logs for diagnosis.
+- task: CopyFiles@2
+  displayName: Prepare BuildLogs staging directory
+  inputs:
+    SourceFolder: '$(System.DefaultWorkingDirectory)'
+    Contents: |
+      **/*.log
+      **/*.binlog
+      artifacts/sb/prebuilt-report/**
+    TargetFolder: '$(Build.StagingDirectory)/BuildLogs'
+    CleanTargetFolder: true
+  continueOnError: true
+  condition: succeededOrFailed()
+
 - template: /eng/common/core-templates/steps/publish-pipeline-artifacts.yml
   parameters:
     is1ESPipeline: ${{ parameters.is1ESPipeline }}
@@ -63,3 +77,14 @@ steps:
       continueOnError: true
       condition: succeededOrFailed()
       sbomEnabled: false  # we don't need SBOM for logs
+
+# Manually inject component detection so that we can ignore the source build upstream cache, which contains
+# a nupkg cache of input packages (a local feed).
+# This path must match the upstream cache path in property 'CurrentRepoSourceBuiltNupkgCacheDir'
+# in src\Microsoft.DotNet.Arcade.Sdk\tools\SourceBuild\SourceBuildArcade.targets
+- template: /eng/common/core-templates/steps/component-governance.yml
+  parameters:
+    displayName: Component Detection (Exclude upstream cache)
+    is1ESPipeline: ${{ parameters.is1ESPipeline }}
+    componentGovernanceIgnoreDirectories: '$(System.DefaultWorkingDirectory)/artifacts/sb/src/artifacts/obj/source-built-upstream-cache'
+    disableComponentGovernance: ${{ eq(variables['System.TeamProject'], 'public') }}
