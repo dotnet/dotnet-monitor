@@ -14,7 +14,7 @@ jobs:
     if: github.repository == 'dotnet/dotnet-monitor'
     strategy:
       matrix:
-        branch: ["release/8.x", "release/9.0", "release/9.x"]
+        branch: ["release/8.x", "release/9.0", "release/9.x"] # We don't sync release/10.0 here because we sync both code and non-code for now
     name: 'Sync non-code to ${{ matrix.branch }}'
     runs-on: ubuntu-latest
     permissions:
@@ -55,7 +55,7 @@ jobs:
     if: github.repository == 'dotnet/dotnet-monitor'
     strategy:
       matrix:
-        branch: ["feature/10.0"]
+        branch: ["release/10.0"]
     name: 'Sync branch with ${{ matrix.branch }}'
     runs-on: ubuntu-latest
     permissions:
