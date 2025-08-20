@@ -61,8 +61,19 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 {
                     int processId = await runner.ProcessIdTask;
 
-                    using ResponseStreamHolder holder = await client.CaptureDumpAsync(processId, type);
-                    Assert.NotNull(holder);
+                    // In .Net 10, dump operations sometimes fail due to a lock on /proc/<pid>/mem.
+                    using ResponseStreamHolder holder = await RetryUtilities.RetryAsync<ResponseStreamHolder>(
+                    func: async () =>
+                        {
+                            ResponseStreamHolder holder = await client.CaptureDumpAsync(processId, type);
+                            Assert.NotNull(holder);
+                            holder.Response.EnsureSuccessStatusCode();
+                            return holder;
+                        },
+                    shouldRetry: (Exception e) =>
+                        ((e is HttpRequestException requestException) &&
+                        (requestException.StatusCode == System.Net.HttpStatusCode.BadRequest)),
+                    outputHelper: _outputHelper);
 
                     // The dump operation may still be in progress but the process should still be discoverable.
                     // If this check fails, then the dump operation is causing dotnet-monitor to not be able
