@@ -402,6 +402,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
             {
                 ExcludeAzureCliCredential = true,
                 ExcludeAzureDeveloperCliCredential = true,
+                ExcludeBrokerCredential = true,
                 ExcludeManagedIdentityCredential = true,
                 ExcludeWorkloadIdentityCredential = true,
                 ExcludeAzurePowerShellCredential = true,

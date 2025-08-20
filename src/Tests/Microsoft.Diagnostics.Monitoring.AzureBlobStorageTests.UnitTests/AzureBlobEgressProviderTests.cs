@@ -247,6 +247,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests.UnitTests
                 nameof(DefaultAzureCredentialOptions.ExcludeAzureDeveloperCliCredential),
                 nameof(DefaultAzureCredentialOptions.ExcludeSharedTokenCacheCredential),
                 nameof(DefaultAzureCredentialOptions.ExcludeInteractiveBrowserCredential),
+                nameof(DefaultAzureCredentialOptions.ExcludeBrokerCredential),
                 nameof(DefaultAzureCredentialOptions.ExcludeAzureCliCredential),
                 nameof(DefaultAzureCredentialOptions.ExcludeVisualStudioCredential),
                 "ExcludeVisualStudioCodeCredential", // Don't use nameof for an Obsolete member
