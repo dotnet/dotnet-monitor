@@ -4,7 +4,7 @@
   <PropertyGroup Label="Versioning">
     <RepositoryUrl>https://github.com/dotnet/dotnet-monitor</RepositoryUrl>
     <VersionPrefix>10.0.0</VersionPrefix>
-    <PreReleaseVersionLabel>alpha</PreReleaseVersionLabel>
+    <PreReleaseVersionLabel>rc</PreReleaseVersionLabel>
     <PreReleaseVersionIteration>1</PreReleaseVersionIteration>
     <!-- Disable final version kind until merged into release branch. -->
     <DotNetUseShippingVersions>true</DotNetUseShippingVersions>
@@ -13,11 +13,11 @@
       - 'daily': sets the blob group release name to 'daily' so a release type does not have to be assigned.
       - 'release': sets the blob group release name to 'release'. Can be used for prereleases and full releases.
     -->
-    <BlobGroupBuildQuality>daily</BlobGroupBuildQuality>
+    <BlobGroupBuildQuality>release</BlobGroupBuildQuality>
     <!--
       This should be set to true for official releases.
     -->
-    <UseMicrosoftDiagnosticsMonitoringShippedVersion>false</UseMicrosoftDiagnosticsMonitoringShippedVersion>
+    <UseMicrosoftDiagnosticsMonitoringShippedVersion>true</UseMicrosoftDiagnosticsMonitoringShippedVersion>
   </PropertyGroup>
   <PropertyGroup Label="Testing">
     <XUnitCoreSettingsFile>$(MSBuildThisFileDirectory)xunit.runner.json</XUnitCoreSettingsFile>
