@@ -24,8 +24,8 @@
   </PropertyGroup>
   <Import Project="$(MSBuildThisFileDirectory)Common.props" />
   <PropertyGroup Label="TargetFrameworks">
-    <!-- The TFMs of the dotnet-monitor tool.  -->
-    <ToolTargetFrameworks>$(LatestTargetFramework)</ToolTargetFrameworks>
+    <!-- The TFM of the dotnet-monitor tool.  -->
+    <ToolTargetFramework>$(LatestTargetFramework)</ToolTargetFramework>
     <!-- The TFMs of that the dotnet-monitor tool supports diagnosing. -->
     <TestTargetFrameworks>net8.0;net9.0;$(LatestTargetFramework)</TestTargetFrameworks>
     <!-- The TFM for generating schema.json and OpenAPI docs. -->
