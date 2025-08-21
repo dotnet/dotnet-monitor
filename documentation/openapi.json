@@ -1960,7 +1960,8 @@
           "Critical",
           "None"
         ],
-        "type": "string"
+        "type": "string",
+        "nullable": true
       },
       "LogsConfiguration": {
         "required": [
@@ -1974,7 +1975,7 @@
           "filterSpecs": {
             "type": "object",
             "additionalProperties": {
-              "$ref": "#/components/schemas/NullableOfLogLevel"
+              "$ref": "#/components/schemas/LogLevel"
             },
             "description": "The logger categories and levels at which logs are collected. Setting the log level to null will have logs collected from the corresponding category at the level set in the LogLevel property.",
             "nullable": true
@@ -2026,19 +2027,6 @@
         },
         "additionalProperties": false
       },
-      "NullableOfLogLevel": {
-        "enum": [
-          "Trace",
-          "Debug",
-          "Information",
-          "Warning",
-          "Error",
-          "Critical",
-          "None"
-        ],
-        "type": "string",
-        "nullable": true
-      },
       "OperationError": {
         "type": "object",
         "properties": {
@@ -2051,8 +2039,7 @@
             "nullable": true
           }
         },
-        "additionalProperties": false,
-        "nullable": true
+        "additionalProperties": false
       },
       "OperationProcessInfo": {
         "type": "object",
@@ -2071,8 +2058,7 @@
           }
         },
         "additionalProperties": false,
-        "description": "Represents the details of a given process used in an operation.",
-        "nullable": true
+        "description": "Represents the details of a given process used in an operation."
       },
       "OperationState": {
         "enum": [
@@ -2093,7 +2079,14 @@
             "nullable": true
           },
           "error": {
-            "$ref": "#/components/schemas/OperationError"
+            "oneOf": [
+              {
+                "nullable": true
+              },
+              {
+                "$ref": "#/components/schemas/OperationError"
+              }
+            ]
           },
           "operationId": {
             "type": "string",
@@ -2107,7 +2100,14 @@
             "$ref": "#/components/schemas/OperationState"
           },
           "process": {
-            "$ref": "#/components/schemas/OperationProcessInfo"
+            "oneOf": [
+              {
+                "nullable": true
+              },
+              {
+                "$ref": "#/components/schemas/OperationProcessInfo"
+              }
+            ]
           },
           "egressProviderName": {
             "type": "string",
@@ -2143,7 +2143,14 @@
             "$ref": "#/components/schemas/OperationState"
           },
           "process": {
-            "$ref": "#/components/schemas/OperationProcessInfo"
+            "oneOf": [
+              {
+                "nullable": true
+              },
+              {
+                "$ref": "#/components/schemas/OperationProcessInfo"
+              }
+            ]
           },
           "egressProviderName": {
             "type": "string",
