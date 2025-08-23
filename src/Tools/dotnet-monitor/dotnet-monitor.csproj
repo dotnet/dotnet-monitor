@@ -11,6 +11,13 @@
     <Nullable>enable</Nullable>
     <EnableConfigurationBindingGenerator>false</EnableConfigurationBindingGenerator>
     <DisableCompileTimeOpenApiXmlGenerator>true</DisableCompileTimeOpenApiXmlGenerator>
+    <!-- This repo sets RuntimeIdentifiers globally in Directory.Build.props, but we explicitly don't want to use
+         RID-specific tools yet. So we need to clear the RuntimeIdentifiers here. -->
+    <RuntimeIdentifiers Condition="'$(_IsPacking)' == 'true'"></RuntimeIdentifiers>
+    <!-- This doesn't work as a way to override the set of package identifiers (yet) because in MSBuild logic we
+         can't detect the difference between property-set-to-empty and property-does-not-exist.
+         See https://github.com/dotnet/msbuild/issues/12404 for tracking. -->
+    <ToolPackageRuntimeIdentifiers></ToolPackageRuntimeIdentifiers>
   </PropertyGroup>
 
   <ItemGroup>
@@ -32,6 +39,13 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.Options\Microsoft.Diagnostics.Monitoring.Options.csproj" />
     <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Microsoft.Diagnostics.Monitoring.WebApi.csproj" />
+    <!-- This is a build-ordering dependency only - we don't want this hook to appear directly in the our referenced libraries, we
+         need to customize it's layout. We _do_ however need to ensure that it _gets built_ before we build/publish. -->
+    <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.StartupHook\Microsoft.Diagnostics.Monitoring.StartupHook.csproj"
+      AdditionalProperties="RuntimeIdentifier=;PublishDir=$(StartupHookPublishPath)"
+      GlobalPropertiesToRemove="PublishSingleFile"
+      Targets="Publish"
+      ReferenceOutputAssembly="false" />
   </ItemGroup>
 
   <ItemGroup>
@@ -79,55 +93,38 @@
   <Import Project="$(RepoRoot)src\Microsoft.Diagnostics.Monitoring.StartupHook\ProjectsToPublish.props" />
   <Import Project="$(RepositoryEngineeringDir)PublishProjects.targets" />
 
-  <!-- Publish projects unless skipped -->
-  <Target Name="PublishProjectsBeforePack"
-          Condition="'$(SkipPublishProjects)' != 'true'">
-    <CallTarget Targets="PublishProjects" />
-  </Target>
+  <ItemGroup Label="Computed Publish Assets">
+    <!-- Pack the profiler library for each platform. -->
+    <AdditionalRIDSpecificPublishFile
+      Include="@(MonitorProfilerLibraryFile);
+               @(MutatingMonitorProfilerLibraryFile);
+               @(MonitorProfilerSymbolsFile);
+               @(MutatingMonitorProfilerSymbolsFile);
+               @(CommonMonitorProfilerSymbolsFile);
+              ">
+        <RelativePath>shared/%(TargetRid)/native/%(Filename)%(Extension)</RelativePath>
+     </AdditionalRIDSpecificPublishFile>
 
-  <PropertyGroup>
-    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);CollectTfmSpecificPackageFiles</TargetsForTfmSpecificContentInPackage>
-  </PropertyGroup>
+     <!-- Pack startup hook files -->
+     <AdditionalRIDAgnosticPublishFile Include="$(StartupHookLibraryPath);$(StartupHookSymbolsPath)">
+       <RelativePath>shared/any/$(StartupHookTargetFramework)/%(FileName)%(Extension)</RelativePath>
+     </AdditionalRIDAgnosticPublishFile>
 
-  <Target Name="CollectTfmSpecificPackageFiles"
-          DependsOnTargets="PublishProjectsBeforePack">
+     <!-- Pack extension files -->
+     <AdditionalRIDAgnosticPublishFile Include="$(AzureBlobStoragePublishRootPath)$(TargetFramework)\any\**">
+       <RelativePath>extensions/$(AzureBlobStorageExtensionFolderName)/%(RecursiveDir)%(FileName)%(Extension)</RelativePath>
+     </AdditionalRIDAgnosticPublishFile>
+     <AdditionalRIDAgnosticPublishFile Include="$(S3StoragePublishRootPath)$(TargetFramework)\any\**">
+       <RelativePath>extensions/$(S3StorageExtensionFolderName)/%(RecursiveDir)%(FileName)%(Extension)</RelativePath>
+     </AdditionalRIDAgnosticPublishFile>
+  </ItemGroup>
+
+  <Target Name="AddNativeAssetsToPublishLayout"
+          BeforeTargets="ComputeResolvedFilesToPublishList">
     <ItemGroup>
-      <!-- Pack the profiler library for each platform. -->
-      <AdditionalPackageFile Include="@(MonitorProfilerLibraryFile)">
-        <PackagePath>tools/$(TargetFramework)/any/shared/%(TargetRid)/native</PackagePath>
-      </AdditionalPackageFile>
-      <AdditionalPackageFile Include="@(MutatingMonitorProfilerLibraryFile)">
-        <PackagePath>tools/$(TargetFramework)/any/shared/%(TargetRid)/native</PackagePath>
-      </AdditionalPackageFile>
-      <!-- Pack the profiler symbols for each platform. -->
-      <AdditionalPackageFile Include="@(MonitorProfilerSymbolsFile)">
-        <PackagePath>tools/$(TargetFramework)/any/shared/%(TargetRid)/native</PackagePath>
-      </AdditionalPackageFile>
-      <AdditionalPackageFile Include="@(MutatingMonitorProfilerSymbolsFile)">
-        <PackagePath>tools/$(TargetFramework)/any/shared/%(TargetRid)/native</PackagePath>
-      </AdditionalPackageFile>
-      <AdditionalPackageFile Include="@(CommonMonitorProfilerSymbolsFile)">
-        <PackagePath>tools/$(TargetFramework)/any/shared/%(TargetRid)/native</PackagePath>
-      </AdditionalPackageFile>
-    </ItemGroup>
-    <ItemGroup>
-      <!-- Pack the file if it exists. -->
-      <TfmSpecificPackageFile Include="@(AdditionalPackageFile->Exists())" />
-      <!-- Pack startup hook files -->
-      <TfmSpecificPackageFile Include="$(StartupHookLibraryPath)">
-        <PackagePath>tools/$(TargetFramework)/any/shared/any/$(StartupHookTargetFramework)</PackagePath>
-      </TfmSpecificPackageFile>
-      <TfmSpecificPackageFile Include="$(StartupHookSymbolsPath)">
-        <PackagePath>tools/$(TargetFramework)/any/shared/any/$(StartupHookTargetFramework)</PackagePath>
-      </TfmSpecificPackageFile>
-
-      <!-- Pack extension files -->
-      <TfmSpecificPackageFile Include="$(AzureBlobStoragePublishRootPath)$(TargetFramework)\any\**">
-        <PackagePath>tools/$(TargetFramework)/any/extensions/$(AzureBlobStorageExtensionFolderName)</PackagePath>
-      </TfmSpecificPackageFile>
-      <TfmSpecificPackageFile Include="$(S3StoragePublishRootPath)$(TargetFramework)\any\**">
-        <PackagePath>tools/$(TargetFramework)/any/extensions/$(S3StorageExtensionFolderName)</PackagePath>
-      </TfmSpecificPackageFile>
+      <ResolvedFileToPublish Include="@(AdditionalRIDSpecificPublishFile->Exists());@(AdditionalRIDAgnosticPublishFile)">
+        <CopyFileToPublishDirectory>PreserveNewest</CopyFileToPublishDirectory>
+      </ResolvedFileToPublish>
     </ItemGroup>
   </Target>
 
