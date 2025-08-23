@@ -26,6 +26,8 @@
   <PropertyGroup Label="TargetFrameworks">
     <!-- The TFMs of the dotnet-monitor tool.  -->
     <ToolTargetFrameworks>$(LatestTargetFramework)</ToolTargetFrameworks>
+    <!-- Single TFM for tool packaging  -->
+    <ToolTargetFramework>$(LatestTargetFramework)</ToolTargetFramework>
     <!-- The TFMs of that the dotnet-monitor tool supports diagnosing. -->
     <TestTargetFrameworks>net8.0;net9.0;$(LatestTargetFramework)</TestTargetFrameworks>
     <!-- The TFM for generating schema.json and OpenAPI docs. -->
@@ -98,7 +100,10 @@
     <SystemTextJsonVersion>$(SystemTextJson90Version)</SystemTextJsonVersion>
     <MicrosoftAspNetCoreOpenApiVersion>$(MicrosoftAspNetCoreApp90Version)</MicrosoftAspNetCoreOpenApiVersion>
   </PropertyGroup>
-  <PropertyGroup Label=".NET 10 Dependent" Condition=" '$(TargetFramework)' == 'net10.0' ">
+  <!-- Starting in .NET 10, we are packing the tool using TargetFramework instead of TargetFrameworks.  
+    As a result, TargetFramework is not defined in this props file.
+  -->
+  <PropertyGroup Label=".NET 10 Dependent" Condition=" '$(TargetFramework)' == 'net10.0' OR ('$(TargetFramework)' == '' AND '$(ToolTargetFramework)' == 'net10.0') ">
     <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>$(MicrosoftAspNetCoreApp100Version)</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
     <MicrosoftAspNetCoreAuthenticationNegotiateVersion>$(MicrosoftAspNetCoreApp100Version)</MicrosoftAspNetCoreAuthenticationNegotiateVersion>
     <MicrosoftExtensionsConfigurationAbstractionsVersion>$(MicrosoftNETCoreApp100Version)</MicrosoftExtensionsConfigurationAbstractionsVersion>
