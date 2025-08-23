@@ -39,6 +39,13 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.Options\Microsoft.Diagnostics.Monitoring.Options.csproj" />
     <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Microsoft.Diagnostics.Monitoring.WebApi.csproj" />
+    <!-- This is a build-ordering dependency only - we don't want this hook to appear directly in the our referenced libraries, we
+         need to customize it's layout. We _do_ however need to ensure that it _gets built_ before we build/publish. -->
+    <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.StartupHook\Microsoft.Diagnostics.Monitoring.StartupHook.csproj"
+      AdditionalProperties="RuntimeIdentifier=;PublishDir=$(StartupHookPublishPath)"
+      GlobalPropertiesToRemove="PublishSingleFile"
+      Targets="Publish"
+      ReferenceOutputAssembly="false" />
   </ItemGroup>
 
   <ItemGroup>
