@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <PackAsTool>false</PackAsTool>
-    <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
+    <TargetFramework>$(ToolTargetFrameworks)</TargetFramework>
     <DefineConstants>$(DefineConstants);EXTENSION</DefineConstants>
     <IsPackable>true</IsPackable>
     <IsShippingAssembly>true</IsShippingAssembly>

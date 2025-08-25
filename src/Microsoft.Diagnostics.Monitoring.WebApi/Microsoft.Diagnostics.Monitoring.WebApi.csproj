@@ -5,7 +5,7 @@
       Ideally, this would be TestTargetFrameworks, but some of the test
       assemblies have a binary dependency on the older TFMs.
       -->
-    <TargetFrameworks>$(TestTargetFrameworks)</TargetFrameworks>
+    <TargetFramework>$(TestTargetFrameworks)</TargetFramework>
     <NoWarn>$(NoWarn);1591;1701</NoWarn>
     <Description>Web Api surface for dotnet-monitor</Description>
     <!-- Tentatively create package so other teams can tentatively consume. -->
