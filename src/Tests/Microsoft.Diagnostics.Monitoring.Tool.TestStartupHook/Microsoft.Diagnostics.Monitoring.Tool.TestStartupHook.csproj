@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
+    <TargetFramework>$(ToolTargetFrameworks)</TargetFramework>
   </PropertyGroup>
 
 </Project>

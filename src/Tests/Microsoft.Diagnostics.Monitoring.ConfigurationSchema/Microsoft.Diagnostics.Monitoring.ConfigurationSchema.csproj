@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <Nullable>enable</Nullable>
-    <TargetFrameworks>$(SchemaTargetFramework)</TargetFrameworks>
+    <TargetFramework>$(SchemaTargetFramework)</TargetFramework>
     <DefineConstants>$(DefineConstants);SCHEMAGEN</DefineConstants>
   </PropertyGroup>
 
