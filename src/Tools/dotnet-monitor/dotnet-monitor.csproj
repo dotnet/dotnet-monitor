@@ -13,7 +13,7 @@
     <DisableCompileTimeOpenApiXmlGenerator>true</DisableCompileTimeOpenApiXmlGenerator>
     <!-- This repo sets RuntimeIdentifiers globally in Directory.Build.props, but we explicitly don't want to use
          RID-specific tools yet. So we need to clear the RuntimeIdentifiers here. -->
-    <RuntimeIdentifiers Condition="'$(_IsPacking)' == 'true'"></RuntimeIdentifiers>
+    <RuntimeIdentifiers Condition="'$(CustomIsPacking)' == 'true'"></RuntimeIdentifiers>
     <!-- This doesn't work as a way to override the set of package identifiers (yet) because in MSBuild logic we
          can't detect the difference between property-set-to-empty and property-does-not-exist.
          See https://github.com/dotnet/msbuild/issues/12404 for tracking. -->
