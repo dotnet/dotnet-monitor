@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(ToolTargetFrameworks)</TargetFramework>
+    <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
     <RootNamespace>Microsoft.Diagnostics.Monitoring.Extension.S3Storage</RootNamespace>
     <Description>S3 Storage extension for dotnet-monitor</Description>
     <PackageTags>Diagnostic</PackageTags>

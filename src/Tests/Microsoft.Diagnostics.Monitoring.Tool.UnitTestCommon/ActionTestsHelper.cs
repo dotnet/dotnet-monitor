@@ -22,7 +22,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
     {
         private static TargetFrameworkMoniker[] tfmsToTest =
         [
-            TargetFrameworkMoniker.Net100,
+            TargetFrameworkMoniker.Net80,
+            TargetFrameworkMoniker.Net90,
         ];
 
         public static IEnumerable<object[]> GetTfms()
