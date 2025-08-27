@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <RootNamespace>Microsoft.Diagnostics.Monitoring.StartupHook</RootNamespace>
-    <TargetFramework>$(TestTargetFrameworks)</TargetFramework>
+    <TargetFrameworks>$(TestTargetFrameworks)</TargetFrameworks>
     <Nullable>enable</Nullable>
     <DefineConstants>$(DefineConstants);STARTUPHOOK</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

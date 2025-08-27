@@ -5,7 +5,7 @@
       Ideally, this would be TestTargetFrameworks, but some of the test
       assemblies have a binary dependency on the older TFMs.
       -->
-    <TargetFramework>$(TestTargetFrameworks)</TargetFramework>
+    <TargetFrameworks>$(TestTargetFrameworks)</TargetFrameworks>
     <IsShippingAssembly>true</IsShippingAssembly>
     <OutputType>Library</OutputType>
     <Nullable>enable</Nullable>

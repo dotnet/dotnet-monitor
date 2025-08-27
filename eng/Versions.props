@@ -29,7 +29,7 @@
     <!-- Single TFM for tool packaging  -->
     <ToolTargetFramework>$(LatestTargetFramework)</ToolTargetFramework>
     <!-- The TFMs of that the dotnet-monitor tool supports diagnosing. -->
-    <TestTargetFrameworks>$(LatestTargetFramework)</TestTargetFrameworks>
+    <TestTargetFrameworks>net8.0;net9.0;$(LatestTargetFramework)</TestTargetFrameworks>
     <!-- The TFM for generating schema.json and OpenAPI docs. -->
     <SchemaTargetFramework>$(LatestTargetFramework)</SchemaTargetFramework>
   </PropertyGroup>

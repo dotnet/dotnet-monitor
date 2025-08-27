@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(ToolTargetFrameworks)</TargetFramework>
+    <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
     <RootNamespace>Microsoft.Diagnostics.Monitoring.AzureBlobStorage</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
