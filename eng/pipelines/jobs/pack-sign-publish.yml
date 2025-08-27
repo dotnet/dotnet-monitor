@@ -47,6 +47,7 @@ jobs:
         /p:ThirdPartyNoticesFilePath='$(Build.SourcesDirectory)/$(_TPNFile)'
         /p:DotNetRuntimeSourceFeed=https://dotnetbuilds.blob.core.windows.net/internal
         /p:DotNetRuntimeSourceFeedKey=$(dotnetbuilds-internal-container-read-token-base64)
+        /nowarn:MSB4011
       displayName: Pack, Sign, and Publish
     # Intentionally copying file as "dotnet-monitor.nupkg.buildversion" for back compat
     - task: powershell@2
