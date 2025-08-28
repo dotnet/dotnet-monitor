@@ -8,5 +8,7 @@ namespace Microsoft.Diagnostics.Monitoring.Options
         public const bool Enabled = true;
 
         public const int TopLevelLimit = 20;
+
+        public const bool CollectOnStartup = true;
     }
 }

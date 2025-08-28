@@ -43,15 +43,15 @@
       <TestRunName>Windows 11 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
     </HelixAvailableTargetQueue>
     <!-- win-x64 -->
-    <HelixAvailableTargetQueue Include="windows.10.amd64.client$(QueueSuffix)"
+    <HelixAvailableTargetQueue Include="windows.11.amd64.client$(QueueSuffix)"
                                Condition="'$(HelixArchitecture)' == 'x64'">
-      <TestRunName>Windows 10 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
+      <TestRunName>Windows 11 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
     </HelixAvailableTargetQueue>
     <!-- win-x86 -->
     <!-- Windows x64 clients can run dotnet x86 natively -->
-    <HelixAvailableTargetQueue Include="windows.10.amd64.client$(QueueSuffix)"
+    <HelixAvailableTargetQueue Include="windows.11.amd64.client$(QueueSuffix)"
                                Condition="'$(HelixArchitecture)' == 'x86'">
-      <TestRunName>Windows 10 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
+      <TestRunName>Windows 11 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
     </HelixAvailableTargetQueue>
   </ItemGroup>
 
@@ -71,15 +71,15 @@
       <TestRunName>Ubuntu 22.04 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
     </HelixAvailableTargetQueue>
     <!-- linux-x64 -->
-    <HelixAvailableTargetQueue Include="ubuntu.2204.amd64$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:azurelinux-3.0-helix-amd64"
+    <HelixAvailableTargetQueue Include="azurelinux.3.amd64$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:azurelinux-3.0-helix-amd64"
                                Condition="'$(HelixArchitecture)' == 'x64'">
       <TestRunName>Azure 3.0 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
     </HelixAvailableTargetQueue>
-    <HelixAvailableTargetQueue Include="ubuntu.2204.amd64$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:debian-12-helix-amd64"
+    <HelixAvailableTargetQueue Include="azurelinux.3.amd64$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:debian-12-helix-amd64"
                                Condition="'$(HelixArchitecture)' == 'x64'">
       <TestRunName>Debian 12 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
     </HelixAvailableTargetQueue>
-    <HelixAvailableTargetQueue Include="ubuntu.2204.amd64$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-20.04-helix-amd64"
+    <HelixAvailableTargetQueue Include="azurelinux.3.amd64$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-20.04-helix-amd64"
                                Condition="'$(HelixArchitecture)' == 'x64'">
       <TestRunName>Ubuntu 20.04 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
     </HelixAvailableTargetQueue>
@@ -93,7 +93,7 @@
       <TestRunName>Alpine 3.20 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
     </HelixAvailableTargetQueue>
     <!-- linux-musl-x64 -->
-    <HelixAvailableTargetQueue Include="ubuntu.2204.amd64$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.20-helix-amd64"
+    <HelixAvailableTargetQueue Include="azurelinux.3.amd64$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.20-helix-amd64"
                                Condition="'$(HelixArchitecture)' == 'x64'">
       <TestRunName>Alpine 3.20 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
     </HelixAvailableTargetQueue>

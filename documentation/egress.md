@@ -36,7 +36,7 @@ In addition to the current `dotnet monitor` offerings, a `monitor-base` image is
 
 Users using the `monitor-base` image can manually install supported extensions via Multi-Stage Docker Builds, creating their own image that includes any desired egress providers.
 
-For an example of using Multi-Stage Docker Builds, see the [Dockerfile](https://github.com/dotnet/dotnet-docker/blob/nightly/src/monitor/8.0/ubuntu-chiseled/amd64/Dockerfile) that the `dotnet monitor` team uses to construct the `amd64` `monitor` image.
+For an example of using Multi-Stage Docker Builds, see the [Dockerfile](https://github.com/dotnet/dotnet-docker/blob/nightly/src/monitor/8.1/ubuntu-chiseled/amd64/Dockerfile) that the `dotnet monitor` team uses to construct the `amd64` `monitor` image.
 
 To directly access archives for one of `dotnet monitor`'s supported extensions, these are available using the following link (this example is specifically for the `linux-x64` archive): `https://ci.dot.net/public/diagnostics/monitor/$dotnet_monitor_extension_version/dotnet-monitor-egress-azureblobstorage-$dotnet_monitor_extension_version-linux-x64.tar.gz`.
 > [!NOTE]

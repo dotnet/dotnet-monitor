@@ -141,7 +141,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 //   because the startup hook may call into the profiler on load.
                 // - ConfigureExceptions needs to be called before ConfigureStartupHook
                 //   because we want to avoid missing exception data events and potentially having an out-of-sync name cache.
-                //
+                // - Exceptions must be configured after the profiler, so that the profiler can throw out exceptions from a previous session.
+
                 services.ConfigureInProcessFeatures(context.Configuration);
                 services.ConfigureProfiler();
                 services.ConfigureExceptions();

@@ -8,11 +8,10 @@
   ],
   "supported": [
     "9.0",
-    "8.1",
-    "8.0"
+    "8.1"
   ],
   "unsupported": [
-    "7.3",
+    "8.0",
     "6.3"
   ],
   "releases": {
@@ -35,36 +34,26 @@
       ],
       "outOfSupportDate": "2025-05-11T00:00:00.000Z"
     },
-    "7.3": {
-      "tag": "v7.3.4",
-      "minorReleaseDate": "2023-08-08T00:00:00.000Z",
-      "patchReleaseDate": "2024-05-14T00:00:00.000Z",
-      "supportedFrameworks": [
-        "net6.0",
-        "net7.0"
-      ],
-      "outOfSupportDate": "2024-05-14T00:00:00.000Z"
-    },
     "9.0": {
-      "tag": "v9.0.2",
+      "tag": "v9.0.4",
       "minorReleaseDate": "2024-11-12T00:00:00.000Z",
-      "patchReleaseDate": "2025-02-11T00:00:00.000Z",
+      "patchReleaseDate": "2025-08-06T00:00:00.000Z",
       "supportedFrameworks": [
         "net9.0"
       ]
     },
     "8.1": {
-      "tag": "v8.1.0",
+      "tag": "v8.1.2",
       "minorReleaseDate": "2025-02-11T00:00:00.000Z",
-      "patchReleaseDate": "2025-02-11T00:00:00.000Z",
+      "patchReleaseDate": "2025-08-06T00:00:00.000Z",
       "supportedFrameworks": [
         "net8.0"
       ]
     },
     "9.1": {
-      "tag": "v9.1.0-preview.2.25201.5",
-      "minorReleaseDate": "2025-04-08T00:00:00.000Z",
-      "patchReleaseDate": "2025-04-08T00:00:00.000Z",
+      "tag": "v9.1.0-preview.3.25257.5",
+      "minorReleaseDate": "2025-05-13T00:00:00.000Z",
+      "patchReleaseDate": "2025-05-13T00:00:00.000Z",
       "supportedFrameworks": [
         "net9.0"
       ]

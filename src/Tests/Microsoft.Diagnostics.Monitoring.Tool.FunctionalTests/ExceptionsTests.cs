@@ -12,6 +12,7 @@ using Microsoft.Diagnostics.Monitoring.UnitTestApp.Scenarios;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -876,6 +877,83 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 });
         }
 
+        [Fact]
+        public async Task Exceptions_ResetState()
+        {
+            DiagnosticPortHelper.Generate(
+                DiagnosticPortConnectionMode.Listen,
+                out DiagnosticPortConnectionMode appConnectionMode,
+                out string diagnosticPortPath);
+
+            Func<Task<(MonitorCollectRunner Runner, HttpClient Client, ApiClient ApiClient)>> createMonitorRunner = async () =>
+            {
+                MonitorCollectRunner toolRunner = new(_outputHelper);
+                toolRunner.ConnectionModeViaCommandLine = DiagnosticPortConnectionMode.Listen;
+                toolRunner.DiagnosticPortPath = diagnosticPortPath;
+                toolRunner.DisableAuthentication = true;
+                toolRunner.ConfigurationFromEnvironment.EnableInProcessFeatures();
+                toolRunner.ConfigurationFromEnvironment.DiagnosticPort = new DiagnosticPortOptions
+                {
+                    DeleteEndpointOnStartup = true
+                };
+
+                await toolRunner.StartAsync();
+                HttpClient httpClient = await toolRunner.CreateHttpClientDefaultAddressAsync(_httpClientFactory);
+                ApiClient apiClient = new(_outputHelper, httpClient);
+
+                return (toolRunner, httpClient, apiClient);
+            };
+
+            var result = await createMonitorRunner();
+            await using MonitorCollectRunner firstRunner = result.Runner;
+            using HttpClient firstClient = result.Client;
+            ApiClient apiClient = result.ApiClient;
+
+            await using AppRunner appRunner = new(_outputHelper, Assembly.GetExecutingAssembly());
+            appRunner.ProfilerLogLevel = LogLevel.Information.ToString("G");
+            appRunner.ConnectionMode = appConnectionMode;
+            appRunner.DiagnosticPortPath = diagnosticPortPath;
+            appRunner.ScenarioName = TestAppScenarios.Exceptions.Name;
+            appRunner.SubScenarioName = TestAppScenarios.Exceptions.SubScenarios.MultiPhase;
+            appRunner.EnableMonitorStartupHook = true;
+
+            await appRunner.ExecuteAsync(async () =>
+            {
+                await GetExceptions(apiClient, appRunner, ExceptionFormat.PlainText);
+
+                ValidateSingleExceptionText(
+                    SystemInvalidOperationException,
+                    ExceptionMessage,
+                    FrameTypeName,
+                    FrameMethodName,
+                    new List<string> { SimpleFrameParameterType, SimpleFrameParameterType });
+
+                await firstRunner.StopAsync();
+                await firstRunner.DisposeAsync();
+
+                result = await createMonitorRunner();
+                await using MonitorCollectRunner secondRunner = result.Runner;
+                using HttpClient secondClient = result.Client;
+                ApiClient secondApiClient = result.ApiClient;
+
+                // We cannot resume the scenario immediately against the second runner.
+                // If the target application throws the second exception while we are starting up, it will be missed.
+                // We wait until the process is perceived by dotnet-monitor.
+                int appPid = await appRunner.ProcessIdTask;
+
+                _ = await secondApiClient.GetProcessWithRetryAsync(_outputHelper, pid: appPid);
+                   
+                await GetExceptions(secondApiClient, appRunner, ExceptionFormat.PlainText);
+
+                ValidateSingleExceptionText(
+                    SystemInvalidOperationException,
+                    ExceptionMessage,
+                    FrameTypeName,
+                    FrameMethodName,
+                    new List<string> { SimpleFrameParameterType, SimpleFrameParameterType });
+            });
+        }
+
         private void ValidateMultipleExceptionsText(int exceptionsCount, List<string> exceptionTypes)
         {
             var exceptions = exceptionsResult.Split(new[] { FirstChanceExceptionMessage }, StringSplitOptions.RemoveEmptyEntries);
@@ -979,7 +1057,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             int processId = await appRunner.ProcessIdTask;
 
             await RetryUtilities.RetryAsync(
-                () => CaptureExtensions(apiClient, processId, format, configuration),
+                () => CaptureExceptions(apiClient, processId, format, configuration),
                 shouldRetry: (Exception ex) => ex is ArgumentException,
                 maxRetryCount: 5,
                 outputHelper: _outputHelper);
@@ -987,7 +1065,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             await appRunner.SendCommandAsync(TestAppScenarios.Exceptions.Commands.End);
         }
 
-        private async Task CaptureExtensions(ApiClient apiClient, int processId, ExceptionFormat format, ExceptionsConfiguration configuration)
+        private async Task CaptureExceptions(ApiClient apiClient, int processId, ExceptionFormat format, ExceptionsConfiguration configuration)
         {
             await Task.Delay(500);
 

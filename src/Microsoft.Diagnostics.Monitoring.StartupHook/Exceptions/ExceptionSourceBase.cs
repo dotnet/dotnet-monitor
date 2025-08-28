@@ -16,6 +16,10 @@ namespace Microsoft.Diagnostics.Monitoring.StartupHook.Exceptions
             ExceptionAvailable?.Invoke(this, new ExceptionAvailableEventArgs(ex, timestamp, activityId, format));
         }
 
+        public virtual void Start() { }
+
+        public virtual void Stop() { }
+
         /// <summary>
         /// Event that is raised each time an exception is made available.
         /// </summary>
