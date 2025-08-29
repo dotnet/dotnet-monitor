@@ -15,6 +15,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Negotiate" />
     <PackageReference Include="Microsoft.Identity.Web" />
+    <PackageReference Include="OpenTelemetry.OutOfProcess.Forwarder.Configuration" />
     <PackageReference Include="System.CommandLine" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
   </ItemGroup>
@@ -32,7 +33,7 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(OTEL_REPO_ROOT)' != ''">
-    <ProjectReference Include="$(OTEL_REPO_ROOT)\next-gen\src\OpenTelemetry.AutoInstrumentation.Sdk.Configuration\OpenTelemetry.AutoInstrumentation.Sdk.Configuration.csproj" />
+    <!--<ProjectReference Include="$(OTEL_REPO_ROOT)\next-gen\src\OpenTelemetry.OutOfProcess.Forwarder.Configuration\OpenTelemetry.OutOfProcess.Forwarder.Configuration.csproj" />-->
   </ItemGroup>
 
   <ItemGroup>
