@@ -4,6 +4,7 @@
     "cleanupUnsupportedReleasesAfterMonths": 12
   },
   "preview": [
+    "10.0",
     "9.1"
   ],
   "supported": [
@@ -56,6 +57,14 @@
       "patchReleaseDate": "2025-05-13T00:00:00.000Z",
       "supportedFrameworks": [
         "net9.0"
+      ]
+    },
+    "10.0": {
+      "tag": "v10.0.0-rc.1.25453.1",
+      "minorReleaseDate": "2025-09-09T00:00:00.000Z",
+      "patchReleaseDate": "2025-09-09T00:00:00.000Z",
+      "supportedFrameworks": [
+        "net10.0"
       ]
     }
   }
