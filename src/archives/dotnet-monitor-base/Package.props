@@ -11,12 +11,73 @@
   <ItemGroup>
     <FileToArchive Include="$(RepoRoot)LICENSE.TXT" />
     <FileToArchive Include="$(ThirdPartyNoticesFilePath)" Condition="Exists('$(ThirdPartyNoticesFilePath)')" />
+    <!-- Include the profiler for the current platform. -->
+    <FileToArchive Include="@(MonitorProfilerLibraryFile->WithMetadataValue('TargetRid', '$(RuntimeIdentifier)'))">
+      <PackagePath>shared\$(RuntimeIdentifier)\native\</PackagePath>
+    </FileToArchive>
+    <FileToArchive Include="@(MutatingMonitorProfilerLibraryFile->WithMetadataValue('TargetRid', '$(RuntimeIdentifier)'))">
+      <PackagePath>shared\$(RuntimeIdentifier)\native\</PackagePath>
+    </FileToArchive>
+    <!-- For linux, include both musl and glib variants; thus include the profiler for the other variant. -->
+    <FileToArchive Include="@(MonitorProfilerLibraryFile->WithMetadataValue('TargetRid', 'linux-arm64'))"
+                   Condition="'$(RuntimeIdentifier)' == 'linux-musl-arm64'">
+      <PackagePath>shared\linux-arm64\native\</PackagePath>
+    </FileToArchive>
+    <FileToArchive Include="@(MutatingMonitorProfilerLibraryFile->WithMetadataValue('TargetRid', 'linux-arm64'))"
+                   Condition="'$(RuntimeIdentifier)' == 'linux-musl-arm64'">
+      <PackagePath>shared\linux-arm64\native\</PackagePath>
+    </FileToArchive>
+    <FileToArchive Include="@(MonitorProfilerLibraryFile->WithMetadataValue('TargetRid', 'linux-x64'))"
+                   Condition="'$(RuntimeIdentifier)' == 'linux-musl-x64'">
+      <PackagePath>shared\linux-x64\native\</PackagePath>
+    </FileToArchive>
+    <FileToArchive Include="@(MutatingMonitorProfilerLibraryFile->WithMetadataValue('TargetRid', 'linux-x64'))"
+                   Condition="'$(RuntimeIdentifier)' == 'linux-musl-x64'">
+      <PackagePath>shared\linux-x64\native\</PackagePath>
+    </FileToArchive>
+    <FileToArchive Include="@(MonitorProfilerLibraryFile->WithMetadataValue('TargetRid', 'linux-musl-arm64'))"
+                   Condition="'$(RuntimeIdentifier)' == 'linux-arm64'">
+      <PackagePath>shared\linux-musl-arm64\native\</PackagePath>
+    </FileToArchive>
+    <FileToArchive Include="@(MutatingMonitorProfilerLibraryFile->WithMetadataValue('TargetRid', 'linux-musl-arm64'))"
+                   Condition="'$(RuntimeIdentifier)' == 'linux-arm64'">
+      <PackagePath>shared\linux-musl-arm64\native\</PackagePath>
+    </FileToArchive>
+    <FileToArchive Include="@(MonitorProfilerLibraryFile->WithMetadataValue('TargetRid', 'linux-musl-x64'))"
+                   Condition="'$(RuntimeIdentifier)' == 'linux-x64'">
+      <PackagePath>shared\linux-musl-x64\native\</PackagePath>
+    </FileToArchive>
+    <FileToArchive Include="@(MutatingMonitorProfilerLibraryFile->WithMetadataValue('TargetRid', 'linux-musl-x64'))"
+                   Condition="'$(RuntimeIdentifier)' == 'linux-x64'">
+      <PackagePath>shared\linux-musl-x64\native\</PackagePath>
+    </FileToArchive>
+
+    <!-- Startup hook assemblies -->
+    <FileToArchive Include="$(StartupHookLibraryPath)">
+      <PackagePath>shared\any\$(StartupHookTargetFramework)\</PackagePath>
+    </FileToArchive>
     <!-- Hosting startup assemblies -->
     <FileToArchive Include="$(HostingStartupLibraryPath)">
       <PackagePath>shared\any\$(HostingStartupTargetFramework)\</PackagePath>
     </FileToArchive>
   </ItemGroup>
   <ItemGroup>
+    <!-- Do not include symbols for the extra native assemblies since they have their own symbols package. -->
+    <SymbolFileToArchive Include="@(MonitorProfilerSymbolsFile->WithMetadataValue('TargetRid', '$(RuntimeIdentifier)'))">
+      <PackagePath>shared\$(RuntimeIdentifier)\native\</PackagePath>
+    </SymbolFileToArchive>
+    <SymbolFileToArchive Include="@(MutatingMonitorProfilerSymbolsFile->WithMetadataValue('TargetRid', '$(RuntimeIdentifier)'))">
+      <PackagePath>shared\$(RuntimeIdentifier)\native\</PackagePath>
+    </SymbolFileToArchive>
+    <!-- Symbols are not created for static libraries on non-Windows platforms -->
+    <SymbolFileToArchive Include="@(CommonMonitorProfilerSymbolsFile->WithMetadataValue('TargetRid', '$(RuntimeIdentifier)'))"
+                         Condition="$(RuntimeIdentifier.Contains(win))">
+      <PackagePath>shared\$(RuntimeIdentifier)\native\</PackagePath>
+    </SymbolFileToArchive>
+    <!-- Startup hook symbols -->
+    <SymbolFileToArchive Include="$(StartupHookSymbolsPath)">
+      <PackagePath>shared\any\$(StartupHookTargetFramework)\</PackagePath>
+    </SymbolFileToArchive>
     <!-- Hosting startup symbols -->
     <SymbolFileToArchive Include="$(HostingStartupSymbolsPath)">
       <PackagePath>shared\any\$(HostingStartupTargetFramework)\</PackagePath>
