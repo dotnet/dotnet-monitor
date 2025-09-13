@@ -48,9 +48,9 @@
   -->
   <PropertyGroup Label="Automated">
     <!-- dotnet/arcade references -->
-    <MicrosoftDotNetBuildTasksArchivesVersion>9.0.0-beta.25460.1</MicrosoftDotNetBuildTasksArchivesVersion>
-    <MicrosoftDotNetCodeAnalysisVersion>9.0.0-beta.25460.1</MicrosoftDotNetCodeAnalysisVersion>
-    <MicrosoftDotNetXUnitExtensionsVersion>9.0.0-beta.25460.1</MicrosoftDotNetXUnitExtensionsVersion>
+    <MicrosoftDotNetBuildTasksArchivesVersion>9.0.0-beta.25462.4</MicrosoftDotNetBuildTasksArchivesVersion>
+    <MicrosoftDotNetCodeAnalysisVersion>9.0.0-beta.25462.4</MicrosoftDotNetCodeAnalysisVersion>
+    <MicrosoftDotNetXUnitExtensionsVersion>9.0.0-beta.25462.4</MicrosoftDotNetXUnitExtensionsVersion>
     <!-- dotnet/aspnetcore references -->
     <MicrosoftAspNetCoreAppRuntimewinx64Version>9.0.0</MicrosoftAspNetCoreAppRuntimewinx64Version>
     <VSRedistCommonAspNetCoreSharedFrameworkx6490Version>9.0.0-rtm.24529.3</VSRedistCommonAspNetCoreSharedFrameworkx6490Version>
