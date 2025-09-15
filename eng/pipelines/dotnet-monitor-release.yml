@@ -483,7 +483,8 @@ extends:
                     # Copy checksums to checksum account
                     Transfer-File `
                         -From $checksumsSourceUri `
-                        -To $checksumsDestinationUri
+                        -To $checksumsDestinationUri `
+                        -ToToken ([Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($DestinationSasTokenBase64)))
                 env:
                   DestinationSasTokenBase64: $(DotNetCliDelegationSasTokenBase64)
 
