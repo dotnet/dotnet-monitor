@@ -10,7 +10,7 @@
     <!-- Microsoft.Extensions.Logging.Console -->
     <MicrosoftExtensionsLoggingConsole80Version>8.0.1</MicrosoftExtensionsLoggingConsole80Version>
     <!-- Microsoft.NETCore.App -->
-    <MicrosoftNETCoreApp80Version>8.0.19</MicrosoftNETCoreApp80Version>
+    <MicrosoftNETCoreApp80Version>8.0.20</MicrosoftNETCoreApp80Version>
     <!-- System.Text.Json -->
     <SystemTextJson80Version>8.0.6</SystemTextJson80Version>
   </PropertyGroup>
