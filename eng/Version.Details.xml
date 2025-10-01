@@ -22,25 +22,25 @@
       <Uri>https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet</Uri>
       <Sha>3e26a30db6f35a6ffe3a80b2bf2f79afe1aee70b</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="10.0.0-beta.25480.104">
-      <Uri>https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet</Uri>
-      <Sha>3e26a30db6f35a6ffe3a80b2bf2f79afe1aee70b</Sha>
+    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="10.0.0-beta.25479.4">
+      <Uri>https://github.com/dotnet/arcade</Uri>
+      <Sha>e6f510cb87812d56ad781d93ff0513cdcccd0eb4</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.Build.Tasks.Archives" Version="10.0.0-beta.25480.104">
-      <Uri>https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet</Uri>
-      <Sha>3e26a30db6f35a6ffe3a80b2bf2f79afe1aee70b</Sha>
+    <Dependency Name="Microsoft.DotNet.Build.Tasks.Archives" Version="10.0.0-beta.25479.4">
+      <Uri>https://github.com/dotnet/arcade</Uri>
+      <Sha>e6f510cb87812d56ad781d93ff0513cdcccd0eb4</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.CodeAnalysis" Version="10.0.0-beta.25480.104">
-      <Uri>https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet</Uri>
-      <Sha>3e26a30db6f35a6ffe3a80b2bf2f79afe1aee70b</Sha>
+    <Dependency Name="Microsoft.DotNet.CodeAnalysis" Version="10.0.0-beta.25479.4">
+      <Uri>https://github.com/dotnet/arcade</Uri>
+      <Sha>e6f510cb87812d56ad781d93ff0513cdcccd0eb4</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.Helix.Sdk" Version="10.0.0-beta.25480.104">
-      <Uri>https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet</Uri>
-      <Sha>3e26a30db6f35a6ffe3a80b2bf2f79afe1aee70b</Sha>
+    <Dependency Name="Microsoft.DotNet.Helix.Sdk" Version="10.0.0-beta.25479.4">
+      <Uri>https://github.com/dotnet/arcade</Uri>
+      <Sha>e6f510cb87812d56ad781d93ff0513cdcccd0eb4</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="10.0.0-beta.25480.104">
-      <Uri>https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet</Uri>
-      <Sha>3e26a30db6f35a6ffe3a80b2bf2f79afe1aee70b</Sha>
+    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="10.0.0-beta.25479.4">
+      <Uri>https://github.com/dotnet/arcade</Uri>
+      <Sha>e6f510cb87812d56ad781d93ff0513cdcccd0eb4</Sha>
     </Dependency>
     <Dependency Name="Microsoft.FileFormats" Version="1.0.637302">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
