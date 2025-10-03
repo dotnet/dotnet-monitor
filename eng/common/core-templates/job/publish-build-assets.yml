@@ -131,7 +131,6 @@ jobs:
           /p:ManifestsPath='$(Build.StagingDirectory)/AssetManifests'
           /p:IsAssetlessBuild=${{ parameters.isAssetlessBuild }}
           /p:MaestroApiEndpoint=https://maestro.dot.net
-          /p:PublishUsingPipelines=${{ parameters.publishUsingPipelines }}
           /p:OfficialBuildId=$(OfficialBuildId)
       condition: ${{ parameters.condition }}
       continueOnError: ${{ parameters.continueOnError }}
