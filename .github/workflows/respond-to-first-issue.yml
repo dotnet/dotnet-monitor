@@ -12,7 +12,7 @@ jobs:
     permissions:
       issues: write
     steps:
-      - uses: actions/first-interaction@753c925c8d1ac6fede23781875376600628d9b5d
+      - uses: actions/first-interaction@1c4688942c71f71d4f5502a26ea67c331730fa4d
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           issue-message: "## Welcome to dotnet-monitor!\nThanks for creating your first issue; let us know what you think of dotnet-monitor by filling out our [survey](https://aka.ms/dotnet-monitor-survey?src=firstissue)."
