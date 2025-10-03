@@ -1,8 +1,8 @@
 <Dependencies>
   <ProductDependencies>
-    <Dependency Name="Microsoft.AspNetCore.App.Runtime.win-x64" Version="10.0.0-rc.2.25480.104">
+    <Dependency Name="Microsoft.AspNetCore.App.Runtime.win-x64" Version="10.0.0-rc.2.25502.107">
       <Uri>https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet</Uri>
-      <Sha>3e26a30db6f35a6ffe3a80b2bf2f79afe1aee70b</Sha>
+      <Sha>89c8f6a112d37d2ea8b77821e56d170a1bccdc5a</Sha>
     </Dependency>
     <Dependency Name="Microsoft.Diagnostics.Monitoring" Version="9.0.637302">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
@@ -12,15 +12,15 @@
       <Uri>https://github.com/dotnet/diagnostics</Uri>
       <Sha>eab990eafdd479265f78855d72e6afa3ee0813c7</Sha>
     </Dependency>
-    <Dependency Name="System.CommandLine" Version="2.0.0-rc.2.25480.104">
+    <Dependency Name="System.CommandLine" Version="2.0.0-rc.2.25502.107">
       <Uri>https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet</Uri>
-      <Sha>3e26a30db6f35a6ffe3a80b2bf2f79afe1aee70b</Sha>
+      <Sha>89c8f6a112d37d2ea8b77821e56d170a1bccdc5a</Sha>
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
-    <Dependency Name="Microsoft.CodeAnalysis.NetAnalyzers" Version="10.0.100-rc.2.25480.104">
+    <Dependency Name="Microsoft.CodeAnalysis.NetAnalyzers" Version="10.0.100-rc.2.25502.107">
       <Uri>https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet</Uri>
-      <Sha>3e26a30db6f35a6ffe3a80b2bf2f79afe1aee70b</Sha>
+      <Sha>89c8f6a112d37d2ea8b77821e56d170a1bccdc5a</Sha>
     </Dependency>
     <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="10.0.0-beta.25479.4">
       <Uri>https://github.com/dotnet/arcade</Uri>
@@ -46,21 +46,21 @@
       <Uri>https://github.com/dotnet/diagnostics</Uri>
       <Sha>eab990eafdd479265f78855d72e6afa3ee0813c7</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.NETCore.App.Runtime.win-x64" Version="10.0.0-rc.2.25480.104">
+    <Dependency Name="Microsoft.NETCore.App.Runtime.win-x64" Version="10.0.0-rc.2.25502.107">
       <Uri>https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet</Uri>
-      <Sha>3e26a30db6f35a6ffe3a80b2bf2f79afe1aee70b</Sha>
+      <Sha>89c8f6a112d37d2ea8b77821e56d170a1bccdc5a</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.10.0" Version="10.0.0-rc.2.25480.104">
+    <Dependency Name="VS.Redist.Common.AspNetCore.SharedFramework.x64.10.0" Version="10.0.0-rc.2.25502.107">
       <Uri>https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet</Uri>
-      <Sha>3e26a30db6f35a6ffe3a80b2bf2f79afe1aee70b</Sha>
+      <Sha>89c8f6a112d37d2ea8b77821e56d170a1bccdc5a</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.NetCore.SdkPlaceholder.x64.10.0" Version="10.0.100-rc.2.25480.104">
+    <Dependency Name="VS.Redist.Common.NetCore.SdkPlaceholder.x64.10.0" Version="10.0.100-rc.2.25502.107">
       <Uri>https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet</Uri>
-      <Sha>3e26a30db6f35a6ffe3a80b2bf2f79afe1aee70b</Sha>
+      <Sha>89c8f6a112d37d2ea8b77821e56d170a1bccdc5a</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.10.0" Version="10.0.0-rc.2.25480.104">
+    <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.10.0" Version="10.0.0-rc.2.25502.107">
       <Uri>https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet</Uri>
-      <Sha>3e26a30db6f35a6ffe3a80b2bf2f79afe1aee70b</Sha>
+      <Sha>89c8f6a112d37d2ea8b77821e56d170a1bccdc5a</Sha>
     </Dependency>
   </ToolsetDependencies>
 </Dependencies>
