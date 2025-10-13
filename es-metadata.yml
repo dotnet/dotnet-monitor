@@ -1,0 +1,8 @@
+schemaVersion: 0.0.1
+isProduction: true
+accountableOwners:
+  service: 14bd3069-339c-43ff-af32-9a71b732d1c0
+routing:
+  defaultAreaPath:
+    org: devdiv
+    path: DevDiv\VS Diagnostics\Production Diagnostics\Dotnet Monitor
