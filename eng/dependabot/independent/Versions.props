@@ -4,8 +4,8 @@
   <PropertyGroup>
     <AzureCoreVersion>1.49.0</AzureCoreVersion>
     <AzureIdentityVersion>1.17.0</AzureIdentityVersion>
-    <AzureStorageBlobsVersion>12.25.1</AzureStorageBlobsVersion>
-    <AzureStorageQueuesVersion>12.23.0</AzureStorageQueuesVersion>
+    <AzureStorageBlobsVersion>12.26.0</AzureStorageBlobsVersion>
+    <AzureStorageQueuesVersion>12.24.0</AzureStorageQueuesVersion>
     <MicrosoftIdentityWebVersion>3.14.1</MicrosoftIdentityWebVersion>
     <MicrosoftOpenApiReadersVersion>1.6.24</MicrosoftOpenApiReadersVersion>
     <SystemPrivateUriVersion>4.3.2</SystemPrivateUriVersion>
