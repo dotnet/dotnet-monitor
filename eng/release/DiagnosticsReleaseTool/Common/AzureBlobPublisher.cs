@@ -44,10 +44,10 @@ namespace ReleaseTool.Core
                 if (_clientId == null)
                 {
                     // Local development scenario. Use the default credential.
-                    return new DefaultAzureCredential();
+                    return new DefaultAzureCredential(); // CodeQL [SM05137] This is not a security issue as this is for local development only. 
                 }
 
-                return new DefaultAzureCredential(new DefaultAzureCredentialOptions { ManagedIdentityClientId = _clientId });
+                return new DefaultAzureCredential(new DefaultAzureCredentialOptions { ManagedIdentityClientId = _clientId }); // CodeQL [SM05137] This is not a security issue since this is only used for pipeline builds.
             }
         }
 
