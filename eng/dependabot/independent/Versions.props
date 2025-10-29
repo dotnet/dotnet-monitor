@@ -12,7 +12,7 @@
     <SystemSecurityPrincipalWindowsVersion>5.0.0</SystemSecurityPrincipalWindowsVersion>
 
     <!-- Third-party references -->
-    <NewtonsoftJsonVersion>13.0.3</NewtonsoftJsonVersion>
+    <NewtonsoftJsonVersion>13.0.4</NewtonsoftJsonVersion>
     <NJsonSchemaVersion>11.0.0</NJsonSchemaVersion>
     <AwsSdkS3Version>4.0.0.3</AwsSdkS3Version>
     <AwsSdkSecurityTokenVersion>4.0.0.2</AwsSdkSecurityTokenVersion>
