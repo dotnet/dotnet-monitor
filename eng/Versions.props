@@ -68,8 +68,8 @@
   <PropertyGroup Label="Runtime Versions">
     <MicrosoftAspNetCoreApp80Version>$(MicrosoftNETCoreApp80Version)</MicrosoftAspNetCoreApp80Version>
     <MicrosoftAspNetCoreApp90Version>$(MicrosoftNETCoreApp90Version)</MicrosoftAspNetCoreApp90Version>
-    <MicrosoftNETCoreApp100Version>$(MicrosoftNETCoreAppRuntimewinx64Version)</MicrosoftNETCoreApp100Version>
-    <MicrosoftAspNetCoreApp100Version>$(MicrosoftAspNetCoreAppRuntimewinx64Version)</MicrosoftAspNetCoreApp100Version>
+    <MicrosoftNETCoreApp100Version>$(VSRedistCommonNetCoreSharedFrameworkx64100Version)</MicrosoftNETCoreApp100Version>
+    <MicrosoftAspNetCoreApp100Version>$(VSRedistCommonAspNetCoreSharedFrameworkx64100Version)</MicrosoftAspNetCoreApp100Version>
   </PropertyGroup>
   <PropertyGroup Label="SDK Versions">
     <!-- Use a non-final versioned sentinel package for installation of specific SDK version. -->
