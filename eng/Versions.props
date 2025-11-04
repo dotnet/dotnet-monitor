@@ -54,16 +54,16 @@
     <MicrosoftDiagnosticsMonitoringEventPipeVersion>9.0.637302</MicrosoftDiagnosticsMonitoringEventPipeVersion>
     <MicrosoftFileFormatsVersion>1.0.637302</MicrosoftFileFormatsVersion>
     <!-- dotnet/dotnet references -->
-    <MicrosoftAspNetCoreAppRuntimewinx64Version>10.0.0-rc.2.25502.107</MicrosoftAspNetCoreAppRuntimewinx64Version>
-    <MicrosoftCodeAnalysisNetAnalyzersVersion>10.0.100-rc.2.25502.107</MicrosoftCodeAnalysisNetAnalyzersVersion>
-    <MicrosoftDotNetBuildTasksArchivesVersion>10.0.0-beta.25479.4</MicrosoftDotNetBuildTasksArchivesVersion>
-    <MicrosoftDotNetCodeAnalysisVersion>10.0.0-beta.25479.4</MicrosoftDotNetCodeAnalysisVersion>
-    <MicrosoftDotNetXUnitExtensionsVersion>10.0.0-beta.25479.4</MicrosoftDotNetXUnitExtensionsVersion>
-    <MicrosoftNETCoreAppRuntimewinx64Version>10.0.0-rc.2.25502.107</MicrosoftNETCoreAppRuntimewinx64Version>
-    <SystemCommandLineVersion>2.0.0-rc.2.25502.107</SystemCommandLineVersion>
-    <VSRedistCommonAspNetCoreSharedFrameworkx64100Version>10.0.0-rc.2.25502.107</VSRedistCommonAspNetCoreSharedFrameworkx64100Version>
-    <VSRedistCommonNetCoreSdkPlaceholderx64100Version>10.0.100-rc.2.25502.107</VSRedistCommonNetCoreSdkPlaceholderx64100Version>
-    <VSRedistCommonNetCoreSharedFrameworkx64100Version>10.0.0-rc.2.25502.107</VSRedistCommonNetCoreSharedFrameworkx64100Version>
+    <MicrosoftAspNetCoreAppRuntimewinx64Version>10.0.0</MicrosoftAspNetCoreAppRuntimewinx64Version>
+    <MicrosoftCodeAnalysisNetAnalyzersVersion>10.0.100</MicrosoftCodeAnalysisNetAnalyzersVersion>
+    <MicrosoftDotNetBuildTasksArchivesVersion>10.0.0-beta.25531.102</MicrosoftDotNetBuildTasksArchivesVersion>
+    <MicrosoftDotNetCodeAnalysisVersion>10.0.0-beta.25531.102</MicrosoftDotNetCodeAnalysisVersion>
+    <MicrosoftDotNetXUnitExtensionsVersion>10.0.0-beta.25531.102</MicrosoftDotNetXUnitExtensionsVersion>
+    <MicrosoftNETCoreAppRuntimewinx64Version>10.0.0</MicrosoftNETCoreAppRuntimewinx64Version>
+    <SystemCommandLineVersion>2.0.0</SystemCommandLineVersion>
+    <VSRedistCommonAspNetCoreSharedFrameworkx64100Version>10.0.0-rtm.25531.102</VSRedistCommonAspNetCoreSharedFrameworkx64100Version>
+    <VSRedistCommonNetCoreSdkPlaceholderx64100Version>10.0.100-rtm.25531.102</VSRedistCommonNetCoreSdkPlaceholderx64100Version>
+    <VSRedistCommonNetCoreSharedFrameworkx64100Version>10.0.0-rtm.25531.102</VSRedistCommonNetCoreSharedFrameworkx64100Version>
   </PropertyGroup>
   <PropertyGroup Label="Runtime Versions">
     <MicrosoftAspNetCoreApp80Version>$(MicrosoftNETCoreApp80Version)</MicrosoftAspNetCoreApp80Version>
