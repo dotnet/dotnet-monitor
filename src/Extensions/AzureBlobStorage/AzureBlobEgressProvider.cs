@@ -394,7 +394,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorage
                 credOptions.ManagedIdentityClientId = options.ManagedIdentityClientId;
             }
 
-            return new DefaultAzureCredential(credOptions);
+            return new DefaultAzureCredential(credOptions); // CodeQL [SM05137] Guidance here is to ensure that credential lookup is deterministic by using an environment variable. We accomplish this through settings and only including Managed Identity and Workload credentials, and do not want to introduce a breaking change.
         }
 
         private static DefaultAzureCredentialOptions GetDefaultCredentialOptions() =>
