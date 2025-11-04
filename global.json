@@ -5,22 +5,22 @@
       "aspnetcore": [
         "$(MicrosoftAspNetCoreApp80Version)",
         "$(MicrosoftAspNetCoreApp90Version)",
-        "$(MicrosoftAspNetCoreApp100Version)"
+        "$(VSRedistCommonAspNetCoreSharedFrameworkx64100Version)"
       ],
       "aspnetcore/x86": [
         "$(MicrosoftAspNetCoreApp80Version)",
         "$(MicrosoftAspNetCoreApp90Version)",
-        "$(MicrosoftAspNetCoreApp100Version)"
+        "$(VSRedistCommonAspNetCoreSharedFrameworkx64100Version)"
       ],
       "dotnet": [
         "$(MicrosoftNETCoreApp80Version)",
         "$(MicrosoftNETCoreApp90Version)",
-        "$(MicrosoftNETCoreApp100Version)"
+        "$(VSRedistCommonNetCoreSharedFrameworkx64100Version)"
       ],
       "dotnet/x86": [
         "$(MicrosoftNETCoreApp80Version)",
         "$(MicrosoftNETCoreApp90Version)",
-        "$(MicrosoftNETCoreApp100Version)"
+        "$(VSRedistCommonNetCoreSharedFrameworkx64100Version)"
       ]
     }
   },
