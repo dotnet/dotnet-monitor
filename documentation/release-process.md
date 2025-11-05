@@ -25,7 +25,7 @@
 
 ## Additional steps for GA releases
 
-1. [global.json](../global.json) typically points to `MicrosoftNETCoreApp100Version` and similiar, but this will not work for GA releases (since the stable version has not yet been released). 
+1. [global.json](../global.json) typically points to `MicrosoftNETCoreApp100Version` and similar, but this will not work for GA releases (since the stable version has not yet been released). 
 1. Change `MicrosoftNETCoreApp100Version` to `VSRedistCommonNetCoreSharedFrameworkx64100Version`
 1. Change `MicrosoftAspNetCoreApp100Version` `VSRedistCommonAspNetCoreSharedFrameworkx64100Version`
 
