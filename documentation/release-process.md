@@ -23,6 +23,12 @@
 - It can be helpful to create test release branches (e.g. release/test/8.x). Note these branches will trigger warnings because they are considered unprotected release branches and should be deleted as soon as possible.
 - If you created a build from a newly created release branch without a channel, you will get the message 'target build already exists on all channels'. To use this build you need to add it to a channel: `darc add-build-to-channel --id <Build BAR ID> --channel "General Testing"`.
 
+## Additional steps for GA releases
+
+1. [global.json](../global.json) typically points to `MicrosoftNETCoreApp100Version` and similiar, but this will not work for GA releases (since the stable version has not yet been released). 
+1. Change `MicrosoftNETCoreApp100Version` to `VSRedistCommonNetCoreSharedFrameworkx64100Version`
+1. Change `MicrosoftAspNetCoreApp100Version` `VSRedistCommonAspNetCoreSharedFrameworkx64100Version`
+
 ## Updating dependencies
 
 If necessary, update dependencies in the release branch.
@@ -33,7 +39,7 @@ If necessary, update dependencies in the release branch.
 1. Use `darc get-subscriptions --target-repo monitor` to see existing subscriptions.
 1. Use `darc trigger-subscriptions` to trigger an update. This will create a pull request that will update the Versions.details.xml file.
 1. Sometimes an existing subscription needs to be updated. For example, when updating from Preview 5 to Preview 6:
-
+1. In some situations the build from the subscription may not be one you want. You can manually update dependencies using `darc update-dependencies`
 ```
 darc get-subscriptions --target-repo https://github.com/dotnet/dotnet-monitor --target-branch release/8.x
 https://github.com/dotnet/installer (.NET 8.0.1xx SDK Preview 5) ==> 'https://github.com/dotnet/dotnet-monitor' ('release/8.x')
@@ -44,6 +50,8 @@ darc update-subscription --id 2f528213-5355-43ec-0bf5-08db410c84fe
 darc get-subscriptions --target-repo https://github.com/dotnet/dotnet-monitor --target-branch release/8.x
 https://github.com/dotnet/installer (.NET 8.0.1xx SDK Preview 6) ==> 'https://github.com/dotnet/dotnet-monitor' ('release/8.x')
   - Id: 2f528213-5355-43ec-0bf5-08db410c84fe
+
+darc update-dependencies --id 288422
 
 ```
 
