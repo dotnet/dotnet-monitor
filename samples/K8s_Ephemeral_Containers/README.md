@@ -1,60 +1,61 @@
-# Running dotnet-monitor as an ephemeral container in Kubernetes
+# Running dotnet-monitor as an Ephemeral Container in Kubernetes
 
-Running `dotnet-monitor` as an ephemeral container lets you bring powerful diagnostics tooling to a running .NET workload only when you need it,
-without permanently increasing pod resource usage or attack surface. Instead of baking monitoring into every application image or running a sidecar 24/7,
-you can inject a purpose-built container on demand to capture dumps, traces, metrics, logs, and other artifacts from a live process—even a hung or crash-looping one.
+Running `dotnet-monitor` as an ephemeral container lets you attach diagnostics tooling to a live .NET workload only when you need it—without permanent resource, security, or operational overhead. Instead of baking tools into each application image or running a sidecar continuously, you temporarily inject a container to collect dumps, traces, logs, metrics, or other artifacts (even from hung or crash-looping processes) and then let it disappear.
 
-Key advantages:
+### Why use an ephemeral container?
+* On-demand: No steady-state CPU/memory cost; start only for investigations.
+* Lightweight images: Keep app container images free of extra tooling.
+* Smaller attack surface: Elevated permissions and tooling exist for minutes, not the lifetime of the pod.
+* Post-mortem access: Attach after failures or while the target process is unresponsive.
+* Version independence: Use the latest `dotnet-monitor` image regardless of app version.
+* Consistent workflow: Same injection procedure across all pods; no pre-provisioned sidecars.
+* Cost aware: Fewer always-on containers reduces baseline resource usage.
 
-* On-demand diagnostics: Start the container only when investigation is required; no steady-state overhead.
-* Minimal performance impact: Eliminates continuous profiler / collector costs until activated.
-* Reduced image complexity: Keeps app images lean (no extra tools or dependencies bundled).
-* Smaller security surface: Tooling and elevated permissions exist for minutes instead of the lifetime of the pod.
-* Post-mortem access: Ephemeral containers can attach after a failure or while the target process is unresponsive.
-* Version agility: Use the `dotnet-monitor` image version independently of deployed app versions.
-* Operational consistency: Same workflow across all pods without pre-provisioning sidecars.
-* Cost optimization: Fewer always-on containers and lower baseline CPU/memory utilization.
+## Prerequisites
+1. Kubernetes v1.25 or newer (ephemeral containers stable).
+2. Target pod created with required env vars, volume, and volume mounts. See example [template](./_dotnetmonitor.tpl).
 
-The sections below show how to inject and use an ephemeral `dotnet-monitor` container to collect diagnostic data from .NET applications running in Kubernetes.
-
-## Prerequisits
-1. Kubernetes version >= 1.25
-2. Pod deployed with the necessary settings: env, volume and volume mount. See [template](_dotnetmonitor.tpl).
-
-## Use dotnet monitor in a k8s pod
-
-First you need to inject the dotnet monitor as an ephemeral container. The variables in the next example should match the target .Net container you wish to inspect.
-Here's an example of the [ConfigFile](config.yaml). Make sure the values match with the deployed [template](_dotnetmonitor.tpl). This step should be done only once
-per pod. The ephemeral container will remain until the pod restarts.
+## Inject dotnet monitor into a Pod
+Prepare a [config file](config.yaml) whose values match the target's deployment as it does our [example template](./_dotnetmonitor.tpl). This step is performed once per pod lifetime; the ephemeral container persists until the pod restarts.
 
 ```pwsh
+$Namespace = "<target pod namespace>"
+$Pod = "<target pod>"
+$AppContainer = "<target container app>"
+$ConfigFile = ".config.yaml"
+$MonitorPort = 52323
+
 kubectl debug -n $Namespace pod/$Pod `
-    --image="mcr.microsoft.com/dotnet/monitor:8.0" `
-    --container "debugger" `
+    --image "mcr.microsoft.com/dotnet/monitor:8.0" `
+    --container debugger `
     --target $AppContainer `
-    --profile=general `
+    --profile general `
     --custom $ConfigFile
 ```
 
-Once you have injected your ephemeral dotnet monitor you next need to start port-forwarding to use the API. In the case of [collection rules](../../documentation/api/collectionrules.md)
-and [egress](../../documentation/egress.md) already being configured, this is not necessary but still a valid option for ad-hoc collections.
+## Access the HTTP API
+If you have existing [collection rules](../../documentation/api/collectionrules.md) and [egress](../../documentation/egress.md) configured, port-forwarding is optional; otherwise it enables ad-hoc requests.
 
 ```pwsh
-kubectl port-forward -n $Namespace pod/$Pod "${MonitorPort}:${MonitorPort}"
+kubectl port-forward -n $Namespace pod/$Pod "$MonitorPort:$MonitorPort"
 ```
 
-Finally from you should be able to make use of [dotnet monitor HTTP API](../../documentation/api/README.md), as the following example shows:
+## Example: Collect a GC Dump
+After port-forwarding, call the [HTTP API](../../documentation/api/README.md):
 
 ```pwsh
-$MonitorPort = 52323
 $ProcessId = 1
 $ts = Get-Date -Format 'yyyyMMdd_HHmmss'
 $file = "./diagnostics/gcdump_${ProcessId}_${ts}.gcdump"
-# API: GET /gcdump?pid=PID
-$uri = "http://127.0.0.1:$MonitorPort/gcdump?pid=$ProcessId"
-Write-Host "[INFO] Collecting GC dump for PID $ProcessId";
+$uri = "http://127.0.0.1:$MonitorPort/gcdump?pid=$ProcessId"  # API: GET /gcdump?pid=PID
+Write-Host "[INFO] Collecting GC dump for PID $ProcessId"
 Invoke-WebRequest -Method GET -UseBasicParsing `
     -Uri $uri `
-    -Headers @{ Accept='application/octet-stream' } `
+    -Headers @{ Accept = 'application/octet-stream' } `
     -OutFile $file
 ```
+
+## Next Steps
+* Use other endpoints for traces (`/trace`), process dumps (`/dump`), or metrics.
+* Configure secure [authentication](../../documentation/authentication.md).
+* Automate common investigations with [collection rules](../../documentation/collectionrules/collectionrules.md) and [egress](../../documentation/egress.md) before incidents occur.
