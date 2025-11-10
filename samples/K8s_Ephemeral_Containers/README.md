@@ -18,41 +18,40 @@ Running `dotnet-monitor` as an ephemeral container lets you attach diagnostics t
 ## Inject dotnet monitor into a Pod
 Prepare a [config file](config.yaml) whose values match the target's deployment as it does our [example template](./_dotnetmonitor.tpl). This step is performed once per pod lifetime; the ephemeral container persists until the pod restarts.
 
-```pwsh
-$Namespace = "<target pod namespace>"
-$Pod = "<target pod>"
-$AppContainer = "<target container app>"
-$ConfigFile = ".config.yaml"
-$MonitorPort = 52323
+```bash
+Namespace="<target pod namespace>"
+Pod="<target pod>"
+AppContainer="<target container app>"
+ConfigFile="./config.yaml"
+MonitorPort=52323
 
-kubectl debug -n $Namespace pod/$Pod `
-    --image "mcr.microsoft.com/dotnet/monitor:8.0" `
-    --container debugger `
-    --target $AppContainer `
-    --profile general `
-    --custom $ConfigFile
+kubectl debug -n "$Namespace" "pod/$Pod" \
+    --image "mcr.microsoft.com/dotnet/monitor:8.0" \
+    --container "debugger" \
+    --target "$AppContainer" \
+    --profile "general" \
+    --custom "$ConfigFile"
 ```
 
 ## Access the HTTP API
 If you have existing [collection rules](../../documentation/api/collectionrules.md) and [egress](../../documentation/egress.md) configured, port-forwarding is optional; otherwise it enables ad-hoc requests.
 
-```pwsh
-kubectl port-forward -n $Namespace pod/$Pod "$MonitorPort:$MonitorPort"
+```bash
+kubectl port-forward -n $Namespace pod/$Pod "${MonitorPort}:${MonitorPort}"
 ```
 
 ## Example: Collect a GC Dump
 After port-forwarding, call the [HTTP API](../../documentation/api/README.md):
 
-```pwsh
-$ProcessId = 1
-$ts = Get-Date -Format 'yyyyMMdd_HHmmss'
-$file = "./diagnostics/gcdump_${ProcessId}_${ts}.gcdump"
-$uri = "http://127.0.0.1:$MonitorPort/gcdump?pid=$ProcessId"  # API: GET /gcdump?pid=PID
-Write-Host "[INFO] Collecting GC dump for PID $ProcessId"
-Invoke-WebRequest -Method GET -UseBasicParsing `
-    -Uri $uri `
-    -Headers @{ Accept = 'application/octet-stream' } `
-    -OutFile $file
+```bash
+ProcessId=1
+ts=$(date +'%Y%m%d_%H%M%S')
+file="./diagnostics/gcdump_${ProcessId}_${ts}.gcdump"
+uri="http://127.0.0.1:${MonitorPort}/gcdump?pid=${ProcessId}"
+echo "[INFO] Collecting GC dump for PID ${ProcessId}" >&2
+mkdir -p "$(dirname "$file")"
+curl -sS -H 'Accept: application/octet-stream' "$uri" -o "$file"
+echo "[INFO] Saved GC dump to $file" >&2
 ```
 
 ## Next Steps
