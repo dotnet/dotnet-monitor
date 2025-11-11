@@ -10,7 +10,7 @@
     <!-- Microsoft.Extensions.Logging.Console -->
     <MicrosoftExtensionsLoggingConsole90Version>9.0.10</MicrosoftExtensionsLoggingConsole90Version>
     <!-- Microsoft.NETCore.App -->
-    <MicrosoftNETCoreApp90Version>9.0.10</MicrosoftNETCoreApp90Version>
+    <MicrosoftNETCoreApp90Version>9.0.11</MicrosoftNETCoreApp90Version>
     <!-- System.Text.Json -->
     <SystemTextJson90Version>9.0.10</SystemTextJson90Version>
   </PropertyGroup>
