@@ -36,9 +36,9 @@
       "outOfSupportDate": "2025-05-11T00:00:00.000Z"
     },
     "9.0": {
-      "tag": "v9.0.4",
+      "tag": "v9.0.5",
       "minorReleaseDate": "2024-11-12T00:00:00.000Z",
-      "patchReleaseDate": "2025-08-06T00:00:00.000Z",
+      "patchReleaseDate": "2025-11-11T00:00:00.000Z",
       "supportedFrameworks": [
         "net9.0"
       ]
