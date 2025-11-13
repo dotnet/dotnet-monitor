@@ -22,29 +22,29 @@
       <Uri>https://github.com/dotnet/roslyn-analyzers</Uri>
       <Sha>abef8ced132657943b7150f01a308e2199a17d5d</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="8.0.0-beta.25555.2">
+    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="8.0.0-beta.25562.3">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>048a8c0ba5b72234301a3605c424ee9f9ff99772</Sha>
+      <Sha>e8483fe03c7d3257c68f6013441da5d72eeb8392</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.Build.Tasks.Archives" Version="8.0.0-beta.25555.2">
+    <Dependency Name="Microsoft.DotNet.Build.Tasks.Archives" Version="8.0.0-beta.25562.3">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>048a8c0ba5b72234301a3605c424ee9f9ff99772</Sha>
+      <Sha>e8483fe03c7d3257c68f6013441da5d72eeb8392</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.CodeAnalysis" Version="8.0.0-beta.25555.2">
+    <Dependency Name="Microsoft.DotNet.CodeAnalysis" Version="8.0.0-beta.25562.3">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>048a8c0ba5b72234301a3605c424ee9f9ff99772</Sha>
+      <Sha>e8483fe03c7d3257c68f6013441da5d72eeb8392</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.Helix.Sdk" Version="8.0.0-beta.25555.2">
+    <Dependency Name="Microsoft.DotNet.Helix.Sdk" Version="8.0.0-beta.25562.3">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>048a8c0ba5b72234301a3605c424ee9f9ff99772</Sha>
+      <Sha>e8483fe03c7d3257c68f6013441da5d72eeb8392</Sha>
     </Dependency>
     <Dependency Name="Microsoft.Dotnet.Sdk.Internal" Version="8.0.414-servicing.25404.6">
       <Uri>https://github.com/dotnet/installer</Uri>
       <Sha>7b3032b6553f6436e8d1cdfd103c22187de53502</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="8.0.0-beta.25555.2">
+    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="8.0.0-beta.25562.3">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>048a8c0ba5b72234301a3605c424ee9f9ff99772</Sha>
+      <Sha>e8483fe03c7d3257c68f6013441da5d72eeb8392</Sha>
     </Dependency>
     <Dependency Name="Microsoft.FileFormats" Version="1.0.637302">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
