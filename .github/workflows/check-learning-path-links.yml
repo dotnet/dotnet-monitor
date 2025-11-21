@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Checkout head
-        uses: actions/checkout@v5.0.1
+        uses: actions/checkout@v6.0.0
         with:
           persist-credentials: true # need this for opening a PR
           fetch-depth: 0
@@ -30,7 +30,7 @@ jobs:
           echo "prev_sha=$prev_sha" >> $GITHUB_ENV
 
       - name: Checkout previous update
-        uses: actions/checkout@v5.0.1
+        uses: actions/checkout@v6.0.0
         with:
           persist-credentials: false
           ref:  ${{ env.prev_sha }}
