@@ -16,7 +16,7 @@ Running `dotnet-monitor` as an ephemeral container lets you attach diagnostics t
 2. Target pod created with required env vars, volume, and volume mounts.
 
 ## Inject dotnet monitor into a Pod
-Prepare a [config file](config.yaml) whose values match the target's deployment dotnetmonitor configuration. This step is performed once per pod lifetime; the ephemeral container persists until the pod restarts.
+Prepare a [config file](config.yaml) whose values match the target's deployment dotnet monitor configuration. This step is performed once per pod lifetime; the ephemeral container persists until the pod restarts.
 
 ```bash
 Namespace="<target pod namespace>"
