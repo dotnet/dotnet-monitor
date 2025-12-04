@@ -39,7 +39,7 @@ If necessary, update dependencies in the release branch.
 1. Use `darc get-subscriptions --target-repo monitor` to see existing subscriptions.
 1. Use `darc trigger-subscriptions` to trigger an update. This will create a pull request that will update the Versions.details.xml file.
 1. Sometimes an existing subscription needs to be updated. For example, when updating from Preview 5 to Preview 6:
-1. In some situations the build from the subscription may not be one you want. You can manually update dependencies using `darc update-dependencies`
+1. In some situations the build from the subscription may not be the one you want. You can manually update dependencies using `darc update-dependencies`
 ```
 darc get-subscriptions --target-repo https://github.com/dotnet/dotnet-monitor --target-branch release/8.x
 https://github.com/dotnet/installer (.NET 8.0.1xx SDK Preview 5) ==> 'https://github.com/dotnet/dotnet-monitor' ('release/8.x')
