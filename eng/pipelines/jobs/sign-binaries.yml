@@ -43,7 +43,7 @@ jobs:
         /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
         /p:DotNetSignType=real
         /p:SignAllBinaries=true
-        /p:DotNetRuntimeSourceFeed=https://dotnetbuilds.blob.core.windows.net/internal
+        /p:DotNetRuntimeSourceFeed=https://ci.dot.net/internal
         /p:DotNetRuntimeSourceFeedKey=$(dotnetbuilds-internal-container-read-token-base64)
       displayName: Sign
 
