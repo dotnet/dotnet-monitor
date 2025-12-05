@@ -23,6 +23,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                     return TestDotNetHost.AspNetCore80VersionString;
                 case TargetFrameworkMoniker.Net90:
                     return TestDotNetHost.AspNetCore90VersionString;
+                case TargetFrameworkMoniker.Net100:
+                    return TestDotNetHost.AspNetCore100VersionString;
             }
             throw CreateUnsupportedException(moniker);
         }
@@ -37,6 +39,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                     return TestDotNetHost.NetCore80VersionString;
                 case TargetFrameworkMoniker.Net90:
                     return TestDotNetHost.NetCore90VersionString;
+                case TargetFrameworkMoniker.Net100:
+                    return TestDotNetHost.NetCore100VersionString;
             }
             throw CreateUnsupportedException(moniker);
         }

@@ -14,6 +14,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.NoAuth
     {
         public void ConfigureApiAuth(IServiceCollection services, HostBuilderContext context)
         {
+            services.AddAuthenticationCore();
+
             services.AddAuthorization(authOptions =>
             {
                 authOptions.AddPolicy(AuthConstants.PolicyName, (builder) =>

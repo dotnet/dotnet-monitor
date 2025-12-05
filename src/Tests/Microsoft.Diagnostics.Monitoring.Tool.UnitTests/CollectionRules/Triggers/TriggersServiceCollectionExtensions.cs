@@ -11,7 +11,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Trigge
         public static IServiceCollection RegisterManualTrigger(this IServiceCollection services, ManualTriggerService service)
         {
             services.AddSingleton(service);
-            return services.RegisterCollectionRuleTrigger<ManualTriggerFactory>(ManualTrigger.TriggerName);
+            return services.RegisterCollectionRuleTrigger<ManualTriggerFactory, ManualTriggerDescriptor>();
         }
     }
 }

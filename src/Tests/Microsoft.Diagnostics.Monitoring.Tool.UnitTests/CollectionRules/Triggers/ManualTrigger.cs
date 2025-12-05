@@ -2,7 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -56,6 +58,19 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests.CollectionRules.Trigge
         private void NotifyHandler(object sender, EventArgs args)
         {
             _callback();
+        }
+    }
+
+    internal sealed class ManualTriggerDescriptor : ICollectionRuleTriggerDescriptor
+    {
+        public string TriggerName => ManualTrigger.TriggerName;
+        public Type FactoryType => typeof(ManualTriggerFactory);
+        public Type OptionsType => null;
+
+        public bool TryBindOptions(IConfigurationSection settingsSection, out object settings)
+        {
+            settings = null;
+            return false;
         }
     }
 

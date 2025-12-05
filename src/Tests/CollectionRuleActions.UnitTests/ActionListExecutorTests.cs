@@ -186,7 +186,7 @@ namespace CollectionRuleActions.UnitTests
                 Assert.Throws<OptionsValidationException>(() => host.Services.GetRequiredService<IOptionsMonitor<CollectionRuleOptions>>().Get(DefaultRuleName));
             }, serviceCollection =>
             {
-                serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions>(nameof(PassThroughAction));
+                serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions, PassThroughActionDescriptor>();
             });
         }
 

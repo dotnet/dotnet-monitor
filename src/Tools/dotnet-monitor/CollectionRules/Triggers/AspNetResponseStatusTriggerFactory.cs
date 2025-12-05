@@ -6,6 +6,9 @@ using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers;
 using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers.AspNet;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Binder.SourceGeneration;
 using System;
 using System.Globalization;
 using System.Linq;
@@ -57,6 +60,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
                 max = int.Parse(ranges[1]);
             }
             return new StatusCodeRange(min, max);
+        }
+    }
+
+    internal sealed class AspNetResponseStatusTriggerDescriptor : ICollectionRuleTriggerDescriptor
+    {
+        public Type FactoryType => typeof(AspNetResponseStatusTriggerFactory);
+        public Type? OptionsType => typeof(AspNetResponseStatusOptions);
+        public string TriggerName => KnownCollectionRuleTriggers.AspNetResponseStatus;
+
+        public bool TryBindOptions(IConfigurationSection settingsSection, out object? settings)
+        {
+            var options = new AspNetResponseStatusOptions();
+            settingsSection.Bind_AspNetResponseStatusOptions(options);
+            settings = options;
+            return true;
         }
     }
 }
