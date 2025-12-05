@@ -4,28 +4,17 @@
     "cleanupUnsupportedReleasesAfterMonths": 12
   },
   "preview": [
-    "10.0",
     "9.1"
   ],
   "supported": [
+    "10.0",
     "9.0",
     "8.1"
   ],
   "unsupported": [
-    "8.0",
-    "6.3"
+    "8.0"
   ],
   "releases": {
-    "6.3": {
-      "tag": "v6.3.10",
-      "minorReleaseDate": "2022-10-11T00:00:00.000Z",
-      "patchReleaseDate": "2024-11-12T00:00:00.000Z",
-      "supportedFrameworks": [
-        "net6.0",
-        "netcoreapp3.1"
-      ],
-      "outOfSupportDate": "2024-11-12T00:00:00.000Z"
-    },
     "8.0": {
       "tag": "v8.0.8",
       "minorReleaseDate": "2023-11-14T00:00:00.000Z",
@@ -36,9 +25,9 @@
       "outOfSupportDate": "2025-05-11T00:00:00.000Z"
     },
     "9.0": {
-      "tag": "v9.0.4",
+      "tag": "v9.0.5",
       "minorReleaseDate": "2024-11-12T00:00:00.000Z",
-      "patchReleaseDate": "2025-08-06T00:00:00.000Z",
+      "patchReleaseDate": "2025-11-11T00:00:00.000Z",
       "supportedFrameworks": [
         "net9.0"
       ]
@@ -60,9 +49,9 @@
       ]
     },
     "10.0": {
-      "tag": "v10.0.0-rc.2.25503.6",
-      "minorReleaseDate": "2025-10-14T00:00:00.000Z",
-      "patchReleaseDate": "2025-10-14T00:00:00.000Z",
+      "tag": "v10.0.0",
+      "minorReleaseDate": "2025-11-12T00:00:00.000Z",
+      "patchReleaseDate": "2025-11-12T00:00:00.000Z",
       "supportedFrameworks": [
         "net10.0"
       ]
