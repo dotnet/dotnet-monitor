@@ -1,0 +1,12 @@
+{
+  "volumeMounts": [
+    { "name": "diagvol", "mountPath": "/diag" },
+  ],
+  "env": [
+    { "name": "DotnetMonitor_Urls", "value": "http://+:52323" },
+    { "name": "DotnetMonitor_DiagnosticPort__ConnectionMode", "value": "Listen" },
+    { "name": "DotnetMonitor_DiagnosticPort__EndpointName", "value": "/diag/dotnet-monitor.sock" },
+    { "name": "DOTNETMONITOR_Storage__DefaultSharedPath", "value": "/diag" }
+  ],
+  args: [ "collect", "--no-auth" ]
+}
