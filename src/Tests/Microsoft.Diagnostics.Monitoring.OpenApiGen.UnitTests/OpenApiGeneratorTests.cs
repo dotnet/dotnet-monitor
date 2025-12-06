@@ -33,7 +33,7 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen.UnitTests
             Path.Combine(Path.GetDirectoryName(CurrentExecutingAssemblyPath), OpenApiBaselineName);
 
         private static readonly string OpenApiGenPath =
-            AssemblyHelper.GetAssemblyArtifactBinPath(Assembly.GetExecutingAssembly(), OpenApiGenName, TargetFrameworkMoniker.Net90);
+            AssemblyHelper.GetAssemblyArtifactBinPath(Assembly.GetExecutingAssembly(), OpenApiGenName, TargetFrameworkMoniker.Net100);
 
         private readonly ITestOutputHelper _outputHelper;
 
@@ -100,7 +100,7 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen.UnitTests
 
         private async Task<FileStream> GenerateDocumentAsync()
         {
-            string path = Path.GetTempFileName();
+            string path = Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString()), ".json");
 
             DotNetRunner runner = new();
             runner.EntrypointAssemblyPath = OpenApiGenPath;

@@ -4,7 +4,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,21 +20,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers
         {
             OpenApiResponse unauthorizedResponse = new();
             unauthorizedResponse.Description = "Bad Request";
+            unauthorizedResponse.Content ??= new Dictionary<string, OpenApiMediaType>();
             unauthorizedResponse.Content.Add(
                 ContentTypes.ApplicationProblemJson,
                 new OpenApiMediaType()
                 {
-                    Schema = new OpenApiSchema()
-                    {
-                        Reference = new OpenApiReference()
-                        {
-                            Id = nameof(ValidationProblemDetails),
-                            Type = ReferenceType.Schema
-                        }
-                    }
+                    Schema = new OpenApiSchemaReference(nameof(ValidationProblemDetails))
                 });
 
-            (openApiDoc.Components ??= new OpenApiComponents()).Responses.Add(
+            OpenApiComponents components = openApiDoc.Components ??= new OpenApiComponents();
+            IDictionary<string, IOpenApiResponse> responses = components.Responses ??= new OpenApiResponses();
+            responses.Add(
                 ResponseNames.BadRequestResponse,
                 unauthorizedResponse);
 

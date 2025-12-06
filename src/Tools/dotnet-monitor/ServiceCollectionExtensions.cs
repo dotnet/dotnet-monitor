@@ -33,6 +33,7 @@ using Microsoft.Diagnostics.Tools.Monitor.Profiler;
 using Microsoft.Diagnostics.Tools.Monitor.Stacks;
 using Microsoft.Diagnostics.Tools.Monitor.StartupHook;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Binder.SourceGeneration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
@@ -49,43 +50,43 @@ namespace Microsoft.Diagnostics.Tools.Monitor
     {
         public static IServiceCollection ConfigureCors(this IServiceCollection services, IConfiguration configuration)
         {
-            return ConfigureOptions<CorsConfigurationOptions>(services, configuration, ConfigurationKeys.CorsConfiguration);
+            return BindingExtensions.Configure<CorsConfigurationOptions>(services, configuration.GetSection(ConfigurationKeys.CorsConfiguration));
         }
 
         public static IServiceCollection ConfigureDotnetMonitorDebug(this IServiceCollection services, IConfiguration configuration)
         {
-            return ConfigureOptions<DotnetMonitorDebugOptions>(services, configuration, ConfigurationKeys.DotnetMonitorDebug);
+            return BindingExtensions.Configure<DotnetMonitorDebugOptions>(services, configuration.GetSection(ConfigurationKeys.DotnetMonitorDebug));
         }
 
         public static IServiceCollection ConfigureGlobalCounter(this IServiceCollection services, IConfiguration configuration)
         {
-            return ConfigureOptions<GlobalCounterOptions>(services, configuration, ConfigurationKeys.GlobalCounter)
+            return BindingExtensions.Configure<GlobalCounterOptions>(services, configuration.GetSection(ConfigurationKeys.GlobalCounter))
                 .AddSingleton<IValidateOptions<GlobalCounterOptions>, DataAnnotationValidateOptions<GlobalCounterOptions>>();
 
         }
 
         public static IServiceCollection ConfigureCollectionRuleDefaults(this IServiceCollection services, IConfiguration configuration)
         {
-            return ConfigureOptions<CollectionRuleDefaultsOptions>(services, configuration, ConfigurationKeys.CollectionRuleDefaults);
+            return BindingExtensions.Configure<CollectionRuleDefaultsOptions>(services, configuration.GetSection(ConfigurationKeys.CollectionRuleDefaults));
         }
 
         public static IServiceCollection ConfigureTemplates(this IServiceCollection services, IConfiguration configuration)
         {
-            return ConfigureOptions<TemplateOptions>(services, configuration, ConfigurationKeys.Templates);
+            return BindingExtensions.Configure<TemplateOptions>(services, configuration.GetSection(ConfigurationKeys.Templates));
         }
 
         public static IServiceCollection ConfigureInProcessFeatures(this IServiceCollection services, IConfiguration configuration)
         {
-            ConfigureOptions<CallStacksOptions>(services, configuration, ConfigurationKeys.InProcessFeatures_CallStacks)
+            BindingExtensions.Configure<CallStacksOptions>(services, configuration.GetSection(ConfigurationKeys.InProcessFeatures_CallStacks))
                 .AddSingleton<IPostConfigureOptions<CallStacksOptions>, CallStacksPostConfigureOptions>();
 
-            ConfigureOptions<ExceptionsOptions>(services, configuration, ConfigurationKeys.InProcessFeatures_Exceptions)
+            BindingExtensions.Configure<ExceptionsOptions>(services, configuration.GetSection(ConfigurationKeys.InProcessFeatures_Exceptions))
                 .AddSingleton<IPostConfigureOptions<ExceptionsOptions>, ExceptionsPostConfigureOptions>();
 
-            ConfigureOptions<ParameterCapturingOptions>(services, configuration, ConfigurationKeys.InProcessFeatures_ParameterCapturing)
-             .AddSingleton<IPostConfigureOptions<ParameterCapturingOptions>, ParameterCapturingPostConfigureOptions>();
+            BindingExtensions.Configure<ParameterCapturingOptions>(services, configuration.GetSection(ConfigurationKeys.InProcessFeatures_ParameterCapturing))
+                .AddSingleton<IPostConfigureOptions<ParameterCapturingOptions>, ParameterCapturingPostConfigureOptions>();
 
-            ConfigureOptions<InProcessFeaturesOptions>(services, configuration, ConfigurationKeys.InProcessFeatures)
+            BindingExtensions.Configure<InProcessFeaturesOptions>(services, configuration.GetSection(ConfigurationKeys.InProcessFeatures))
                 .AddSingleton<InProcessFeaturesService>()
                 .AddSingleton<IEndpointInfoSourceCallbacks, InProcessFeaturesEndpointInfoSourceCallbacks>();
 
@@ -94,7 +95,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureMetrics(this IServiceCollection services, IConfiguration configuration)
         {
-            return ConfigureOptions<MetricsOptions>(services, configuration, ConfigurationKeys.Metrics)
+            return BindingExtensions.Configure<MetricsOptions>(services, configuration.GetSection(ConfigurationKeys.Metrics))
                 .AddSingleton<IValidateOptions<MetricsOptions>, DataAnnotationValidateOptions<MetricsOptions>>()
                 .AddSingleton<MetricsStoreService>()
                 .AddHostedService<MetricsService>()
@@ -103,7 +104,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureMonitorApiKeyOptions(this IServiceCollection services, IConfiguration configuration, bool allowConfigurationUpdates)
         {
-            ConfigureOptions<MonitorApiKeyOptions>(services, configuration, ConfigurationKeys.MonitorApiKey);
+            BindingExtensions.Configure<MonitorApiKeyOptions>(services, configuration.GetSection(ConfigurationKeys.MonitorApiKey));
 
             // Loads and validates MonitorApiKeyOptions into MonitorApiKeyConfiguration
             services.AddSingleton<IPostConfigureOptions<MonitorApiKeyConfiguration>, MonitorApiKeyPostConfigure>();
@@ -140,27 +141,27 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureCollectionRules(this IServiceCollection services)
         {
-            services.RegisterCollectionRuleAction<CollectDumpActionFactory, CollectDumpOptions>(KnownCollectionRuleActions.CollectDump);
-            services.RegisterCollectionRuleAction<CollectExceptionsActionFactory, CollectExceptionsOptions>(KnownCollectionRuleActions.CollectExceptions);
-            services.RegisterCollectionRuleAction<CollectGCDumpActionFactory, CollectGCDumpOptions>(KnownCollectionRuleActions.CollectGCDump);
-            services.RegisterCollectionRuleAction<CollectLiveMetricsActionFactory, CollectLiveMetricsOptions>(KnownCollectionRuleActions.CollectLiveMetrics);
-            services.RegisterCollectionRuleAction<CollectLogsActionFactory, CollectLogsOptions>(KnownCollectionRuleActions.CollectLogs);
-            services.RegisterCollectionRuleAction<CollectStacksActionFactory, CollectStacksOptions>(KnownCollectionRuleActions.CollectStacks);
-            services.RegisterCollectionRuleAction<CollectTraceActionFactory, CollectTraceOptions>(KnownCollectionRuleActions.CollectTrace);
-            services.RegisterCollectionRuleAction<ExecuteActionFactory, ExecuteOptions>(KnownCollectionRuleActions.Execute);
-            services.RegisterCollectionRuleAction<LoadProfilerActionFactory, LoadProfilerOptions>(KnownCollectionRuleActions.LoadProfiler);
-            services.RegisterCollectionRuleAction<SetEnvironmentVariableActionFactory, SetEnvironmentVariableOptions>(KnownCollectionRuleActions.SetEnvironmentVariable);
-            services.RegisterCollectionRuleAction<GetEnvironmentVariableActionFactory, GetEnvironmentVariableOptions>(KnownCollectionRuleActions.GetEnvironmentVariable);
+            services.RegisterCollectionRuleAction<CollectDumpActionFactory, CollectDumpOptions, CollectDumpActionDescriptor>();
+            services.RegisterCollectionRuleAction<CollectExceptionsActionFactory, CollectExceptionsOptions, CollectExceptionsActionDescriptor>();
+            services.RegisterCollectionRuleAction<CollectGCDumpActionFactory, CollectGCDumpOptions, CollectGCDumpActionDescriptor>();
+            services.RegisterCollectionRuleAction<CollectLiveMetricsActionFactory, CollectLiveMetricsOptions, CollectLiveMetricsActionDescriptor>();
+            services.RegisterCollectionRuleAction<CollectLogsActionFactory, CollectLogsOptions, CollectLogsActionDescriptor>();
+            services.RegisterCollectionRuleAction<CollectStacksActionFactory, CollectStacksOptions, CollectStacksActionDescriptor>();
+            services.RegisterCollectionRuleAction<CollectTraceActionFactory, CollectTraceOptions, CollectTraceActionDescriptor>();
+            services.RegisterCollectionRuleAction<ExecuteActionFactory, ExecuteOptions, ExecuteActionDescriptor>();
+            services.RegisterCollectionRuleAction<LoadProfilerActionFactory, LoadProfilerOptions, LoadProfilerActionDescriptor>();
+            services.RegisterCollectionRuleAction<SetEnvironmentVariableActionFactory, SetEnvironmentVariableOptions, SetEnvironmentVariableActionDescriptor>();
+            services.RegisterCollectionRuleAction<GetEnvironmentVariableActionFactory, GetEnvironmentVariableOptions, GetEnvironmentVariableActionDescriptor>();
 
-            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.AspNetRequestCountTriggerFactory, AspNetRequestCountOptions>(KnownCollectionRuleTriggers.AspNetRequestCount);
-            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.AspNetRequestDurationTriggerFactory, AspNetRequestDurationOptions>(KnownCollectionRuleTriggers.AspNetRequestDuration);
-            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.AspNetResponseStatusTriggerFactory, AspNetResponseStatusOptions>(KnownCollectionRuleTriggers.AspNetResponseStatus);
-            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, EventCounterOptions>(KnownCollectionRuleTriggers.EventCounter);
-            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, CPUUsageOptions>(KnownCollectionRuleTriggers.CPUUsage);
-            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, GCHeapSizeOptions>(KnownCollectionRuleTriggers.GCHeapSize);
-            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, ThreadpoolQueueLengthOptions>(KnownCollectionRuleTriggers.ThreadpoolQueueLength);
-            services.RegisterCollectionRuleTrigger<StartupTriggerFactory>(KnownCollectionRuleTriggers.Startup);
-            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventMeterTriggerFactory, EventMeterOptions>(KnownCollectionRuleTriggers.EventMeter);
+            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.AspNetRequestCountTriggerFactory, AspNetRequestCountOptions, AspNetRequestCountTriggerDescriptor>();
+            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.AspNetRequestDurationTriggerFactory, AspNetRequestDurationOptions, AspNetRequestDurationTriggerDescriptor>();
+            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.AspNetResponseStatusTriggerFactory, AspNetResponseStatusOptions, AspNetResponseStatusTriggerDescriptor>();
+            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, EventCounterOptions, EventCounterTriggerDescriptor>();
+            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, CPUUsageOptions, CPUUsageTriggerDescriptor>();
+            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, GCHeapSizeOptions, GCHeapSizeTriggerDescriptor>();
+            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventCounterTriggerFactory, ThreadpoolQueueLengthOptions, ThreadpoolQueueLengthTriggerDescriptor>();
+            services.RegisterCollectionRuleTrigger<StartupTriggerFactory, StartupTriggerDescriptor>();
+            services.RegisterCollectionRuleTrigger<CollectionRules.Triggers.EventMeterTriggerFactory, EventMeterOptions, EventMeterTriggerDescriptor>();
 
             services.AddSingleton<EventPipeTriggerFactory>();
             services.AddSingleton<ITraceEventTriggerFactory<EventCounterTriggerSettings>, Monitoring.EventPipe.Triggers.EventCounter.EventCounterTriggerFactory>();
@@ -196,37 +197,38 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             return services;
         }
 
-        public static IServiceCollection RegisterCollectionRuleAction<TFactory, TOptions>(this IServiceCollection services, string actionName)
+        public static IServiceCollection RegisterCollectionRuleAction<TFactory, TOptions, TDescriptor>(this IServiceCollection services)
             where TFactory : class, ICollectionRuleActionFactory<TOptions>
             where TOptions : BaseRecordOptions, new()
+            where TDescriptor : class, ICollectionRuleActionDescriptor
         {
             services.AddSingleton<TFactory>();
             services.AddSingleton<CollectionRuleActionFactoryProxy<TFactory, TOptions>>();
-            services.AddSingleton<ICollectionRuleActionDescriptor, CollectionRuleActionDescriptor<TFactory, TOptions>>(sp => new CollectionRuleActionDescriptor<TFactory, TOptions>(actionName));
+            services.AddSingleton<ICollectionRuleActionDescriptor, TDescriptor>();
             // NOTE: When opening collection rule actions for extensibility, this should not be added for all registered actions.
             // Each action should register its own IValidateOptions<> implementation (if it needs one).
             services.AddSingleton<IValidateOptions<TOptions>, DataAnnotationValidateOptions<TOptions>>();
             return services;
         }
 
-        public static IServiceCollection RegisterCollectionRuleTrigger<TFactory>(this IServiceCollection services, string triggerName)
+        public static IServiceCollection RegisterCollectionRuleTrigger<TFactory, TDescriptor>(this IServiceCollection services)
             where TFactory : class, ICollectionRuleTriggerFactory
+            where TDescriptor : class, ICollectionRuleTriggerDescriptor
         {
             services.AddSingleton<TFactory>();
             services.AddSingleton<CollectionRuleTriggerFactoryProxy<TFactory>>();
-            services.AddSingleton<ICollectionRuleTriggerDescriptor, CollectionRuleTriggerDescriptor<TFactory>>(
-                sp => new CollectionRuleTriggerDescriptor<TFactory>(triggerName));
+            services.AddSingleton<ICollectionRuleTriggerDescriptor, TDescriptor>();
             return services;
         }
 
-        public static IServiceCollection RegisterCollectionRuleTrigger<TFactory, TOptions>(this IServiceCollection services, string triggerName)
+        public static IServiceCollection RegisterCollectionRuleTrigger<TFactory, TOptions, TDescriptor>(this IServiceCollection services)
             where TFactory : class, ICollectionRuleTriggerFactory<TOptions>
             where TOptions : class, new()
+            where TDescriptor : class, ICollectionRuleTriggerDescriptor
         {
             services.AddSingleton<TFactory>();
             services.AddSingleton<CollectionRuleTriggerFactoryProxy<TFactory, TOptions>>();
-            services.AddSingleton<ICollectionRuleTriggerDescriptor, CollectionRuleTriggerProvider<TFactory, TOptions>>(
-                sp => new CollectionRuleTriggerProvider<TFactory, TOptions>(triggerName));
+            services.AddSingleton<ICollectionRuleTriggerDescriptor, TDescriptor>();
             // NOTE: When opening collection rule triggers for extensibility, this should not be added for all registered triggers.
             // Each trigger should register its own IValidateOptions<> implementation (if it needs one).
             services.AddSingleton<IValidateOptions<TOptions>, DataAnnotationValidateOptions<TOptions>>();
@@ -236,7 +238,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureStorage(this IServiceCollection services, IConfiguration configuration)
         {
-            ConfigureOptions<StorageOptions>(services, configuration, ConfigurationKeys.Storage);
+            BindingExtensions.Configure<StorageOptions>(services, configuration.GetSection(ConfigurationKeys.Storage));
             services.AddSingleton<IPostConfigureOptions<StorageOptions>, StoragePostConfigureOptions>();
             return services;
         }
@@ -254,12 +256,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureDefaultProcess(this IServiceCollection services, IConfiguration configuration)
         {
-            return ConfigureOptions<ProcessFilterOptions>(services, configuration, ConfigurationKeys.DefaultProcess);
-        }
-
-        private static IServiceCollection ConfigureOptions<T>(IServiceCollection services, IConfiguration configuration, string key) where T : class
-        {
-            return services.Configure<T>(configuration.GetSection(key));
+            return BindingExtensions.Configure<ProcessFilterOptions>(services, configuration.GetSection(ConfigurationKeys.DefaultProcess));
         }
 
         public static IServiceCollection ConfigureExtensions(this IServiceCollection services)
@@ -337,7 +334,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public static IServiceCollection ConfigureDiagnosticPort(this IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<DiagnosticPortOptions>(configuration.GetSection(ConfigurationKeys.DiagnosticPort));
+            BindingExtensions.Configure<DiagnosticPortOptions>(services, configuration.GetSection(ConfigurationKeys.DiagnosticPort));
             services.AddSingleton<IPostConfigureOptions<DiagnosticPortOptions>, DiagnosticPortPostConfigureOptions>();
             services.AddSingleton<IValidateOptions<DiagnosticPortOptions>, DiagnosticPortValidateOptions>();
 

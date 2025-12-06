@@ -1,5 +1,5 @@
 {
-  "openapi": "3.0.1",
+  "openapi": "3.0.4",
   "info": {
     "title": "dotnet-monitor",
     "version": "1.0"
@@ -187,14 +187,7 @@
             "in": "query",
             "description": "The type of dump to capture.",
             "schema": {
-              "enum": [
-                "Full",
-                "Mini",
-                "WithHeap",
-                "Triage"
-              ],
-              "type": "string",
-              "default": "WithHeap"
+              "$ref": "#/components/schemas/DumpType"
             }
           },
           {
@@ -358,15 +351,7 @@
             "in": "query",
             "description": "The profiles enabled for the trace session.",
             "schema": {
-              "enum": [
-                "Cpu",
-                "Http",
-                "Logs",
-                "Metrics",
-                "GcCollect"
-              ],
-              "type": "string",
-              "default": "Cpu, Http, Metrics, GcCollect"
+              "$ref": "#/components/schemas/TraceProfile"
             }
           },
           {
@@ -1787,6 +1772,16 @@
         },
         "additionalProperties": false
       },
+      "DumpType": {
+        "enum": [
+          "Full",
+          "Mini",
+          "WithHeap",
+          "Triage"
+        ],
+        "type": "string",
+        "default": "WithHeap"
+      },
       "EventLevel": {
         "enum": [
           "LogAlways",
@@ -1965,7 +1960,8 @@
           "Critical",
           "None"
         ],
-        "type": "string"
+        "type": "string",
+        "nullable": true
       },
       "LogsConfiguration": {
         "required": [
@@ -2043,8 +2039,7 @@
             "nullable": true
           }
         },
-        "additionalProperties": false,
-        "nullable": true
+        "additionalProperties": false
       },
       "OperationProcessInfo": {
         "type": "object",
@@ -2063,8 +2058,7 @@
           }
         },
         "additionalProperties": false,
-        "description": "Represents the details of a given process used in an operation.",
-        "nullable": true
+        "description": "Represents the details of a given process used in an operation."
       },
       "OperationState": {
         "enum": [
@@ -2085,7 +2079,14 @@
             "nullable": true
           },
           "error": {
-            "$ref": "#/components/schemas/OperationError"
+            "oneOf": [
+              {
+                "nullable": true
+              },
+              {
+                "$ref": "#/components/schemas/OperationError"
+              }
+            ]
           },
           "operationId": {
             "type": "string",
@@ -2099,7 +2100,14 @@
             "$ref": "#/components/schemas/OperationState"
           },
           "process": {
-            "$ref": "#/components/schemas/OperationProcessInfo"
+            "oneOf": [
+              {
+                "nullable": true
+              },
+              {
+                "$ref": "#/components/schemas/OperationProcessInfo"
+              }
+            ]
           },
           "egressProviderName": {
             "type": "string",
@@ -2135,7 +2143,14 @@
             "$ref": "#/components/schemas/OperationState"
           },
           "process": {
-            "$ref": "#/components/schemas/OperationProcessInfo"
+            "oneOf": [
+              {
+                "nullable": true
+              },
+              {
+                "$ref": "#/components/schemas/OperationProcessInfo"
+              }
+            ]
           },
           "egressProviderName": {
             "type": "string",
@@ -2237,6 +2252,17 @@
           }
         },
         "additionalProperties": false
+      },
+      "TraceProfile": {
+        "enum": [
+          "Cpu",
+          "Http",
+          "Logs",
+          "Metrics",
+          "GcCollect"
+        ],
+        "type": "string",
+        "default": "Cpu, Http, Metrics, GcCollect"
       },
       "ValidationProblemDetails": {
         "type": "object",

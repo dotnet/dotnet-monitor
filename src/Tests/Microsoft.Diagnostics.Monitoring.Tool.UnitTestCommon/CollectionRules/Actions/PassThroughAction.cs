@@ -3,7 +3,10 @@
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -50,6 +53,20 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
             result.OutputValues.Add("Output3", _options.Input3);
 
             return Task.FromResult(result);
+        }
+    }
+
+    internal sealed class PassThroughActionDescriptor : ICollectionRuleActionDescriptor
+    {
+        public string ActionName => nameof(PassThroughAction);
+        public Type OptionsType => typeof(PassThroughOptions);
+        public Type FactoryType => typeof(PassThroughActionFactory);
+
+        public void BindOptions(IConfigurationSection settingsSection, out object settings)
+        {
+            PassThroughOptions options = new();
+            settingsSection.Bind(options);
+            settings = options;
         }
     }
 

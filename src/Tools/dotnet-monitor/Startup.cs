@@ -3,7 +3,6 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Monitoring.WebApi.Controllers;
@@ -14,6 +13,7 @@ using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.IO.Compression;
 using System.Text.Json.Serialization;
+using System.Reflection;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -29,29 +29,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // AddControllers is sufficient because the tool does not use Razor nor Views.
-            services.AddControllers()
-            .AddJsonOptions(options =>
-            {
-                // Allow serialization of enum values into strings rather than numbers.
-                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-            })
-            .AddApplicationPart(typeof(DiagController).Assembly);
-
-            services.AddControllers(options =>
-            {
-                options.Filters.Add(typeof(EgressValidationUnhandledExceptionFilter));
-            });
-
-            services.Configure<ApiBehaviorOptions>(options =>
-            {
-                options.InvalidModelStateResponseFactory = context =>
-                {
-                    var details = new ValidationProblemDetails(context.ModelState);
-                    var result = new BadRequestObjectResult(details);
-                    result.ContentTypes.Add(ContentTypes.ApplicationProblemJson);
-                    return result;
-                };
+            services.ConfigureHttpJsonOptions(options => {
+                options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
 
             services.Configure<BrotliCompressionProviderOptions>(options =>
@@ -82,8 +61,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             app.UseRouting();
 
+            app.UseMiddleware<HostRestrictionMiddleware>();
+
             app.UseAuthentication();
-            app.UseAuthorization();
+            if (Assembly.GetEntryAssembly()?.GetName().Name != "Microsoft.Diagnostics.Monitoring.OpenApiGen")
+            {
+                app.UseAuthorization();
+            }
 
             if (!string.IsNullOrEmpty(corsOptions.Value.AllowedOrigins))
             {
@@ -96,7 +80,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
             app.UseEndpoints(builder =>
             {
-                builder.MapControllers();
+                DiagController.MapActionMethods(builder);
+                DiagController.MapMetricsActionMethods(builder);
+                ExceptionsController.MapActionMethods(builder);
+                MetricsController.MapActionMethods(builder);
+                OperationsController.MapActionMethods(builder);
 
                 builder.MapOpenApi("/");
             });

@@ -6,6 +6,7 @@ using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.Auth;
 using Microsoft.Diagnostics.Tools.Monitor.Auth.ApiKey;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Binder.SourceGeneration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
@@ -158,7 +159,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                         manager.IsBlocking = true;
 
                         var metricsOptions = new MetricsOptions();
-                        context.Configuration.Bind(ConfigurationKeys.Metrics, metricsOptions);
+                        context.Configuration.Bind_MetricsOptions(ConfigurationKeys.Metrics, metricsOptions);
 
                         string metricHostingUrls = metricsOptions.Endpoints;
                         string[] metricUrls = ConfigurationHelper.SplitValue(metricHostingUrls);

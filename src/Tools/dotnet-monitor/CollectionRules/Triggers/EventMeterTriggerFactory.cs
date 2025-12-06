@@ -5,7 +5,10 @@ using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers;
 using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers.SystemDiagnosticsMetrics;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Binder.SourceGeneration;
 using System;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
@@ -53,6 +56,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
                 _traceEventTriggerFactory,
                 settings,
                 callback);
+        }
+    }
+
+    internal sealed class EventMeterTriggerDescriptor : ICollectionRuleTriggerDescriptor
+    {
+        public Type FactoryType => typeof(EventMeterTriggerFactory);
+        public Type? OptionsType => typeof(EventMeterOptions);
+        public string TriggerName => KnownCollectionRuleTriggers.EventMeter;
+
+        public bool TryBindOptions(IConfigurationSection settingsSection, out object? settings)
+        {
+            var options = new EventMeterOptions();
+            settingsSection.Bind_EventMeterOptions(options);
+            settings = options;
+            return true;
         }
     }
 }

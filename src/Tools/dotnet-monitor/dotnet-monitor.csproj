@@ -1,6 +1,6 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
-    <TargetFrameworks>$(ToolTargetFrameworks)</TargetFrameworks>
+    <TargetFramework>$(ToolTargetFramework)</TargetFramework>
     <RootNamespace>Microsoft.Diagnostics.Tools.Monitor</RootNamespace>
     <ToolCommandName>dotnet-monitor</ToolCommandName>
     <Description>.NET Core Diagnostic Monitoring Tool</Description>
@@ -9,6 +9,15 @@
     <ServerGarbageCollection>false</ServerGarbageCollection>
     <OpenApiGenerateDocuments>false</OpenApiGenerateDocuments>
     <Nullable>enable</Nullable>
+    <EnableConfigurationBindingGenerator>false</EnableConfigurationBindingGenerator>
+    <DisableCompileTimeOpenApiXmlGenerator>true</DisableCompileTimeOpenApiXmlGenerator>
+    <!-- This repo sets RuntimeIdentifiers globally in Directory.Build.props, but we explicitly don't want to use
+         RID-specific tools yet. So we need to clear the RuntimeIdentifiers here. -->
+    <RuntimeIdentifiers Condition="'$(CustomIsPacking)' == 'true'"></RuntimeIdentifiers>
+    <!-- This doesn't work as a way to override the set of package identifiers (yet) because in MSBuild logic we
+         can't detect the difference between property-set-to-empty and property-does-not-exist.
+         See https://github.com/dotnet/msbuild/issues/12404 for tracking. -->
+    <ToolPackageRuntimeIdentifiers></ToolPackageRuntimeIdentifiers>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,7 +25,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Negotiate" />
     <PackageReference Include="Microsoft.Identity.Web" />
     <PackageReference Include="System.CommandLine" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" GeneratePathProperty="true" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(DIAGNOSTICS_REPO_ROOT)' == ''">
@@ -30,6 +39,13 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.Options\Microsoft.Diagnostics.Monitoring.Options.csproj" />
     <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Microsoft.Diagnostics.Monitoring.WebApi.csproj" />
+    <!-- This is a build-ordering dependency only - we don't want this hook to appear directly in the our referenced libraries, we
+         need to customize it's layout. We _do_ however need to ensure that it _gets built_ before we build/publish. -->
+    <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.StartupHook\Microsoft.Diagnostics.Monitoring.StartupHook.csproj"
+      AdditionalProperties="RuntimeIdentifier=;PublishDir=$(StartupHookPublishPath)"
+      GlobalPropertiesToRemove="PublishSingleFile"
+      Targets="Publish"
+      ReferenceOutputAssembly="false" />
   </ItemGroup>
 
   <ItemGroup>

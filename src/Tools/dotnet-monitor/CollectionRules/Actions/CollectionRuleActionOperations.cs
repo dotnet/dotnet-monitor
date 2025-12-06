@@ -5,6 +5,7 @@
 
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -59,13 +60,15 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions
         }
 
         /// <inheritdoc/>
-        public bool TryCreateOptions(
+        public bool TryBindOptions(
             string actionName,
+            IConfigurationSection actionSection,
             out object options)
         {
             if (_map.TryGetValue(actionName, out ICollectionRuleActionDescriptor descriptor))
             {
-                options = Activator.CreateInstance(descriptor.OptionsType);
+                IConfigurationSection settingsSection = actionSection.GetSection(nameof(CollectionRuleActionOptions.Settings));
+                descriptor.BindOptions(settingsSection, out options);
                 return true;
             }
 
