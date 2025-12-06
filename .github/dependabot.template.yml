@@ -8,6 +8,7 @@
 #! to the list of TFMs that the major version uses for build and test.
 #@ def getTfms():
 #@   return {
+#@     "10": [ "net10.0", "net9.0", "net8.0" ],
 #@     "9": [ "net9.0", "net8.0" ],
 #@     "8": [ "net8.0" ],
 #@   }
@@ -17,7 +18,8 @@
 #! target branch and which major version of .NET Monitor it builds.
 #@ def getBranches():
 #@   return [
-#@     struct.encode({"name": "main", "majorVersion": "9"}),
+#@     struct.encode({"name": "main", "majorVersion": "10"}),
+#@     struct.encode({"name": "release/10.0", "majorVersion": "10"}),
 #@     struct.encode({"name": "release/9.0", "majorVersion": "9"}),
 #@     struct.encode({"name": "release/8.x", "majorVersion": "8"}),
 #@   ]
