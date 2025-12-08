@@ -3,6 +3,7 @@
 
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Binder.SourceGeneration;
 using Microsoft.Extensions.Options;
 using System;
 
@@ -25,7 +26,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration
             IConfigurationSection ruleSection = _configurationProvider.GetCollectionRuleSection(name);
             if (ruleSection.Exists())
             {
-                ruleSection.Bind(options);
+                ruleSection.Bind_CollectionRuleOptions(options);
             }
         }
 #nullable restore

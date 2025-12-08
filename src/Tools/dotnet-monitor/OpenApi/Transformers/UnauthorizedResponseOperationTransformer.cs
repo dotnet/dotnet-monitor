@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.AspNetCore.OpenApi;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,14 +16,14 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers
     {
         public Task TransformAsync(OpenApiOperation operation, OpenApiOperationTransformerContext context, CancellationToken cancellationToken)
         {
-            if (operation.Responses.TryGetValue(StatusCodeStrings.Status401Unauthorized, out OpenApiResponse? unauthorizedResponse))
+            if (null != operation.Responses)
             {
-                unauthorizedResponse.Content.Clear();
-                unauthorizedResponse.Reference = new OpenApiReference()
+                if (operation.Responses.Remove(StatusCodeStrings.Status401Unauthorized))
                 {
-                    Id = ResponseNames.UnauthorizedResponse,
-                    Type = ReferenceType.Response
-                };
+                    operation.Responses.Add(
+                        StatusCodeStrings.Status401Unauthorized,
+                        new OpenApiResponseReference(ResponseNames.UnauthorizedResponse));
+                }
             }
 
             return Task.CompletedTask;

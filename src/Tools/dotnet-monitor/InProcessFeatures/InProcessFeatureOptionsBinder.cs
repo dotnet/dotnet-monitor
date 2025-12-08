@@ -3,6 +3,7 @@
 
 using Microsoft.Diagnostics.Monitoring.Options;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Binder.SourceGeneration;
 
 namespace Microsoft.Diagnostics.Tools.Monitor
 {
@@ -14,17 +15,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             // been bound by the default options binding, but this makes it consistent for
             // anything that passes in an unbound options instance and fulfills the complete
             // expected behavior of binding the Enabled property.
-            options.Enabled = configuration
-                .GetSection(ConfigurationPath.Combine(configurationKey, "Enabled"))
-                .Get<bool?>();
+            options.Enabled = BindingExtensions.Get<bool?>(
+                configuration
+                    .GetSection(ConfigurationPath.Combine(configurationKey, "Enabled")));
 
             // Tristate value for InProcessFeatures:Enabled
             // - null -> Defer enablement to each individual in-process feature
             // - true -> Enable all in-process features that support default enablement
             // - false -> Unconditionally disable all in-process features
-            bool? inProcessFeaturesEnabled = configuration
-                .GetSection(ConfigurationKeys.InProcessFeatures_Enabled)
-                .Get<bool?>();
+            bool? inProcessFeaturesEnabled = BindingExtensions.Get<bool?>(
+                configuration
+                    .GetSection(ConfigurationKeys.InProcessFeatures_Enabled));
 
             // Check if in-process features should be unconditionally disabled
             if (!inProcessFeaturesEnabled.GetValueOrDefault(true))

@@ -6,7 +6,10 @@ using Microsoft.Diagnostics.Monitoring.EventPipe.Triggers.EventCounter;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Triggers.EventCounterShortcuts;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Configuration;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Binder.SourceGeneration;
 using System;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
@@ -107,6 +110,66 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Triggers
                 LessThan = options.GreaterThan.HasValue ? options.LessThan : (options.LessThan ?? lessThanDefault),
                 SlidingWindowDuration = options.SlidingWindowDuration ?? slidingWindowDurationDefault
             };
+        }
+    }
+
+    internal sealed class EventCounterTriggerDescriptor : ICollectionRuleTriggerDescriptor
+    {
+        public Type FactoryType => typeof(EventCounterTriggerFactory);
+        public Type? OptionsType => typeof(EventCounterOptions);
+        public string TriggerName => KnownCollectionRuleTriggers.EventCounter;
+
+        public bool TryBindOptions(IConfigurationSection settingsSection, out object? settings)
+        {
+            var options = new EventCounterOptions();
+            settingsSection.Bind_EventCounterOptions(options);
+            settings = options;
+            return true;
+        }
+    }
+
+    internal sealed class CPUUsageTriggerDescriptor : ICollectionRuleTriggerDescriptor
+    {
+        public Type FactoryType => typeof(EventCounterTriggerFactory);
+        public Type? OptionsType => typeof(CPUUsageOptions);
+        public string TriggerName => KnownCollectionRuleTriggers.CPUUsage;
+
+        public bool TryBindOptions(IConfigurationSection settingsSection, out object? settings)
+        {
+            var options = new CPUUsageOptions();
+            settingsSection.Bind_CPUUsageOptions(options);
+            settings = options;
+            return true;
+        }
+    }
+
+    internal sealed class GCHeapSizeTriggerDescriptor : ICollectionRuleTriggerDescriptor
+    {
+        public Type FactoryType => typeof(EventCounterTriggerFactory);
+        public Type? OptionsType => typeof(GCHeapSizeOptions);
+        public string TriggerName => KnownCollectionRuleTriggers.GCHeapSize;
+
+        public bool TryBindOptions(IConfigurationSection settingsSection, out object? settings)
+        {
+            var options = new GCHeapSizeOptions();
+            settingsSection.Bind_GCHeapSizeOptions(options);
+            settings = options;
+            return true;
+        }
+    }
+
+    internal sealed class ThreadpoolQueueLengthTriggerDescriptor : ICollectionRuleTriggerDescriptor
+    {
+        public Type FactoryType => typeof(EventCounterTriggerFactory);
+        public Type? OptionsType => typeof(ThreadpoolQueueLengthOptions);
+        public string TriggerName => KnownCollectionRuleTriggers.ThreadpoolQueueLength;
+
+        public bool TryBindOptions(IConfigurationSection settingsSection, out object? settings)
+        {
+            var options = new ThreadpoolQueueLengthOptions();
+            settingsSection.Bind_ThreadpoolQueueLengthOptions(options);
+            settings = options;
+            return true;
         }
     }
 }
