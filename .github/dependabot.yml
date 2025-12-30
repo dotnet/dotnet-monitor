@@ -35,6 +35,23 @@ updates:
   commit-message:
     prefix: '[main] '
 - package-ecosystem: nuget
+  directory: /eng/dependabot/net10.0
+  schedule:
+    interval: daily
+  target-branch: main
+  ignore:
+  - dependency-name: '*'
+    update-types:
+    - version-update:semver-major
+  commit-message:
+    prefix: '[main] '
+  groups:
+    runtime-dependencies:
+      patterns:
+      - Microsoft.Extensions.*
+      - Microsoft.NETCore.DotNetHost
+      - System.Text.Json
+- package-ecosystem: nuget
   directory: /eng/dependabot/net9.0
   schedule:
     interval: daily
@@ -62,6 +79,86 @@ updates:
     - version-update:semver-major
   commit-message:
     prefix: '[main] '
+  groups:
+    runtime-dependencies:
+      patterns:
+      - Microsoft.Extensions.*
+      - Microsoft.NETCore.DotNetHost
+      - System.Text.Json
+- package-ecosystem: nuget
+  directory: /eng/dependabot/independent
+  schedule:
+    interval: daily
+  target-branch: release/10.0
+  ignore:
+  - dependency-name: Microsoft.Extensions.*
+    update-types:
+    - version-update:semver-major
+  - dependency-name: Moq
+  commit-message:
+    prefix: '[release/10.0] '
+  groups:
+    azure-sdk-dependencies:
+      patterns:
+      - Azure.Core
+      - Azure.Identity
+      - Azure.Storage.*
+    identity-dependencies:
+      patterns:
+      - Microsoft.Identity.*
+      - Microsoft.IdentityModel.*
+- package-ecosystem: nuget
+  directory: /eng/dependabot/nuget.org
+  schedule:
+    interval: daily
+  target-branch: release/10.0
+  commit-message:
+    prefix: '[release/10.0] '
+- package-ecosystem: nuget
+  directory: /eng/dependabot/net10.0
+  schedule:
+    interval: daily
+  target-branch: release/10.0
+  ignore:
+  - dependency-name: '*'
+    update-types:
+    - version-update:semver-major
+  commit-message:
+    prefix: '[release/10.0] '
+  groups:
+    runtime-dependencies:
+      patterns:
+      - Microsoft.Extensions.*
+      - Microsoft.NETCore.DotNetHost
+      - System.Text.Json
+- package-ecosystem: nuget
+  directory: /eng/dependabot/net9.0
+  schedule:
+    interval: daily
+  target-branch: release/10.0
+  ignore:
+  - dependency-name: '*'
+    update-types:
+    - version-update:semver-major
+  commit-message:
+    prefix: '[release/10.0] '
+  groups:
+    runtime-dependencies:
+      patterns:
+      - Microsoft.Extensions.*
+      - Microsoft.NETCore.DotNetHost
+      - System.Text.Json
+- package-ecosystem: nuget
+  directory: /eng/dependabot/net8.0
+  schedule:
+    interval: daily
+  target-branch: release/10.0
+  ignore:
+  - dependency-name: '*'
+    update-types:
+    - version-update:semver-major
+  commit-message:
+    prefix: '[release/10.0] '
   groups:
     runtime-dependencies:
       patterns:
