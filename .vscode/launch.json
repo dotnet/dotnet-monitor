@@ -14,7 +14,7 @@
             "args": {
                 "fileName": "${workspaceFolder}/eng/branch-vscode-config",
                 "key": "TFM",
-                "default": "net9.0"
+                "default": "net10.0"
             }
         }
     ],
