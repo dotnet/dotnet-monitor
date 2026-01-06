@@ -102,14 +102,14 @@
   <!-- OSX queues -->
   <ItemGroup Condition="$([MSBuild]::IsOSPlatform(OSX))">
     <!-- osx-arm64 -->
-    <HelixAvailableTargetQueue Include="osx.13.arm64$(QueueSuffix)"
+    <HelixAvailableTargetQueue Include="osx.15.arm64$(QueueSuffix)"
                                Condition="'$(HelixArchitecture)' == 'arm64'">
-      <TestRunName>OSX 13 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
+      <TestRunName>OSX 15 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
     </HelixAvailableTargetQueue>
     <!-- osx-x64 -->
-    <HelixAvailableTargetQueue Include="osx.13.amd64$(QueueSuffix)"
+    <HelixAvailableTargetQueue Include="osx.15.amd64$(QueueSuffix)"
                                Condition="'$(HelixArchitecture)' == 'x64'">
-      <TestRunName>OSX 13 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
+      <TestRunName>OSX 15 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
     </HelixAvailableTargetQueue>
   </ItemGroup>
 
