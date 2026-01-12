@@ -4,8 +4,8 @@
   <PropertyGroup Label="Versioning">
     <RepositoryUrl>https://github.com/dotnet/dotnet-monitor</RepositoryUrl>
     <VersionPrefix>10.0.1</VersionPrefix>
-    <PreReleaseVersionLabel>preview</PreReleaseVersionLabel>
-    <PreReleaseVersionIteration>1</PreReleaseVersionIteration>
+    <PreReleaseVersionLabel>servicing</PreReleaseVersionLabel>
+    <DotnetFinalVersionKind>release</DotnetFinalVersionKind>
     <!-- Disable final version kind until merged into release branch. -->
     <DotNetUseShippingVersions>true</DotNetUseShippingVersions>
     <!--
@@ -13,11 +13,11 @@
       - 'daily': sets the blob group release name to 'daily' so a release type does not have to be assigned.
       - 'release': sets the blob group release name to 'release'. Can be used for prereleases and full releases.
     -->
-    <BlobGroupBuildQuality>daily</BlobGroupBuildQuality>
+    <BlobGroupBuildQuality>release</BlobGroupBuildQuality>
     <!--
       This should be set to true for official releases.
     -->
-    <UseMicrosoftDiagnosticsMonitoringShippedVersion>false</UseMicrosoftDiagnosticsMonitoringShippedVersion>
+    <UseMicrosoftDiagnosticsMonitoringShippedVersion>true</UseMicrosoftDiagnosticsMonitoringShippedVersion>
   </PropertyGroup>
   <PropertyGroup Label="Testing">
     <XUnitCoreSettingsFile>$(MSBuildThisFileDirectory)xunit.runner.json</XUnitCoreSettingsFile>
@@ -42,17 +42,15 @@
   </PropertyGroup>
   <!--
     These versions should ONLY be updated by automation.
-
     DO NOT UPDATE THESE MANUALLY. Use the `darc` command line tool to update this file so it stays in sync with
     Version.Details.xml.
-
     See https://github.com/dotnet/arcade/blob/master/Documentation/Darc.md for instructions on using darc.
   -->
   <PropertyGroup Label="Automated">
     <!-- dotnet/diagnostics references -->
-    <MicrosoftDiagnosticsMonitoringVersion>9.0.0-preview.26061.1</MicrosoftDiagnosticsMonitoringVersion>
-    <MicrosoftDiagnosticsMonitoringEventPipeVersion>9.0.0-preview.26061.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
-    <MicrosoftFileFormatsVersion>1.0.706101</MicrosoftFileFormatsVersion>
+    <MicrosoftDiagnosticsMonitoringVersion>9.0.637302</MicrosoftDiagnosticsMonitoringVersion>
+    <MicrosoftDiagnosticsMonitoringEventPipeVersion>9.0.637302</MicrosoftDiagnosticsMonitoringEventPipeVersion>
+    <MicrosoftFileFormatsVersion>1.0.637302</MicrosoftFileFormatsVersion>
     <!-- dotnet/dotnet references -->
     <MicrosoftAspNetCoreAppRuntimewinx64Version>10.0.0</MicrosoftAspNetCoreAppRuntimewinx64Version>
     <MicrosoftCodeAnalysisNetAnalyzersVersion>10.0.100</MicrosoftCodeAnalysisNetAnalyzersVersion>
