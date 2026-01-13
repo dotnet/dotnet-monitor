@@ -14,7 +14,7 @@
     <!-- Third-party references -->
     <NewtonsoftJsonVersion>13.0.4</NewtonsoftJsonVersion>
     <NJsonSchemaVersion>11.5.1</NJsonSchemaVersion>
-    <AwsSdkS3Version>4.0.0.3</AwsSdkS3Version>
+    <AwsSdkS3Version>4.0.17</AwsSdkS3Version>
     <AwsSdkSecurityTokenVersion>4.0.0.2</AwsSdkSecurityTokenVersion>
 
     <!--
