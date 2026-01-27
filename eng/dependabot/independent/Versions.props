@@ -15,7 +15,7 @@
     <NewtonsoftJsonVersion>13.0.4</NewtonsoftJsonVersion>
     <NJsonSchemaVersion>11.5.1</NJsonSchemaVersion>
     <AwsSdkS3Version>4.0.0.3</AwsSdkS3Version>
-    <AwsSdkSecurityTokenVersion>4.0.5.6</AwsSdkSecurityTokenVersion>
+    <AwsSdkSecurityTokenVersion>4.0.5.8</AwsSdkSecurityTokenVersion>
 
     <!--
       Moq version & constants derived from Moq.
