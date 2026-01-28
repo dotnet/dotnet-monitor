@@ -1,7 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Swagger.Filters
@@ -14,18 +14,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Swagger.Filters
     {
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
-            if (operation.Responses.Remove(StatusCodeStrings.Status400BadRequest))
+            if (operation.Responses?.Remove(StatusCodeStrings.Status400BadRequest) == true)
             {
                 operation.Responses.Add(
                     StatusCodeStrings.Status400BadRequest,
-                    new OpenApiResponse()
-                    {
-                        Reference = new OpenApiReference()
-                        {
-                            Id = ResponseNames.BadRequestResponse,
-                            Type = ReferenceType.Response
-                        }
-                    });
+                    new OpenApiResponseReference(ResponseNames.BadRequestResponse, hostDocument: null));
             }
         }
     }

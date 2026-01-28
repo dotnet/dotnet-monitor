@@ -6,11 +6,12 @@ using Microsoft.Diagnostics.Monitoring.WebApi.Controllers;
 using Microsoft.Diagnostics.Tools.Monitor.Swagger.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
-using Microsoft.OpenApi.Any;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
+using System.Text.Json.Nodes;
 using System.Xml.XPath;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Swagger
@@ -33,7 +34,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Swagger
             options.IncludeXmlComments(() => new XPathDocument(Assembly.GetExecutingAssembly().GetManifestResourceStream(documentationFile)));
 #nullable restore
             // Make sure TimeSpan is represented as a string instead of a full object type
-            options.MapType<TimeSpan>(() => new OpenApiSchema() { Type = "string", Format = "time-span", Example = new OpenApiString("00:00:30") });
+            options.MapType<TimeSpan>(() => new OpenApiSchema() { Type = JsonSchemaType.String, Format = "time-span", Example = JsonNode.Parse("\"00:00:30\"") });
         }
 
         public static void AddBearerTokenAuthOption(this SwaggerGenOptions options, string securityDefinitionName)
@@ -48,14 +49,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Swagger
                 Description = Strings.HelpDescription_SecurityDefinitionDescription_ApiKey
             });
 
-            options.AddSecurityRequirement(new OpenApiSecurityRequirement
+            options.AddSecurityRequirement(_ => new OpenApiSecurityRequirement
             {
                 {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = securityDefinitionName }
-                    },
-                    Array.Empty<string>()
+                    new OpenApiSecuritySchemeReference(securityDefinitionName, hostDocument: null),
+                    new List<string>()
                 }
             });
         }

@@ -3,8 +3,9 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Swagger.Filters
 {
@@ -15,20 +16,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Swagger.Filters
             OpenApiResponse tooManyRequests = new();
             tooManyRequests.Description = "TooManyRequests";
 
+            tooManyRequests.Content ??= new Dictionary<string, OpenApiMediaType>();
             tooManyRequests.Content.Add(
                  ContentTypes.ApplicationProblemJson,
                  new OpenApiMediaType()
                  {
-                     Schema = new OpenApiSchema()
-                     {
-                         Reference = new OpenApiReference()
-                         {
-                             Id = nameof(ProblemDetails),
-                             Type = ReferenceType.Schema
-                         }
-                     }
+                     Schema = new OpenApiSchemaReference(nameof(ProblemDetails), hostDocument: null)
                  });
 
+            swaggerDoc.Components ??= new OpenApiComponents();
+            swaggerDoc.Components.Responses ??= new Dictionary<string, IOpenApiResponse>();
             swaggerDoc.Components.Responses.Add(
                 ResponseNames.TooManyRequestsResponse,
                 tooManyRequests);

@@ -7,9 +7,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Web;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
+using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
 {
@@ -66,14 +67,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Auth.AzureAd
                 }
             });
 
-            options.AddSecurityRequirement(new OpenApiSecurityRequirement
+            options.AddSecurityRequirement(_ => new OpenApiSecurityRequirement
             {
                 {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference { Type= ReferenceType.SecurityScheme, Id = OAuth2SecurityDefinitionName }
-                    },
-                    Array.Empty<string>()
+                    new OpenApiSecuritySchemeReference(OAuth2SecurityDefinitionName, hostDocument: null),
+                    new List<string>()
                 }
             });
         }
