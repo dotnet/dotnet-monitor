@@ -3,8 +3,9 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Swagger.Filters
 {
@@ -15,25 +16,21 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Swagger.Filters
     {
         public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
         {
-            OpenApiResponse unauthorizedResponse = new();
-            unauthorizedResponse.Description = "Bad Request";
-            unauthorizedResponse.Content.Add(
+            OpenApiResponse badRequestResponse = new();
+            badRequestResponse.Description = "Bad Request";
+            badRequestResponse.Content ??= new Dictionary<string, OpenApiMediaType>();
+            badRequestResponse.Content.Add(
                 ContentTypes.ApplicationProblemJson,
                 new OpenApiMediaType()
                 {
-                    Schema = new OpenApiSchema()
-                    {
-                        Reference = new OpenApiReference()
-                        {
-                            Id = nameof(ValidationProblemDetails),
-                            Type = ReferenceType.Schema
-                        }
-                    }
+                    Schema = new OpenApiSchemaReference(nameof(ValidationProblemDetails), hostDocument: null)
                 });
 
+            swaggerDoc.Components ??= new OpenApiComponents();
+            swaggerDoc.Components.Responses ??= new Dictionary<string, IOpenApiResponse>();
             swaggerDoc.Components.Responses.Add(
                 ResponseNames.BadRequestResponse,
-                unauthorizedResponse);
+                badRequestResponse);
         }
     }
 }

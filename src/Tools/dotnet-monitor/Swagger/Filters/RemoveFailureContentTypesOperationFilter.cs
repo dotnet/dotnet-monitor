@@ -2,9 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Monitoring.WebApi;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Collections.Generic;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Swagger.Filters
 {
@@ -15,11 +14,16 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Swagger.Filters
     {
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
-            foreach (KeyValuePair<string, OpenApiResponse> response in operation.Responses)
+            if (operation.Responses == null)
+            {
+                return;
+            }
+
+            foreach (var response in operation.Responses)
             {
                 if (response.Key.StartsWith("2"))
                 {
-                    response.Value.Content.Remove(ContentTypes.ApplicationProblemJson);
+                    response.Value.Content?.Remove(ContentTypes.ApplicationProblemJson);
                 }
             }
         }
