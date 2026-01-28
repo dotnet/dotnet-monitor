@@ -1,7 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.Swagger.Filters
@@ -14,14 +14,11 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Swagger.Filters
     {
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
-            if (operation.Responses.TryGetValue(StatusCodeStrings.Status401Unauthorized, out OpenApiResponse? unauthorizedResponse))
+            if (operation.Responses?.TryGetValue(StatusCodeStrings.Status401Unauthorized, out IOpenApiResponse? unauthorizedResponse) == true
+                && unauthorizedResponse is OpenApiResponse response)
             {
-                unauthorizedResponse.Content.Clear();
-                unauthorizedResponse.Reference = new OpenApiReference()
-                {
-                    Id = ResponseNames.UnauthorizedResponse,
-                    Type = ReferenceType.Response
-                };
+                response.Content?.Clear();
+                operation.Responses[StatusCodeStrings.Status401Unauthorized] = new OpenApiResponseReference(ResponseNames.UnauthorizedResponse, hostDocument: null);
             }
         }
     }
