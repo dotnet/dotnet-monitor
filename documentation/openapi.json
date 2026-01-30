@@ -2276,5 +2276,19 @@
         }
       }
     }
-  }
+  },
+  "tags": [
+    {
+      "name": "Diag"
+    },
+    {
+      "name": "Exceptions"
+    },
+    {
+      "name": "Metrics"
+    },
+    {
+      "name": "Operations"
+    }
+  ]
 }
