@@ -10,7 +10,7 @@
     <!-- Microsoft.Extensions.Logging.Console -->
     <MicrosoftExtensionsLoggingConsole100Version>10.0.2</MicrosoftExtensionsLoggingConsole100Version>
     <!-- Microsoft.NETCore.App -->
-    <MicrosoftNETCoreApp100Version>10.0.2</MicrosoftNETCoreApp100Version>
+    <MicrosoftNETCoreApp100Version>10.0.3</MicrosoftNETCoreApp100Version>
     <!-- System.Text.Json -->
     <SystemTextJson100Version>10.0.2</SystemTextJson100Version>
   </PropertyGroup>
