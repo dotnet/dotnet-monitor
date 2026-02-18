@@ -116,10 +116,9 @@
 
 ## Security Considerations
 
-1. **Security Reporting:** Report security issues privately to secure@microsoft.com (MSRC)
-2. **Authentication:** dotnet-monitor supports API Key authentication (recommended) and Windows authentication
-3. **Sensitive Data:** Never commit secrets or API keys to source code
-4. **Security Documentation:** See `documentation/security-considerations.md` for security topics
+1. **Authentication:** dotnet-monitor supports API Key authentication (recommended) and Windows authentication
+2. **Sensitive Data:** Never commit secrets or API keys to source code
+3. **Security Documentation:** See `documentation/security-considerations.md` for security topics
 
 ## Pull Request Process
 
