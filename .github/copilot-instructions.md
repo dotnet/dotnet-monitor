@@ -146,6 +146,7 @@
 3. **Egress Providers:** Extend `IEgressProvider` for new storage backends
 4. **API Endpoints:** Follow RESTful conventions in `Microsoft.Diagnostics.Monitoring.WebApi`
 5. **Configuration:** Use IConfiguration with JSON/environment variable support
+6. **Learning Paths:** Guidance for developers on the various components in `dotnet-monitor`. It may need to be updated based on product changes.
 
 ## Documentation
 
