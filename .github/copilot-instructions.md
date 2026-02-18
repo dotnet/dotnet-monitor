@@ -13,7 +13,7 @@
 ## Technology Stack
 
 - **Primary Language:** C# 
-- **.NET SDK:** 10.0.101
+- **.NET SDK:** 10.0
 - **Target Frameworks:** .NET 8.0, 9.0, 10.0
 - **ASP.NET Core:** Multi-version support (8.0, 9.0, 10.0)
 - **Build System:** MSBuild with .NET Arcade SDK
