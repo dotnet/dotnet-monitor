@@ -45,7 +45,9 @@
       AdditionalProperties="RuntimeIdentifier=;PublishDir=$(StartupHookPublishPath)"
       GlobalPropertiesToRemove="PublishSingleFile"
       Targets="Publish"
-      ReferenceOutputAssembly="false" />
+      ReferenceOutputAssembly="false"
+      OutputItemType=""
+      SkipGetTargetFrameworkProperties="true" />
   </ItemGroup>
 
   <ItemGroup>
