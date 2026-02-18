@@ -42,7 +42,7 @@
     <!-- This is a build-ordering dependency only - we don't want this hook to appear directly in the our referenced libraries, we
          need to customize it's layout. We _do_ however need to ensure that it _gets built_ before we build/publish. -->
     <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.StartupHook\Microsoft.Diagnostics.Monitoring.StartupHook.csproj"
-      AdditionalProperties="RuntimeIdentifier=;PublishDir=$(StartupHookPublishPath)"
+      AdditionalProperties="TargetFramework=$(StartupHookTargetFramework);RuntimeIdentifier=;PublishDir=$(StartupHookPublishPath)"
       GlobalPropertiesToRemove="PublishSingleFile"
       Targets="Publish"
       ReferenceOutputAssembly="false"
