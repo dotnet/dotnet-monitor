@@ -12,14 +12,41 @@ set __ThisScriptDir="%~dp0"
 call "%__ThisScriptDir%"\native\init-vs-env.cmd
 if NOT '%ERRORLEVEL%' == '0' goto ExitWithError
 
-if defined VS160COMNTOOLS (
+set "__VSToolsRoot="
+set "__VCToolsRoot="
+
+if defined VS180COMNTOOLS (
+    set "__VSToolsRoot=%VS180COMNTOOLS%"
+    set "__VCToolsRoot=%VS180COMNTOOLS%\..\..\VC\Auxiliary\Build"
+) else if defined VS170COMNTOOLS (
+    set "__VSToolsRoot=%VS170COMNTOOLS%"
+    set "__VCToolsRoot=%VS170COMNTOOLS%\..\..\VC\Auxiliary\Build"
+) else if defined VS160COMNTOOLS (
     set "__VSToolsRoot=%VS160COMNTOOLS%"
     set "__VCToolsRoot=%VS160COMNTOOLS%\..\..\VC\Auxiliary\Build"
-    set __VSVersion=vs2019
 ) else if defined VS150COMNTOOLS (
     set "__VSToolsRoot=%VS150COMNTOOLS%"
     set "__VCToolsRoot=%VS150COMNTOOLS%\..\..\VC\Auxiliary\Build"
-    set __VSVersion=vs2017
+) else if defined VCINSTALLDIR (
+    set "__VCToolsRoot=%VCINSTALLDIR%Auxiliary\Build"
+)
+
+if defined VisualStudioVersion (
+    for /f "tokens=1 delims=." %%i in ("%VisualStudioVersion%") do set __VSMajorVersion=%%i
+    if !__VSMajorVersion! GEQ 17 (
+        set __VSVersion=vs2022
+    ) else if !__VSMajorVersion! EQU 16 (
+        set __VSVersion=vs2019
+    ) else if !__VSMajorVersion! EQU 15 (
+        set __VSVersion=vs2017
+    )
+) else (
+    set __VSVersion=vs2022
+)
+
+if not defined __VCToolsRoot (
+    echo %__MsgPrefix%Error: Visual Studio C++ build tools path could not be determined.
+    goto ExitWithError
 )
 
 :: Set the default arguments for build
@@ -38,7 +65,7 @@ set __CrossArch=
 
 :: Set the various build properties here so that CMake and MSBuild can pick them up
 set "__ProjectDir=%~dp0"
-:: remove trailing slash 
+:: remove trailing slash
 if %__ProjectDir:~-1%==\ set "__ProjectDir=%__ProjectDir:~0,-1%"
 set "__ProjectDir=%__ProjectDir%\.."
 set "__SourceDir=%__ProjectDir%\src"
