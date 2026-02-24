@@ -33,7 +33,9 @@ if defined VS180COMNTOOLS (
 
 if defined VisualStudioVersion (
     for /f "tokens=1 delims=." %%i in ("%VisualStudioVersion%") do set __VSMajorVersion=%%i
-    if !__VSMajorVersion! GEQ 17 (
+    if !__VSMajorVersion! GEQ 18 (
+        set __VSVersion=vs2026
+    ) else if !__VSMajorVersion! EQU 17 (
         set __VSVersion=vs2022
     ) else if !__VSMajorVersion! EQU 16 (
         set __VSVersion=vs2019
