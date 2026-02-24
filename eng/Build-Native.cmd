@@ -42,8 +42,11 @@ if defined VisualStudioVersion (
     ) else if !__VSMajorVersion! EQU 15 (
         set __VSVersion=vs2017
     )
-) else (
-    set __VSVersion=vs2022
+)
+
+if not defined __VSVersion (
+    echo %__MsgPrefix%Error: Unsupported Visual Studio version. Visual Studio 2017 or later is required.
+    goto ExitWithError
 )
 
 if not defined __VCToolsRoot (
