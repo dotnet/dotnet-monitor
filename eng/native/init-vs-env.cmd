@@ -61,7 +61,7 @@ Please see https://github.com/dotnet/runtime/blob/main/docs/workflow/requirement
 exit /b 1
 
 :VSWhereMissing
-echo %__MsgPrefix%Error: vswhere couldn not be found in Visual Studio Installer directory at "%__VSWhere%"
+echo %__MsgPrefix%Error: vswhere could not be found in Visual Studio Installer directory at "%__VSWhere%"
 exit /b 1
 
 :SetVCEnvironment
