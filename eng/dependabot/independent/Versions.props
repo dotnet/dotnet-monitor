@@ -2,8 +2,8 @@
   <!-- Import references updated by Dependabot. -->
 
   <PropertyGroup>
-    <AzureCoreVersion>1.50.0</AzureCoreVersion>
-    <AzureIdentityVersion>1.17.1</AzureIdentityVersion>
+    <AzureCoreVersion>1.51.1</AzureCoreVersion>
+    <AzureIdentityVersion>1.18.0</AzureIdentityVersion>
     <AzureStorageBlobsVersion>12.27.0</AzureStorageBlobsVersion>
     <AzureStorageQueuesVersion>12.25.0</AzureStorageQueuesVersion>
     <MicrosoftIdentityWebVersion>4.3.0</MicrosoftIdentityWebVersion>
