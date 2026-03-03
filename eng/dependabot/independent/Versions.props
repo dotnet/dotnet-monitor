@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <AzureCoreVersion>1.51.1</AzureCoreVersion>
-    <AzureIdentityVersion>1.17.1</AzureIdentityVersion>
+    <AzureIdentityVersion>1.18.0</AzureIdentityVersion>
     <AzureStorageBlobsVersion>12.27.0</AzureStorageBlobsVersion>
     <AzureStorageQueuesVersion>12.25.0</AzureStorageQueuesVersion>
     <MicrosoftIdentityWebVersion>4.4.0</MicrosoftIdentityWebVersion>
@@ -14,8 +14,8 @@
     <!-- Third-party references -->
     <NewtonsoftJsonVersion>13.0.4</NewtonsoftJsonVersion>
     <NJsonSchemaVersion>11.5.2</NJsonSchemaVersion>
-    <AwsSdkS3Version>4.0.18.6</AwsSdkS3Version>
-    <AwsSdkSecurityTokenVersion>4.0.5.9</AwsSdkSecurityTokenVersion>
+    <AwsSdkS3Version>4.0.18.7</AwsSdkS3Version>
+    <AwsSdkSecurityTokenVersion>4.0.5.10</AwsSdkSecurityTokenVersion>
 
     <!--
       Moq version & constants derived from Moq.
