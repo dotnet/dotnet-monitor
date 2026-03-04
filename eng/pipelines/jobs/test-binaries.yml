@@ -17,6 +17,8 @@ parameters:
     value: .NET 8
   - key: net9.0
     value: .NET 9
+  - key: net10.0
+    value: .NET 10
   useHelix: false
   # Adjust for 1ES pipeline template
   is1ESPipeline: true

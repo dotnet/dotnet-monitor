@@ -32,3 +32,5 @@ extends:
       featureFlags: ${{ parameters.featureFlags }}
     ${{ if parameters.sdl }}:
       sdl: ${{ parameters.sdl }}
+    settings:
+      networkIsolationPolicy: Permissive,CFSClean

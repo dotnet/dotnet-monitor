@@ -9,7 +9,7 @@ jobs:
     - _InternalInstallArgs: ''
     - ${{ if eq(variables['System.TeamProject'], 'internal') }}:
       - _InternalInstallArgs: >-
-          /p:DotNetRuntimeSourceFeed=https://dotnetbuilds.blob.core.windows.net/internal
+          /p:DotNetRuntimeSourceFeed=https://ci.dot.net/internal
           /p:DotNetRuntimeSourceFeedKey=$(dotnetbuilds-internal-container-read-token-base64)
     steps:
     - template: /eng/pipelines/steps/setup-nuget-sources.yml@self

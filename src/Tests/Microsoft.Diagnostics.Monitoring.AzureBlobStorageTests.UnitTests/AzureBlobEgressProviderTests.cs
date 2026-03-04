@@ -352,7 +352,7 @@ namespace Microsoft.Diagnostics.Monitoring.AzureBlobStorageTests.UnitTests
 
             try
             {
-                var resultSegment = containerClient.GetBlobsAsync(BlobTraits.All).AsPages(default);
+                var resultSegment = containerClient.GetBlobsAsync(new GetBlobsOptions { Traits = BlobTraits.All }).AsPages(default);
                 await foreach (Page<BlobItem> blobPage in resultSegment)
                 {
                     foreach (BlobItem blob in blobPage.Values)

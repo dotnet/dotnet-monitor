@@ -82,6 +82,12 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.FileFormats" />
     <PackageReference Include="Microsoft.Identity.Web" />
+    <!-- See https://github.com/Azure/azure-sdk-for-net/pull/54590
+    Azure.Core now depends on all .NET 10.0 packages even for its .NET 8 targets.
+    This is the minimum overrides required to prevent package downgrades due to transitive dependencies -->
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" VersionOverride="$(MicrosoftExtensionsConfigurationAbstractions100Version)" Condition="'$(TargetFramework)' == 'net8.0' OR '$(TargetFramework)' == 'net9.0'" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" VersionOverride="$(MicrosoftExtensionsLoggingAbstractions100Version)" Condition="'$(TargetFramework)' == 'net8.0' OR '$(TargetFramework)' == 'net9.0'" />
+    <PackageReference Include="System.Text.Json" VersionOverride="$(SystemTextJson100Version)" Condition="'$(TargetFramework)' == 'net8.0' OR '$(TargetFramework)' == 'net9.0'" />
   </ItemGroup>
 
   <ItemGroup>

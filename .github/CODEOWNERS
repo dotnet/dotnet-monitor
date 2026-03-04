@@ -5,4 +5,3 @@
 /eng/
 global.json
 /eng/dependabot             @dotnet/dotnet-monitor
-/eng/actions                @dotnet/dotnet-monitor

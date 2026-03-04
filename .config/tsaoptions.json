@@ -2,7 +2,7 @@
     "instanceUrl": "https://devdiv.visualstudio.com/",
     "template": "TFSDEVDIV",
     "projectName": "DEVDIV",
-    "areaPath": "DevDiv\\VS Diagnostics\\Production Diagnostics\\Dotnet Monitor",
+    "areaPath": "DevDiv\\VS Diagnostics\\Production Diagnostics",
     "iterationPath": "DevDiv",
     "notificationAliases": [ "dotnetmonitorsdl@microsoft.com" ],
     "repositoryName": "dotnet-dotnet-monitor",
