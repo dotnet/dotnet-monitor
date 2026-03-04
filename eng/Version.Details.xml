@@ -20,7 +20,7 @@
   <ToolsetDependencies>
     <Dependency Name="Microsoft.CodeAnalysis.NetAnalyzers" Version="10.0.201">
       <Uri>https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet</Uri>
-      <Sha>a8e4e5445b7080d3acca8b1ec4ea6b3a049d5123</Sha>
+      <Sha>4d3023de605a78ba3e59e50c657eed70f125c68a</Sha>
     </Dependency>
     <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="10.0.0-beta.26153.3">
       <Uri>https://github.com/dotnet/arcade</Uri>
@@ -54,9 +54,9 @@
       <Uri>https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet</Uri>
       <Sha>b0f34d51fccc69fd334253924abd8d6853fad7aa</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.NetCore.SdkPlaceholder.x64.10.0" Version="10.0.201-servicing.26153.112">
+    <Dependency Name="VS.Redist.Common.NetCore.SdkPlaceholder.x64.10.0" Version="10.0.201-servicing.26153.122">
       <Uri>https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet</Uri>
-      <Sha>a8e4e5445b7080d3acca8b1ec4ea6b3a049d5123</Sha>
+      <Sha>4d3023de605a78ba3e59e50c657eed70f125c68a</Sha>
     </Dependency>
     <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.10.0" Version="10.0.0-rtm.25523.111">
       <Uri>https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet</Uri>
