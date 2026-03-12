@@ -86,20 +86,28 @@
   <PropertyGroup Label=".NET 8 Dependent" Condition=" '$(TargetFramework)' == 'net8.0' ">
     <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>$(MicrosoftAspNetCoreApp80Version)</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
     <MicrosoftAspNetCoreAuthenticationNegotiateVersion>$(MicrosoftAspNetCoreApp80Version)</MicrosoftAspNetCoreAuthenticationNegotiateVersion>
-    <MicrosoftExtensionsConfigurationAbstractionsVersion>$(MicrosoftExtensionsConfigurationAbstractions80Version)</MicrosoftExtensionsConfigurationAbstractionsVersion>
+    <!--
+      Azure SDK dependencies require .NET 10 versions of these packages to avoid package downgrade errors.
+      Using 100 versions for packages that have transitive dependencies from Azure.Core and Azure.Identity.
+    -->
+    <MicrosoftExtensionsConfigurationAbstractionsVersion>$(MicrosoftExtensionsConfigurationAbstractions100Version)</MicrosoftExtensionsConfigurationAbstractionsVersion>
     <MicrosoftExtensionsLoggingVersion>$(MicrosoftExtensionsLogging80Version)</MicrosoftExtensionsLoggingVersion>
-    <MicrosoftExtensionsLoggingAbstractionsVersion>$(MicrosoftExtensionsLoggingAbstractions80Version)</MicrosoftExtensionsLoggingAbstractionsVersion>
+    <MicrosoftExtensionsLoggingAbstractionsVersion>$(MicrosoftExtensionsLoggingAbstractions100Version)</MicrosoftExtensionsLoggingAbstractionsVersion>
     <MicrosoftExtensionsLoggingConsoleVersion>$(MicrosoftExtensionsLoggingConsole80Version)</MicrosoftExtensionsLoggingConsoleVersion>
-    <SystemTextJsonVersion>$(SystemTextJson80Version)</SystemTextJsonVersion>
+    <SystemTextJsonVersion>$(SystemTextJson100Version)</SystemTextJsonVersion>
   </PropertyGroup>
   <PropertyGroup Label=".NET 9 Dependent" Condition=" '$(TargetFramework)' == 'net9.0' ">
     <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>$(MicrosoftAspNetCoreApp90Version)</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
     <MicrosoftAspNetCoreAuthenticationNegotiateVersion>$(MicrosoftAspNetCoreApp90Version)</MicrosoftAspNetCoreAuthenticationNegotiateVersion>
-    <MicrosoftExtensionsConfigurationAbstractionsVersion>$(MicrosoftExtensionsConfigurationAbstractions90Version)</MicrosoftExtensionsConfigurationAbstractionsVersion>
+    <!--
+      Azure SDK dependencies require .NET 10 versions of these packages to avoid package downgrade errors.
+      Using 100 versions for packages that have transitive dependencies from Azure.Core and Azure.Identity.
+    -->
+    <MicrosoftExtensionsConfigurationAbstractionsVersion>$(MicrosoftExtensionsConfigurationAbstractions100Version)</MicrosoftExtensionsConfigurationAbstractionsVersion>
     <MicrosoftExtensionsLoggingVersion>$(MicrosoftExtensionsLogging90Version)</MicrosoftExtensionsLoggingVersion>
-    <MicrosoftExtensionsLoggingAbstractionsVersion>$(MicrosoftExtensionsLoggingAbstractions90Version)</MicrosoftExtensionsLoggingAbstractionsVersion>
+    <MicrosoftExtensionsLoggingAbstractionsVersion>$(MicrosoftExtensionsLoggingAbstractions100Version)</MicrosoftExtensionsLoggingAbstractionsVersion>
     <MicrosoftExtensionsLoggingConsoleVersion>$(MicrosoftExtensionsLoggingConsole90Version)</MicrosoftExtensionsLoggingConsoleVersion>
-    <SystemTextJsonVersion>$(SystemTextJson90Version)</SystemTextJsonVersion>
+    <SystemTextJsonVersion>$(SystemTextJson100Version)</SystemTextJsonVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(UseMicrosoftDiagnosticsMonitoringShippedVersion)' == 'true'">
     <MicrosoftDiagnosticsMonitoringLibraryVersion>$(MicrosoftDiagnosticsMonitoringShippedVersion)</MicrosoftDiagnosticsMonitoringLibraryVersion>
