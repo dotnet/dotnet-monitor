@@ -168,6 +168,7 @@ resources:
 extends:
   template: /eng/pipelines/templates/pipeline-template.yml@self
   parameters:
+    networkIsolationPolicy: Permissive,CFSClean
     sdl:
       sbom:
         enabled: false

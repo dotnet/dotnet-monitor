@@ -48,6 +48,7 @@ resources:
 extends:
   template: /eng/pipelines/templates/pipeline-template.yml@self
   parameters:
+    networkIsolationPolicy: Permissive
     sdl:
       sbom:
         enabled: false
