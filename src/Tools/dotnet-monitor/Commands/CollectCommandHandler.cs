@@ -163,11 +163,13 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Commands
                 ServerUrlsBlockingConfigurationManager? manager =
                     context.Properties[typeof(ServerUrlsBlockingConfigurationManager)] as ServerUrlsBlockingConfigurationManager;
                 Debug.Assert(null != manager, $"Expected {typeof(ServerUrlsBlockingConfigurationManager).FullName} to be a {typeof(HostBuilderContext).FullName} property.");
+#pragma warning disable IDE0031 // Use null propagation
                 if (null != manager)
                 {
                     // Block reading of the Urls option so that Kestrel is unable to read it from the composed configuration.
                     manager.IsBlocking = true;
                 }
+#pragma warning restore IDE0031 // Use null propagation
             });
         }
 
