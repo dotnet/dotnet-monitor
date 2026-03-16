@@ -50,7 +50,7 @@
     },
     "10.0": {
       "tag": "v10.0.1",
-      "minorReleaseDate": "2025-03-10T00:00:00.000Z",
+      "minorReleaseDate": "2025-11-12T00:00:00.000Z",
       "patchReleaseDate": "2025-03-10T00:00:00.000Z",
       "supportedFrameworks": [
         "net10.0"
