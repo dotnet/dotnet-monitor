@@ -2,4 +2,5 @@
   <Import Project="independent/Versions.props" />
   <Import Project="nuget.org/Versions.props" />
   <Import Project="net8.0/Versions.props" />
+  <Import Project="net10.0/Versions.props" />
 </Project>
