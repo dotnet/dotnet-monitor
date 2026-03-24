@@ -8,6 +8,7 @@ using Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -80,7 +81,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             await toolRunner.StartAsync();
 
-            AssertDefaultDiagnosticPortExists(defaultSharedTempDir);
+            await AssertDefaultDiagnosticPortExistsAsync(defaultSharedTempDir);
         }
 
         /// <summary>
@@ -107,10 +108,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
             return Path.Combine(defaultSharedPath, ToolIdentifiers.DefaultSocketName);
         }
 
-        private static void AssertDefaultDiagnosticPortExists(TemporaryDirectory dir)
+        private static async Task AssertDefaultDiagnosticPortExistsAsync(TemporaryDirectory dir)
         {
             string diagnosticPort = GetDefaultSharedSocketPath(dir.FullName);
-            Assert.True(File.Exists(diagnosticPort), $"Expected socket to exist at '{diagnosticPort}'.");
+
+            using CancellationTokenSource cancellationSource = new CancellationTokenSource(CommonTestTimeouts.GeneralTimeout);
+
+            while (!File.Exists(diagnosticPort))
+            {
+                await Task.Delay(TimeSpan.FromMilliseconds(50), cancellationSource.Token);
+            }
         }
 
         private static void AssertDefaultDiagnosticPortNotExists(TemporaryDirectory dir)
