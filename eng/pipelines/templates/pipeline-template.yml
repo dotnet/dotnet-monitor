@@ -14,6 +14,9 @@ parameters:
 - name: sdl
   type: object
   default: null
+- name: networkIsolationPolicy
+  type: string
+  default: Permissive,CFSClean
 - name: stages
   type: stageList
   default: []
@@ -55,3 +58,4 @@ extends:
         ${{ if parameters.sdl }}:
           ${{ each pair in parameters.sdl }}:
             ${{ pair.key }}: ${{ pair.value }}
+      networkIsolationPolicy: ${{ parameters.networkIsolationPolicy }}

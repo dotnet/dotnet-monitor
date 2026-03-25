@@ -11,7 +11,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         [Obsolete("Do not use except for startup hook.")]
         Net60,
         Net80,
-        Net90
+        Net90,
+        Net100
     }
 
     public static partial class TargetFrameworkMonikerExtensions
@@ -27,6 +28,8 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
                     return "net8.0";
                 case TargetFrameworkMoniker.Net90:
                     return "net9.0";
+                case TargetFrameworkMoniker.Net100:
+                    return "net10.0";
             }
 #pragma warning restore CS0618 // Type or member is obsolete
             throw CreateUnsupportedException(moniker);
@@ -38,7 +41,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         }
 
         public const TargetFrameworkMoniker CurrentTargetFrameworkMoniker =
-#if NET9_0
+#if NET10_0
+            TargetFrameworkMoniker.Net100;
+#elif NET9_0
             TargetFrameworkMoniker.Net90;
 #elif NET8_0
             TargetFrameworkMoniker.Net80;

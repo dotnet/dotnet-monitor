@@ -2,20 +2,20 @@
   <!-- Import references updated by Dependabot. -->
 
   <PropertyGroup>
-    <AzureCoreVersion>1.47.3</AzureCoreVersion>
-    <AzureIdentityVersion>1.15.0</AzureIdentityVersion>
-    <AzureStorageBlobsVersion>12.25.0</AzureStorageBlobsVersion>
-    <AzureStorageQueuesVersion>12.23.0</AzureStorageQueuesVersion>
-    <MicrosoftIdentityWebVersion>3.14.0</MicrosoftIdentityWebVersion>
-    <MicrosoftOpenApiReadersVersion>1.6.24</MicrosoftOpenApiReadersVersion>
+    <AzureCoreVersion>1.51.1</AzureCoreVersion>
+    <AzureIdentityVersion>1.18.0</AzureIdentityVersion>
+    <AzureStorageBlobsVersion>12.27.0</AzureStorageBlobsVersion>
+    <AzureStorageQueuesVersion>12.25.0</AzureStorageQueuesVersion>
+    <MicrosoftIdentityWebVersion>4.6.0</MicrosoftIdentityWebVersion>
+    <MicrosoftOpenApiReadersVersion>1.6.28</MicrosoftOpenApiReadersVersion>
     <SystemPrivateUriVersion>4.3.2</SystemPrivateUriVersion>
     <SystemSecurityPrincipalWindowsVersion>5.0.0</SystemSecurityPrincipalWindowsVersion>
 
     <!-- Third-party references -->
-    <NewtonsoftJsonVersion>13.0.3</NewtonsoftJsonVersion>
-    <NJsonSchemaVersion>11.0.0</NJsonSchemaVersion>
-    <AwsSdkS3Version>4.0.0.3</AwsSdkS3Version>
-    <AwsSdkSecurityTokenVersion>4.0.0.2</AwsSdkSecurityTokenVersion>
+    <NewtonsoftJsonVersion>13.0.4</NewtonsoftJsonVersion>
+    <NJsonSchemaVersion>11.5.2</NJsonSchemaVersion>
+    <AwsSdkS3Version>4.0.18.7</AwsSdkS3Version>
+    <AwsSdkSecurityTokenVersion>4.0.5.13</AwsSdkSecurityTokenVersion>
 
     <!--
       Moq version & constants derived from Moq.

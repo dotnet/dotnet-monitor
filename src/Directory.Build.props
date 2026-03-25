@@ -32,8 +32,8 @@
 
   <!-- Filter tests based on specified TestGroup -->
   <PropertyGroup Condition="'$(TestGroup)' == 'PR'">
-    <!-- Only run tests for .NET 9 -->
-    <TestRunnerFilterArguments>TargetFrameworkMoniker=Net90</TestRunnerFilterArguments>
+    <!-- Only run tests for .NET 10 -->
+    <TestRunnerFilterArguments>TargetFrameworkMoniker=Net100</TestRunnerFilterArguments>
     <TestRunnerAdditionalArguments>$(TestRunnerAdditionalArguments) --filter "$(TestRunnerFilterArguments)"</TestRunnerAdditionalArguments>
   </PropertyGroup>
 

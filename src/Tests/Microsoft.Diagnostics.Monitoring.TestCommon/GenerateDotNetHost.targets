@@ -10,8 +10,10 @@
     <DotNetHostGeneratedFileName>$(IntermediateOutputPath)/$(TargetFramework)/TestDotNetHost.g.cs</DotNetHostGeneratedFileName>
     <NetCoreAppVersion Condition="'$(TargetFramework)' == 'net8.0'">$(MicrosoftNETCoreApp80Version)</NetCoreAppVersion>
     <NetCoreAppVersion Condition="'$(TargetFramework)' == 'net9.0'">$(MicrosoftNETCoreApp90Version)</NetCoreAppVersion>
+    <NetCoreAppVersion Condition="'$(TargetFramework)' == 'net10.0'">$(MicrosoftNETCoreApp100Version)</NetCoreAppVersion>
     <AspNetCoreAppVersion Condition="'$(TargetFramework)' == 'net8.0'">$(MicrosoftAspNetCoreApp80Version)</AspNetCoreAppVersion>
     <AspNetCoreAppVersion Condition="'$(TargetFramework)' == 'net9.0'">$(MicrosoftAspNetCoreApp90Version)</AspNetCoreAppVersion>
+    <AspNetCoreAppVersion Condition="'$(TargetFramework)' == 'net10.0'">$(MicrosoftAspNetCoreApp100Version)</AspNetCoreAppVersion>
   </PropertyGroup>
 
   <Target Name="GenerateDotNetHostSourceFile" Inputs="$(VersionsPropsPath)" Outputs="$(DotNetHostGeneratedFileName)">
@@ -23,6 +25,7 @@
       <TransformedContent>$(TransformedContent.Replace('$MicrosoftNetCoreApp90Version$', '$(MicrosoftNETCoreApp90Version)'))</TransformedContent>
       <TransformedContent>$(TransformedContent.Replace('$MicrosoftAspNetCoreApp80Version$', '$(MicrosoftAspNetCoreApp80Version)'))</TransformedContent>
       <TransformedContent>$(TransformedContent.Replace('$MicrosoftAspNetCoreApp90Version$', '$(MicrosoftAspNetCoreApp90Version)'))</TransformedContent>
+      <TransformedContent>$(TransformedContent.Replace('$MicrosoftAspNetCoreApp100Version$', '$(MicrosoftAspNetCoreApp100Version)'))</TransformedContent>
     </PropertyGroup>
     <WriteLinesToFile File="$(DotNetHostGeneratedFileName)" Overwrite="true" Lines="$(TransformedContent)" WriteOnlyWhenDifferent="true" />
   </Target>

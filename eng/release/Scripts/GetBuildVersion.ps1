@@ -15,7 +15,7 @@ $buildData = & $PSScriptRoot\GetDarcBuild.ps1 `
     -MaestroApiEndPoint $MaestroApiEndPoint `
     -DarcVersion $DarcVersion
 
-[array]$matchingData = $buildData.assets | Where-Object { $_.name -match 'MergedManifest.xml$' -and $_.nonShipping }
+[array]$matchingData = $buildData.assets | Where-Object { $_.name -eq 'dotnet-monitor' }
 
 if (!$matchingData -or $matchingData.Length -ne 1) {
     Write-Error 'Unable to obtain build version.'

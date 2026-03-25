@@ -8,6 +8,7 @@ using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -76,20 +77,21 @@ namespace Microsoft.Diagnostics.Monitoring.UnitTestApp
             // - Doesn't write logs to stdout (since the unit test app uses this for execution control)
             // - Allows ASP.NET events via DiagnosticsSourceEventSource (enabled via adding a logger
             //   and the ASP.NET hosting category).
-            // - Uses WebHostBuilder to support hosting startup assemblies.
-            IWebHost host = new WebHostBuilder()
-                .ConfigureServices(services =>
+            IHost host = new HostBuilder()
+                .ConfigureWebHost(webBuilder =>
                 {
-                    configureServices?.Invoke(services);
-
-                    services.AddLogging(builder =>
+                    webBuilder.ConfigureServices(services =>
                     {
-                        builder.AddEventSourceLogger();
-                        builder.AddFilter("Microsoft.AspNetCore.Hosting", LogLevel.Information);
+                        configureServices?.Invoke(services);
+                        services.AddLogging(builder =>
+                        {
+                            builder.AddEventSourceLogger();
+                            builder.AddFilter("Microsoft.AspNetCore.Hosting", LogLevel.Information);
+                        });
                     });
+                    webBuilder.UseKestrel();
+                    webBuilder.UseStartup<TStartup>();
                 })
-                .UseKestrel()
-                .UseStartup<TStartup>()
                 .Build();
 
             int exitCode;

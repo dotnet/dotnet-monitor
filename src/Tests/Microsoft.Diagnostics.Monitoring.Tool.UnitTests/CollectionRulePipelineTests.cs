@@ -574,7 +574,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         public static IEnumerable<object[]> GetCurrentTfm()
         {
-            yield return new object[] { TargetFrameworkMoniker.Net90 };
+            yield return new object[] { TargetFrameworkMoniker.Net100 };
         }
     }
 }

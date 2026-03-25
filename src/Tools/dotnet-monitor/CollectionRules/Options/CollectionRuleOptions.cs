@@ -37,6 +37,22 @@ namespace Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CollectionRuleOptions_Limits))]
         public CollectionRuleLimitsOptions? Limits { get; set; }
 
-        internal List<ValidationResult> ErrorList { get; } = new List<ValidationResult>();
+        // Configuration bindig source generator doesn't support ValidationResult
+        // error SYSLIB1100: The collection element type is not supported: 'System.Collections.Generic.List<ValidationResult>'.
+        // (https://learn.microsoft.com/dotnet/fundamentals/syslib-diagnostics/syslib1100)
+        // so use a custom type to hold the validation results and convert it to ValidationResult later.
+        internal List<ErrorValidationResult> ErrorList { get; } = new List<ErrorValidationResult>();
+    }
+
+    struct ErrorValidationResult
+    {
+        public string Message { get; }
+        public string MemberName { get; }
+
+        public ErrorValidationResult(string message, string memberName)
+        {
+            Message = message;
+            MemberName = memberName;
+        }
     }
 }
