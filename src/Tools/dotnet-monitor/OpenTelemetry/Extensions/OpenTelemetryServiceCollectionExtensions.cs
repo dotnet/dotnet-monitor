@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.OpenTelemetry;
 
-public static class OpenTelemetryServiceCollectionExtensions
+internal static class OpenTelemetryServiceCollectionExtensions
 {
     public static IServiceCollection AddOpenTelemetry(
         this IServiceCollection services)

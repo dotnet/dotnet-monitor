@@ -3,20 +3,14 @@ param
 (
     [ValidateNotNullOrEmpty()]
     [string]
-    $DiagRepoRoot = "$PSScriptRoot\..\diagnostics",
-
-    [ValidateNotNullOrEmpty()]
-    [string]
-    $OtelRepoRoot = "$PSScriptRoot\..\opentelemetry-dotnet-instrumentation"
+    $DiagRepoRoot = "$PSScriptRoot\..\diagnostics"
 )
 
 $ErrorActionPreference = 'Stop'
 
 $resolvedPath = Resolve-Path $DiagRepoRoot
 $env:DIAGNOSTICS_REPO_ROOT=$resolvedPath
-
-$resolvedPath = Resolve-Path $OtelRepoRoot
-$env:OTEL_REPO_ROOT=$resolvedPath
+$env:ENABLE_OTEL="true"
 
 #Generates a solution that spans both the diagnostics and the dotnet-monitor repo.
 #This can be used to build both projects in VS.
@@ -36,15 +30,6 @@ if ($LASTEXITCODE -gt 0)
 }
 & dotnet sln $devSln add "$env:DIAGNOSTICS_REPO_ROOT\src\Microsoft.Diagnostics.NETCore.Client\Microsoft.Diagnostics.NETCore.Client.csproj"
 if ($LASTEXITCODE -gt 0)
-{
-    exit $LASTEXITCODE
-}
-& dotnet sln $devSln add "$env:OTEL_REPO_ROOT\next-gen\src\OpenTelemetry.AutoInstrumentation.Sdk\OpenTelemetry.AutoInstrumentation.Sdk.csproj"
-if ($LASTEXITCODE -gt 0)
-{
-    exit $LASTEXITCODE
-}
-& dotnet sln $devSln add "$env:OTEL_REPO_ROOT\next-gen\src\OpenTelemetry.AutoInstrumentation.Sdk.Configuration\OpenTelemetry.AutoInstrumentation.Sdk.Configuration.csproj"if ($LASTEXITCODE -gt 0)
 {
     exit $LASTEXITCODE
 }

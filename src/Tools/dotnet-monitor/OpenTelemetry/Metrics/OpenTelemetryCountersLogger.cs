@@ -43,7 +43,7 @@ internal sealed class OpenTelemetryCountersLogger : ICountersLogger
 
         _MetricsStore = new MetricsStore(
             loggerFactory.CreateLogger<MetricsStoreService>(),
-            maxMetricCount: int.MaxValue);
+            maxMetricCount: 50_000);
     }
 
     public Task PipelineStarted(CancellationToken token)

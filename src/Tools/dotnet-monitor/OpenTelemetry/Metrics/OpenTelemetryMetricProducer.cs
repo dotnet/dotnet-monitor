@@ -179,9 +179,13 @@ internal sealed class OpenTelemetryMetricProducer : OTel.MetricProducer
             exemplars: default);
     }
 
+    [ThreadStatic]
+    private static List<KeyValuePair<string, object?>>? s_ThreadAttributeStorage;
+
     private static ReadOnlySpan<KeyValuePair<string, object?>> ParseAttributes(ICounterPayload payload)
     {
-        List<KeyValuePair<string, object?>> attributes = new List<KeyValuePair<string, object?>>();
+        List<KeyValuePair<string, object?>> attributes = s_ThreadAttributeStorage ??= new();
+        attributes.Clear();
 
         ReadOnlySpan<char> metadata = payload.ValueTags;
 

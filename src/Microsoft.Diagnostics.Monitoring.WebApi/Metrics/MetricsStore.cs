@@ -49,13 +49,18 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
         private readonly Dictionary<MetricKey, Queue<ICounterPayload>> _allMetrics = new Dictionary<MetricKey, Queue<ICounterPayload>>();
         private readonly int _maxMetricCount;
         private readonly ILogger<MetricsStoreService> _logger;
-        private static readonly DateTime s_processStartTimeUtc = DateTime.UtcNow;
-        private DateTime _lastCollectionStartTimeUtc = s_processStartTimeUtc;
+        private readonly DateTime _processStartTimeUtc;
+        private DateTime _lastCollectionStartTimeUtc;
 
         private HashSet<string> _observedErrorMessages = new();
         private HashSet<(string provider, string counter)> _observedEndedCounters = new();
 
         public MetricsStore(ILogger<MetricsStoreService> logger, int maxMetricCount)
+            : this(logger, maxMetricCount, DateTime.UtcNow)
+        {
+        }
+
+        public MetricsStore(ILogger<MetricsStoreService> logger, int maxMetricCount, DateTime processStartTimeUtc)
         {
             if (maxMetricCount < 1)
             {
@@ -63,6 +68,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             }
             _maxMetricCount = maxMetricCount;
             _logger = logger;
+            _processStartTimeUtc = processStartTimeUtc;
+            _lastCollectionStartTimeUtc = processStartTimeUtc;
         }
 
         public void AddMetric(ICounterPayload metric)
@@ -319,7 +326,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                         instruments));
             }
 
-            snapshot = new(s_processStartTimeUtc, lastCollectionStartTimeUtc, lastCollectionEndTimeUtc, meters);
+            snapshot = new(_processStartTimeUtc, lastCollectionStartTimeUtc, lastCollectionEndTimeUtc, meters);
         }
 
         public async Task SnapshotMetrics(Stream outputStream, CancellationToken token)

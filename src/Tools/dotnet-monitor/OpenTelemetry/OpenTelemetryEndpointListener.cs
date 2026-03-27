@@ -29,6 +29,8 @@ internal sealed class OpenTelemetryEndpointListener
     private readonly ILogger<OpenTelemetryEndpointListener> _Logger;
     private readonly IOptionsMonitor<OpenTelemetryOptions> _OpenTelemetryOptions;
     private readonly IEndpointInfo _EndpointInfo;
+    private readonly DiagnosticsClient _DiagnosticsClient;
+    private readonly object _lock = new();
     private Task? _ProcessTask;
     private CancellationTokenSource? _StoppingToken;
 
@@ -40,33 +42,51 @@ internal sealed class OpenTelemetryEndpointListener
         _LoggerFactory = loggerFactory;
         _OpenTelemetryOptions = openTelemetryOptions;
         _EndpointInfo = endpointInfo;
+        _DiagnosticsClient = new DiagnosticsClient(endpointInfo.Endpoint);
 
         _Logger = loggerFactory.CreateLogger<OpenTelemetryEndpointListener>();
     }
 
     public void StartListening()
     {
-        if (_StoppingToken == null)
+        lock (_lock)
         {
-            _StoppingToken = new();
-            _ProcessTask = Task.Run(() => Process(_StoppingToken.Token));
+            if (_StoppingToken == null)
+            {
+                _StoppingToken = new();
+                _ProcessTask = Task.Run(() => Process(_StoppingToken.Token));
+            }
         }
     }
 
-    public async void StopListening()
+    public async Task StopListeningAsync()
     {
-        if (_StoppingToken != null)
+        Task? processTask;
+        CancellationTokenSource? stoppingToken;
+
+        lock (_lock)
         {
-            _StoppingToken.Cancel();
+            stoppingToken = _StoppingToken;
+            processTask = _ProcessTask;
+            _StoppingToken = null;
+            _ProcessTask = null;
+        }
+
+        if (stoppingToken != null)
+        {
+            stoppingToken.Cancel();
             try
             {
-                await _ProcessTask!;
+                await processTask!;
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                _Logger.LogError(ex, "Unexpected error while stopping OpenTelemetry listener for process.");
             }
             catch (OperationCanceledException)
             {
             }
-            _StoppingToken.Dispose();
-            _StoppingToken = null;
+            stoppingToken.Dispose();
         }
     }
 
@@ -100,9 +120,7 @@ internal sealed class OpenTelemetryEndpointListener
                 continue;
             }
 
-            var client = new DiagnosticsClient(_EndpointInfo.Endpoint);
-
-            var resource = await BuildResourceForProcess(_EndpointInfo, client, options, stoppingToken);
+            var resource = await BuildResourceForProcess(_EndpointInfo, _DiagnosticsClient, options, stoppingToken);
 
             _Logger.LogInformation("Resource created for process with {NumberOfKeys} keys.", resource.Attributes.Length);
 
@@ -119,22 +137,37 @@ internal sealed class OpenTelemetryEndpointListener
             if (logsEnabled)
             {
                 tasks.Add(
-                    ListenToLogs(options, client, resource, linkedTokenSource.Token));
+                    RunPipelineAsync("logs", () => ListenToLogs(options, _DiagnosticsClient, resource, linkedTokenSource.Token)));
             }
 
             if (metricsEnabled)
             {
                 tasks.Add(
-                    ListenToMetrics(options, client, _EndpointInfo.RuntimeVersion, resource, linkedTokenSource.Token));
+                    RunPipelineAsync("metrics", () => ListenToMetrics(options, _DiagnosticsClient, _EndpointInfo.RuntimeVersion, resource, linkedTokenSource.Token)));
             }
 
             if (tracingEnabled)
             {
                 tasks.Add(
-                    ListenToTraces(options, client, resource, linkedTokenSource.Token));
+                    RunPipelineAsync("traces", () => ListenToTraces(options, _DiagnosticsClient, resource, linkedTokenSource.Token)));
             }
 
             await Task.WhenAll(tasks);
+        }
+    }
+
+    private async Task RunPipelineAsync(string signalType, Func<Task> pipelineFunc)
+    {
+        try
+        {
+            await pipelineFunc();
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (Exception ex)
+        {
+            _Logger.LogError(ex, "OpenTelemetry {SignalType} pipeline failed.", signalType);
         }
     }
 
@@ -144,6 +177,10 @@ internal sealed class OpenTelemetryEndpointListener
         OpenTelemetryOptions options,
         CancellationToken stoppingToken)
     {
+        // Note: The full process environment is passed to CreateResource so that ${env:VAR}
+        // expressions in resource attribute configuration can be resolved. Only attributes explicitly
+        // configured in ResourceOptions are included in the exported resource; the full environment
+        // dictionary is not forwarded to the OTLP backend.
         var environment = await client.GetProcessEnvironmentAsync(stoppingToken);
 
         var processInfo = await ProcessInfoImpl.FromEndpointInfoAsync(endpointInfo, stoppingToken);
@@ -173,7 +210,7 @@ internal sealed class OpenTelemetryEndpointListener
         Resource resource,
         CancellationToken stoppingToken)
     {
-        _Logger.LogTrace("Starting log collection");
+        _Logger.LogInformation("Starting log collection");
 
         var filterSpecs = new Dictionary<string, LogLevel?>();
 
@@ -181,6 +218,7 @@ internal sealed class OpenTelemetryEndpointListener
         {
             if (!Enum.TryParse(category.LogLevel, out LogLevel logLevel))
             {
+                _Logger.LogWarning("Could not parse LogLevel '{LogLevel}' for category '{CategoryPrefix}', defaulting to Warning.", category.LogLevel, category.CategoryPrefix);
                 logLevel = LogLevel.Warning;
             }
 
@@ -189,6 +227,7 @@ internal sealed class OpenTelemetryEndpointListener
 
         if (!Enum.TryParse(options.LoggingOptions.DefaultLogLevel, out LogLevel defaultLogLevel))
         {
+            _Logger.LogWarning("Could not parse default LogLevel '{LogLevel}', defaulting to Warning.", options.LoggingOptions.DefaultLogLevel);
             defaultLogLevel = LogLevel.Warning;
         }
 
@@ -208,7 +247,7 @@ internal sealed class OpenTelemetryEndpointListener
 
         await pipeline.RunAsync(stoppingToken);
 
-        _Logger.LogTrace("Stopped log collection");
+        _Logger.LogInformation("Stopped log collection");
     }
 
     private async Task ListenToMetrics(
@@ -218,7 +257,7 @@ internal sealed class OpenTelemetryEndpointListener
         Resource resource,
         CancellationToken stoppingToken)
     {
-        _Logger.LogTrace("Starting metrics collection");
+        _Logger.LogInformation("Starting metrics collection");
 
         var counterGroups = new List<EventPipeCounterGroup>();
 
@@ -249,7 +288,7 @@ internal sealed class OpenTelemetryEndpointListener
 
         await pipeline.RunAsync(stoppingToken);
 
-        _Logger.LogTrace("Stopped metrics collection");
+        _Logger.LogInformation("Stopped metrics collection");
     }
 
     private async Task ListenToTraces(
@@ -258,7 +297,7 @@ internal sealed class OpenTelemetryEndpointListener
         Resource resource,
         CancellationToken stoppingToken)
     {
-        _Logger.LogTrace("Starting traces collection");
+        _Logger.LogInformation("Starting traces collection");
 
         var sources = options.TracingOptions.Sources.ToArray();
 
@@ -281,7 +320,7 @@ internal sealed class OpenTelemetryEndpointListener
 
         await pipeline.RunAsync(stoppingToken);
 
-        _Logger.LogTrace("Stopped traces collection");
+        _Logger.LogInformation("Stopped traces collection");
     }
 }
 #endif

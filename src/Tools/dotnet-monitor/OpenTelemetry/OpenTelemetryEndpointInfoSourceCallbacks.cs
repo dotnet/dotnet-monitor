@@ -32,8 +32,7 @@ internal sealed class OpenTelemetryEndpointInfoSourceCallbacks : IEndpointInfoSo
 
     Task IEndpointInfoSourceCallbacks.OnRemovedEndpointInfoAsync(IEndpointInfo endpointInfo, CancellationToken cancellationToken)
     {
-        _openTelemetryManager.StopListeningToEndpoint(endpointInfo);
-        return Task.CompletedTask;
+        return _openTelemetryManager.StopListeningToEndpointAsync(endpointInfo);
     }
 }
 #endif

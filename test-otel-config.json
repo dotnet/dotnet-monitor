@@ -1,0 +1,48 @@
+{
+  "DefaultProcess": {
+    "Filters": [{
+      "ProcessName": "WebApplication2"
+    }]
+  },
+  "OpenTelemetry": {
+    "Exporter": {
+      "Type": "otlp",
+      "Settings": {
+        "Defaults": {
+          "Protocol": "HttpProtobuf",
+          "BaseUrl": "http://localhost:4318"
+        }
+      }
+    },
+    "Logs": {
+      "Categories": {
+        "Default": "Information"
+      },
+      "IncludeScopes": true,
+      "Batch": {
+        "ExportIntervalMilliseconds": 5000
+      }
+    },
+    "Metrics": {
+      "Meters": {
+        "System.Runtime": [],
+        "Microsoft.AspNetCore.Hosting": [],
+        "Microsoft.AspNetCore.Server.Kestrel": []
+      },
+      "PeriodicExporting": {
+        "ExportIntervalMilliseconds": 10000
+      }
+    },
+    "Traces": {
+      "Sampler": 1.0,
+      "Sources": [
+        "Microsoft.AspNetCore",
+        "System.Net.Http",
+        "System.Net.Http.HttpClient"
+      ],
+      "Batch": {
+        "ExportIntervalMilliseconds": 5000
+      }
+    }
+  }
+}

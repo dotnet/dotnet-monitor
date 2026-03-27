@@ -4,7 +4,9 @@
 #if BUILDING_OTEL
 #nullable enable
 
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Diagnostics.Monitoring.WebApi;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -12,7 +14,7 @@ using OpenTelemetry.Configuration;
 
 namespace Microsoft.Diagnostics.Tools.Monitor.OpenTelemetry;
 
-internal sealed class OpenTelemetryEndpointManager
+internal sealed class OpenTelemetryEndpointManager : IAsyncDisposable
 {
     private readonly ILoggerFactory _LoggerFactory;
     private readonly ILogger<OpenTelemetryEndpointManager> _Logger;
@@ -54,7 +56,7 @@ internal sealed class OpenTelemetryEndpointManager
         endpointListener.StartListening();
     }
 
-    public void StopListeningToEndpoint(IEndpointInfo endpointInfo)
+    public async Task StopListeningToEndpointAsync(IEndpointInfo endpointInfo)
     {
         OpenTelemetryEndpointListener? endpointListener;
 
@@ -71,7 +73,23 @@ internal sealed class OpenTelemetryEndpointManager
             _Endpoints.Remove(endpointInfo.ProcessId);
         }
 
-        endpointListener.StopListening();
+        await endpointListener.StopListeningAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        List<OpenTelemetryEndpointListener> listeners;
+
+        lock (_Endpoints)
+        {
+            listeners = new List<OpenTelemetryEndpointListener>(_Endpoints.Values);
+            _Endpoints.Clear();
+        }
+
+        foreach (OpenTelemetryEndpointListener listener in listeners)
+        {
+            await listener.StopListeningAsync();
+        }
     }
 }
 #endif

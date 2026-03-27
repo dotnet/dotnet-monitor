@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Extensions.Logging;
 
+using System.Collections.Concurrent;
 using OpenTelemetry;
 using OpenTelemetry.Configuration;
 using OpenTelemetry.Resources;
@@ -20,6 +21,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenTelemetry.Tracing;
 
 internal sealed class OpenTelemetryActivityLogger : IActivityLogger
 {
+    private readonly ConcurrentDictionary<(string Name, string? Version), InstrumentationScope> _scopeCache = new();
     private readonly ILoggerFactory _LoggerFactory;
     private readonly Resource _Resource;
     private readonly OpenTelemetryOptions _Options;
@@ -82,11 +84,9 @@ internal sealed class OpenTelemetryActivityLogger : IActivityLogger
             return;
         }
 
-        // todo: Cache InstrumentationScopes
-        var scope = new InstrumentationScope(activity.Source.Name)
-        {
-            Version = activity.Source.Version
-        };
+        InstrumentationScope scope = _scopeCache.GetOrAdd(
+            (activity.Source.Name, activity.Source.Version),
+            static key => new InstrumentationScope(key.Name) { Version = key.Version });
 
         var spanInfo = new SpanInfo(
             scope,

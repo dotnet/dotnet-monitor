@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Microsoft.Diagnostics.Monitoring.EventPipe;
 using Microsoft.Extensions.Logging;
 
+using System.Collections.Concurrent;
 using OpenTelemetry;
 using OpenTelemetry.Configuration;
 using OpenTelemetry.Logging;
@@ -24,6 +25,8 @@ internal sealed class OpenTelemetryLogRecordLogger : ILogRecordLogger
 {
     [ThreadStatic]
     private static List<KeyValuePair<string, object?>>? s_ThreadAttributeStorage;
+
+    private readonly ConcurrentDictionary<string, InstrumentationScope> _scopeCache = new();
 
     private static readonly string[] LogLevels = new string[]
     {
@@ -99,8 +102,7 @@ internal sealed class OpenTelemetryLogRecordLogger : ILogRecordLogger
             return;
         }
 
-        // todo: Cache InstrumentationScopes
-        var scope = new InstrumentationScope(log.CategoryName);
+        InstrumentationScope scope = _scopeCache.GetOrAdd(log.CategoryName, static name => new InstrumentationScope(name));
 
         var attributeStorage = s_ThreadAttributeStorage;
         if (attributeStorage == null)

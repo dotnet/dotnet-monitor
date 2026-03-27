@@ -54,9 +54,16 @@ internal sealed class OpenTelemetryService : BackgroundService
             {
                 processInfo = await _DiagnosticServices.GetProcessAsync(processKey: null, stoppingToken);
             }
-            catch (Exception e) when (e is not OperationCanceledException || !stoppingToken.IsCancellationRequested)
+            catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
             {
-                // Note: Most likely we failed to resolve the pid. Attempt to do this again.
+                throw;
+            }
+            catch (Exception e)
+            {
+                // Process discovery can take time, especially on machines with many .NET processes.
+                // Log without the stack trace to avoid alarming users during normal startup.
+                _Logger.LogInformation("Waiting for target process to be discovered. Retrying in 5 seconds.");
+                _Logger.LogDebug(e, "Process discovery failed with exception.");
                 await Task.Delay(5000, stoppingToken);
                 continue;
             }
@@ -67,7 +74,7 @@ internal sealed class OpenTelemetryService : BackgroundService
 
             await WaitForOptionsReloadOrStop(_ProcessOptions, stoppingToken);
 
-            _OpenTelemetryEndpointManager.StopListeningToEndpoint(processInfo.EndpointInfo);
+            await _OpenTelemetryEndpointManager.StopListeningToEndpointAsync(processInfo.EndpointInfo);
         }
     }
 
