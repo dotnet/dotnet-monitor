@@ -10,6 +10,7 @@ $ErrorActionPreference = 'Stop'
 
 $resolvedPath = Resolve-Path $DiagRepoRoot
 $env:DIAGNOSTICS_REPO_ROOT=$resolvedPath
+$env:ENABLE_OTEL="true"
 
 #Generates a solution that spans both the diagnostics and the dotnet-monitor repo.
 #This can be used to build both projects in VS.
