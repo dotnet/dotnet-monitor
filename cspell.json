@@ -73,6 +73,7 @@
         "ndjson",
         "netcoreapp",
         "newtonsoft",
+        "nosuspend",
         "Notfication",
         "NTLM",
         "nupkg",
