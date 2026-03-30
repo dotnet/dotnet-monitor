@@ -276,34 +276,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
                     }
                     // EnumBinding<TEnum> values are represented as strings in query parameters.
                     // Populate enum values explicitly so OpenAPI documents them as enums.
-                    if (IsEnumBindingType(type) || enumType.GetCustomAttribute<FlagsAttribute>() != null)
-                    {
-                        schema.Enum = Enum.GetNames(enumType)
-                            .Select(name => JsonValue.Create(name))
-                            .ToList<JsonNode>();
-                    }
-                }
-                return Task.CompletedTask;
-            });
 
-            // Ensure nullable enums have correct schema
-            options.AddSchemaTransformer((schema, context, cancellationToken) =>
-            {
-                var type = context.JsonTypeInfo.Type;
-                if (TryGetNullableEnumType(type, out Type? enumType))
-                {
-                    if (enumType == null)
-                    {
-                        throw new InvalidOperationException("Unexpected null type");
-                    }
-                    schema.Type = JsonSchemaType.String | JsonSchemaType.Null;
-
-                    if (!IsEnumBindingType(type))
-                    {
-                        schema.Enum = Enum.GetNames(enumType)
-                            .Select(name => JsonValue.Create(name))
-                            .ToList<JsonNode>();
-                    }
+                    schema.Enum = Enum.GetNames(enumType)
+                        .Select(name => JsonValue.Create(name))
+                        .ToList<JsonNode>();
                 }
                 return Task.CompletedTask;
             });
