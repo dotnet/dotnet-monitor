@@ -22,25 +22,25 @@
       <Uri>https://github.com/dotnet/roslyn-analyzers</Uri>
       <Sha>16865ea61910500f1022ad2b96c499e5df02c228</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="9.0.0-beta.26168.2">
+    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="9.0.0-beta.26180.1">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>91828e6fea5ea06bea2d06532af9b974a8742ef4</Sha>
+      <Sha>57da0818c9c45c5b637d8534c4227eaae45dd6c0</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.Build.Tasks.Archives" Version="9.0.0-beta.26168.2">
+    <Dependency Name="Microsoft.DotNet.Build.Tasks.Archives" Version="9.0.0-beta.26180.1">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>91828e6fea5ea06bea2d06532af9b974a8742ef4</Sha>
+      <Sha>57da0818c9c45c5b637d8534c4227eaae45dd6c0</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.CodeAnalysis" Version="9.0.0-beta.26168.2">
+    <Dependency Name="Microsoft.DotNet.CodeAnalysis" Version="9.0.0-beta.26180.1">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>91828e6fea5ea06bea2d06532af9b974a8742ef4</Sha>
+      <Sha>57da0818c9c45c5b637d8534c4227eaae45dd6c0</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.Helix.Sdk" Version="9.0.0-beta.26168.2">
+    <Dependency Name="Microsoft.DotNet.Helix.Sdk" Version="9.0.0-beta.26180.1">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>91828e6fea5ea06bea2d06532af9b974a8742ef4</Sha>
+      <Sha>57da0818c9c45c5b637d8534c4227eaae45dd6c0</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="9.0.0-beta.26168.2">
+    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="9.0.0-beta.26180.1">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>91828e6fea5ea06bea2d06532af9b974a8742ef4</Sha>
+      <Sha>57da0818c9c45c5b637d8534c4227eaae45dd6c0</Sha>
     </Dependency>
     <Dependency Name="Microsoft.FileFormats" Version="1.0.637302">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
