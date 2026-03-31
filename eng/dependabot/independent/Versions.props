@@ -16,7 +16,7 @@
     <NJsonSchemaVersion>11.5.2</NJsonSchemaVersion>
     <SwashbuckleAspNetCoreVersion>10.1.7</SwashbuckleAspNetCoreVersion>
     <AwsSdkS3Version>4.0.19.4</AwsSdkS3Version>
-    <AwsSdkSecurityTokenVersion>4.0.5.12</AwsSdkSecurityTokenVersion>
+    <AwsSdkSecurityTokenVersion>4.0.5.15</AwsSdkSecurityTokenVersion>
 
     <!--
       Moq version & constants derived from Moq.
