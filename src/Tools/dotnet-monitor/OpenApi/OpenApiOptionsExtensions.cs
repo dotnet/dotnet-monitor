@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Diagnostics.Monitoring.Options;
+using Microsoft.Diagnostics.Monitoring.WebApi;
+
 using Microsoft.Diagnostics.Monitoring.WebApi.Controllers;
 using Microsoft.Diagnostics.Monitoring.WebApi.Models;
 using Microsoft.Diagnostics.Tools.Monitor.OpenApi.Transformers;
@@ -35,7 +37,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
             options.AddOperationTransformer<UnauthorizedResponseOperationTransformer>();
 
             // Make sure TimeSpan is represented as a string instead of a full object type
-            options.AddSchemaTransformer((schema, context, cancellationToken) => {
+            options.AddSchemaTransformer((schema, context, cancellationToken) =>
+            {
                 if (context.JsonTypeInfo.Type == typeof(TimeSpan?))
                 {
                     schema.Type = JsonSchemaType.String | JsonSchemaType.Null;
@@ -47,7 +50,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
             });
 
             // Make sure FileResult is represented as a string with binary format
-            options.AddSchemaTransformer((schema, context, cancellationToken) => {
+            options.AddSchemaTransformer((schema, context, cancellationToken) =>
+            {
                 if (context.JsonTypeInfo.Type == typeof(FileResult))
                 {
                     schema.Type = JsonSchemaType.String;
@@ -58,7 +62,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
             });
 
             // Make sure int is represented as type: integer
-            options.AddSchemaTransformer((schema, context, cancellationToken) => {
+            options.AddSchemaTransformer((schema, context, cancellationToken) =>
+            {
                 var type = context.JsonTypeInfo.Type;
                 if (type == typeof(int) || type == typeof(int?))
                 {
@@ -76,7 +81,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
                 type.Type == typeof(FileResult) ? null : OpenApiOptions.CreateDefaultSchemaReferenceId(type);
 
             // Fix ExceptionFilter schema to work around https://github.com/dotnet/aspnetcore/issues/61194
-            options.AddDocumentTransformer((document, context, cancellationToken) => {
+            options.AddDocumentTransformer((document, context, cancellationToken) =>
+            {
                 OpenApiComponents components = document.Components ??= new OpenApiComponents();
                 IDictionary<string, IOpenApiSchema> schemas = components.Schemas ??= new Dictionary<string, IOpenApiSchema>();
                 schemas[nameof(ExceptionFilter)] = new OpenApiSchema
@@ -95,7 +101,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
             });
 
             // Fix up nullable and uniqueItems
-            options.AddSchemaTransformer((schema, context, cancellationToken) => {
+            options.AddSchemaTransformer((schema, context, cancellationToken) =>
+            {
                 var type = context.JsonTypeInfo.Type;
                 if (type == typeof(CaptureParametersConfiguration))
                 {
@@ -154,7 +161,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
             });
 
             // Fix up "additionalProperties"
-            options.AddSchemaTransformer((schema, context, cancellationToken) => {
+            options.AddSchemaTransformer((schema, context, cancellationToken) =>
+            {
                 var type = context.JsonTypeInfo.Type;
                 if (type == typeof(CaptureParametersConfiguration) ||
                     type == typeof(CollectionRuleDetailedDescription) ||
@@ -194,7 +202,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
             });
 
             // Add missing descriptions on types that have DescriptionAttribute
-            options.AddSchemaTransformer((schema, context, cancellationToken) => {
+            options.AddSchemaTransformer((schema, context, cancellationToken) =>
+            {
                 var descriptionAttribute = context.JsonTypeInfo.Type.GetCustomAttributes<DescriptionAttribute>().ToArray();
                 if (descriptionAttribute.Length > 0)
                 {
@@ -203,69 +212,174 @@ namespace Microsoft.Diagnostics.Tools.Monitor.OpenApi
                 return Task.CompletedTask;
             });
 
-            options.AddDocumentTransformer((document, context, cancellationToken) => {
+            options.AddDocumentTransformer((document, context, cancellationToken) =>
+            {
                 document.Info.Title = "dotnet-monitor";
                 document.Info.Version = "1.0";
                 return Task.CompletedTask;
             });
 
-            // Ensure LogLevel parameter is represented as a schema reference
-            options.AddOperationTransformer((operation, context, cancellationToken) => {
-                if (operation.OperationId == nameof(DiagController.CaptureLogs))
+            // Ensure referenced enum component schemas exist for EnumBinding-backed query parameters.
+            options.AddDocumentTransformer((document, context, cancellationToken) =>
+            {
+                OpenApiComponents components = document.Components ??= new OpenApiComponents();
+                IDictionary<string, IOpenApiSchema> schemas = components.Schemas ??= new Dictionary<string, IOpenApiSchema>();
+
+                EnsureEnumSchema<DumpType>(schemas, defaultValue: DumpType.WithHeap);
+                EnsureEnumSchema<TraceProfile>(schemas, defaultValue: TraceProfile.Cpu | TraceProfile.Http | TraceProfile.Metrics | TraceProfile.GcCollect);
+
+                //TODO Figure out why this is the only nullable enum
+                EnsureEnumSchema<LogLevel>(schemas, nullable: true);
+
+                return Task.CompletedTask;
+            });
+
+            // Ensure enum query parameters that use EnumBinding<T> are represented as enums.
+            options.AddOperationTransformer((operation, context, cancellationToken) =>
+            {
+                if (operation.Parameters is IList<IOpenApiParameter> parameters)
                 {
-                    if (operation.Parameters is IList<IOpenApiParameter> parameters)
+                    foreach (var parameter in parameters)
                     {
-                        foreach (var parameter in operation.Parameters)
+                        if (parameter is not OpenApiParameter openApiParameter)
                         {
-                            if (parameter.Name == "level")
-                            {
-                                if (parameter is OpenApiParameter openApiParameter)
-                                {
-                                    openApiParameter.Schema = new OpenApiSchemaReference(nameof(LogLevel));
-                                }
-                            }
+                            continue;
+                        }
+
+                        if (operation.OperationId == nameof(DiagController.CaptureLogs) && parameter.Name == "level")
+                        {
+                            openApiParameter.Schema = new OpenApiSchemaReference(nameof(LogLevel));
+                        }
+                        else if (operation.OperationId == nameof(DiagController.CaptureDump) && parameter.Name == "type")
+                        {
+                            openApiParameter.Schema = new OpenApiSchemaReference(nameof(DumpType));
+                        }
+                        else if (operation.OperationId == nameof(DiagController.CaptureTrace) && parameter.Name == "profile")
+                        {
+                            openApiParameter.Schema = new OpenApiSchemaReference(nameof(TraceProfile));
                         }
                     }
                 }
                 return Task.CompletedTask;
             });
 
-            // Ensure enums have type: string
-            options.AddSchemaTransformer((schema, context, cancellationToken) => {
-                var type = context.JsonTypeInfo.Type;
-                if (type.IsEnum)
-                {
-                    schema.Type = JsonSchemaType.String;
-
-                    // Also treat enums with [Flags] as enums in the schema
-                    if (type.GetCustomAttribute<FlagsAttribute>() != null)
-                    {
-                        schema.Enum = Enum.GetNames(type)
-                            .Select(name => JsonValue.Create(name))
-                            .ToList<JsonNode>();
-                    }
-                }
-                return Task.CompletedTask;
-            });
-
-            // Ensure nullable enums have correct schema
+            //Ensure enums have type: string
             options.AddSchemaTransformer((schema, context, cancellationToken) =>
             {
                 var type = context.JsonTypeInfo.Type;
-                if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+                if (TryGetEnumType(type, out Type? enumType, out bool isNullableEnum))
                 {
-                    Type typeArg = type.GetGenericArguments().First();
-                    if (typeArg.IsEnum)
+                    schema.Type = isNullableEnum ? JsonSchemaType.String | JsonSchemaType.Null : JsonSchemaType.String;
+                    if (enumType == null)
                     {
-                        schema.Type = JsonSchemaType.String | JsonSchemaType.Null;
-
-                        schema.Enum = Enum.GetNames(typeArg)
-                            .Select(name => JsonValue.Create(name))
-                            .ToList<JsonNode>();
+                        throw new InvalidOperationException("Unexpected null Type");
                     }
+                    // EnumBinding<TEnum> values are represented as strings in query parameters.
+                    // Populate enum values explicitly so OpenAPI documents them as enums.
+
+                    schema.Enum = Enum.GetNames(enumType)
+                        .Select(name => JsonValue.Create(name))
+                        .ToList<JsonNode>();
                 }
                 return Task.CompletedTask;
             });
+        }
+
+        private static bool TryGetEnumType(Type type, out Type? enumType, out bool isNullableEnum)
+        {
+            if (type.IsEnum)
+            {
+                enumType = type;
+                isNullableEnum = false;
+                return true;
+            }
+
+            if (TryGetNullableEnumType(type, out enumType))
+            {
+                isNullableEnum = true;
+                return true;
+            }
+
+            if (TryGetEnumBindingEnumType(type, out enumType, out isNullableEnum))
+            {
+                return true;
+            }
+
+            enumType = null;
+            isNullableEnum = false;
+            return false;
+        }
+
+        private static bool TryGetNullableEnumType(Type type, out Type? enumType)
+        {
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                Type typeArg = type.GetGenericArguments().First();
+                if (typeArg.IsEnum)
+                {
+                    enumType = typeArg;
+                    return true;
+                }
+            }
+
+            enumType = null;
+            return false;
+        }
+
+        private static bool TryGetEnumBindingEnumType(Type type, out Type? enumType, out bool isNullableEnum)
+        {
+            isNullableEnum = false;
+            Type checkType = type;
+
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                checkType = type.GetGenericArguments().First();
+                isNullableEnum = true;
+            }
+
+            if (IsEnumBindingType(checkType))
+            {
+                Type typeArg = checkType.GetGenericArguments().First();
+                if (typeArg.IsEnum)
+                {
+                    enumType = typeArg;
+                    return true;
+                }
+            }
+
+            enumType = null;
+            isNullableEnum = false;
+            return false;
+        }
+
+        private static bool IsEnumBindingType(Type type)
+        {
+            return type.IsGenericType
+                && type.GetGenericTypeDefinition() == typeof(EnumBinding<>);
+        }
+
+        private static void EnsureEnumSchema<TEnum>(IDictionary<string, IOpenApiSchema> schemas, bool nullable = false,
+            TEnum? defaultValue = null) where TEnum : struct, Enum
+        {
+            string schemaName = typeof(TEnum).Name;
+            if (!schemas.TryGetValue(schemaName, out IOpenApiSchema? lookupSchema))
+            {
+                lookupSchema = new OpenApiSchema();
+                schemas.Add(schemaName, lookupSchema);
+            }
+
+            if (lookupSchema is OpenApiSchema schema)
+            {
+                schema.Type = JsonSchemaType.String | (nullable ? JsonSchemaType.Null : 0);
+                schema.Enum = Enum.GetNames(typeof(TEnum))
+                    .Select(name => JsonValue.Create(name))
+                    .ToList<JsonNode>();
+
+                if (defaultValue != null)
+                {
+                    schema.Default = JsonValue.Create(defaultValue.Value.ToString());
+                }
+            }
         }
 
         public static void AddBearerTokenAuthOption(this OpenApiOptions options, string securityDefinitionName)
