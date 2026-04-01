@@ -3,7 +3,7 @@
   <Import Project="dependabot/Versions.props" />
   <PropertyGroup Label="Versioning">
     <RepositoryUrl>https://github.com/dotnet/dotnet-monitor</RepositoryUrl>
-    <VersionPrefix>10.0.1</VersionPrefix>
+    <VersionPrefix>10.0.2</VersionPrefix>
     <PreReleaseVersionLabel>servicing</PreReleaseVersionLabel>
     <DotnetFinalVersionKind>release</DotnetFinalVersionKind>
     <!-- Disable final version kind until merged into release branch. -->
@@ -53,10 +53,10 @@
     <MicrosoftFileFormatsVersion>1.0.707702</MicrosoftFileFormatsVersion>
     <!-- dotnet/dotnet references -->
     <MicrosoftAspNetCoreAppRuntimewinx64Version>10.0.0</MicrosoftAspNetCoreAppRuntimewinx64Version>
-    <MicrosoftCodeAnalysisNetAnalyzersVersion>10.0.201</MicrosoftCodeAnalysisNetAnalyzersVersion>
-    <MicrosoftDotNetBuildTasksArchivesVersion>10.0.0-beta.26153.3</MicrosoftDotNetBuildTasksArchivesVersion>
-    <MicrosoftDotNetCodeAnalysisVersion>10.0.0-beta.26153.3</MicrosoftDotNetCodeAnalysisVersion>
-    <MicrosoftDotNetXUnitExtensionsVersion>10.0.0-beta.26153.3</MicrosoftDotNetXUnitExtensionsVersion>
+    <MicrosoftCodeAnalysisNetAnalyzersVersion>10.0.100</MicrosoftCodeAnalysisNetAnalyzersVersion>
+    <MicrosoftDotNetBuildTasksArchivesVersion>10.0.0-beta.26177.7</MicrosoftDotNetBuildTasksArchivesVersion>
+    <MicrosoftDotNetCodeAnalysisVersion>10.0.0-beta.26177.7</MicrosoftDotNetCodeAnalysisVersion>
+    <MicrosoftDotNetXUnitExtensionsVersion>10.0.0-beta.26177.7</MicrosoftDotNetXUnitExtensionsVersion>
     <MicrosoftNETCoreAppRuntimewinx64Version>10.0.0</MicrosoftNETCoreAppRuntimewinx64Version>
     <SystemCommandLineVersion>2.0.0</SystemCommandLineVersion>
     <VSRedistCommonAspNetCoreSharedFrameworkx64100Version>10.0.0-rtm.25523.111</VSRedistCommonAspNetCoreSharedFrameworkx64100Version>
