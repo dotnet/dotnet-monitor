@@ -134,12 +134,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 [Description("Process name used to identify the target process.")]
                 string? name,
                 [Description("The type of dump to capture.")]
-                Models.DumpType type = Models.DumpType.WithHeap,
+                EnumBinding<Models.DumpType>? type = null,
                 [Description("The egress provider to which the dump is saved.")]
                 string? egressProvider = null,
                 [Description("An optional set of comma-separated identifiers users can include to make an operation easier to identify.")]
                 string? tags = null) =>
-                    new DiagController(context, logger).CaptureDump(pid, uid, name, type, egressProvider, tags))
+                    new DiagController(context, logger).CaptureDump(pid, uid, name, type?.Value ?? Models.DumpType.WithHeap, egressProvider, tags))
                 .WithName(nameof(CaptureDump))
                 .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
@@ -186,7 +186,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 [Description("Process name used to identify the target process.")]
                 string? name,
                 [Description("The profiles enabled for the trace session.")]
-                TraceProfile profile = DefaultTraceProfiles,
+                EnumBinding<TraceProfile>? profile = null,
                 [Description("The duration of the trace session (in seconds).")]
                 [Range(-1, int.MaxValue)]
                 int durationSeconds = 30,
@@ -194,7 +194,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 string? egressProvider = null,
                 [Description("An optional set of comma-separated identifiers users can include to make an operation easier to identify.")]
                 string? tags = null) =>
-                    new DiagController(context, logger).CaptureTrace(pid, uid, name, profile, durationSeconds, egressProvider, tags))
+                    new DiagController(context, logger).CaptureTrace(pid, uid, name, profile?.Value ?? DefaultTraceProfiles, durationSeconds, egressProvider, tags))
                 .WithName(nameof(CaptureTrace))
                 .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
@@ -252,12 +252,12 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 [Range(-1, int.MaxValue)]
                 int durationSeconds = 30,
                 [Description("The level of the logs to capture.")]
-                LogLevel? level = null,
+                EnumBinding<LogLevel>? level = null,
                 [Description("The egress provider to which the logs are saved.")]
                 string? egressProvider = null,
                 [Description("An optional set of comma-separated identifiers users can include to make an operation easier to identify.")]
                 string? tags = null) =>
-                    new DiagController(context, logger).CaptureLogs(pid, uid, name, durationSeconds, level, egressProvider, tags))
+                    new DiagController(context, logger).CaptureLogs(pid, uid, name, durationSeconds, level?.Value, egressProvider, tags))
                 .WithName(nameof(CaptureLogs))
                 .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
