@@ -17,6 +17,7 @@
 - **[Metrics Configuration](./metrics-configuration.md)** - Configuration of the `/metrics` endpoint for live metrics collection
 - **[Egress Configuration](./egress-configuration.md)** - When `dotnet-monitor` is used to produce artifacts such as dumps or traces, an egress provider enables the artifacts to be stored in a manner suitable for the hosting environment rather than streamed back directly.]
 - **[In-Process Features Configuration](./in-process-features-configuration.md)** - Some features of `dotnet monitor` require loading libraries into target applications that may have performance impact on memory and CPU utilization
+- **[OpenTelemetry Configuration](./opentelemetry-configuration.md)** - Configure out-of-process telemetry forwarding of logs, metrics, and traces to any OTLP-compatible backend
 - **[Garbage Collector Mode](#garbage-collector-mode)** - Configure which GC mode is used by the `dotnet monitor` process.
 
 ## Kestrel Configuration
