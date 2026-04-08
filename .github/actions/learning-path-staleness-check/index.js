@@ -202,7 +202,7 @@ function ValidateLinks(learningPathContents, repoURLToSearch, modifiedPRFiles, l
 
 const main = async () => {
 
-  const [core] = await actionUtils.installAndRequirePackages("@actions/core");
+  const [core] = await actionUtils.installAndRequirePackages({ name: "@actions/core", version: "2" });
 
   try {
     const learningPathDirectory = core.getInput('learningPathsDirectory', { required: true });

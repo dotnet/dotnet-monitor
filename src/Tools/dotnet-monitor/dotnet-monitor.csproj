@@ -39,13 +39,15 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.Options\Microsoft.Diagnostics.Monitoring.Options.csproj" />
     <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.WebApi\Microsoft.Diagnostics.Monitoring.WebApi.csproj" />
-    <!-- This is a build-ordering dependency only - we don't want this hook to appear directly in the our referenced libraries, we
-         need to customize it's layout. We _do_ however need to ensure that it _gets built_ before we build/publish. -->
+    <!-- This is a build-ordering dependency only - we don't want this hook to appear directly in our referenced libraries, we
+         need to customize its layout. We _do_ however need to ensure that it _gets built_ before we build/publish.
+         The actual publish of StartupHook is handled by PublishProjectsBeforePack (during pack) and
+         PublishProjectsAfterBuild in eng/AfterSolutionBuild.targets (during CI).
+         Do NOT add AdditionalProperties or Targets="Publish" here - doing so creates a separate MSBuild
+         project instance that races with test projects' references during parallel builds. -->
     <ProjectReference Include="..\..\Microsoft.Diagnostics.Monitoring.StartupHook\Microsoft.Diagnostics.Monitoring.StartupHook.csproj"
-      AdditionalProperties="RuntimeIdentifier=;PublishDir=$(StartupHookPublishPath)"
-      GlobalPropertiesToRemove="PublishSingleFile"
-      Targets="Publish"
-      ReferenceOutputAssembly="false" />
+      ReferenceOutputAssembly="false"
+      Private="false" />
   </ItemGroup>
 
   <ItemGroup>
