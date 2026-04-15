@@ -10,7 +10,7 @@ using System.Reflection;
 namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
 {
     /// <summary>
-    /// Workaround for NJsonSchema 11.6.0+ where [EnumDataType] support (PR #1890)
+    /// Workaround for NJsonSchema 11.6.0+ where [EnumDataType] support (PR #1890 in https://github.com/RicoSuter/NJsonSchema/pull/1890)
     /// causes nullable enum properties to lose their null type in oneOf schemas.
     /// When a property is Nullable&lt;TEnum&gt; with [EnumDataType(typeof(TEnum))],
     /// NJsonSchema replaces the effective type with TEnum (non-nullable), dropping
