@@ -316,6 +316,7 @@ namespace Microsoft.Diagnostics.Monitoring.ConfigurationSchema
                 };
 
                 _settings.SchemaProcessors.Add(new ExperimentalSchemaProcessor());
+                _settings.SchemaProcessors.Add(new NullableEnumSchemaProcessor());
 
                 _resolver = new JsonSchemaResolver(rootSchema, _settings);
 
