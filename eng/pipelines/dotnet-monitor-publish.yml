@@ -183,7 +183,7 @@ extends:
           condition: and(succeeded(), ${{ eq(parameters.DraftRelease, false) }})
           inputs:
             filePath: $(DRP_RepoRoot)\eng\release\Scripts\PublishToNuget.ps1
-            arguments: -ManifestPath $(DRP_OutputManifestPath) -StagingPath $(DRP_MonitorRelease) -FeedEndpoint $(DRP_NugetFeed) -FeedPat $(DotNetNugetApiKey-A4)
+            arguments: -ManifestPath $(DRP_OutputManifestPath) -StagingPath $(DRP_MonitorRelease) -FeedEndpoint $(DRP_NugetFeed) -FeedPat $(DotNetNugetApiKey-A9)
             failOnStderr: true
     - stage: Release
       displayName: Create GitHub Release
