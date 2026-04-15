@@ -28,7 +28,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             public bool Accept(ActionConstraintContext context)
             {
-                return !_restrictedPorts.Any(port => context.RouteContext.HttpContext.Request.Host.Port == port);
+                return !_restrictedPorts.Any(port => context.RouteContext.HttpContext.Connection.LocalPort == port);
             }
         }
 
