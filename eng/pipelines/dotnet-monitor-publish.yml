@@ -169,6 +169,15 @@ extends:
         displayName: Push To NuGet
         condition: succeeded()
         timeoutInMinutes: 0
+        templateContext:
+          outputs:
+          - output: nuget
+            displayName: Push To NuGet.org
+            condition: and(succeeded(), ${{ eq(parameters.DraftRelease, false) }})
+            packageParentPath: '$(Build.StagingDirectory)'
+            packagesToPush: '$(Build.StagingDirectory)/NuGetStaging/*.nupkg'
+            nuGetFeedType: external
+            publishFeedCredentials: 'nuget.org (dotnetframework)'
         steps:
         - checkout: self
         - download: dotnet-monitor_build
@@ -203,14 +212,6 @@ extends:
                   $count++
               }
               Write-Host "Staged $count package(s) to $outputDir"
-        - task: NuGetCommand@2
-          displayName: Push To NuGet
-          condition: and(succeeded(), ${{ eq(parameters.DraftRelease, false) }})
-          inputs:
-            command: push
-            packagesToPush: '$(Build.StagingDirectory)\NuGetStaging\*.nupkg'
-            nuGetFeedType: external
-            publishFeedCredentials: 'nuget.org (dotnetframework)'
     - stage: Release
       displayName: Create GitHub Release
       dependsOn: Nuget
