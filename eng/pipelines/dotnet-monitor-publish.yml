@@ -185,6 +185,7 @@ extends:
                 inputs:
                   artifactName: StagingToolAssetsLayout
                   targetPath: $(Pipeline.Workspace)\dotnet-monitor_build\StagingToolAssetsLayout
+                  pipeline: dotnet-monitor_build
               - task: PowerShell@2
                 displayName: Stage NuGet Packages
                 condition: and(succeeded(), ${{ eq(parameters.DraftRelease, false) }})
