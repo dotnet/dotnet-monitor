@@ -181,17 +181,12 @@ extends:
             deploy:
               steps:
               - task: 1ES.DownloadPipelineArtifact@1
-                displayName: Download StagingToolAssetsLayout
-                inputs:
-                  artifactName: StagingToolAssetsLayout
-                  targetPath: $(Pipeline.Workspace)\dotnet-monitor_build\StagingToolAssetsLayout
-                  pipeline: dotnet-monitor_build
-              - task: 1ES.DownloadPipelineArtifact@1
                 displayName: Download SBOM
                 inputs:
                   artifactName: PackSignPublish_Pack_and_Sign_SBOM
                   targetPath: $(Agent.TempDirectory)\SbomArtifact
                   pipeline: dotnet-monitor_build
+                  sbomValidate: false
               - task: PowerShell@2
                 displayName: Copy SBOM to StagingToolAssetsLayout
                 inputs:
@@ -201,6 +196,13 @@ extends:
                     $destination = "$(Pipeline.Workspace)\dotnet-monitor_build\StagingToolAssetsLayout\_manifest"
                     Write-Host "Copying SBOM from $source to $destination"
                     Copy-Item -Path $source -Destination $destination -Recurse -Force
+              - task: 1ES.DownloadPipelineArtifact@1
+                displayName: Download StagingToolAssetsLayout
+                inputs:
+                  artifactName: StagingToolAssetsLayout
+                  targetPath: $(Pipeline.Workspace)\dotnet-monitor_build\StagingToolAssetsLayout
+                  pipeline: dotnet-monitor_build
+                  sbomValidate: false
               - task: PowerShell@2
                 displayName: Stage NuGet Packages
                 condition: and(succeeded(), ${{ eq(parameters.DraftRelease, false) }})
