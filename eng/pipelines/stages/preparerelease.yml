@@ -87,6 +87,22 @@ stages:
             --client-id "$env:servicePrincipalId"
             -v True
 
+      - task: DownloadPipelineArtifact@2
+        displayName: Download SBOM Artifact
+        inputs:
+          artifactName: PackSignPublish_Pack_and_Sign_SBOM
+          targetPath: '$(Agent.TempDirectory)\SbomArtifact'
+
+      - task: PowerShell@2
+        displayName: Copy SBOM to Assets Layout
+        inputs:
+          targetType: inline
+          script: |
+            $source = "$(Agent.TempDirectory)\SbomArtifact\PackSignPublish_Pack_and_Sign_SBOM\_manifest"
+            $destination = "$(System.ArtifactsDirectory)\AssetsLayout\NugetAssets\_manifest"
+            Write-Host "Copying SBOM from $source to $destination"
+            Copy-Item -Path $source -Destination $destination -Recurse -Force
+
       - template: /eng/pipelines/steps/publish-pipeline-artifact.yml@self
         parameters:
           displayName: 'Upload Assets Layout'
