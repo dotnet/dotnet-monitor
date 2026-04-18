@@ -99,7 +99,7 @@ stages:
           targetType: inline
           script: |
             $source = "$(Agent.TempDirectory)\SbomArtifact\PackSignPublish_Pack_and_Sign_SBOM\_manifest"
-            $destination = "$(System.ArtifactsDirectory)\AssetsLayout\NugetAssets\_manifest"
+            $destination = "$(System.ArtifactsDirectory)\AssetsLayout\_manifest"
             Write-Host "Copying SBOM from $source to $destination"
             Copy-Item -Path $source -Destination $destination -Recurse -Force
 
