@@ -2,21 +2,22 @@ const util = require("util");
 const fs = require("fs");
 const jsExec = util.promisify(require("child_process").exec);
 
-module.exports.installAndRequirePackages = async function(...newPackages)
-{
+module.exports.installAndRequirePackages = async function (...packages) {
+    // Back-compat: allow strings ("@actions/core") as well as objects ({ name, version })
+    const normalized = packages.map(p => typeof p === "string" ? { name: p } : p);
+
+    const installSpecs = normalized.map(p =>
+        p.version ? `${p.name}@${p.version}` : p.name
+    );
+
     console.log("Installing npm dependency");
-    const { stdout, stderr } = await jsExec(`npm install ${newPackages.join(' ')}`);
+    const { stdout, stderr } = await jsExec(`npm install ${installSpecs.join(" ")}`);
     console.log("npm-install stderr:\n\n" + stderr);
     console.log("npm-install stdout:\n\n" + stdout);
     console.log("Finished installing npm dependencies");
 
-    let requiredPackages = [];
-    for (const packageName of newPackages) {
-        requiredPackages.push(require(packageName));
-    }
-
-    return requiredPackages;
-}
+    return normalized.map(p => require(p.name));
+};
 
 function splitVersionTag(tag) {
     const regex = /v(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)(-(?<versionLabel>[a-zA-Z]+)\.(?<iteration>\d+))?/;

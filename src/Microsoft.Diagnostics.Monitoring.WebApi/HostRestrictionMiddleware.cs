@@ -32,8 +32,9 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
             var metadata = context.GetEndpoint()?.Metadata.GetMetadata<HostRestrictionAttribute>();
             if (metadata != null)
             {
+                int localPort = context.Connection.LocalPort;
                 var _restrictedPorts = _metricsPortsProvider.MetricsPorts.ToArray();
-                if (_restrictedPorts.Any(port => context.Request.Host.Port == port))
+                if (_restrictedPorts.Any(port => localPort == port))
                 {
                     context.Response.StatusCode = StatusCodes.Status404NotFound;
                     return;
