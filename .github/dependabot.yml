@@ -27,6 +27,9 @@ updates:
       patterns:
       - Microsoft.Identity.*
       - Microsoft.IdentityModel.*
+    aws-sdk-dependencies:
+      patterns:
+      - AWSSDK.*
 - package-ecosystem: nuget
   directory: /eng/dependabot/nuget.org
   schedule:
@@ -107,6 +110,9 @@ updates:
       patterns:
       - Microsoft.Identity.*
       - Microsoft.IdentityModel.*
+    aws-sdk-dependencies:
+      patterns:
+      - AWSSDK.*
 - package-ecosystem: nuget
   directory: /eng/dependabot/nuget.org
   schedule:
@@ -187,6 +193,9 @@ updates:
       patterns:
       - Microsoft.Identity.*
       - Microsoft.IdentityModel.*
+    aws-sdk-dependencies:
+      patterns:
+      - AWSSDK.*
 - package-ecosystem: nuget
   directory: /eng/dependabot/nuget.org
   schedule:
@@ -250,6 +259,9 @@ updates:
       patterns:
       - Microsoft.Identity.*
       - Microsoft.IdentityModel.*
+    aws-sdk-dependencies:
+      patterns:
+      - AWSSDK.*
 - package-ecosystem: nuget
   directory: /eng/dependabot/nuget.org
   schedule:
