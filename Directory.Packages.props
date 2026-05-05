@@ -29,9 +29,6 @@
     <PackageVersion Include="OpenTelemetry.OutOfProcess.Forwarder.Configuration" Version="0.1.0-beta.1" />
     <PackageVersion Include="System.CommandLine" Version="$(SystemCommandLineVersion)" />
     <PackageVersion Include="System.Private.Uri" Version="$(SystemPrivateUriVersion)" />
-
-    <!-- Temporary override to bypass build failure for transitive dependencies-->
-    <PackageVersion Include="System.Security.Cryptography.Xml" Version="10.0.6" />
     <PackageVersion Include="System.Text.Json" Version="$(SystemTextJsonVersion)" />
   </ItemGroup>
 </Project>
