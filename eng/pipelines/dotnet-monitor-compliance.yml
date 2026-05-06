@@ -68,13 +68,15 @@ extends:
           inputs:
             azureSubscription: 'DotNetStaging'
             scriptType: ps
-            scriptPath: '$(Build.Repository.LocalPath)/eng/release/Scripts/AcquireBuild.ps1'
-            arguments: >-
-              -BarBuildId "$(BuildBarId)"
-              -AzdoToken "$(dn-bot-all-drop-rw-code-rw-release-all)"
-              -DownloadTargetPath "$(System.ArtifactsDirectory)\BuildAssets"
-              -ReleaseVersion "$(BuildVersion)"
-              -Separated $False
+            scriptLocation: inlineScript
+            inlineScript: |
+              $azdoToken = az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 --query accessToken -o tsv
+              & '$(Build.Repository.LocalPath)/eng/release/Scripts/AcquireBuild.ps1' `
+                -BarBuildId "$(BuildBarId)" `
+                -AzdoToken $azdoToken `
+                -DownloadTargetPath "$(System.ArtifactsDirectory)\BuildAssets" `
+                -ReleaseVersion "$(BuildVersion)" `
+                -Separated $False
             workingDirectory: '$(Build.Repository.LocalPath)'
           continueOnError: true
 
