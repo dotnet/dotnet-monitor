@@ -5,6 +5,8 @@
     <FileSignInfo Include="AWSSDK.SecurityToken.dll" CertificateName="3PartySHA2" />
     <FileSignInfo Include="Newtonsoft.Json.dll" CertificateName="3PartySHA2" />
     <FileSignInfo Include="Newtonsoft.Json.Bson.dll" CertificateName="3PartySHA2" />
+    <FileSignInfo Include="OpenTelemetry.OutOfProcess.Forwarder.dll" CertificateName="3PartySHA2" />
+    <FileSignInfo Include="OpenTelemetry.OutOfProcess.Forwarder.Configuration.dll" CertificateName="3PartySHA2" />
   </ItemGroup>
   <ItemGroup Condition="'$(SignAllBinaries)' != 'true'">
     <!--
