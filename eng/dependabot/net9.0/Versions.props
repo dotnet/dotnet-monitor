@@ -12,6 +12,6 @@
     <!-- Microsoft.NETCore.App -->
     <MicrosoftNETCoreApp90Version>9.0.11</MicrosoftNETCoreApp90Version>
     <!-- System.Text.Json -->
-    <SystemTextJson90Version>9.0.15</SystemTextJson90Version>
+    <SystemTextJson90Version>10.0.3</SystemTextJson90Version>
   </PropertyGroup>
 </Project>
