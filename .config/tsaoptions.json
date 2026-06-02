@@ -4,7 +4,7 @@
     "projectName": "DEVDIV",
     "areaPath": "DevDiv\\VS Diagnostics\\Production Diagnostics\\Dotnet Monitor",
     "iterationPath": "DevDiv",
-    "notificationAliases": [ "dotnetmonitorsdl@microsoft.com" ],
+    "notificationAliases": [ "NETMonitorSdl@microsoft.com" ],
     "repositoryName": "dotnet-dotnet-monitor",
     "codebaseName": "dotnet-dotnet-monitor"
 }
