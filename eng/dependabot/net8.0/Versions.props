@@ -12,6 +12,6 @@
     <!-- Microsoft.NETCore.App -->
     <MicrosoftNETCoreApp80Version>8.0.27</MicrosoftNETCoreApp80Version>
     <!-- System.Text.Json -->
-    <SystemTextJson80Version>10.0.3</SystemTextJson80Version>
+    <SystemTextJson80Version>10.0.8</SystemTextJson80Version>
   </PropertyGroup>
 </Project>
