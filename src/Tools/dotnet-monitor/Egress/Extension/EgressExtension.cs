@@ -141,6 +141,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
                 executablePath = Path.Combine(_extensionPath, exeName);
 
                 ValidateFileExists(new FileInfo(executablePath));
+
+                EnsureExecutePermission(executablePath);
             }
             else
             {
@@ -253,6 +255,24 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Egress
             if (!fileInfo.Exists)
             {
                 ExtensionException.ThrowFileNotFound(_manifest.Name, fileInfo.FullName);
+            }
+        }
+
+        private static void EnsureExecutePermission(string filePath)
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                return;
+            }
+
+            // Self-contained extensions are launched as native executables (ExecutableFileName). When the tool is
+            // installed from a NuGet package, only the tool's own entry point receives the execute bit; bundled
+            // extension executables do not. Ensure the execute bits are set so the extension process can be started.
+            UnixFileMode currentMode = File.GetUnixFileMode(filePath);
+            UnixFileMode desiredMode = currentMode | UnixFileMode.UserExecute | UnixFileMode.GroupExecute | UnixFileMode.OtherExecute;
+            if (currentMode != desiredMode)
+            {
+                File.SetUnixFileMode(filePath, desiredMode);
             }
         }
 

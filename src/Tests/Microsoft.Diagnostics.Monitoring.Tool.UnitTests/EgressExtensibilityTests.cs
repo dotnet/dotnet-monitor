@@ -135,12 +135,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
             CopyExtensionFiles(extensionDirPath);
 
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                string executablePath = Path.Combine(extensionDirPath, EgressExtensibilityTestsConstants.AppName);
-
-                File.SetUnixFileMode(executablePath, UnixFileMode.UserExecute);
-            }
+            // The extension executable is copied without its execute bit (File.Copy does not preserve Unix
+            // permissions), mirroring how a self-contained extension arrives from a NuGet tool package. The
+            // product is responsible for ensuring the execute permission before launching the extension, so it
+            // is intentionally NOT set here.
 
             var extensionDiscoverer = host.Services.GetService<ExtensionDiscoverer>();
             return extensionDiscoverer.FindExtension<IEgressExtension>(EgressExtensibilityTestsConstants.ProviderName);

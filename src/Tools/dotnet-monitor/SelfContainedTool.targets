@@ -1,0 +1,116 @@
+<Project>
+
+  <!--
+    Self-contained tool build (dotnet-monitor-selfcontained).
+
+    Activated by the single global toggle 'DotNetMonitorBuildSelfContainedTool=true'. Everything in this file is
+    PROJECT-LOCAL: the self-contained/single-file/trimmed properties are deliberately NOT passed as global
+    properties, because global properties cascade into every ProjectReference (StartupHook, WebApi, Options,
+    extensions) and break their publishes (NETSDK1097/1099) or collide on PackageId ("ambiguous project name").
+    The toggle itself is the only global property; all of the behavior it switches on lives here.
+
+    When the toggle is off this file contributes nothing, so the default framework-dependent dotnet-monitor
+    package is completely unaffected.
+
+    Layout note: for a RID-specific self-contained tool the SDK packs the host at tools/any/<rid>/ (the short
+    TFM segment becomes "any" once SelfContained=true - see Microsoft.NET.PackTool.targets). The runtime asset
+    discovery in dotnet-monitor is relative to the executable directory, so the profilers, startup hook, and
+    extensions are injected next to the host at that same tools/any/<rid>/ root.
+  -->
+
+  <PropertyGroup Condition="'$(DotNetMonitorBuildSelfContainedTool)' == 'true'">
+    <PackageId>dotnet-monitor-selfcontained</PackageId>
+
+    <!-- Override the repo-wide RuntimeIdentifiers (set in Directory.Build.props) with the self-contained tool's
+         supported set. This drives the SDK to produce a base wrapper package plus one package per RID.
+         ToolPackageRuntimeIdentifiers is pinned as well so the per-RID package set cannot be widened by shim
+         RIDs (PackAsToolShimRuntimeIdentifiers), which would otherwise leak into RuntimeIdentifiers. -->
+    <ToolPackageRuntimeIdentifiers>win-x64;linux-x64</ToolPackageRuntimeIdentifiers>
+    <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
+    <!-- The framework-dependent tool sets PackAsToolShimRuntimeIdentifiers (in src\Tools\Directory.Build.props)
+         to ship native apphost shims for the whole RID matrix inside a single framework-dependent package. The
+         self-contained tool uses a different model entirely - one self-contained, RID-specific package per RID,
+         each carrying its own apphost - so the shim mechanism must be disabled. Leaving it on would re-expand
+         RuntimeIdentifiers to the full matrix (forcing matrix-wide restore) and emit unwanted shims. -->
+    <PackAsToolShimRuntimeIdentifiers></PackAsToolShimRuntimeIdentifiers>
+
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <PublishTrimmed>true</PublishTrimmed>
+    <!-- Conservative trimming: only assemblies marked IsTrimmable (mostly the BCL/runtime) are trimmed; the app
+         and ASP.NET Core assemblies are left intact to minimize the risk of runtime breakage. -->
+    <TrimMode>partial</TrimMode>
+    <!-- dotnet-monitor relies on reflection-based JSON serialization (e.g. generatekey) and reflection-based
+         configuration binding (consistent with the framework-dependent host, which already sets
+         EnableConfigurationBindingGenerator=false). PublishTrimmed disables reflection JSON by default, so it is
+         re-enabled here; this works because partial trimming leaves the relevant assemblies untrimmed. -->
+    <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
+
+    <!-- Partial trimming does not trim the app/SDK assemblies that the trim and single-file analyzers warn about,
+         so those warnings do not correspond to real removals. They are suppressed so the build passes under the
+         repo-wide TreatWarningsAsErrors. Runtime behavior is verified by functional smoke tests instead. -->
+    <SuppressTrimAnalysisWarnings>true</SuppressTrimAnalysisWarnings>
+    <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+    <EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>
+    <EnableAotAnalyzer>false</EnableAotAnalyzer>
+
+    <!-- Register the self-contained content collector. The framework-dependent collector
+         (CollectTfmSpecificPackageFiles in dotnet-monitor.csproj) is guarded off when the toggle is on. -->
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);CollectSelfContainedToolPackageFiles</TargetsForTfmSpecificContentInPackage>
+  </PropertyGroup>
+
+  <!--
+    Inject the out-of-process runtime assets next to the self-contained host for the current RID. Runs only for
+    the RID-specific inner builds (RuntimeIdentifier != ''); the base wrapper package carries no implementation.
+  -->
+  <Target Name="CollectSelfContainedToolPackageFiles"
+          Condition="'$(DotNetMonitorBuildSelfContainedTool)' == 'true' and '$(RuntimeIdentifier)' != ''"
+          DependsOnTargets="PublishProjectsBeforePack">
+    <PropertyGroup>
+      <_SelfContainedToolRoot>tools/any/$(RuntimeIdentifier)</_SelfContainedToolRoot>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <!-- Profilers and their symbols for the matching RID only. The profiler is loaded into the *target*
+           process, so a self-contained x64 tool can only profile same-OS x64 targets; profiling musl (Alpine)
+           or x86 targets is not supported by this package (use the framework-dependent tool or image). -->
+      <_SelfContainedProfilerFile Include="@(MonitorProfilerLibraryFile)" Condition="'%(TargetRid)' == '$(RuntimeIdentifier)'" />
+      <_SelfContainedProfilerFile Include="@(MutatingMonitorProfilerLibraryFile)" Condition="'%(TargetRid)' == '$(RuntimeIdentifier)'" />
+      <_SelfContainedProfilerFile Include="@(MonitorProfilerSymbolsFile)" Condition="'%(TargetRid)' == '$(RuntimeIdentifier)'" />
+      <_SelfContainedProfilerFile Include="@(MutatingMonitorProfilerSymbolsFile)" Condition="'%(TargetRid)' == '$(RuntimeIdentifier)'" />
+      <_SelfContainedProfilerFile Include="@(CommonMonitorProfilerSymbolsFile)" Condition="'%(TargetRid)' == '$(RuntimeIdentifier)'" />
+
+      <TfmSpecificPackageFile Include="@(_SelfContainedProfilerFile->Exists())">
+        <PackagePath>$(_SelfContainedToolRoot)/shared/$(RuntimeIdentifier)/native</PackagePath>
+      </TfmSpecificPackageFile>
+
+      <!-- Startup hook (platform-neutral managed assembly, injected into target processes). -->
+      <TfmSpecificPackageFile Include="$(StartupHookLibraryPath)">
+        <PackagePath>$(_SelfContainedToolRoot)/shared/any/$(StartupHookTargetFramework)</PackagePath>
+      </TfmSpecificPackageFile>
+      <TfmSpecificPackageFile Include="$(StartupHookSymbolsPath)">
+        <PackagePath>$(_SelfContainedToolRoot)/shared/any/$(StartupHookTargetFramework)</PackagePath>
+      </TfmSpecificPackageFile>
+
+      <!-- Self-contained extensions. Pack everything from the self-contained publish except the
+           framework-dependent manifest, then overlay the ExecutableFileName manifest variant as extension.json
+           so dotnet-monitor launches the extension's native executable directly (there is no shared host). -->
+      <TfmSpecificPackageFile Include="$(AzureBlobStorageSelfContainedPublishPath)**"
+                              Exclude="$(AzureBlobStorageSelfContainedPublishPath)extension.json">
+        <PackagePath>$(_SelfContainedToolRoot)/extensions/$(AzureBlobStorageExtensionFolderName)</PackagePath>
+      </TfmSpecificPackageFile>
+      <TfmSpecificPackageFile Include="$(RepoRoot)src\Extensions\AzureBlobStorage\extension.selfcontained.json">
+        <PackagePath>$(_SelfContainedToolRoot)/extensions/$(AzureBlobStorageExtensionFolderName)/extension.json</PackagePath>
+      </TfmSpecificPackageFile>
+
+      <TfmSpecificPackageFile Include="$(S3StorageSelfContainedPublishPath)**"
+                              Exclude="$(S3StorageSelfContainedPublishPath)extension.json">
+        <PackagePath>$(_SelfContainedToolRoot)/extensions/$(S3StorageExtensionFolderName)</PackagePath>
+      </TfmSpecificPackageFile>
+      <TfmSpecificPackageFile Include="$(RepoRoot)src\Extensions\S3Storage\extension.selfcontained.json">
+        <PackagePath>$(_SelfContainedToolRoot)/extensions/$(S3StorageExtensionFolderName)/extension.json</PackagePath>
+      </TfmSpecificPackageFile>
+    </ItemGroup>
+  </Target>
+
+</Project>

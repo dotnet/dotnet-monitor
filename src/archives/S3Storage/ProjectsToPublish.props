@@ -6,15 +6,29 @@
     <S3StoragePublishTargetFramework Condition="'$(TargetFramework)' != ''">$(TargetFramework)</S3StoragePublishTargetFramework>
     <S3StoragePublishRootPath>$(ArtifactsDir)pub\dotnet-monitor-egress-s3storage\$(Configuration)\</S3StoragePublishRootPath>
     <S3StoragePlatformSpecificPublishPath>$(ArtifactsDir)pub\dotnet-monitor-egress-s3storage\$(Configuration)\$(S3StoragePublishTargetFramework)\$(PackageRid)\</S3StoragePlatformSpecificPublishPath>
+    <!-- Self-contained, single-file, trimmed publish output (consumed by the dotnet-monitor-selfcontained package).
+         The RuntimeIdentifier is part of the path so each RID gets its own publish directory. -->
+    <S3StorageSelfContainedPublishPath>$(S3StoragePublishRootPath)$(S3StoragePublishTargetFramework)\selfcontained\$(RuntimeIdentifier)\</S3StorageSelfContainedPublishPath>
   </PropertyGroup>
-  <ItemGroup>
+  <!-- Framework-dependent publish flavors (the default dotnet-monitor package). Disabled when building the
+       self-contained tool so its inner per-RID builds only produce the self-contained extension outputs. -->
+  <ItemGroup Condition="'$(DotNetMonitorBuildSelfContainedTool)' != 'true'">
     <ProjectToPublish Include="$(S3StorageProjectPath)">
       <AdditionalProperties>TargetFramework=$(S3StoragePublishTargetFramework);RuntimeIdentifier=$(PackageRid);PublishDir=$(S3StoragePlatformSpecificPublishPath);SelfContained=false;UseAppHost=false</AdditionalProperties>
     </ProjectToPublish>
   </ItemGroup>
-  <ItemGroup Condition="'$(SkipPlatformNeutralPublish)' != 'true'">
+  <ItemGroup Condition="'$(DotNetMonitorBuildSelfContainedTool)' != 'true' and '$(SkipPlatformNeutralPublish)' != 'true'">
     <ProjectToPublish Include="$(S3StorageProjectPath)">
       <AdditionalProperties>TargetFramework=$(LatestToolTargetFramework);RuntimeIdentifier=;PublishDir=$(S3StoragePublishRootPath)$(LatestToolTargetFramework)\any\;SelfContained=false;UseAppHost=false</AdditionalProperties>
+    </ProjectToPublish>
+  </ItemGroup>
+  <!-- Self-contained, single-file, trimmed publish flavor for the current RID. Reflection-based JSON and
+       configuration binding are used (consistent with the host) so they keep working under partial trimming;
+       the trim/single-file analyzers are disabled because partial trimming does not trim the app/SDK
+       assemblies these warnings originate from, so they do not correspond to real removals. -->
+  <ItemGroup Condition="'$(DotNetMonitorBuildSelfContainedTool)' == 'true' and '$(RuntimeIdentifier)' != ''">
+    <ProjectToPublish Include="$(S3StorageProjectPath)">
+      <AdditionalProperties>TargetFramework=$(S3StoragePublishTargetFramework);RuntimeIdentifier=$(RuntimeIdentifier);PublishDir=$(S3StorageSelfContainedPublishPath);SelfContained=true;PublishSingleFile=true;PublishTrimmed=true;TrimMode=partial;UseAppHost=true;JsonSerializerIsReflectionEnabledByDefault=true;EnableConfigurationBindingGenerator=false;SuppressTrimAnalysisWarnings=true;EnableTrimAnalyzer=false;EnableSingleFileAnalyzer=false;EnableAotAnalyzer=false</AdditionalProperties>
     </ProjectToPublish>
   </ItemGroup>
 </Project>

@@ -12,8 +12,10 @@
     <EnableConfigurationBindingGenerator>false</EnableConfigurationBindingGenerator>
     <DisableCompileTimeOpenApiXmlGenerator>true</DisableCompileTimeOpenApiXmlGenerator>
     <!-- This repo sets RuntimeIdentifiers globally in Directory.Build.props, but we explicitly don't want to use
-         RID-specific tools yet. So we need to clear the RuntimeIdentifiers here. -->
-    <RuntimeIdentifiers Condition="'$(CustomIsPacking)' == 'true'"></RuntimeIdentifiers>
+         RID-specific tools yet. So we need to clear the RuntimeIdentifiers here. The self-contained tool build
+         (DotNetMonitorBuildSelfContainedTool=true) is the exception: it intentionally uses RID-specific tool
+         packages, so it must keep RuntimeIdentifiers set (overridden in SelfContainedTool.targets). -->
+    <RuntimeIdentifiers Condition="'$(CustomIsPacking)' == 'true' and '$(DotNetMonitorBuildSelfContainedTool)' != 'true'"></RuntimeIdentifiers>
     <!-- This doesn't work as a way to override the set of package identifiers (yet) because in MSBuild logic we
          can't detect the difference between property-set-to-empty and property-does-not-exist.
          See https://github.com/dotnet/msbuild/issues/12404 for tracking. -->
@@ -96,6 +98,10 @@
   <Import Project="$(RepoRoot)src\Microsoft.Diagnostics.Monitoring.StartupHook\ProjectsToPublish.props" />
   <Import Project="$(RepositoryEngineeringDir)PublishProjects.targets" />
 
+  <!-- Self-contained tool (dotnet-monitor-selfcontained) build logic, gated behind the
+       DotNetMonitorBuildSelfContainedTool toggle. Imported after the publish props it depends on. -->
+  <Import Project="SelfContainedTool.targets" />
+
   <!-- Publish projects unless skipped -->
   <Target Name="PublishProjectsBeforePack"
           Condition="'$(SkipPublishProjects)' != 'true'">
@@ -106,7 +112,10 @@
     <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);CollectTfmSpecificPackageFiles</TargetsForTfmSpecificContentInPackage>
   </PropertyGroup>
 
+  <!-- Framework-dependent (default dotnet-monitor package) content. Guarded off when building the
+       self-contained tool, whose content is produced by CollectSelfContainedToolPackageFiles instead. -->
   <Target Name="CollectTfmSpecificPackageFiles"
+          Condition="'$(DotNetMonitorBuildSelfContainedTool)' != 'true'"
           DependsOnTargets="PublishProjectsBeforePack">
     <ItemGroup>
       <!-- Pack the profiler library for each platform. -->
