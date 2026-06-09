@@ -1,0 +1,42 @@
+<Project>
+
+  <!--
+    Full-trim support for the self-contained, single-file egress extensions that ship inside the
+    dotnet-monitor-selfcontained tool package (AzureBlobStorage, S3Storage).
+
+    Imported at the bottom of each extension csproj. Everything here is gated on BOTH the global
+    DotNetMonitorBuildSelfContainedTool toggle (set via AdditionalProperties on the self-contained
+    ProjectToPublish flavor in the extension's ProjectsToPublish.props) AND PublishTrimmed, so it only
+    affects the self-contained trimmed publish - the framework-dependent extension publish that feeds the
+    default dotnet-monitor package is completely unaffected.
+
+    Why root rather than annotate: the egress infrastructure binds the provider options from configuration,
+    validates them with DataAnnotations, and (de)serializes the payload/result with reflection-based JSON
+    (consistent with the host). Under TrimMode=full those reflection paths would otherwise have their target
+    members trimmed. Rooting the small set of assemblies that actually hold those reflected-over types keeps
+    them intact; almost all of the size reduction still comes from the framework/runtime assemblies, which
+    remain fully trimmed. The Azure and AWS SDKs are trim-annotated and produce no warnings, so they are left
+    to trim normally (not rooted).
+  -->
+
+  <ItemGroup Condition="'$(DotNetMonitorBuildSelfContainedTool)' == 'true' and '$(PublishTrimmed)' == 'true'">
+    <!-- The extension's own assembly: carries the EgressProvider implementation (constructed by DI) and the
+         *EgressProviderOptions type that is configuration-bound and DataAnnotations-validated by reflection. -->
+    <TrimmerRootAssembly Include="$(AssemblyName)" />
+
+    <!-- The shared egress host: EgressHelper plus the ExtensionEgressPayload / EgressArtifactResult DTOs that
+         are reflection-(de)serialized, and DataAnnotationValidateOptions. -->
+    <TrimmerRootAssembly Include="Microsoft.Diagnostics.Monitoring.Extension.Common" />
+
+    <!-- Intrinsic TypeConverters resolved reflectively by [Range(typeof(TimeSpan), ...)] validation (e.g.
+         S3StorageEgressProviderOptions) and by reflection-based binding of TimeSpan options. Preserve the whole
+         assembly so every converter-backed type keeps working. -->
+    <TrimmerRootAssembly Include="System.ComponentModel.TypeConverter" />
+
+    <!-- Rooting System.ComponentModel.TypeConverter whole keeps a dead BinaryFormatter design-time-licensing
+         path that dotnet-monitor never uses; suppress its trim warning via an external link-attributes file
+         (cross-assembly attribute documents must be external, not embedded). -->
+    <_ILLinkSuppressions Include="$(MSBuildThisFileDirectory)ILLink.LinkAttributes.SelfContainedExtension.xml" />
+  </ItemGroup>
+
+</Project>

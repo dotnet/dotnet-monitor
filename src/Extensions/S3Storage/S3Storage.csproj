@@ -55,4 +55,14 @@
     <InternalsVisibleTo Include="Microsoft.Diagnostics.Monitoring.S3StorageTests.UnitTests" />
   </ItemGroup>
 
+  <!-- Trim-analysis suppression specific to this assembly is only compiled into the self-contained, fully-trimmed
+       extension build (toggle on); excluded from the default / shipping build so it stays identical. -->
+  <ItemGroup Condition="'$(DotNetMonitorBuildSelfContainedTool)' != 'true'">
+    <Compile Remove="GlobalSuppressions.SelfContainedTrim.cs" />
+  </ItemGroup>
+
+  <!-- Full-trim support for the self-contained, single-file flavor of this extension. Gated internally on the
+       DotNetMonitorBuildSelfContainedTool toggle + PublishTrimmed, so the framework-dependent build is unaffected. -->
+  <Import Project="..\SelfContainedExtension.targets" />
+
 </Project>

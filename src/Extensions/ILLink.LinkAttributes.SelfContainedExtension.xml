@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ILLink "link attributes" document for the self-contained, fully-trimmed egress extensions
+  (see src/Extensions/SelfContainedExtension.targets).
+
+  System.ComponentModel.Design.DesigntimeLicenseContextSerializer.SerializeWithBinaryFormatter uses
+  BinaryFormatter, which is not trim-compatible. It is only reachable because the whole
+  System.ComponentModel.TypeConverter assembly is rooted (to preserve the intrinsic TypeConverters used by
+  [Range(typeof(TimeSpan), ...)] validation and TimeSpan configuration binding). The egress extensions never
+  use the design-time licensing path, so this member is dead code in these applications and the warning is
+  safe to suppress.
+
+  This document is supplied to illink as an external link-attributes file (via the SDK _ILLinkSuppressions
+  item) only when the self-contained extension toggle is on, so the framework-dependent extension build is
+  unaffected. It must be external rather than embedded because an embedded attributes document may only
+  target its own assembly (IL2101), whereas the member below lives in a framework assembly.
+-->
+<linker>
+  <assembly fullname="System.ComponentModel.TypeConverter">
+    <type fullname="System.ComponentModel.Design.DesigntimeLicenseContextSerializer">
+      <attribute fullname="System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessageAttribute" assembly="System.Private.CoreLib">
+        <argument>Trimming</argument>
+        <argument>IL2026</argument>
+        <property name="Justification">Design-time licensing BinaryFormatter path is dead code in the egress extensions; the type is only present because System.ComponentModel.TypeConverter is rooted to preserve intrinsic TypeConverters.</property>
+      </attribute>
+    </type>
+  </assembly>
+</linker>

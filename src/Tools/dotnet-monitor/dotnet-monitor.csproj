@@ -102,6 +102,16 @@
        DotNetMonitorBuildSelfContainedTool toggle. Imported after the publish props it depends on. -->
   <Import Project="SelfContainedTool.targets" />
 
+  <!-- The self-contained, fully-trimmed tool is the only build that trims, so the trim-analysis
+       suppressions in GlobalSuppressions.SelfContainedTrim.cs are compiled in only when the toggle is on.
+       This keeps the framework-dependent package's assembly identical and prevents the blanket
+       [UnconditionalSuppressMessage]s from masking a real trim warning if trimming is ever enabled on the
+       default build. (The global toggle flows into the WebApi/Options project references, which gate their
+       own copies the same way.) -->
+  <ItemGroup Condition="'$(DotNetMonitorBuildSelfContainedTool)' != 'true'">
+    <Compile Remove="GlobalSuppressions.SelfContainedTrim.cs" />
+  </ItemGroup>
+
   <!-- Publish projects unless skipped -->
   <Target Name="PublishProjectsBeforePack"
           Condition="'$(SkipPublishProjects)' != 'true'">

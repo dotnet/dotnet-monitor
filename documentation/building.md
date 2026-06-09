@@ -29,8 +29,8 @@ If you prefer to use *Visual Studio*, *Visual Studio Code*, or *Visual Studio fo
 In addition to the default framework-dependent `dotnet-monitor` global tool (which requires a matching
 .NET runtime to be installed on the host), the repo can also build a **self-contained** variant packaged
 as the `dotnet-monitor-selfcontained` global tool. This variant bundles the .NET runtime, so it runs on a
-machine without any .NET runtime or SDK installed. It is **single-file** and **trimmed**
-(`TrimMode=partial`), and the whole tool is runtime-independent: the host, the bundled egress extensions
+machine without any .NET runtime or SDK installed. It is **single-file** and **fully trimmed**
+(`TrimMode=full`), and the whole tool is runtime-independent: the host, the bundled egress extensions
 (`AzureBlobStorage`, `S3Storage`), and the injected startup hook are all self-contained.
 
 The self-contained build is opt-in behind a single MSBuild toggle,
@@ -59,6 +59,25 @@ Notes and limitations:
   package.
 - The default framework-dependent `dotnet-monitor` package is unaffected when the toggle is off, so both
   packages can be built and shipped side by side.
+
+Because the self-contained tool is fully trimmed, reflection-dependent code must be preserved explicitly.
+This is handled in the build and should be kept in mind when adding features:
+
+- The assemblies whose members are reached by reflection (reflection-based JSON serialization,
+  configuration binding, and `DataAnnotations` validation) are preserved whole via `TrimmerRootAssembly`
+  items (see `SelfContainedTool.targets` for the host and `src/Extensions/SelfContainedExtension.targets`
+  for the extensions). The reflection-heavy diagnostic libraries (`TraceEvent`, `EventPipe`,
+  `FastSerialization`) and `System.ComponentModel.TypeConverter` (for `[Range(typeof(TimeSpan), ...)]`
+  validation) are rooted there as well.
+- Trim-analysis warnings are **not** blanket-suppressed: `SuppressTrimAnalysisWarnings` is left off so the
+  build fails (under `TreatWarningsAsErrors`) if a new reflection dependency would actually be trimmed.
+  Warnings in our own code are addressed with real attributes — `[DynamicallyAccessedMembers]` where a
+  member can be preserved precisely, and narrowly-justified `[UnconditionalSuppressMessage]` (in the
+  `GlobalSuppressions.SelfContainedTrim.cs` files) where the referenced type set is already rooted. These
+  attributes are gated on the toggle so the shipping framework-dependent assemblies stay identical.
+- If you add a feature that depends on reflection over a new assembly or type, root the relevant assembly
+  in the appropriate `*.targets` and validate that the trimmed tool/extension still works at runtime — a
+  clean build alone does not prove a reflection path survived trimming.
 
 # Updating native build support
 

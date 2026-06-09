@@ -9,8 +9,26 @@
     <IsShippingAssembly>true</IsShippingAssembly>
   </PropertyGroup>
 
+  <!-- When part of the self-contained, fully-trimmed extension closure, define SELF_CONTAINED_TRIM so the
+       trim annotations in EgressHelper ([DynamicallyAccessedMembers] on the provider type parameter) are
+       compiled in. They are gated rather than unconditional so this shipping assembly stays byte-identical in
+       the default / framework-dependent build (where there is no trimming and the annotations would be inert).
+       The toggle flows in via AdditionalProperties on the extension's self-contained ProjectToPublish. -->
+  <PropertyGroup Condition="'$(DotNetMonitorBuildSelfContainedTool)' == 'true'">
+    <DefineConstants>$(DefineConstants);SELF_CONTAINED_TRIM</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Include="..\Tools\dotnet-monitor\DataAnnotationValidateOptions.cs" Link="DataAnnotationValidateOptions.cs" />
+  </ItemGroup>
+
+  <!-- Trim-analysis suppressions are only needed (and only valid to apply) when this assembly is part of the
+       self-contained, fully-trimmed extension closure. The global DotNetMonitorBuildSelfContainedTool toggle
+       flows in (via AdditionalProperties on the extension's self-contained ProjectToPublish) from the extension
+       publish; when it is off (the default / shipping Extension.Common package build) the file is excluded so
+       this shipping assembly stays identical and the blanket suppressions cannot hide real warnings. -->
+  <ItemGroup Condition="'$(DotNetMonitorBuildSelfContainedTool)' != 'true'">
+    <Compile Remove="GlobalSuppressions.SelfContainedTrim.cs" />
   </ItemGroup>
 
   <ItemGroup>

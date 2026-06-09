@@ -58,4 +58,8 @@
     </None>
   </ItemGroup>
 
+  <!-- Full-trim support for the self-contained, single-file flavor of this extension. Gated internally on the
+       DotNetMonitorBuildSelfContainedTool toggle + PublishTrimmed, so the framework-dependent build is unaffected. -->
+  <Import Project="..\SelfContainedExtension.targets" />
+
 </Project>

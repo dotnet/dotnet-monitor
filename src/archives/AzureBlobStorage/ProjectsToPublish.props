@@ -22,13 +22,18 @@
       <AdditionalProperties>TargetFramework=$(LatestToolTargetFramework);RuntimeIdentifier=;PublishDir=$(AzureBlobStoragePublishRootPath)$(LatestToolTargetFramework)\any\;SelfContained=false;UseAppHost=false</AdditionalProperties>
     </ProjectToPublish>
   </ItemGroup>
-  <!-- Self-contained, single-file, trimmed publish flavor for the current RID. Reflection-based JSON and
-       configuration binding are used (consistent with the host) so they keep working under partial trimming;
-       the trim/single-file analyzers are disabled because partial trimming does not trim the app/SDK
-       assemblies these warnings originate from, so they do not correspond to real removals. -->
+  <!-- Self-contained, single-file, fully-trimmed publish flavor for the current RID. Reflection-based JSON and
+       configuration binding are used (consistent with the host) so they keep working under trimming; the
+       reflected-over type sets are preserved via TrimmerRootAssembly items in SelfContainedExtension.targets.
+       SuppressTrimAnalysisWarnings stays off (fail-fast) and TrimmerSingleWarn is off so every warning is
+       reported in detail (nothing hides behind an IL2104 rollup); our own warnings are addressed with
+       attributes (see EgressHelper [DynamicallyAccessedMembers] and GlobalSuppressions.SelfContainedTrim.cs).
+       The Roslyn trim/single-file/AOT analyzers stay off because rooting is a link-time concept they cannot
+       see. DotNetMonitorBuildSelfContainedTool is forwarded explicitly because PublishProjects.targets sets an
+       explicit Properties set, so the inner build does not otherwise inherit the outer toggle. -->
   <ItemGroup Condition="'$(DotNetMonitorBuildSelfContainedTool)' == 'true' and '$(RuntimeIdentifier)' != ''">
     <ProjectToPublish Include="$(AzureBlobStorageProjectPath)">
-      <AdditionalProperties>TargetFramework=$(AzureBlobStoragePublishTargetFramework);RuntimeIdentifier=$(RuntimeIdentifier);PublishDir=$(AzureBlobStorageSelfContainedPublishPath);SelfContained=true;PublishSingleFile=true;PublishTrimmed=true;TrimMode=partial;UseAppHost=true;JsonSerializerIsReflectionEnabledByDefault=true;EnableConfigurationBindingGenerator=false;SuppressTrimAnalysisWarnings=true;EnableTrimAnalyzer=false;EnableSingleFileAnalyzer=false;EnableAotAnalyzer=false</AdditionalProperties>
+      <AdditionalProperties>TargetFramework=$(AzureBlobStoragePublishTargetFramework);RuntimeIdentifier=$(RuntimeIdentifier);PublishDir=$(AzureBlobStorageSelfContainedPublishPath);SelfContained=true;PublishSingleFile=true;PublishTrimmed=true;TrimMode=full;UseAppHost=true;JsonSerializerIsReflectionEnabledByDefault=true;EnableConfigurationBindingGenerator=false;SuppressTrimAnalysisWarnings=false;TrimmerSingleWarn=false;EnableTrimAnalyzer=false;EnableSingleFileAnalyzer=false;EnableAotAnalyzer=false;DotNetMonitorBuildSelfContainedTool=true</AdditionalProperties>
     </ProjectToPublish>
   </ItemGroup>
 </Project>

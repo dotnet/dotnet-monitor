@@ -9,6 +9,9 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
+#if SELF_CONTAINED_TRIM
+using System.Diagnostics.CodeAnalysis;
+#endif
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -25,7 +28,11 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
         private static CancellationTokenSource CancelSource = new CancellationTokenSource();
         private const int ExpectedPayloadProtocolVersion = 1;
 
-        public static Command CreateEgressCommand<TProvider, TOptions>(Action<IServiceCollection> configureServices = null)
+        public static Command CreateEgressCommand<
+#if SELF_CONTAINED_TRIM
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
+#endif
+            TProvider, TOptions>(Action<IServiceCollection> configureServices = null)
             where TProvider : EgressProvider<TOptions>
             where TOptions : class, new()
         {
@@ -45,7 +52,11 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
         }
 
 
-        private static async Task<int> Egress<TProvider, TOptions>(Action<IServiceCollection> configureServices, CancellationToken token)
+        private static async Task<int> Egress<
+#if SELF_CONTAINED_TRIM
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
+#endif
+            TProvider, TOptions>(Action<IServiceCollection> configureServices, CancellationToken token)
             where TProvider : EgressProvider<TOptions>
             where TOptions : class, new()
         {
@@ -77,7 +88,11 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
             return ProcessEgressResult(result);
         }
 
-        private static async Task<int> Validate<TProvider, TOptions>(Action<IServiceCollection> configureServices, CancellationToken token)
+        private static async Task<int> Validate<
+#if SELF_CONTAINED_TRIM
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
+#endif
+            TProvider, TOptions>(Action<IServiceCollection> configureServices, CancellationToken token)
             where TProvider : EgressProvider<TOptions>
             where TOptions : class, new()
         {
@@ -109,7 +124,11 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.Common
             return result.Succeeded ? 0 : 1;
         }
 
-        private static ServiceProvider BuildServiceProvider<TProvider, TOptions>(Action<IServiceCollection> configureServices, ExtensionEgressPayload configPayload)
+        private static ServiceProvider BuildServiceProvider<
+#if SELF_CONTAINED_TRIM
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
+#endif
+            TProvider, TOptions>(Action<IServiceCollection> configureServices, ExtensionEgressPayload configPayload)
             where TProvider : EgressProvider<TOptions>
             where TOptions : class, new()
         {

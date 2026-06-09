@@ -37,27 +37,84 @@
     <SelfContained>true</SelfContained>
     <PublishSingleFile>true</PublishSingleFile>
     <PublishTrimmed>true</PublishTrimmed>
-    <!-- Conservative trimming: only assemblies marked IsTrimmable (mostly the BCL/runtime) are trimmed; the app
-         and ASP.NET Core assemblies are left intact to minimize the risk of runtime breakage. -->
-    <TrimMode>partial</TrimMode>
+    <!-- Full trimming: every assembly is analyzed and trimmed. The reflection-dependent assemblies that would
+         break at runtime (or whose owners ship them trim-unsafe) are preserved whole via the TrimmerRootAssembly
+         item group below, so almost all of the size reduction comes from the framework/runtime assemblies that
+         are already trim-clean. See the item group for the rationale behind each rooted assembly. -->
+    <TrimMode>full</TrimMode>
     <!-- dotnet-monitor relies on reflection-based JSON serialization (e.g. generatekey) and reflection-based
          configuration binding (consistent with the framework-dependent host, which already sets
          EnableConfigurationBindingGenerator=false). PublishTrimmed disables reflection JSON by default, so it is
-         re-enabled here; this works because partial trimming leaves the relevant assemblies untrimmed. -->
+         re-enabled here; this works because the assemblies carrying the serialized/validated/bound types are
+         rooted below, so their members survive trimming. -->
     <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
 
-    <!-- Partial trimming does not trim the app/SDK assemblies that the trim and single-file analyzers warn about,
-         so those warnings do not correspond to real removals. They are suppressed so the build passes under the
-         repo-wide TreatWarningsAsErrors. Runtime behavior is verified by functional smoke tests instead. -->
-    <SuppressTrimAnalysisWarnings>true</SuppressTrimAnalysisWarnings>
+    <!-- Fail fast rather than blanket-suppress. SuppressTrimAnalysisWarnings stays off so the linker reports
+         every trim warning and, under the repo-wide TreatWarningsAsErrors, breaks the build if a future change
+         adds a reflection dependency that full trimming would actually remove (instead of silently trimming code
+         and failing at runtime). dotnet-monitor's own warnings are addressed with real attributes:
+         [DynamicallyAccessedMembers] where a member can be preserved precisely, and per-member/per-type
+         [UnconditionalSuppressMessage] (see the GlobalSuppressions.*.cs files) where the referenced type set is
+         already preserved by the TrimmerRootAssembly items below. The Roslyn trim analyzer stays off because
+         rooting is a link-time concept the analyzer cannot see: leaving it on would flood the compile with
+         warnings for code that is preserved (rooted) and therefore not actually removed. -->
+    <SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
     <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
     <EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>
     <EnableAotAnalyzer>false</EnableAotAnalyzer>
+
+    <!-- IL2104 ("Assembly 'X' produced trim warnings") is the single-warning summary the linker emits for the
+         reflection-heavy third-party diagnostic assemblies we deliberately keep whole (TraceEvent, EventPipe,
+         FastSerialization - see the TrimmerRootAssembly items below). We cannot annotate code we do not own, and
+         keeping these assemblies whole is the intended behavior, so the summary is accepted here. This is narrow:
+         IL2104 is only ever the per-assembly rollup, so it cannot hide an actionable IL2026/IL2070/IL2075/IL2091
+         in dotnet-monitor's own code, which are still reported (and addressed with attributes). -->
+    <NoWarn>$(NoWarn);IL2104</NoWarn>
 
     <!-- Register the self-contained content collector. The framework-dependent collector
          (CollectTfmSpecificPackageFiles in dotnet-monitor.csproj) is guarded off when the toggle is on. -->
     <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);CollectSelfContainedToolPackageFiles</TargetsForTfmSpecificContentInPackage>
   </PropertyGroup>
+
+  <!--
+    Preserve the reflection-dependent assemblies that full trimming cannot reason about. TrimmerRootAssembly keeps
+    every member of each listed assembly, so the reflection-based code (trace/event parsing, JSON serialization,
+    configuration binding, DataAnnotations validation) keeps working at runtime even though the trimmer cannot see
+    those usages. Note that rooting preserves members but does NOT silence trim analysis: these assemblies are
+    still analyzed, so dotnet-monitor's own rooted assemblies still emit IL2026/IL2070/IL2075/IL2091 at their
+    reflection call sites - those are addressed with attributes (DAM + UnconditionalSuppressMessage; see the
+    GlobalSuppressions.*.cs files), and the third-party assemblies roll their warnings up into IL2104 (NoWarn'd
+    above). Trimming dotnet-monitor's own assemblies saves only ~140 KB, so preserving them costs almost nothing
+    while removing the runtime risk. These items only affect the host publish (the project being published); the
+    extensions root their own assemblies in their respective ProjectsToPublish.props.
+  -->
+  <ItemGroup Condition="'$(DotNetMonitorBuildSelfContainedTool)' == 'true'">
+    <!-- Third-party diagnostic libraries: reflection-heavy trace/event parsing, cannot be annotated by us, and
+         trimming them removes the parsers that trace/GC-dump/metrics collection depend on. FastSerialization is a
+         TraceEvent sibling used by its (de)serialization paths and must be preserved alongside it. -->
+    <TrimmerRootAssembly Include="Microsoft.Diagnostics.Tracing.TraceEvent" />
+    <TrimmerRootAssembly Include="Microsoft.Diagnostics.Monitoring.EventPipe" />
+    <TrimmerRootAssembly Include="Microsoft.Diagnostics.FastSerialization" />
+    <!-- dotnet-monitor's own model/option/DTO assemblies. Reflection-based JSON serialization, reflection-based
+         configuration binding, and DataAnnotations validation (including [Range(typeof(TimeSpan), ...)] on the
+         collection-rule options) all operate over these closed type sets, which the trimmer cannot see. -->
+    <TrimmerRootAssembly Include="dotnet-monitor" />
+    <TrimmerRootAssembly Include="Microsoft.Diagnostics.Monitoring.WebApi" />
+    <TrimmerRootAssembly Include="Microsoft.Diagnostics.Monitoring.Options" />
+    <!-- TimeSpanConverter (and the other intrinsic TypeConverters) are resolved reflectively by
+         [Range(typeof(TimeSpan), "min", "max")] when DataAnnotations validates collection-rule durations and
+         sliding windows, and by reflection-based configuration binding of TimeSpan options. Preserve the whole
+         assembly so that validation and binding keep working for every converter-backed type. -->
+    <TrimmerRootAssembly Include="System.ComponentModel.TypeConverter" />
+
+    <!-- Suppress the two trim warnings that originate in framework members dotnet-monitor cannot annotate at the
+         call site (minimal-API JSON resolver and a dead BinaryFormatter licensing path). See the XML for the
+         per-member justifications. Passed to illink as an EXTERNAL link-attributes file via the SDK's
+         _ILLinkSuppressions hook (an embedded attributes document may only target its own assembly - IL2101 -
+         so cross-assembly suppressions must be external). Gated on the toggle so the framework-dependent
+         build/image do not carry it. -->
+    <_ILLinkSuppressions Include="$(MSBuildThisFileDirectory)ILLink.LinkAttributes.SelfContained.xml" />
+  </ItemGroup>
 
   <!--
     Inject the out-of-process runtime assets next to the self-contained host for the current RID. Runs only for

@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ILLink "link attributes" document for the self-contained, fully-trimmed tool build
+  (dotnet-monitor-selfcontained; see SelfContainedTool.targets).
+
+  Under TrimMode=full two trim warnings originate in framework members that dotnet-monitor does not own
+  and therefore cannot annotate at the call site. This document attaches an [UnconditionalSuppressMessage]
+  to those exact members. Both are genuinely safe:
+
+  * Microsoft.AspNetCore.Http.Json.JsonOptions.CreateDefaultTypeResolver - the reflection-based JSON type
+    resolver used by minimal-API endpoints. dotnet-monitor keeps reflection-based JSON enabled
+    (JsonSerializerIsReflectionEnabledByDefault=true) and roots the assemblies that hold the serialized
+    response/model types (TrimmerRootAssembly), so the types the resolver needs are preserved.
+
+  * System.ComponentModel.Design.DesigntimeLicenseContextSerializer.SerializeWithBinaryFormatter - a
+    BinaryFormatter code path that is only reachable because the whole System.ComponentModel.TypeConverter
+    assembly is rooted (to preserve the intrinsic TypeConverters used by [Range(typeof(TimeSpan), ...)] and
+    configuration binding). dotnet-monitor never uses the design-time licensing path, so this member is dead
+    code in this application.
+
+  This document is supplied to illink as an external link-attributes file (via the SDK _ILLinkSuppressions item
+  in SelfContainedTool.targets) only when the self-contained tool toggle is on, so the framework-dependent build
+  and the container image are unaffected. It must be external rather than embedded because an embedded attributes
+  document may only target its own assembly (IL2101), whereas the members below live in framework assemblies.
+-->
+<linker>
+  <assembly fullname="Microsoft.AspNetCore.Http.Extensions">
+    <type fullname="Microsoft.AspNetCore.Http.Json.JsonOptions">
+      <attribute fullname="System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessageAttribute" assembly="System.Private.CoreLib">
+        <argument>Trimming</argument>
+        <argument>IL2026</argument>
+        <property name="Justification">Reflection-based minimal-API JSON resolver; the serialized type set is preserved via TrimmerRootAssembly and reflection JSON is intentionally enabled in the self-contained build.</property>
+      </attribute>
+    </type>
+  </assembly>
+  <assembly fullname="System.ComponentModel.TypeConverter">
+    <type fullname="System.ComponentModel.Design.DesigntimeLicenseContextSerializer">
+      <attribute fullname="System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessageAttribute" assembly="System.Private.CoreLib">
+        <argument>Trimming</argument>
+        <argument>IL2026</argument>
+        <property name="Justification">Design-time licensing BinaryFormatter path is dead code in dotnet-monitor; the type is only present because System.ComponentModel.TypeConverter is rooted to preserve intrinsic TypeConverters.</property>
+      </attribute>
+    </type>
+  </assembly>
+</linker>

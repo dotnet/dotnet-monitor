@@ -24,6 +24,15 @@
     <InternalsVisibleTo Include="$(MoqInternalsVisibleTo)" Key="$(MoqInternalsVisibleToKey)" />
   </ItemGroup>
 
+  <!-- Trim-analysis suppressions are only needed (and only valid to apply) when this assembly is part of the
+       self-contained, fully-trimmed tool closure. The global DotNetMonitorBuildSelfContainedTool toggle flows in
+       from the dotnet-monitor host publish; when it is off (the default / shipping Options package build) the file
+       is excluded so this shipping assembly stays identical and the blanket suppressions cannot hide real
+       warnings. -->
+  <ItemGroup Condition="'$(DotNetMonitorBuildSelfContainedTool)' != 'true'">
+    <Compile Remove="GlobalSuppressions.SelfContainedTrim.cs" />
+  </ItemGroup>
+
   <ItemGroup>
     <Compile Update="OptionsDisplayStrings.Designer.cs">
       <DependentUpon>OptionsDisplayStrings.resx</DependentUpon>
