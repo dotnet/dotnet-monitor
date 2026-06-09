@@ -1,0 +1,63 @@
+jobs:
+# Builds, packs, and signs the self-contained dotnet-monitor tool (dotnet-monitor-selfcontained).
+#
+# This is an ADDITIONAL output alongside the framework-dependent dotnet-monitor package produced by
+# pack-sign-publish.yml. Unlike that job (which consumes prebuilt binaries via NoBuild=true), this job
+# recompiles the self-contained tool's project graph with DotNetMonitorBuildSelfContainedTool=true so the
+# trim/single-file annotations - compiled into the IL only under that toggle - are present before full
+# trimming runs. The matching-RID native profilers are taken from the unified build output.
+#
+# The signed packages are published as the pipeline artifact 'Artifacts_Pack_Sign_SelfContained'. They are
+# intentionally NOT registered with BAR (enablePublishUsingPipelines is false and no asset manifest is
+# emitted), so this job is fully isolated from the framework-dependent BAR registration and cannot affect
+# it. BAR registration and darc-based release promotion of the self-contained packages are a documented
+# follow-up that must be validated in the official pipeline (see documentation/building.md).
+#
+# No self-contained container/image artifacts are produced - images remain runtime-specific and are built
+# in the separate dotnet-docker repository.
+- template: /eng/common/templates-official/job/job.yml@self
+  parameters:
+    name: Pack_Sign_SelfContained
+    displayName: Pack and Sign (Self-Contained)
+    enableMicrobuild: true
+    # Do not participate in pipeline-based (BAR) publishing - these packages are published as a plain
+    # pipeline artifact, not registered with BAR.
+    enablePublishUsingPipelines: false
+    artifacts:
+      publish:
+        artifacts:
+          name: Artifacts_Pack_Sign_SelfContained
+        logs:
+          name: Logs_Pack_Sign_SelfContained
+    variables:
+    - _BuildConfig: Release
+    - _SignType: real
+    steps:
+    # Only the native profilers (under bin/) are needed from the unified build; obj/ and pub/ are
+    # intentionally excluded so the self-contained recompile produces fresh intermediate outputs.
+    - task: DownloadPipelineArtifact@2
+      displayName: Download Native Profilers
+      inputs:
+        artifactName: Build_Unified_Release
+        targetPath: '$(Build.SourcesDirectory)/artifacts'
+        itemPattern: 'bin/**'
+    - task: DownloadPipelineArtifact@2
+      displayName: Download Third Party Notice
+      inputs:
+        artifactName: 'THIRD-PARTY-NOTICES'
+        targetPath: '$(Build.SourcesDirectory)'
+    - template: /eng/pipelines/steps/setup-nuget-sources.yml@self
+      parameters:
+        osGroup: Windows
+    # Populate internal runtime access variables
+    - template: /eng/common/templates/steps/enable-internal-runtimes.yml
+    - script: >-
+        $(Build.SourcesDirectory)/eng/cipackselfcontained.cmd
+        /p:TeamName=$(_TeamName)
+        /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
+        /p:DotNetSignType=real
+        /p:ThirdPartyNoticesFilePath='$(Build.SourcesDirectory)/$(_TPNFile)'
+        /p:DotNetRuntimeSourceFeed=https://ci.dot.net/internal
+        /p:DotNetRuntimeSourceFeedKey=$(dotnetbuilds-internal-container-read-token-base64)
+        /nowarn:MSB4011
+      displayName: Pack and Sign (Self-Contained)

@@ -1,0 +1,22 @@
+<Project>
+  <!--
+    Project set for the self-contained tool build (dotnet-monitor-selfcontained). Imported by eng/Build.props
+    only when DotNetMonitorBuildSelfContainedTool=true, this scopes the Arcade -restore to just the
+    self-contained tool's closure (the host plus the two bundled extensions) instead of the whole repo, the
+    same way CreateArchives / CreateSingleFileBundles scope their builds. The extensions are listed so they
+    are restored: they are not project references of the host (the host publishes them via PublishProjects at
+    pack time), so without listing them here their restore would be missing when the self-contained pack
+    publishes them.
+
+    The pack itself is NOT driven through Arcade's -build/-pack over this set: a self-contained tool packs as a
+    RID-specific tool, and the SDK only fans the pack out into the base wrapper + per-RID packages when the
+    outer pack runs RuntimeIdentifier-less. Arcade builds each ProjectToBuild with a single concrete RID, which
+    collapses that fan-out to one package. cipackselfcontained.cmd therefore restores via Arcade (this set) and
+    then runs a direct `dotnet pack` on the host project to get the full fan-out.
+  -->
+  <ItemGroup>
+    <ProjectToBuild Include="$(RepoRoot)src\Tools\dotnet-monitor\dotnet-monitor.csproj" />
+    <ProjectToBuild Include="$(RepoRoot)src\Extensions\AzureBlobStorage\AzureBlobStorage.csproj" />
+    <ProjectToBuild Include="$(RepoRoot)src\Extensions\S3Storage\S3Storage.csproj" />
+  </ItemGroup>
+</Project>

@@ -117,6 +117,31 @@ set DotNetMonitorTestSelfContainedToolPath=%CD%\artifacts\selfcontained-tool\win
 .\.dotnet\dotnet.exe test src\Tests\Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests -f net10.0
 ```
 
+## Self-contained packages in the official pipeline
+
+The official pipeline produces the `dotnet-monitor-selfcontained` packages as an **additional** output,
+alongside the framework-dependent `dotnet-monitor` package. This is done in a dedicated `PackSelfContained`
+stage (`eng/pipelines/jobs/pack-self-contained.yml`, driven by `eng/cipackselfcontained.cmd`) that:
+
+- depends only on the `Build` stage and is fully isolated from the framework-dependent
+  `PackSignPublish` stage and its BAR registration / post-build validation, so it cannot regress the
+  existing shipping pipeline;
+- recompiles the self-contained closure with `DotNetMonitorBuildSelfContainedTool=true` (the trim/single-file
+  annotations only exist in the IL under that toggle), takes the matching-RID native profilers from the
+  unified build output, packs via a direct `dotnet pack` (the SDK fans a RID-specific tool pack out into the
+  base wrapper + per-RID packages — Arcade's `-pack` would collapse that to a single RID), signs the
+  packages, and publishes them as the pipeline artifact `Artifacts_Pack_Sign_SelfContained`.
+
+Deliberately out of scope:
+
+- **No self-contained container/image artifacts.** Images stay runtime-specific and are built in the
+  `dotnet-docker` repository; only the self-contained *tool* packages are added here.
+- **No BAR registration / release promotion.** The signed packages are published as a plain pipeline
+  artifact (`enablePublishUsingPipelines: false`, no asset manifest). Registering them with BAR and wiring
+  darc-based release promotion is a follow-up that must be validated directly in the official pipeline,
+  because the signing of the single-file apphost / native + extension executables and the ADO pipeline YAML
+  cannot be exercised locally.
+
 # Updating native build support
 
 Part of the dotnet/runtime repo has been copied into this repo in order to facilitate building of native code. When needing to update the native build support, take a look at [runtime-version.txt](../src/external/runtime-version.txt) for what files should be synchronized from the dotnet/runtime repo. Synchronizing these files is currently done as a manual process. Update the version file with the new commit and file information if a new synchronization occurs.

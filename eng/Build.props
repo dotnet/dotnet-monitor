@@ -8,4 +8,8 @@
           Condition="'$(CreateArchives)' == 'true'" />
   <Import Project="$(RepoRoot)src\singlefile\dotnet-monitor\ProjectsToBuild.props"
           Condition="'$(CreateSingleFileBundles)' == 'true'" />
+  <!-- Self-contained tool build: scope the Arcade -restore to the dotnet-monitor-selfcontained closure
+       (the pack is driven by a direct `dotnet pack`; see cipackselfcontained.cmd). -->
+  <Import Project="$(RepoRoot)src\Tools\dotnet-monitor\ProjectsToBuild.props"
+          Condition="'$(DotNetMonitorBuildSelfContainedTool)' == 'true'" />
 </Project>

@@ -81,6 +81,13 @@
     <!-- Register the self-contained content collector. The framework-dependent collector
          (CollectTfmSpecificPackageFiles in dotnet-monitor.csproj) is guarded off when the toggle is on. -->
     <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);CollectSelfContainedToolPackageFiles</TargetsForTfmSpecificContentInPackage>
+
+    <!-- Guards that protect the integrity of the self-contained pack (see the validation targets below).
+         They are defaulted on for CI builds, where the cross-platform native profilers are present (gathered
+         from the unified build) and the package set must be exactly the self-contained packages. Local dev
+         packs leave them off so a quick profiler-less pack still succeeds for iteration; the CI pack script
+         (eng/cipackselfcontained.cmd) sets this explicitly. -->
+    <ValidateSelfContainedToolPackages Condition="'$(ValidateSelfContainedToolPackages)' == ''">$(ContinuousIntegrationBuild)</ValidateSelfContainedToolPackages>
   </PropertyGroup>
 
   <!--
@@ -181,6 +188,45 @@
         <PackagePath>$(_SelfContainedToolRoot)/extensions/$(S3StorageExtensionFolderName)/extension.json</PackagePath>
       </TfmSpecificPackageFile>
     </ItemGroup>
+  </Target>
+
+  <!--
+    Fail the per-RID inner build if the matching-RID native profilers are missing, instead of silently
+    shipping a self-contained package without a working profiler (the content collector above filters with
+    ->Exists(), so a missing profiler would otherwise be dropped without a trace). Enabled in CI via
+    ValidateSelfContainedToolPackages; off by default for local dev packs that have no native build.
+  -->
+  <Target Name="_ValidateSelfContainedToolProfilersPresent"
+          Condition="'$(DotNetMonitorBuildSelfContainedTool)' == 'true' and '$(RuntimeIdentifier)' != '' and '$(ValidateSelfContainedToolPackages)' == 'true'"
+          BeforeTargets="CollectSelfContainedToolPackageFiles">
+    <ItemGroup>
+      <_RequiredSelfContainedProfiler Include="@(MonitorProfilerLibraryFile)" Condition="'%(TargetRid)' == '$(RuntimeIdentifier)'" />
+      <_RequiredSelfContainedProfiler Include="@(MutatingMonitorProfilerLibraryFile)" Condition="'%(TargetRid)' == '$(RuntimeIdentifier)'" />
+    </ItemGroup>
+    <Error Condition="'@(_RequiredSelfContainedProfiler)' == ''"
+           Text="No native profiler libraries are defined for RID '$(RuntimeIdentifier)'. The dotnet-monitor-selfcontained package cannot be built for this RID." />
+    <Error Condition="!Exists('%(_RequiredSelfContainedProfiler.Identity)')"
+           Text="Self-contained tool profiler '%(_RequiredSelfContainedProfiler.Identity)' for RID '$(RuntimeIdentifier)' was not found. The dotnet-monitor-selfcontained package would ship without a working profiler. Ensure the native build outputs for '$(RuntimeIdentifier)' are present under '$(ArtifactsBinDir)$(RuntimeIdentifier).$(Configuration)' before packing." />
+  </Target>
+
+  <!--
+    After the outer (wrapper) pack completes, assert that the only packages produced under this toggle are the
+    self-contained packages. This protects against a future change re-enabling IsPackable on the
+    framework-dependent dotnet-monitor / WebApi / Extension.Common projects under the toggle, which would
+    collide with the framework-dependent pack job. Runs once (outer build, RuntimeIdentifier == '').
+  -->
+  <Target Name="_ValidateSelfContainedToolPackages"
+          Condition="'$(DotNetMonitorBuildSelfContainedTool)' == 'true' and '$(RuntimeIdentifier)' == '' and '$(ValidateSelfContainedToolPackages)' == 'true'"
+          AfterTargets="Pack">
+    <ItemGroup>
+      <_ShippingPackage Include="$(ArtifactsPackagesDir)Shipping\*.nupkg" />
+      <_ForbiddenShippingPackage Include="@(_ShippingPackage)"
+                                 Condition="!$([System.String]::Copy('%(Filename)').StartsWith('dotnet-monitor-selfcontained'))" />
+    </ItemGroup>
+    <Error Condition="'@(_ShippingPackage)' == ''"
+           Text="The self-contained tool pack produced no shipping packages under '$(ArtifactsPackagesDir)Shipping'." />
+    <Error Condition="'@(_ForbiddenShippingPackage)' != ''"
+           Text="Unexpected package(s) produced under the DotNetMonitorBuildSelfContainedTool toggle: @(_ForbiddenShippingPackage->'%(Filename)%(Extension)', ', '). Only dotnet-monitor-selfcontained* packages are expected; the framework-dependent dotnet-monitor / WebApi / Extension.Common packages must not be re-emitted by the self-contained pack." />
   </Target>
 
 </Project>

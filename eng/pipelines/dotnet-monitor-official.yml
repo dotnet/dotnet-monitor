@@ -124,6 +124,7 @@ extends:
             dependsOn:
             - Pack_Sign
             publishUsingPipelines: true
+
       # These are the stages that perform validation of several SDL requirements and publish the bits required to the designated feed.
       - template: /eng/common/templates-official/post-build/post-build.yml@self
         parameters:
@@ -138,6 +139,19 @@ extends:
           enableSymbolValidation: false
           enableNugetValidation: true
           publishInstallersAndChecksums: true
+
+      # Builds, packs, and signs the additional self-contained dotnet-monitor tool packages
+      # (dotnet-monitor-selfcontained) as an extra output. Isolated in its own stage that depends only on
+      # Build so it cannot affect the framework-dependent pack / BAR registration / post-build validation
+      # above. The signed packages are published as the 'Artifacts_Pack_Sign_SelfContained' pipeline
+      # artifact; they are not BAR-registered (a documented follow-up). No self-contained image artifacts
+      # are produced - images remain runtime-specific and are built in the dotnet-docker repository.
+      - stage: PackSelfContained
+        displayName: Pack and Sign Self-Contained Tool
+        dependsOn:
+        - Build
+        jobs:
+        - template: /eng/pipelines/jobs/pack-self-contained.yml@self
     # This sets up the bits to do a Release.
     - template: /eng/pipelines/stages/preparerelease.yml@self
       parameters:
