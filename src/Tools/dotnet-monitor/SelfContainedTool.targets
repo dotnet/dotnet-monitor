@@ -49,6 +49,13 @@
          rooted below, so their members survive trimming. -->
     <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
 
+    <!-- The SDK defaults System.StartupHookSupport to false when PublishTrimmed is on, which disables the
+         DOTNET_STARTUP_HOOKS feature in the trimmed host. The framework-dependent host leaves startup hooks
+         enabled (it is not trimmed), so re-enable them here for behavioral parity with the shipping
+         framework-dependent tool. This also lets the functional test suite inject its test startup hook into
+         the self-contained host so the exact shipped artifact can be exercised end-to-end. -->
+    <StartupHookSupport>true</StartupHookSupport>
+
     <!-- Fail fast rather than blanket-suppress. SuppressTrimAnalysisWarnings stays off so the linker reports
          every trim warning and, under the repo-wide TreatWarningsAsErrors, breaks the build if a future change
          adds a reflection dependency that full trimming would actually remove (instead of silently trimming code
@@ -114,6 +121,12 @@
          so cross-assembly suppressions must be external). Gated on the toggle so the framework-dependent
          build/image do not carry it. -->
     <_ILLinkSuppressions Include="$(MSBuildThisFileDirectory)ILLink.LinkAttributes.SelfContained.xml" />
+
+    <!-- Preserve the AssemblyLoadContext assembly-loading extensibility API so that startup hooks (enabled via
+         StartupHookSupport above) can customize assembly resolution against the trimmed host. The host does not
+         use the Resolving event itself, so full trimming would otherwise remove it. This is a narrow root for a
+         public extensibility surface; it intentionally does not root hosting/DI/reflection internals. -->
+    <TrimmerRootDescriptor Include="$(MSBuildThisFileDirectory)ILLink.Descriptors.SelfContained.xml" />
   </ItemGroup>
 
   <!--

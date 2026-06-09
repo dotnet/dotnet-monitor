@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ILLink "descriptors" (trimmer roots) document for the self-contained, fully-trimmed tool build
+  (dotnet-monitor-selfcontained; see SelfContainedTool.targets).
+
+  The self-contained build sets StartupHookSupport=true so that DOTNET_STARTUP_HOOKS continues to work
+  (for parity with the framework-dependent host and so the functional test suite can inject its test hooks).
+  Startup-hook code runs before Main and is not observable by the trimmer, so any framework surface a hook
+  relies on can be trimmed away from the host even though the hook needs it at runtime.
+
+  The AssemblyLoadContext extensibility API (the Resolving event and the LoadFromAssemblyPath/Default members)
+  is a documented .NET assembly-loading extensibility point. The dotnet-monitor host does not subscribe to the
+  Resolving event itself, so full trimming removes those members; a startup hook that customizes assembly
+  resolution (which is exactly how the functional-test injection works, and a legitimate extensibility scenario
+  for any startup hook) would then fail with MissingMethodException. Preserve the whole type so that startup
+  hooks can use assembly-load extensibility against the shipped self-contained host. This is a narrow,
+  self-describing root for a public extensibility API - it deliberately does NOT root ASP.NET Core hosting,
+  dependency-injection, or general reflection internals.
+
+  Supplied to illink via the TrimmerRootDescriptor item in SelfContainedTool.targets, gated on the
+  DotNetMonitorBuildSelfContainedTool toggle, so the framework-dependent build and the container image are
+  unaffected.
+-->
+<linker>
+  <assembly fullname="System.Private.CoreLib">
+    <type fullname="System.Runtime.Loader.AssemblyLoadContext" preserve="all" />
+  </assembly>
+</linker>

@@ -78,6 +78,44 @@ This is handled in the build and should be kept in mind when adding features:
 - If you add a feature that depends on reflection over a new assembly or type, root the relevant assembly
   in the appropriate `*.targets` and validate that the trimmed tool/extension still works at runtime — a
   clean build alone does not prove a reflection path survived trimming.
+- The self-contained host keeps startup hooks enabled (`StartupHookSupport=true`) for parity with the
+  framework-dependent host (the SDK otherwise disables them under trimming) and preserves the
+  `AssemblyLoadContext` assembly-loading extensibility API (`ILLink.Descriptors.SelfContained.xml`). Both are
+  gated on the toggle. This keeps the tool's startup-hook/assembly-load extensibility behavior consistent
+  with the framework-dependent build and allows the functional test suite to run against the self-contained
+  host (see below).
+
+## Running the functional tests against the self-contained tool
+
+The functional tests (`Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests`) spawn the `dotnet-monitor`
+process and exercise its HTTP APIs. They can run against the self-contained host instead of the
+framework-dependent build, which validates that the fully-trimmed, single-file artifact survives the
+end-to-end suite.
+
+First publish the self-contained host to the convention path the tests look for,
+`artifacts/selfcontained-tool/<rid>/dotnet-monitor[.exe]`:
+
+```cmd
+.\.dotnet\dotnet.exe publish src\Tools\dotnet-monitor\dotnet-monitor.csproj -c Release ^
+  /p:TargetFramework=net10.0 /p:RuntimeIdentifier=win-x64 ^
+  /p:DotNetMonitorBuildSelfContainedTool=true ^
+  /p:PublishDir=%CD%\artifacts\selfcontained-tool\win-x64\
+```
+
+There are two ways to use it:
+
+- **Dedicated self-contained tests** (`SelfContainedToolTests`) run automatically whenever a self-contained
+  host is present at the convention path (or at the path given by the `DotNetMonitorTestSelfContainedToolPath`
+  environment variable); otherwise they are skipped. They always force self-contained mode.
+- **Flip the whole suite** by setting `DotNetMonitorTestSelfContainedToolPath` to the published executable (or
+  the directory containing it). Every test then runs against the self-contained host. CI is expected to set
+  this to the exact published artifact for the build under test (it fails fast if the path is missing). When
+  the variable is unset, the suite runs against the framework-dependent build as before.
+
+```cmd
+set DotNetMonitorTestSelfContainedToolPath=%CD%\artifacts\selfcontained-tool\win-x64\dotnet-monitor.exe
+.\.dotnet\dotnet.exe test src\Tests\Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests -f net10.0
+```
 
 # Updating native build support
 

@@ -47,6 +47,16 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         public RootOptions ConfigurationFromEnvironment { get; } = new();
 
         /// <summary>
+        /// When <see langword="true"/>, the self-contained, single-file build of dotnet-monitor
+        /// (see <see cref="SelfContainedToolHelper"/>) is launched directly instead of running the
+        /// framework-dependent assembly through the shared dotnet host. Defaults to
+        /// <see cref="SelfContainedToolHelper.IsEnabledByDefault"/> so that setting the
+        /// <c>DotNetMonitorTestSelfContainedToolPath</c> environment variable runs the entire
+        /// functional suite against the self-contained host; individual tests can also opt in.
+        /// </summary>
+        public bool SelfContained { get; set; } = SelfContainedToolHelper.IsEnabledByDefault;
+
+        /// <summary>
         /// Gets the task for the underlying <see cref="DotNetRunner"/>'s
         /// <see cref="DotNetRunner.ExitedTask"/> which is used to wait for process exit.
         /// </summary>
@@ -70,6 +80,24 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
                 "dotnet-monitor",
                 TargetFrameworkMoniker.Net100
                 );
+
+        private string ResolveEntrypointPath()
+        {
+            if (!SelfContained)
+            {
+                return DotNetMonitorPath;
+            }
+
+            string path = SelfContainedToolHelper.Path;
+            if (string.IsNullOrEmpty(path) || !File.Exists(path))
+            {
+                throw new InvalidOperationException(
+                    $"The self-contained dotnet-monitor build was requested but was not found at '{path}'. " +
+                    $"Publish it to the convention path or set the '{SelfContainedToolHelper.PathEnvironmentVariableName}' environment variable.");
+            }
+
+            return path;
+        }
 
         private static string TestStartupHookPath =>
             AssemblyHelper.GetAssemblyArtifactBinPath(
@@ -141,7 +169,8 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
                 _outputHelper.WriteLine("Explicitly set settings path: {0}", ExplicitlySetSettingsFilePath);
             }
 
-            _runner.EntrypointAssemblyPath = DotNetMonitorPath;
+            _runner.EntrypointAssemblyPath = ResolveEntrypointPath();
+            _runner.SelfContained = SelfContained;
             _runner.Arguments = string.Join(" ", argsList);
 
             // Disable diagnostics on tool

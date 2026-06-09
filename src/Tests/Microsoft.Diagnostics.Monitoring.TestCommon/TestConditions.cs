@@ -14,5 +14,12 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon
         public static bool IsNotWindows => !IsWindows;
 
         public static bool IsNotArm64 => RuntimeInformation.OSArchitecture != Architecture.Arm64;
+
+        /// <summary>
+        /// Whether a self-contained, single-file build of the dotnet-monitor tool is available to run.
+        /// Used to gate self-contained-specific functional tests so they are skipped when no such build
+        /// has been published (see <see cref="SelfContainedToolHelper"/>).
+        /// </summary>
+        public static bool IsSelfContainedToolAvailable => SelfContainedToolHelper.IsAvailable;
     }
 }

@@ -55,6 +55,15 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         public string EntrypointAssemblyPath { get; set; }
 
         /// <summary>
+        /// When <see langword="true"/>, <see cref="EntrypointAssemblyPath"/> is treated as a
+        /// self-contained native executable and launched directly, rather than being executed
+        /// through the shared <c>dotnet</c> host (i.e. without <c>dotnet exec</c> and without a
+        /// <c>.runtimeconfig.test.json</c>). The self-contained executable bundles its own runtime,
+        /// so the framework-version pinning provided by the test runtime config does not apply.
+        /// </summary>
+        public bool SelfContained { get; set; }
+
+        /// <summary>
         /// Retrieves the starting environment block of the process.
         /// </summary>
         public IDictionary<string, string> Environment => _process.StartInfo.Environment;
@@ -152,15 +161,18 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
         public async Task StartAsync(CancellationToken token)
         {
             StringBuilder argsBuilder = new();
-            if (TestDotNetHost.HasHostFullPath)
+            if (!SelfContained)
             {
-                argsBuilder.Append("exec --runtimeconfig \"");
-                argsBuilder.Append(Path.ChangeExtension(EntrypointAssemblyPath, ".runtimeconfig.test.json"));
+                if (TestDotNetHost.HasHostFullPath)
+                {
+                    argsBuilder.Append("exec --runtimeconfig \"");
+                    argsBuilder.Append(Path.ChangeExtension(EntrypointAssemblyPath, ".runtimeconfig.test.json"));
+                    argsBuilder.Append("\" ");
+                }
+                argsBuilder.Append('\"');
+                argsBuilder.Append(EntrypointAssemblyPath);
                 argsBuilder.Append("\" ");
             }
-            argsBuilder.Append('\"');
-            argsBuilder.Append(EntrypointAssemblyPath);
-            argsBuilder.Append("\" ");
             argsBuilder.Append(Arguments);
 
             if (StopOnParentExit)
@@ -182,7 +194,9 @@ namespace Microsoft.Diagnostics.Monitoring.TestCommon.Runners
                 Environment.Add(ToolIdentifiers.EnvironmentVariables.StartupHooks, startupHooks);
             }
 
-            _process.StartInfo.FileName = TestDotNetHost.GetPath(Architecture);
+            // A self-contained executable bundles its own apphost; launch it directly. A
+            // framework-dependent assembly is executed through the shared dotnet host.
+            _process.StartInfo.FileName = SelfContained ? EntrypointAssemblyPath : TestDotNetHost.GetPath(Architecture);
             _process.StartInfo.Arguments = argsBuilder.ToString();
 
             if (!_process.Start())

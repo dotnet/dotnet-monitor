@@ -18,6 +18,14 @@
     configuration binding). dotnet-monitor never uses the design-time licensing path, so this member is dead
     code in this application.
 
+  * System.StartupHookProvider.ProcessStartupHooks - the startup-hook dispatcher. The self-contained build
+    sets StartupHookSupport=true (SelfContainedTool.targets) for behavioral parity with the framework-dependent
+    host and so the functional test suite can inject its test hooks into the exact shipped artifact. The SDK
+    defaults this switch off under trimming precisely because hook code is not observable by the trimmer; that
+    is acceptable here because no startup hook is loaded into the dotnet-monitor host process by default, and the
+    only hooks the functional tests inject reference types in assemblies that are already preserved whole via
+    TrimmerRootAssembly (dotnet-monitor, WebApi, Options).
+
   This document is supplied to illink as an external link-attributes file (via the SDK _ILLinkSuppressions item
   in SelfContainedTool.targets) only when the self-contained tool toggle is on, so the framework-dependent build
   and the container image are unaffected. It must be external rather than embedded because an embedded attributes
@@ -39,6 +47,15 @@
         <argument>Trimming</argument>
         <argument>IL2026</argument>
         <property name="Justification">Design-time licensing BinaryFormatter path is dead code in dotnet-monitor; the type is only present because System.ComponentModel.TypeConverter is rooted to preserve intrinsic TypeConverters.</property>
+      </attribute>
+    </type>
+  </assembly>
+  <assembly fullname="System.Private.CoreLib">
+    <type fullname="System.StartupHookProvider">
+      <attribute fullname="System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessageAttribute" assembly="System.Private.CoreLib">
+        <argument>Trimming</argument>
+        <argument>IL2026</argument>
+        <property name="Justification">StartupHookSupport is enabled in the self-contained build for parity with the framework-dependent host and for functional-test injection. No startup hook is loaded into the dotnet-monitor host by default, and the test hooks reference only types in assemblies preserved whole via TrimmerRootAssembly.</property>
       </attribute>
     </type>
   </assembly>
