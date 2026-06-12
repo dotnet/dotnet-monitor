@@ -2,16 +2,16 @@
   <!-- Import references updated by Dependabot. -->
   <PropertyGroup>
     <!-- Microsoft.Extensions.Configuration.Abstractions -->
-    <MicrosoftExtensionsConfigurationAbstractions100Version>10.0.8</MicrosoftExtensionsConfigurationAbstractions100Version>
+    <MicrosoftExtensionsConfigurationAbstractions100Version>10.0.9</MicrosoftExtensionsConfigurationAbstractions100Version>
     <!-- Microsoft.Extensions.Logging -->
-    <MicrosoftExtensionsLogging100Version>10.0.8</MicrosoftExtensionsLogging100Version>
+    <MicrosoftExtensionsLogging100Version>10.0.9</MicrosoftExtensionsLogging100Version>
     <!-- Microsoft.Extensions.Logging.Abstractions -->
-    <MicrosoftExtensionsLoggingAbstractions100Version>10.0.8</MicrosoftExtensionsLoggingAbstractions100Version>
+    <MicrosoftExtensionsLoggingAbstractions100Version>10.0.9</MicrosoftExtensionsLoggingAbstractions100Version>
     <!-- Microsoft.Extensions.Logging.Console -->
-    <MicrosoftExtensionsLoggingConsole100Version>10.0.8</MicrosoftExtensionsLoggingConsole100Version>
+    <MicrosoftExtensionsLoggingConsole100Version>10.0.9</MicrosoftExtensionsLoggingConsole100Version>
     <!-- Microsoft.NETCore.App -->
     <MicrosoftNETCoreApp100Version>10.0.9</MicrosoftNETCoreApp100Version>
     <!-- System.Text.Json -->
-    <SystemTextJson100Version>10.0.8</SystemTextJson100Version>
+    <SystemTextJson100Version>10.0.9</SystemTextJson100Version>
   </PropertyGroup>
 </Project>
