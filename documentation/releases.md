@@ -9,13 +9,6 @@
 | 8.1 | February 11, 2025 | [8.1.2](https://github.com/dotnet/dotnet-monitor/releases/tag/v8.1.2) | August 6, 2025 |  | net8.0 |
 
 
-## Out of support versions
-
-| Version | Original Release Date | Latest Patch Version | Patch Release Date | End of Support | Runtime Frameworks |
-| --- | --- | --- | --- | --- | --- |
-| 8.0 | November 14, 2023 | [8.0.8](https://github.com/dotnet/dotnet-monitor/releases/tag/v8.0.8) | February 11, 2025 | May 11, 2025 | net8.0 |
-
-
 ## Preview versions
 
 | Version | Release Date | Latest Version | Runtime Frameworks |
