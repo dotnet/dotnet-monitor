@@ -11,19 +11,8 @@
     "9.0",
     "8.1"
   ],
-  "unsupported": [
-    "8.0"
-  ],
+  "unsupported": [],
   "releases": {
-    "8.0": {
-      "tag": "v8.0.8",
-      "minorReleaseDate": "2023-11-14T00:00:00.000Z",
-      "patchReleaseDate": "2025-02-11T00:00:00.000Z",
-      "supportedFrameworks": [
-        "net8.0"
-      ],
-      "outOfSupportDate": "2025-05-11T00:00:00.000Z"
-    },
     "9.0": {
       "tag": "v9.0.5",
       "minorReleaseDate": "2024-11-12T00:00:00.000Z",
@@ -51,7 +40,7 @@
     "10.0": {
       "tag": "v10.0.2",
       "minorReleaseDate": "2025-11-12T00:00:00.000Z",
-      "patchReleaseDate": "2025-04-14T00:00:00.000Z",
+      "patchReleaseDate": "2026-04-14T00:00:00.000Z",
       "supportedFrameworks": [
         "net10.0"
       ]
