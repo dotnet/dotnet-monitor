@@ -3,7 +3,7 @@
   <Import Project="dependabot/Versions.props" />
   <PropertyGroup Label="Versioning">
     <RepositoryUrl>https://github.com/dotnet/dotnet-monitor</RepositoryUrl>
-    <VersionPrefix>10.0.2</VersionPrefix>
+    <VersionPrefix>10.0.3</VersionPrefix>
     <PreReleaseVersionLabel>servicing</PreReleaseVersionLabel>
     <DotnetFinalVersionKind>release</DotnetFinalVersionKind>
     <!-- Disable final version kind until merged into release branch. -->
@@ -48,15 +48,15 @@
   -->
   <PropertyGroup Label="Automated">
     <!-- dotnet/diagnostics references -->
-    <MicrosoftDiagnosticsMonitoringVersion>10.0.707702</MicrosoftDiagnosticsMonitoringVersion>
-    <MicrosoftDiagnosticsMonitoringEventPipeVersion>10.0.707702</MicrosoftDiagnosticsMonitoringEventPipeVersion>
-    <MicrosoftFileFormatsVersion>1.0.707702</MicrosoftFileFormatsVersion>
+    <MicrosoftDiagnosticsMonitoringVersion>10.0.721401</MicrosoftDiagnosticsMonitoringVersion>
+    <MicrosoftDiagnosticsMonitoringEventPipeVersion>10.0.721401</MicrosoftDiagnosticsMonitoringEventPipeVersion>
+    <MicrosoftFileFormatsVersion>1.0.721401</MicrosoftFileFormatsVersion>
     <!-- dotnet/dotnet references -->
     <MicrosoftAspNetCoreAppRuntimewinx64Version>10.0.0</MicrosoftAspNetCoreAppRuntimewinx64Version>
     <MicrosoftCodeAnalysisNetAnalyzersVersion>10.0.202</MicrosoftCodeAnalysisNetAnalyzersVersion>
-    <MicrosoftDotNetBuildTasksArchivesVersion>10.0.0-beta.26201.4</MicrosoftDotNetBuildTasksArchivesVersion>
-    <MicrosoftDotNetCodeAnalysisVersion>10.0.0-beta.26201.4</MicrosoftDotNetCodeAnalysisVersion>
-    <MicrosoftDotNetXUnitExtensionsVersion>10.0.0-beta.26201.4</MicrosoftDotNetXUnitExtensionsVersion>
+    <MicrosoftDotNetBuildTasksArchivesVersion>10.0.0-beta.26304.4</MicrosoftDotNetBuildTasksArchivesVersion>
+    <MicrosoftDotNetCodeAnalysisVersion>10.0.0-beta.26304.4</MicrosoftDotNetCodeAnalysisVersion>
+    <MicrosoftDotNetXUnitExtensionsVersion>10.0.0-beta.26304.4</MicrosoftDotNetXUnitExtensionsVersion>
     <MicrosoftNETCoreAppRuntimewinx64Version>10.0.0</MicrosoftNETCoreAppRuntimewinx64Version>
     <SystemCommandLineVersion>2.0.0</SystemCommandLineVersion>
     <VSRedistCommonAspNetCoreSharedFrameworkx64100Version>10.0.0-rtm.25523.111</VSRedistCommonAspNetCoreSharedFrameworkx64100Version>
