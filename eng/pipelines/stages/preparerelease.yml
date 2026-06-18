@@ -89,22 +89,11 @@ stages:
             --client-id "$env:servicePrincipalId"
             -v True
 
-      - task: DownloadPipelineArtifact@2
-        displayName: Download SBOM Artifact
-        inputs:
-          artifactName: PackSignPublish_Pack_and_Sign_SBOM
-          targetPath: '$(Agent.TempDirectory)\SbomArtifact'
-
-      - task: PowerShell@2
-        displayName: Copy SBOM to Assets Layout
-        inputs:
-          targetType: inline
-          script: |
-            $source = "$(Agent.TempDirectory)\SbomArtifact\PackSignPublish_Pack_and_Sign_SBOM\_manifest"
-            $destination = "$(System.ArtifactsDirectory)\AssetsLayout\_manifest"
-            Write-Host "Copying SBOM from $source to $destination"
-            Copy-Item -Path $source -Destination $destination -Recurse -Force
-
+      # SBOM generation is handled by 1ES PT at publish time: the 1ES.PublishPipelineArtifact
+      # task below auto-generates an SBOM (_manifest) over the published AssetsLayout, which
+      # includes the staged package. The previous explicit "Download SBOM Artifact" /
+      # "Copy SBOM to Assets Layout" steps relied on the per-job PackSignPublish_Pack_and_Sign_SBOM
+      # artifact, which Arcade no longer produces (SBOM moved to 1ES PT), causing the stage to fail.
       - template: /eng/pipelines/steps/publish-pipeline-artifact.yml@self
         parameters:
           displayName: 'Upload Assets Layout'
