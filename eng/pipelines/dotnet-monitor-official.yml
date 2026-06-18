@@ -76,6 +76,17 @@ extends:
         # Generate a TPN for only the dotnet-monitor project
         - template: /eng/pipelines/jobs/tpn.yml@self
 
+      # Produce a cpp CodeQL snapshot for SDL compliance (SFI-PS2.1).
+      # csharp is already covered by 1ES PT auto-injection; this adds the native (cpp) leg.
+      - ${{ if notin(variables['Build.Reason'], 'PullRequest') }}:
+        - template: /eng/pipelines/jobs/build-codeql.yml@self
+          parameters:
+            osGroup: Windows
+            configuration: Release
+            architecture: x64
+            language: cpp
+            enableTsa: true
+
       # Build binaries
       - template: /eng/pipelines/jobs/platform-matrix.yml@self
         parameters:
