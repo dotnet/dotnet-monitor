@@ -9,6 +9,8 @@ parameters:
   architecture: x64
   # Enables TSA results upload
   enableTsa: false
+  # Languages to analyze with CodeQL (csharp, cpp, or csharp,cpp)
+  language: csharp,cpp
 
 jobs:
 - template: /eng/pipelines/jobs/build-binaries.yml@self
@@ -26,7 +28,7 @@ jobs:
     - Codeql.Cadence: 0
     # Force CodeQL enabled so it may be run on any branch
     - Codeql.Enabled: true
-    - Codeql.Language: csharp,cpp
+    - Codeql.Language: ${{ parameters.language }}
       # CodeQL needs this plumbed along as a variable to enable TSA
     - Codeql.TSAEnabled: ${{ parameters.enableTsa }}
 
