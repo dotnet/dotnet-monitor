@@ -53,14 +53,14 @@
     <MicrosoftFileFormatsVersion>1.0.721401</MicrosoftFileFormatsVersion>
     <!-- dotnet/dotnet references -->
     <MicrosoftAspNetCoreAppRuntimewinx64Version>10.0.0</MicrosoftAspNetCoreAppRuntimewinx64Version>
-    <MicrosoftCodeAnalysisNetAnalyzersVersion>10.0.301</MicrosoftCodeAnalysisNetAnalyzersVersion>
-    <MicrosoftDotNetBuildTasksArchivesVersion>10.0.0-beta.26324.4</MicrosoftDotNetBuildTasksArchivesVersion>
-    <MicrosoftDotNetCodeAnalysisVersion>10.0.0-beta.26324.4</MicrosoftDotNetCodeAnalysisVersion>
-    <MicrosoftDotNetXUnitExtensionsVersion>10.0.0-beta.26324.4</MicrosoftDotNetXUnitExtensionsVersion>
+    <MicrosoftCodeAnalysisNetAnalyzersVersion>10.0.302</MicrosoftCodeAnalysisNetAnalyzersVersion>
+    <MicrosoftDotNetBuildTasksArchivesVersion>10.0.0-beta.26329.109</MicrosoftDotNetBuildTasksArchivesVersion>
+    <MicrosoftDotNetCodeAnalysisVersion>10.0.0-beta.26329.109</MicrosoftDotNetCodeAnalysisVersion>
+    <MicrosoftDotNetXUnitExtensionsVersion>10.0.0-beta.26329.109</MicrosoftDotNetXUnitExtensionsVersion>
     <MicrosoftNETCoreAppRuntimewinx64Version>10.0.0</MicrosoftNETCoreAppRuntimewinx64Version>
     <SystemCommandLineVersion>2.0.0</SystemCommandLineVersion>
     <VSRedistCommonAspNetCoreSharedFrameworkx64100Version>10.0.0-rtm.25523.111</VSRedistCommonAspNetCoreSharedFrameworkx64100Version>
-    <VSRedistCommonNetCoreSdkPlaceholderx64100Version>10.0.301-servicing.26270.133</VSRedistCommonNetCoreSdkPlaceholderx64100Version>
+    <VSRedistCommonNetCoreSdkPlaceholderx64100Version>10.0.302-servicing.26329.109</VSRedistCommonNetCoreSdkPlaceholderx64100Version>
     <VSRedistCommonNetCoreSharedFrameworkx64100Version>10.0.0-rtm.25523.111</VSRedistCommonNetCoreSharedFrameworkx64100Version>
   </PropertyGroup>
   <PropertyGroup Label="Runtime Versions">
