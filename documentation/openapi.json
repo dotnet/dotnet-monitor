@@ -2079,14 +2079,13 @@
             "nullable": true
           },
           "error": {
+            "type": "object",
             "oneOf": [
-              {
-                "nullable": true
-              },
               {
                 "$ref": "#/components/schemas/OperationError"
               }
-            ]
+            ],
+            "nullable": true
           },
           "operationId": {
             "type": "string",
@@ -2100,14 +2099,13 @@
             "$ref": "#/components/schemas/OperationState"
           },
           "process": {
+            "type": "object",
             "oneOf": [
-              {
-                "nullable": true
-              },
               {
                 "$ref": "#/components/schemas/OperationProcessInfo"
               }
-            ]
+            ],
+            "nullable": true
           },
           "egressProviderName": {
             "type": "string",
@@ -2143,14 +2141,13 @@
             "$ref": "#/components/schemas/OperationState"
           },
           "process": {
+            "type": "object",
             "oneOf": [
-              {
-                "nullable": true
-              },
               {
                 "$ref": "#/components/schemas/OperationProcessInfo"
               }
-            ]
+            ],
+            "nullable": true
           },
           "egressProviderName": {
             "type": "string",
