@@ -22,7 +22,6 @@
     <PackageVersion Include="Microsoft.FileFormats" Version="$(MicrosoftFileFormatsVersion)" />
     <PackageVersion Include="Microsoft.Identity.Web" Version="$(MicrosoftIdentityWebVersion)" />
     <PackageVersion Include="Microsoft.OpenApi" Version="$(MicrosoftOpenApiVersion)" />
-    <PackageVersion Include="Microsoft.OpenApi.Readers" Version="$(MicrosoftOpenApiReadersVersion)" />
     <PackageVersion Include="Moq" Version="$(MoqVersion)" />
     <PackageVersion Include="Newtonsoft.Json" Version="$(NewtonsoftJsonVersion)" />
     <PackageVersion Include="NJsonSchema" Version="$(NJsonSchemaVersion)" />
