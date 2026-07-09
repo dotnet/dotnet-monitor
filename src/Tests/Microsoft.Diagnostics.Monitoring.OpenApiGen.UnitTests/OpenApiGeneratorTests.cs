@@ -3,10 +3,8 @@
 
 using Microsoft.Diagnostics.Monitoring.TestCommon;
 using Microsoft.Diagnostics.Monitoring.TestCommon.Runners;
-using Microsoft.OpenApi.Extensions;
-using Microsoft.OpenApi.Models;
-using Microsoft.OpenApi.Readers;
-using Microsoft.OpenApi.Validations;
+using Microsoft.OpenApi;
+using Microsoft.OpenApi.Reader;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -80,11 +78,11 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen.UnitTests
         /// Test that the committed OpenAPI document is valid.
         /// </summary>
         [Fact]
-        public void BaselineIsValidTest()
+        public async Task BaselineIsValidTestAsync()
         {
             using FileStream stream = new(OpenApiBaselinePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 
-            ValidateDocument(stream);
+            await ValidateDocumentAsync(stream);
         }
 
         /// <summary>
@@ -95,7 +93,7 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen.UnitTests
         {
             using FileStream stream = await GenerateDocumentAsync();
 
-            ValidateDocument(stream);
+            await ValidateDocumentAsync(stream);
         }
 
         private async Task<FileStream> GenerateDocumentAsync()
@@ -119,13 +117,12 @@ namespace Microsoft.Diagnostics.Monitoring.OpenApiGen.UnitTests
             return new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4096, FileOptions.DeleteOnClose);
         }
 
-        private static void ValidateDocument(FileStream stream)
+        private static async Task ValidateDocumentAsync(Stream stream)
         {
-            OpenApiStreamReader reader = new();
-            OpenApiDocument document = reader.Read(stream, out OpenApiDiagnostic diagnostic);
-            Assert.Empty(diagnostic.Errors);
+            ReadResult result = await OpenApiDocument.LoadAsync(stream, OpenApiConstants.Json);
+            Assert.Empty(result.Diagnostic.Errors);
 
-            IEnumerable<OpenApiError> errors = document.Validate(ValidationRuleSet.GetDefaultRuleSet());
+            IEnumerable<OpenApiError> errors = result.Document.Validate(ValidationRuleSet.GetDefaultRuleSet());
             Assert.Empty(errors);
         }
     }
