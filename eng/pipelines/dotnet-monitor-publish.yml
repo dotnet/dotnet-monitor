@@ -158,9 +158,9 @@ extends:
         - task: ManualValidation@1
           inputs:
             notifyUsers: |-
-              [TEAM FOUNDATION]\.NET Monitor Working Group
+              NETMonitor@service.microsoft.com
             approvers: |-
-              [TEAM FOUNDATION]\.NET Monitor Working Group
+              NETMonitor@service.microsoft.com
     - stage: Nuget
       displayName: Push To NuGet Feed
       dependsOn: Validation
