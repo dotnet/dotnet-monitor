@@ -159,6 +159,8 @@ extends:
           inputs:
             notifyUsers: |-
               [TEAM FOUNDATION]\.NET Monitor
+            approvers: |-
+              [TEAM FOUNDATION]\.NET Monitor
     - stage: Nuget
       displayName: Push To NuGet Feed
       dependsOn: Validation
