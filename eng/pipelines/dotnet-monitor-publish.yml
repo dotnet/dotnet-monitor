@@ -48,9 +48,6 @@ resources:
 extends:
   template: /eng/pipelines/templates/pipeline-template.yml@self
   parameters:
-    featureFlags:
-      sbomtoolkitPipelineRunnerGenerationEnabled: false
-      sbomtoolkitPipelineRunnerValidationEnabled: false
     networkIsolationPolicy: Permissive
     sdl:
       sbom:
