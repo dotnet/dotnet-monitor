@@ -79,7 +79,7 @@
   </PropertyGroup>
   <PropertyGroup Label=".NET 8 Dependent" Condition=" '$(TargetFramework)' == 'net8.0' ">
     <MicrosoftAspNetCoreAuthenticationJwtBearerVersion>$(MicrosoftAspNetCoreApp80Version)</MicrosoftAspNetCoreAuthenticationJwtBearerVersion>
-    <MicrosoftAspNetCoreAuthenticationNegotiateVersion>$(MicrosoftAspNetCoreApp80Version)</MicrosoftAspNetCoreAuthenticationNegotiateVersion>
+    <MicrosoftAspNetCoreAuthenticationNegotiateVersion>$(MicrosoftAspNetCoreAuthenticationNegotiate80Version)</MicrosoftAspNetCoreAuthenticationNegotiateVersion>
     <!--
       Azure SDK dependencies require .NET 10 versions of these packages to avoid package downgrade errors.
       Using 100 versions for packages that have transitive dependencies from Azure.Core and Azure.Identity.

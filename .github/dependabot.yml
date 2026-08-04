@@ -85,6 +85,7 @@ updates:
   groups:
     runtime-dependencies:
       patterns:
+      - Microsoft.AspNetCore.Authentication.Negotiate
       - Microsoft.Extensions.*
       - Microsoft.NETCore.DotNetHost
       - System.Text.Json
@@ -168,6 +169,7 @@ updates:
   groups:
     runtime-dependencies:
       patterns:
+      - Microsoft.AspNetCore.Authentication.Negotiate
       - Microsoft.Extensions.*
       - Microsoft.NETCore.DotNetHost
       - System.Text.Json
@@ -234,6 +236,7 @@ updates:
   groups:
     runtime-dependencies:
       patterns:
+      - Microsoft.AspNetCore.Authentication.Negotiate
       - Microsoft.Extensions.*
       - Microsoft.NETCore.DotNetHost
       - System.Text.Json
@@ -283,6 +286,7 @@ updates:
   groups:
     runtime-dependencies:
       patterns:
+      - Microsoft.AspNetCore.Authentication.Negotiate
       - Microsoft.Extensions.*
       - Microsoft.NETCore.DotNetHost
       - System.Text.Json
