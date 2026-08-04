@@ -3,6 +3,7 @@
     Packages in this file have versions updated periodically by Dependabot specifically for .NET 8.
   -->
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Negotiate" Version="$(MicrosoftAspNetCoreAuthenticationNegotiate80Version)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(MicrosoftExtensionsConfigurationAbstractions80Version)" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="$(MicrosoftExtensionsLogging80Version)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(MicrosoftExtensionsLoggingAbstractions80Version)" />
