@@ -1,6 +1,8 @@
 <Project>
   <!-- Import references updated by Dependabot. -->
   <PropertyGroup>
+    <!-- Microsoft.AspNetCore.Authentication.Negotiate -->
+    <MicrosoftAspNetCoreAuthenticationNegotiate90Version>9.0.18</MicrosoftAspNetCoreAuthenticationNegotiate90Version>
     <!-- Microsoft.Extensions.Configuration.Abstractions -->
     <MicrosoftExtensionsConfigurationAbstractions90Version>9.0.18</MicrosoftExtensionsConfigurationAbstractions90Version>
     <!-- Microsoft.Extensions.Logging -->
