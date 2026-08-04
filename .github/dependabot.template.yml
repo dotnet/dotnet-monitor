@@ -89,6 +89,7 @@ updates:
           - "Microsoft.AspNetCore.Authentication.Negotiate"
           - "Microsoft.Extensions.*"
           - "Microsoft.NETCore.DotNetHost"
+          - "System.Security.Cryptography.Xml"
           - "System.Text.Json"
 #@ end
 #@ end
