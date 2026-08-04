@@ -86,9 +86,7 @@ updates:
     groups:
       runtime-dependencies:
         patterns:
-#@ if tfm == "net8.0":
           - "Microsoft.AspNetCore.Authentication.Negotiate"
-#@ end
           - "Microsoft.Extensions.*"
           - "Microsoft.NETCore.DotNetHost"
           - "System.Text.Json"
