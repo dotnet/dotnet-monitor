@@ -88,6 +88,7 @@
     <MicrosoftExtensionsLoggingVersion>$(MicrosoftExtensionsLogging80Version)</MicrosoftExtensionsLoggingVersion>
     <MicrosoftExtensionsLoggingAbstractionsVersion>$(MicrosoftExtensionsLoggingAbstractions80Version)</MicrosoftExtensionsLoggingAbstractionsVersion>
     <MicrosoftExtensionsLoggingConsoleVersion>$(MicrosoftExtensionsLoggingConsole80Version)</MicrosoftExtensionsLoggingConsoleVersion>
+    <SystemSecurityCryptographyXmlVersion>$(SystemSecurityCryptographyXml80Version)</SystemSecurityCryptographyXmlVersion>
     <SystemTextJsonVersion>$(SystemTextJson80Version)</SystemTextJsonVersion>
   </PropertyGroup>
   <PropertyGroup Label=".NET 9 Dependent" Condition=" '$(TargetFramework)' == 'net9.0' ">
@@ -97,6 +98,7 @@
     <MicrosoftExtensionsLoggingVersion>$(MicrosoftExtensionsLogging90Version)</MicrosoftExtensionsLoggingVersion>
     <MicrosoftExtensionsLoggingAbstractionsVersion>$(MicrosoftExtensionsLoggingAbstractions90Version)</MicrosoftExtensionsLoggingAbstractionsVersion>
     <MicrosoftExtensionsLoggingConsoleVersion>$(MicrosoftExtensionsLoggingConsole90Version)</MicrosoftExtensionsLoggingConsoleVersion>
+    <SystemSecurityCryptographyXmlVersion>$(SystemSecurityCryptographyXml90Version)</SystemSecurityCryptographyXmlVersion>
     <SystemTextJsonVersion>$(SystemTextJson90Version)</SystemTextJsonVersion>
     <MicrosoftAspNetCoreOpenApiVersion>$(MicrosoftAspNetCoreApp90Version)</MicrosoftAspNetCoreOpenApiVersion>
   </PropertyGroup>
@@ -110,6 +112,7 @@
     <MicrosoftExtensionsLoggingVersion>$(MicrosoftExtensionsLogging100Version)</MicrosoftExtensionsLoggingVersion>
     <MicrosoftExtensionsLoggingAbstractionsVersion>$(MicrosoftExtensionsLoggingAbstractions100Version)</MicrosoftExtensionsLoggingAbstractionsVersion>
     <MicrosoftExtensionsLoggingConsoleVersion>$(MicrosoftExtensionsLoggingConsole100Version)</MicrosoftExtensionsLoggingConsoleVersion>
+    <SystemSecurityCryptographyXmlVersion>$(SystemSecurityCryptographyXml100Version)</SystemSecurityCryptographyXmlVersion>
     <SystemTextJsonVersion>$(SystemTextJson100Version)</SystemTextJsonVersion>
     <MicrosoftAspNetCoreOpenApiVersion>$(MicrosoftAspNetCoreApp100Version)</MicrosoftAspNetCoreOpenApiVersion>
   </PropertyGroup>
