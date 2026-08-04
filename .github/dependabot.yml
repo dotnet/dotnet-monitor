@@ -27,9 +27,6 @@ updates:
       patterns:
       - Microsoft.Identity.*
       - Microsoft.IdentityModel.*
-    aws-sdk-dependencies:
-      patterns:
-      - AWSSDK.*
 - package-ecosystem: nuget
   directory: /eng/dependabot/nuget.org
   schedule:
@@ -54,6 +51,7 @@ updates:
       - Microsoft.AspNetCore.Authentication.Negotiate
       - Microsoft.Extensions.*
       - Microsoft.NETCore.DotNetHost
+      - System.Security.Cryptography.Xml
       - System.Text.Json
 - package-ecosystem: nuget
   directory: /eng/dependabot/net9.0
@@ -72,6 +70,7 @@ updates:
       - Microsoft.AspNetCore.Authentication.Negotiate
       - Microsoft.Extensions.*
       - Microsoft.NETCore.DotNetHost
+      - System.Security.Cryptography.Xml
       - System.Text.Json
 - package-ecosystem: nuget
   directory: /eng/dependabot/net8.0
@@ -90,6 +89,7 @@ updates:
       - Microsoft.AspNetCore.Authentication.Negotiate
       - Microsoft.Extensions.*
       - Microsoft.NETCore.DotNetHost
+      - System.Security.Cryptography.Xml
       - System.Text.Json
 - package-ecosystem: nuget
   directory: /eng/dependabot/independent
@@ -113,9 +113,6 @@ updates:
       patterns:
       - Microsoft.Identity.*
       - Microsoft.IdentityModel.*
-    aws-sdk-dependencies:
-      patterns:
-      - AWSSDK.*
 - package-ecosystem: nuget
   directory: /eng/dependabot/nuget.org
   schedule:
@@ -140,6 +137,7 @@ updates:
       - Microsoft.AspNetCore.Authentication.Negotiate
       - Microsoft.Extensions.*
       - Microsoft.NETCore.DotNetHost
+      - System.Security.Cryptography.Xml
       - System.Text.Json
 - package-ecosystem: nuget
   directory: /eng/dependabot/net9.0
@@ -158,6 +156,7 @@ updates:
       - Microsoft.AspNetCore.Authentication.Negotiate
       - Microsoft.Extensions.*
       - Microsoft.NETCore.DotNetHost
+      - System.Security.Cryptography.Xml
       - System.Text.Json
 - package-ecosystem: nuget
   directory: /eng/dependabot/net8.0
@@ -176,6 +175,7 @@ updates:
       - Microsoft.AspNetCore.Authentication.Negotiate
       - Microsoft.Extensions.*
       - Microsoft.NETCore.DotNetHost
+      - System.Security.Cryptography.Xml
       - System.Text.Json
 - package-ecosystem: nuget
   directory: /eng/dependabot/independent
@@ -199,9 +199,6 @@ updates:
       patterns:
       - Microsoft.Identity.*
       - Microsoft.IdentityModel.*
-    aws-sdk-dependencies:
-      patterns:
-      - AWSSDK.*
 - package-ecosystem: nuget
   directory: /eng/dependabot/nuget.org
   schedule:
@@ -226,6 +223,7 @@ updates:
       - Microsoft.AspNetCore.Authentication.Negotiate
       - Microsoft.Extensions.*
       - Microsoft.NETCore.DotNetHost
+      - System.Security.Cryptography.Xml
       - System.Text.Json
 - package-ecosystem: nuget
   directory: /eng/dependabot/net8.0
@@ -244,6 +242,7 @@ updates:
       - Microsoft.AspNetCore.Authentication.Negotiate
       - Microsoft.Extensions.*
       - Microsoft.NETCore.DotNetHost
+      - System.Security.Cryptography.Xml
       - System.Text.Json
 - package-ecosystem: nuget
   directory: /eng/dependabot/independent
@@ -267,9 +266,6 @@ updates:
       patterns:
       - Microsoft.Identity.*
       - Microsoft.IdentityModel.*
-    aws-sdk-dependencies:
-      patterns:
-      - AWSSDK.*
 - package-ecosystem: nuget
   directory: /eng/dependabot/nuget.org
   schedule:
@@ -294,40 +290,5 @@ updates:
       - Microsoft.AspNetCore.Authentication.Negotiate
       - Microsoft.Extensions.*
       - Microsoft.NETCore.DotNetHost
-      - System.Text.Json
-- package-ecosystem: nuget
-  directory: /eng/dependabot/net10.0
-  schedule:
-    interval: daily
-  target-branch: release/9.0
-  ignore:
-  - dependency-name: '*'
-    update-types:
-    - version-update:semver-major
-  commit-message:
-    prefix: '[release/9.0] '
-  groups:
-    runtime-dependencies:
-      patterns:
-      - Microsoft.AspNetCore.Authentication.Negotiate
-      - Microsoft.Extensions.*
-      - Microsoft.NETCore.DotNetHost
-      - System.Text.Json
-- package-ecosystem: nuget
-  directory: /eng/dependabot/net10.0
-  schedule:
-    interval: daily
-  target-branch: release/8.x
-  ignore:
-  - dependency-name: '*'
-    update-types:
-    - version-update:semver-major
-  commit-message:
-    prefix: '[release/8.x] '
-  groups:
-    runtime-dependencies:
-      patterns:
-      - Microsoft.AspNetCore.Authentication.Negotiate
-      - Microsoft.Extensions.*
-      - Microsoft.NETCore.DotNetHost
+      - System.Security.Cryptography.Xml
       - System.Text.Json

@@ -13,6 +13,8 @@
     <MicrosoftExtensionsLoggingConsole90Version>9.0.18</MicrosoftExtensionsLoggingConsole90Version>
     <!-- Microsoft.NETCore.App -->
     <MicrosoftNETCoreApp90Version>9.0.14</MicrosoftNETCoreApp90Version>
+    <!-- System.Security.Cryptography.Xml -->
+    <SystemSecurityCryptographyXml90Version>9.0.18</SystemSecurityCryptographyXml90Version>
     <!-- System.Text.Json -->
     <SystemTextJson90Version>9.0.18</SystemTextJson90Version>
   </PropertyGroup>
