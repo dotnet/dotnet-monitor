@@ -54,6 +54,7 @@ updates:
       - Microsoft.AspNetCore.Authentication.Negotiate
       - Microsoft.Extensions.*
       - Microsoft.NETCore.DotNetHost
+      - System.Security.Cryptography.Xml
       - System.Text.Json
 - package-ecosystem: nuget
   directory: /eng/dependabot/net9.0
@@ -72,6 +73,7 @@ updates:
       - Microsoft.AspNetCore.Authentication.Negotiate
       - Microsoft.Extensions.*
       - Microsoft.NETCore.DotNetHost
+      - System.Security.Cryptography.Xml
       - System.Text.Json
 - package-ecosystem: nuget
   directory: /eng/dependabot/net8.0
@@ -90,6 +92,7 @@ updates:
       - Microsoft.AspNetCore.Authentication.Negotiate
       - Microsoft.Extensions.*
       - Microsoft.NETCore.DotNetHost
+      - System.Security.Cryptography.Xml
       - System.Text.Json
 - package-ecosystem: nuget
   directory: /eng/dependabot/independent
@@ -140,6 +143,7 @@ updates:
       - Microsoft.AspNetCore.Authentication.Negotiate
       - Microsoft.Extensions.*
       - Microsoft.NETCore.DotNetHost
+      - System.Security.Cryptography.Xml
       - System.Text.Json
 - package-ecosystem: nuget
   directory: /eng/dependabot/net9.0
@@ -158,6 +162,7 @@ updates:
       - Microsoft.AspNetCore.Authentication.Negotiate
       - Microsoft.Extensions.*
       - Microsoft.NETCore.DotNetHost
+      - System.Security.Cryptography.Xml
       - System.Text.Json
 - package-ecosystem: nuget
   directory: /eng/dependabot/net8.0
@@ -176,6 +181,7 @@ updates:
       - Microsoft.AspNetCore.Authentication.Negotiate
       - Microsoft.Extensions.*
       - Microsoft.NETCore.DotNetHost
+      - System.Security.Cryptography.Xml
       - System.Text.Json
 - package-ecosystem: nuget
   directory: /eng/dependabot/independent
@@ -226,6 +232,7 @@ updates:
       - Microsoft.AspNetCore.Authentication.Negotiate
       - Microsoft.Extensions.*
       - Microsoft.NETCore.DotNetHost
+      - System.Security.Cryptography.Xml
       - System.Text.Json
 - package-ecosystem: nuget
   directory: /eng/dependabot/net8.0
@@ -244,6 +251,7 @@ updates:
       - Microsoft.AspNetCore.Authentication.Negotiate
       - Microsoft.Extensions.*
       - Microsoft.NETCore.DotNetHost
+      - System.Security.Cryptography.Xml
       - System.Text.Json
 - package-ecosystem: nuget
   directory: /eng/dependabot/independent
@@ -294,6 +302,7 @@ updates:
       - Microsoft.AspNetCore.Authentication.Negotiate
       - Microsoft.Extensions.*
       - Microsoft.NETCore.DotNetHost
+      - System.Security.Cryptography.Xml
       - System.Text.Json
 - package-ecosystem: nuget
   directory: /eng/dependabot/net10.0
@@ -312,6 +321,7 @@ updates:
       - Microsoft.AspNetCore.Authentication.Negotiate
       - Microsoft.Extensions.*
       - Microsoft.NETCore.DotNetHost
+      - System.Security.Cryptography.Xml
       - System.Text.Json
 - package-ecosystem: nuget
   directory: /eng/dependabot/net10.0
@@ -330,4 +340,5 @@ updates:
       - Microsoft.AspNetCore.Authentication.Negotiate
       - Microsoft.Extensions.*
       - Microsoft.NETCore.DotNetHost
+      - System.Security.Cryptography.Xml
       - System.Text.Json
