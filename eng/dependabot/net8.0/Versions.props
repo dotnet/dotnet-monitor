@@ -2,7 +2,7 @@
   <!-- Import references updated by Dependabot. -->
   <PropertyGroup>
     <!-- Microsoft.AspNetCore.Authentication.Negotiate -->
-    <MicrosoftAspNetCoreAuthenticationNegotiate80Version>8.0.29</MicrosoftAspNetCoreAuthenticationNegotiate80Version>
+    <MicrosoftAspNetCoreAuthenticationNegotiate80Version>8.0.30</MicrosoftAspNetCoreAuthenticationNegotiate80Version>
     <!-- Microsoft.Extensions.Configuration.Abstractions -->
     <MicrosoftExtensionsConfigurationAbstractions80Version>8.0.0</MicrosoftExtensionsConfigurationAbstractions80Version>
     <!-- Microsoft.Extensions.Logging -->
@@ -12,7 +12,7 @@
     <!-- Microsoft.Extensions.Logging.Console -->
     <MicrosoftExtensionsLoggingConsole80Version>8.0.1</MicrosoftExtensionsLoggingConsole80Version>
     <!-- Microsoft.NETCore.App -->
-    <MicrosoftNETCoreApp80Version>8.0.29</MicrosoftNETCoreApp80Version>
+    <MicrosoftNETCoreApp80Version>8.0.30</MicrosoftNETCoreApp80Version>
     <!-- System.Security.Cryptography.Xml -->
     <SystemSecurityCryptographyXml80Version>8.0.4</SystemSecurityCryptographyXml80Version>
     <!-- System.Text.Json -->
