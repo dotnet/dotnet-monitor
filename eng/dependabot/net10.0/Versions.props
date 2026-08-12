@@ -2,20 +2,20 @@
   <!-- Import references updated by Dependabot. -->
   <PropertyGroup>
     <!-- Microsoft.AspNetCore.Authentication.Negotiate -->
-    <MicrosoftAspNetCoreAuthenticationNegotiate100Version>10.0.10</MicrosoftAspNetCoreAuthenticationNegotiate100Version>
+    <MicrosoftAspNetCoreAuthenticationNegotiate100Version>10.0.11</MicrosoftAspNetCoreAuthenticationNegotiate100Version>
     <!-- Microsoft.Extensions.Configuration.Abstractions -->
-    <MicrosoftExtensionsConfigurationAbstractions100Version>10.0.10</MicrosoftExtensionsConfigurationAbstractions100Version>
+    <MicrosoftExtensionsConfigurationAbstractions100Version>10.0.11</MicrosoftExtensionsConfigurationAbstractions100Version>
     <!-- Microsoft.Extensions.Logging -->
-    <MicrosoftExtensionsLogging100Version>10.0.10</MicrosoftExtensionsLogging100Version>
+    <MicrosoftExtensionsLogging100Version>10.0.11</MicrosoftExtensionsLogging100Version>
     <!-- Microsoft.Extensions.Logging.Abstractions -->
-    <MicrosoftExtensionsLoggingAbstractions100Version>10.0.10</MicrosoftExtensionsLoggingAbstractions100Version>
+    <MicrosoftExtensionsLoggingAbstractions100Version>10.0.11</MicrosoftExtensionsLoggingAbstractions100Version>
     <!-- Microsoft.Extensions.Logging.Console -->
-    <MicrosoftExtensionsLoggingConsole100Version>10.0.10</MicrosoftExtensionsLoggingConsole100Version>
+    <MicrosoftExtensionsLoggingConsole100Version>10.0.11</MicrosoftExtensionsLoggingConsole100Version>
     <!-- Microsoft.NETCore.App -->
     <MicrosoftNETCoreApp100Version>10.0.10</MicrosoftNETCoreApp100Version>
     <!-- System.Security.Cryptography.Xml -->
-    <SystemSecurityCryptographyXml100Version>10.0.10</SystemSecurityCryptographyXml100Version>
+    <SystemSecurityCryptographyXml100Version>10.0.11</SystemSecurityCryptographyXml100Version>
     <!-- System.Text.Json -->
-    <SystemTextJson100Version>10.0.10</SystemTextJson100Version>
+    <SystemTextJson100Version>10.0.11</SystemTextJson100Version>
   </PropertyGroup>
 </Project>
