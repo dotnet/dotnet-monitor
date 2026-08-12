@@ -12,7 +12,7 @@
     <!-- Microsoft.Extensions.Logging.Console -->
     <MicrosoftExtensionsLoggingConsole100Version>10.0.10</MicrosoftExtensionsLoggingConsole100Version>
     <!-- Microsoft.NETCore.App -->
-    <MicrosoftNETCoreApp100Version>10.0.10</MicrosoftNETCoreApp100Version>
+    <MicrosoftNETCoreApp100Version>10.0.11</MicrosoftNETCoreApp100Version>
     <!-- System.Security.Cryptography.Xml -->
     <SystemSecurityCryptographyXml100Version>10.0.10</SystemSecurityCryptographyXml100Version>
     <!-- System.Text.Json -->
