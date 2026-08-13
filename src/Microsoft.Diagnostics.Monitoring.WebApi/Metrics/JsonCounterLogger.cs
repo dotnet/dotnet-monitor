@@ -75,10 +75,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                         counter.DisplayName,
                         counter.Unit,
                         counter.CounterType.ToString(),
-                        CounterUtilities.AppendPercentile(counter.ValueTags, quantile.Percentage),
+                        FormatValueTags(counter, CounterUtilities.AppendPercentile(counter.ValueTags, quantile.Percentage)),
                         quantile.Value,
-                        counter.CounterMetadata.MeterTags,
-                        counter.CounterMetadata.InstrumentTags);
+                        CounterTags.Format(counter.CounterMetadata.MeterTags),
+                        CounterTags.Format(counter.CounterMetadata.InstrumentTags));
 
                     if (i < aggregatePercentilePayload.Quantiles.Length - 1)
                     {
@@ -97,15 +97,20 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
                     counter.DisplayName,
                     counter.Unit,
                     counter.CounterType.ToString(),
-                    counter.ValueTags,
+                    FormatValueTags(counter, counter.ValueTags),
                     counter.Value,
-                    counter.CounterMetadata.MeterTags,
-                    counter.CounterMetadata.InstrumentTags);
+                    CounterTags.Format(counter.CounterMetadata.MeterTags),
+                    CounterTags.Format(counter.CounterMetadata.InstrumentTags));
             }
             await _stream.WriteAsync(_bufferWriter.WrittenMemory);
 
             await _stream.WriteAsync(NewLineSeparator);
         }
+
+        // An EventCounters payload carries its metadata in ValueTags as unescaped ':'-separated pairs,
+        // which decoding would corrupt, so only meter tags are decoded.
+        private static string FormatValueTags(ICounterPayload counter, string valueTags) =>
+            CounterTags.IsMeterPayload(counter) ? CounterTags.Format(valueTags) : valueTags;
 
         private void SerializeCounterValues(
             DateTime timestamp,
