@@ -1,6 +1,8 @@
 <Project>
   <!-- Import references updated by Dependabot. -->
   <PropertyGroup>
+    <!-- Microsoft.AspNetCore.Authentication.Negotiate -->
+    <MicrosoftAspNetCoreAuthenticationNegotiate100Version>10.0.11</MicrosoftAspNetCoreAuthenticationNegotiate100Version>
     <!-- Microsoft.Extensions.Configuration.Abstractions -->
     <MicrosoftExtensionsConfigurationAbstractions100Version>10.0.11</MicrosoftExtensionsConfigurationAbstractions100Version>
     <!-- Microsoft.Extensions.Logging -->
@@ -11,6 +13,8 @@
     <MicrosoftExtensionsLoggingConsole100Version>10.0.11</MicrosoftExtensionsLoggingConsole100Version>
     <!-- Microsoft.NETCore.App -->
     <MicrosoftNETCoreApp100Version>10.0.11</MicrosoftNETCoreApp100Version>
+    <!-- System.Security.Cryptography.Xml -->
+    <SystemSecurityCryptographyXml100Version>10.0.11</SystemSecurityCryptographyXml100Version>
     <!-- System.Text.Json -->
     <SystemTextJson100Version>10.0.11</SystemTextJson100Version>
   </PropertyGroup>

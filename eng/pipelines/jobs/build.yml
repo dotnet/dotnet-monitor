@@ -64,7 +64,10 @@ jobs:
       ${{ if ne(variables['System.TeamProject'], 'public') }}:
         pool:
           name: $(DncEngInternalBuildPool)
-          demands: ImageOverride -equals 1es-ubuntu-2204
+          # Use the DncEng-maintained build image (matches the public leg's
+          # Build.Ubuntu.2204.Amd64.Open and dotnet/diagnostics' internal LinuxImage) instead of
+          # the leaner 1ES-managed 1es-ubuntu-2204.
+          demands: ImageOverride -equals Build.Ubuntu.2204.Amd64
           os: linux
 
     # Build OSX Pool
