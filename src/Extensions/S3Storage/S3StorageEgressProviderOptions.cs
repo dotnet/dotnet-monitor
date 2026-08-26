@@ -65,6 +65,11 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
 
         [Display(
             ResourceType = typeof(OptionsDisplayStrings),
+            Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_S3StorageEgressProviderOptions_DisablePayloadSigning))]
+        public bool DisablePayloadSigning { get; set; }
+
+        [Display(
+            ResourceType = typeof(OptionsDisplayStrings),
             Description = nameof(OptionsDisplayStrings.DisplayAttributeDescription_CommonEgressProviderOptions_CopyBufferSize))]
         [Range(1, int.MaxValue)]
         public int? CopyBufferSize { get; set; }

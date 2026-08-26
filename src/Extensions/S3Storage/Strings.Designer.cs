@@ -79,6 +79,15 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to S3 storage egress failed: DisablePayloadSigning requires an HTTPS endpoint, because an unsigned payload is only protected by the transport..
+        /// </summary>
+        internal static string ErrorMessage_EgressS3FailedInsecurePayloadSigningOptOut {
+            get {
+                return ResourceManager.GetString("ErrorMessage_EgressS3FailedInsecurePayloadSigningOptOut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The {0} field is required..
         /// </summary>
         internal static string ErrorMessage_EgressS3FailedMissingOption {

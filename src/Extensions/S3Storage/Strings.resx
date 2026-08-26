@@ -141,6 +141,10 @@
     <value>S3 storage egress failed: A session token was specified without an access key id and secret access key.</value>
     <comment>Gets the string for rejecting validation due to a session token being specified without the corresponding access key id and secret access key.</comment>
   </data>
+  <data name="ErrorMessage_EgressS3FailedInsecurePayloadSigningOptOut" xml:space="preserve">
+    <value>S3 storage egress failed: DisablePayloadSigning requires an HTTPS endpoint, because an unsigned payload is only protected by the transport.</value>
+    <comment>Gets the string for rejecting validation due to payload signing being disabled on a non-HTTPS endpoint.</comment>
+  </data>
   <data name="LogFormatString_EgressProviderInvokeStreamAction" xml:space="preserve">
     <value>Provider {providerType}: Invoking stream action.</value>
     <comment>Gets the format string that is printed in the 11:EgressProviderInvokeStreamAction event.

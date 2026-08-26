@@ -26,8 +26,9 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
         private readonly string _contentType;
         private readonly bool _useKmsEncryption;
         private readonly string? _kmsEncryptionKey;
+        private readonly bool _disablePayloadSigning;
 
-        public S3Storage(IAmazonS3 client, string bucketName, string objectId, string contentType, bool useKmsEncryption, string? kmsEncryptionKey)
+        public S3Storage(IAmazonS3 client, string bucketName, string objectId, string contentType, bool useKmsEncryption, string? kmsEncryptionKey, bool disablePayloadSigning)
         {
             _s3Client = client;
             _bucketName = bucketName;
@@ -35,6 +36,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
             _contentType = contentType;
             _useKmsEncryption = useKmsEncryption;
             _kmsEncryptionKey = kmsEncryptionKey;
+            _disablePayloadSigning = disablePayloadSigning;
         }
 
         /// <summary>
@@ -50,6 +52,16 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
             {
                 ForcePathStyle = options.ForcePathStyle
             };
+
+            // Flexible checksums are sent as an aws-chunked trailer, which is a separate wire feature
+            // from payload signing: leaving them on would still produce a STREAMING-...-TRAILER request
+            // that an endpoint without chunked-payload support rejects. Opting out of payload signing
+            // therefore has to opt out of request checksums as well, or the option cannot do its job.
+            if (options.DisablePayloadSigning)
+            {
+                configuration.RequestChecksumCalculation = RequestChecksumCalculation.WHEN_REQUIRED;
+                configuration.ResponseChecksumValidation = ResponseChecksumValidation.WHEN_REQUIRED;
+            }
 
             if (!string.IsNullOrEmpty(options.Endpoint))
                 configuration.ServiceURL = options.Endpoint;
@@ -115,7 +127,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
             bool exists = await AmazonS3Util.DoesS3BucketExistV2Async(s3Client, options.BucketName);
             if (!exists)
                 await s3Client.PutBucketAsync(options.BucketName, cancellationToken);
-            return new S3Storage(s3Client, options.BucketName, settings.Name, settings.ContentType, options.UseKmsEncryption, options.KmsEncryptionKey);
+            return new S3Storage(s3Client, options.BucketName, settings.Name, settings.ContentType, options.UseKmsEncryption, options.KmsEncryptionKey, options.DisablePayloadSigning);
         }
 
         public async Task PutAsync(Stream inputStream, CancellationToken token)
@@ -127,6 +139,7 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
                 Key = _objectId,
                 InputStream = inputStream,
                 AutoCloseStream = false,
+                DisablePayloadSigning = _disablePayloadSigning,
             };
 
             if (_useKmsEncryption)
@@ -144,7 +157,14 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
         public async Task UploadAsync(Stream inputStream, CancellationToken token)
         {
             using TransferUtility transferUtility = new(_s3Client);
-            await transferUtility.UploadAsync(inputStream, _bucketName, _objectId, token);
+            TransferUtilityUploadRequest request = new()
+            {
+                BucketName = _bucketName,
+                Key = _objectId,
+                InputStream = inputStream,
+                DisablePayloadSigning = _disablePayloadSigning,
+            };
+            await transferUtility.UploadAsync(request, token);
         }
 
         public async Task<string> InitMultiPartUploadAsync(IDictionary<string, string> metadata, CancellationToken cancellationToken)
@@ -198,7 +218,8 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
                 InputStream = inputStream,
                 PartSize = partSize,
                 UploadId = uploadId,
-                PartNumber = partNumber
+                PartNumber = partNumber,
+                DisablePayloadSigning = _disablePayloadSigning,
             };
             var response = await _s3Client.UploadPartAsync(uploadRequest, token);
             return new PartETag(response.PartNumber ?? partNumber, response.ETag);

@@ -105,6 +105,15 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sends request payloads with an UNSIGNED-PAYLOAD signature, suppressing flexible-checksum trailers and response checksum validation. Required by S3-compatible services that do not implement chunked or trailered payloads (for example Cloudflare R2). The endpoint must use HTTPS..
+        /// </summary>
+        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_DisablePayloadSigning {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_DisablePayloadSigning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The endpoint of S3 to connect to. This is optional in case of using AWS storage..
         /// </summary>
         public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_Endpoint {
@@ -119,15 +128,6 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage {
         public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_ForcePathStyle {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_ForcePathStyle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The AWS SessionToken associated with temporary (STS-issued) credentials. When set, AccessKeyId and SecretAccessKey must also be set..
-        /// </summary>
-        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_SessionToken {
-            get {
-                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_SessionToken", resourceCulture);
             }
         }
         
@@ -173,6 +173,15 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage {
         public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretAccessKey {
             get {
                 return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_SecretAccessKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The AWS SessionToken associated with temporary (STS-issued) credentials. When set, AccessKeyId and SecretAccessKey must also be set..
+        /// </summary>
+        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_SessionToken {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_SessionToken", resourceCulture);
             }
         }
         

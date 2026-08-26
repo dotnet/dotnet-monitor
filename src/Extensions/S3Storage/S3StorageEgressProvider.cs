@@ -1,6 +1,7 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Amazon.Runtime;
 using Amazon.S3;
 using Microsoft.Diagnostics.Monitoring.Extension.Common;
 using Microsoft.Extensions.Logging;
@@ -68,7 +69,13 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
                 string resourceId = GetResourceId(client, options, artifactSettings);
                 return resourceId;
             }
-            catch (AmazonS3Exception e)
+            // AmazonClientException is a sibling of AmazonServiceException (the base of
+            // AmazonS3Exception), not its base: client-side failures such as the signer
+            // refusing DisablePayloadSigning over a non-HTTPS endpoint surface as
+            // AmazonClientException from the first UploadPartAsync call, after the
+            // multi-part upload has been initiated. Catch both so the upload is aborted
+            // (otherwise the parts are orphaned and billed) and the message is wrapped.
+            catch (Exception e) when (e is AmazonS3Exception or AmazonClientException)
             {
                 if (client != null && uploadId != null && !uploadDone)
                     await client.AbortMultipartUploadAsync(uploadId, token);
