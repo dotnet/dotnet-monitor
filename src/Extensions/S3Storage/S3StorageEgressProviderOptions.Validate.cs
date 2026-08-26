@@ -15,6 +15,10 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
         {
             if (!string.IsNullOrEmpty(AccessKeyId) && string.IsNullOrEmpty(SecretAccessKey))
                 yield return new ValidationResult(Strings.ErrorMessage_EgressS3FailedMissingSecrets);
+
+            // A session token is only meaningful alongside a temporary access key id / secret access key pair.
+            if (!string.IsNullOrEmpty(SessionToken) && (string.IsNullOrEmpty(AccessKeyId) || string.IsNullOrEmpty(SecretAccessKey)))
+                yield return new ValidationResult(Strings.ErrorMessage_EgressS3FailedMissingSessionCredentials);
         }
     }
 }

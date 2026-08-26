@@ -97,6 +97,15 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to S3 storage egress failed: A session token was specified without an access key id and secret access key..
+        /// </summary>
+        internal static string ErrorMessage_EgressS3FailedMissingSessionCredentials {
+            get {
+                return ResourceManager.GetString("ErrorMessage_EgressS3FailedMissingSessionCredentials", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Provider {providerType}: Invoking stream action..
         /// </summary>
         internal static string LogFormatString_EgressProviderInvokeStreamAction {

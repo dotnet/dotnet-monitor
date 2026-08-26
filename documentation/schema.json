@@ -3000,6 +3000,13 @@
           ],
           "description": "The AWS SecretAccessKey associated AccessKeyId for IAM user to login"
         },
+        "SessionToken": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The AWS SessionToken associated with temporary (STS-issued) credentials. When set, AccessKeyId and SecretAccessKey must also be set."
+        },
         "AwsProfileName": {
           "type": [
             "null",

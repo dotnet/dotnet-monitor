@@ -37,30 +37,55 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
             _kmsEncryptionKey = kmsEncryptionKey;
         }
 
-        public static async Task<IS3Storage> CreateAsync(S3StorageEgressProviderOptions options, EgressArtifactSettings settings, CancellationToken cancellationToken)
+        /// <summary>
+        /// Builds the <see cref="AmazonS3Config"/> describing which endpoint the client should talk to.
+        /// </summary>
+        /// <remarks>
+        /// This is applied regardless of how the credentials are obtained: the endpoint of the storage
+        /// service is orthogonal to the way the caller authenticates against it.
+        /// </remarks>
+        internal static AmazonS3Config CreateConfiguration(S3StorageEgressProviderOptions options)
+        {
+            AmazonS3Config configuration = new()
+            {
+                ForcePathStyle = options.ForcePathStyle
+            };
+
+            if (!string.IsNullOrEmpty(options.Endpoint))
+                configuration.ServiceURL = options.Endpoint;
+
+            if (!string.IsNullOrEmpty(options.RegionName))
+            {
+                if (string.IsNullOrEmpty(configuration.ServiceURL))
+                {
+                    configuration.RegionEndpoint = RegionEndpoint.GetBySystemName(options.RegionName);
+                }
+                else
+                {
+                    configuration.AuthenticationRegion = options.RegionName;
+                }
+            }
+
+            return configuration;
+        }
+
+        /// <summary>
+        /// Resolves the credentials used to authenticate against the storage service.
+        /// </summary>
+        internal static AWSCredentials CreateCredentials(S3StorageEgressProviderOptions options)
         {
             AWSCredentials? awsCredentials = null;
-            AmazonS3Config configuration = new();
+
             // use the specified access key and the secrets taken from configuration
             if (!string.IsNullOrEmpty(options.AccessKeyId) && !string.IsNullOrEmpty(options.SecretAccessKey))
             {
                 string secretAccessKeyId = options.SecretAccessKey;
-                awsCredentials = new BasicAWSCredentials(options.AccessKeyId, secretAccessKeyId);
 
-                configuration.ForcePathStyle = options.ForcePathStyle;
-                if (!string.IsNullOrEmpty(options.Endpoint))
-                    configuration.ServiceURL = options.Endpoint;
-                if (!string.IsNullOrEmpty(options.RegionName))
-                {
-                    if (string.IsNullOrEmpty(configuration.ServiceURL))
-                    {
-                        configuration.RegionEndpoint = RegionEndpoint.GetBySystemName(options.RegionName);
-                    }
-                    else
-                    {
-                        configuration.AuthenticationRegion = options.RegionName;
-                    }
-                }
+                // A session token indicates temporary (STS-style) credentials, which must be signed
+                // with the token in addition to the access key id and secret access key.
+                awsCredentials = string.IsNullOrEmpty(options.SessionToken)
+                    ? new BasicAWSCredentials(options.AccessKeyId, secretAccessKeyId)
+                    : new SessionAWSCredentials(options.AccessKeyId, secretAccessKeyId, options.SessionToken);
             }
             // use configured AWS profile
             else if (!string.IsNullOrEmpty(options.AwsProfileName))
@@ -77,6 +102,14 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage
 
             if (awsCredentials == null)
                 throw new AmazonClientException("Failed to find AWS Credentials for constructing AWS service client");
+
+            return awsCredentials;
+        }
+
+        public static async Task<IS3Storage> CreateAsync(S3StorageEgressProviderOptions options, EgressArtifactSettings settings, CancellationToken cancellationToken)
+        {
+            AWSCredentials awsCredentials = CreateCredentials(options);
+            AmazonS3Config configuration = CreateConfiguration(options);
 
             IAmazonS3 s3Client = new AmazonS3Client(awsCredentials, configuration);
             bool exists = await AmazonS3Util.DoesS3BucketExistV2Async(s3Client, options.BucketName);

@@ -155,6 +155,7 @@ First Available: 8.0
 | bucketName | string | true | The name of the S3 Bucket to which the blob will be egressed. |
 | accessKeyId | string | false | The AWS AccessKeyId for IAM user to login.  |
 | secretAccessKey | string | false | The AWS SecretAccessKey associated AccessKeyId for IAM user to login. To login by access key id the 'secretAccessKey' must be set. |
+| sessionToken | string | false | (10.1+) The AWS SessionToken that accompanies temporary (STS-issued) credentials, e.g. those returned by `sts:AssumeRole` or by an S3-compatible service that issues short-lived credentials. When set, both 'accessKeyId' and 'secretAccessKey' must also be set. |
 | awsProfileName | string | false | The AWS profile name to be used for login. |
 | awsProfilePath | string | false | The AWS profile path, if profile details not stored in default path. |
 | regionName | string | false | A Region is a named set of AWS resources in the same geographical area. This option specifies the region to connect to. If the Endpoint is specified, this is the AuthenticationRegion; otherwise, it is the RegionEndpoint. |
@@ -221,9 +222,68 @@ First Available: 8.0
  ```
 </details>
 
+### Authenticating to S3 using temporary credentials
+
+First Available: 10.1
+
+Some credential issuers (`sts:AssumeRole`, HashiCorp Vault, and several S3-compatible services) only ever hand out short-lived credentials, which consist of an access key id, a secret access key **and** a session token. All three must be presented on every request; a request signed with only the first two is rejected by the service.
+
+Set `sessionToken` alongside `accessKeyId` and `secretAccessKey` to use such credentials. `endpoint`, `regionName` and `forcePathStyle` are honored as usual, so this works against a custom S3-compatible endpoint.
+
+<details>
+  <summary>JSON with a session token</summary>
+
+  ```json
+  {
+      "Egress": {
+          "S3Storage": {
+              "monitorS3Blob": {
+                  "endpoint": "https://s3.example.com",
+                  "bucketName": "myS3Bucket",
+                  "accessKeyId": "myTemporaryAccessKeyId",
+                  "secretAccessKey": "myTemporarySecretAccessKey",
+                  "sessionToken": "mySessionToken",
+                  "regionName": "auto",
+                  "forcePathStyle": true
+              }
+          }
+      }
+  }
+  ```
+</details>
+
+<details>
+  <summary>Kubernetes Secret</summary>
+
+  ```sh
+  #!/bin/sh
+  kubectl create secret generic my-s3-secrets \
+  --from-literal=Egress__S3Storage__monitorS3Blob__bucketName=myS3Bucket \
+  --from-literal=Egress__S3Storage__monitorS3Blob__accessKeyId=myTemporaryAccessKeyId \
+  --from-literal=Egress__S3Storage__monitorS3Blob__secretAccessKey=myTemporarySecretAccessKey \
+  --from-literal=Egress__S3Storage__monitorS3Blob__sessionToken=mySessionToken \
+  --from-literal=Egress__S3Storage__monitorS3Blob__regionName=auto \
+  --dry-run=client -o yaml | kubectl apply -f -
+ ```
+</details>
+
+> **Note:** Temporary credentials expire. It is the responsibility of the credential source (for example a sidecar that refreshes a mounted secret) to keep the configured values current; `dotnet monitor` does not renew them.
+
 ### Authenticating to S3 using service accounts
 
 First Available: 9.0 Preview 5
+
+> **Behavior change:** `endpoint`, `regionName` and `forcePathStyle` are applied on **every**
+> authentication path. Previously they were only applied when `accessKeyId` and `secretAccessKey`
+> were both set, and were silently ignored when authenticating via `awsProfileName` or via the
+> default credential chain — which made those paths unusable against a custom S3-compatible
+> endpoint (the client failed with `No RegionEndpoint or ServiceURL configured`).
+>
+> If you authenticate with a profile or the default chain, set no `endpoint`, and previously
+> relied on the region coming from the profile or `AWS_REGION` while *also* having a stale
+> `regionName` configured, the configured `regionName` now wins. Note that an unrecognized
+> region name does not fail fast: `RegionEndpoint.GetBySystemName` returns a placeholder region
+> and the failure surfaces later, when the request is made.
 
 If running workloads in Kubernetes it is common to authenticate with AWS via Kubernetes service accounts ([AWS Documentation](https://docs.aws.amazon.com/eks/latest/userguide/pod-configuration.html)). This is supported in dotnet monitor if none of: `accessKeyId`, `secretAccessKey`, `awsProfileName` are specified. In this case dotnet monitor will fallback to load credentials to login using AWS default defined environment variables, this means that workloads running in EKS can utilize service accounts as discussed in the above AWS documentation.
 

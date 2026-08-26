@@ -123,6 +123,15 @@ namespace Microsoft.Diagnostics.Monitoring.Extension.S3Storage {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The AWS SessionToken associated with temporary (STS-issued) credentials. When set, AccessKeyId and SecretAccessKey must also be set..
+        /// </summary>
+        public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_SessionToken {
+            get {
+                return ResourceManager.GetString("DisplayAttributeDescription_S3StorageEgressProviderOptions_SessionToken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A boolean flag indicates if the return value of egress provider should be a pre-signed URL or only the bucket name and object id of uploaded entry..
         /// </summary>
         public static string DisplayAttributeDescription_S3StorageEgressProviderOptions_GeneratePreSignedUrl {
