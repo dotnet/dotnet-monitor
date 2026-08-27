@@ -89,16 +89,19 @@ stages:
             --client-id "$env:servicePrincipalId"
             -v True
 
-      # SBOM generation is handled by 1ES PT at publish time: the 1ES.PublishPipelineArtifact
-      # task below auto-generates an SBOM (_manifest) over the published AssetsLayout, which
-      # includes the staged package. The previous explicit "Download SBOM Artifact" /
-      # "Copy SBOM to Assets Layout" steps relied on the per-job PackSignPublish_Pack_and_Sign_SBOM
-      # artifact, which Arcade no longer produces (SBOM moved to 1ES PT), causing the stage to fail.
+      # SBOM generation is handled by 1ES PT at publish time. Setting sbomEnabled: true on the
+      # 1ES.PublishPipelineArtifact task below makes 1ES generate an embedded _manifest SBOM over
+      # the published AssetsLayout (which includes the staged package). Downstream, the publish
+      # pipeline's release job validates this _manifest. The previous explicit "Download SBOM
+      # Artifact" / "Copy SBOM to Assets Layout" steps relied on the per-job
+      # PackSignPublish_Pack_and_Sign_SBOM artifact, which Arcade no longer produces (SBOM moved
+      # to 1ES PT).
       - template: /eng/pipelines/steps/publish-pipeline-artifact.yml@self
         parameters:
           displayName: 'Upload Assets Layout'
           targetPath: '$(System.ArtifactsDirectory)\AssetsLayout'
           artifact: 'StagingToolAssetsLayout'
+          sbomEnabled: true
           is1ESPipeline: ${{ parameters.is1ESPipeline }}
 
       # Only tag build from real release branches

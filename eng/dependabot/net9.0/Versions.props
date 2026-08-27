@@ -1,17 +1,21 @@
 <Project>
   <!-- Import references updated by Dependabot. -->
   <PropertyGroup>
+    <!-- Microsoft.AspNetCore.Authentication.Negotiate -->
+    <MicrosoftAspNetCoreAuthenticationNegotiate90Version>9.0.19</MicrosoftAspNetCoreAuthenticationNegotiate90Version>
     <!-- Microsoft.Extensions.Configuration.Abstractions -->
-    <MicrosoftExtensionsConfigurationAbstractions90Version>9.0.17</MicrosoftExtensionsConfigurationAbstractions90Version>
+    <MicrosoftExtensionsConfigurationAbstractions90Version>9.0.19</MicrosoftExtensionsConfigurationAbstractions90Version>
     <!-- Microsoft.Extensions.Logging -->
-    <MicrosoftExtensionsLogging90Version>9.0.17</MicrosoftExtensionsLogging90Version>
+    <MicrosoftExtensionsLogging90Version>9.0.19</MicrosoftExtensionsLogging90Version>
     <!-- Microsoft.Extensions.Logging.Abstractions -->
-    <MicrosoftExtensionsLoggingAbstractions90Version>9.0.17</MicrosoftExtensionsLoggingAbstractions90Version>
+    <MicrosoftExtensionsLoggingAbstractions90Version>9.0.19</MicrosoftExtensionsLoggingAbstractions90Version>
     <!-- Microsoft.Extensions.Logging.Console -->
-    <MicrosoftExtensionsLoggingConsole90Version>9.0.17</MicrosoftExtensionsLoggingConsole90Version>
+    <MicrosoftExtensionsLoggingConsole90Version>9.0.19</MicrosoftExtensionsLoggingConsole90Version>
     <!-- Microsoft.NETCore.App -->
-    <MicrosoftNETCoreApp90Version>9.0.17</MicrosoftNETCoreApp90Version>
+    <MicrosoftNETCoreApp90Version>9.0.18</MicrosoftNETCoreApp90Version>
+    <!-- System.Security.Cryptography.Xml -->
+    <SystemSecurityCryptographyXml90Version>9.0.19</SystemSecurityCryptographyXml90Version>
     <!-- System.Text.Json -->
-    <SystemTextJson90Version>10.0.9</SystemTextJson90Version>
+    <SystemTextJson90Version>10.0.11</SystemTextJson90Version>
   </PropertyGroup>
 </Project>
