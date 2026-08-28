@@ -4,6 +4,8 @@ parameters:
   displayName: 'PublishPipelineArtifact'
   targetPath: ''
   artifact: ''
+  # When true, 1ES PT generates an embedded _manifest SBOM over the published artifact.
+  sbomEnabled: ''
   # Adjust for 1ES pipeline template
   is1ESPipeline: true
 
@@ -14,6 +16,8 @@ steps:
     inputs:
       targetPath: ${{ parameters.targetPath }}
       artifact: ${{ parameters.artifact }}
+      ${{ if ne(parameters.sbomEnabled, '') }}:
+        sbomEnabled: ${{ parameters.sbomEnabled }}
 - ${{ else }}:
   - task: PublishPipelineArtifact@1
     displayName: ${{ parameters.displayName }}
