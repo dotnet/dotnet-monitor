@@ -274,19 +274,14 @@ extends:
                   $shortVersion="$($Matches.major).$($Matches.minor).$($Matches.patch)"
               }
               Write-Host "##vso[task.setvariable variable=ShortReleaseVersion]v$shortVersion"
-        - task: AzureCLI@2
-          displayName: Get GitHub App installation token
-          inputs:
+        - template: /eng/common/templates-official/steps/get-github-app-token.yml@self
+          parameters:
             azureSubscription: dnceng-dotnet-monitor-release-githubapp
-            scriptType: pscore
-            scriptLocation: scriptPath
-            scriptPath: $(DRP_RepoRoot)\eng\release\Scripts\GetGitHubAppToken.ps1
-            scriptArguments: >-
-              -KeyVaultName EngKeyVault
-              -KeyName dotnet-monitor-release-app-key
-              -AppClientId Iv23liBv4UYcLCWQNpMz
-              -InstallationOwner $(DRP_GithubOrg)
-              -OutputVariableName GitHubAppInstallationToken
+            keyVaultName: EngKeyVault
+            keyName: dotnet-monitor-release-app-key
+            appClientId: Iv23liBv4UYcLCWQNpMz
+            installationOwner: $(DRP_GithubOrg)
+            outputVariableName: GitHubAppInstallationToken
         - task: PowerShell@2
           displayName: Generate Release
           inputs:
