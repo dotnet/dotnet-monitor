@@ -84,7 +84,7 @@ function Post-GithubRelease($manifest, [string]$releaseBody)
 
     if (!(Test-Path env:GITHUB_TOKEN))
     {
-        Write-Error "Error: unable to find GitHub PAT. Please set in GITHUB_TOKEN."
+        Write-Error "Error: unable to find GitHub token. Please set GITHUB_TOKEN."
         exit 1
     }
 
