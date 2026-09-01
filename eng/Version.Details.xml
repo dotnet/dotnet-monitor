@@ -22,25 +22,25 @@
       <Uri>https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet</Uri>
       <Sha>35b593bebfcba58f8e78298cef14c2761f5d86c6</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="10.0.0-beta.26429.1">
+    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="10.0.0-beta.26431.5">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>5593ffa7da58f76139b3b49aac38a757417c9526</Sha>
+      <Sha>c642c365e52bd6c5bd979f759963260fb79d710a</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.Build.Tasks.Archives" Version="10.0.0-beta.26429.1">
+    <Dependency Name="Microsoft.DotNet.Build.Tasks.Archives" Version="10.0.0-beta.26431.5">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>5593ffa7da58f76139b3b49aac38a757417c9526</Sha>
+      <Sha>c642c365e52bd6c5bd979f759963260fb79d710a</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.CodeAnalysis" Version="10.0.0-beta.26429.1">
+    <Dependency Name="Microsoft.DotNet.CodeAnalysis" Version="10.0.0-beta.26431.5">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>5593ffa7da58f76139b3b49aac38a757417c9526</Sha>
+      <Sha>c642c365e52bd6c5bd979f759963260fb79d710a</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.Helix.Sdk" Version="10.0.0-beta.26429.1">
+    <Dependency Name="Microsoft.DotNet.Helix.Sdk" Version="10.0.0-beta.26431.5">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>5593ffa7da58f76139b3b49aac38a757417c9526</Sha>
+      <Sha>c642c365e52bd6c5bd979f759963260fb79d710a</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="10.0.0-beta.26429.1">
+    <Dependency Name="Microsoft.DotNet.XUnitExtensions" Version="10.0.0-beta.26431.5">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>5593ffa7da58f76139b3b49aac38a757417c9526</Sha>
+      <Sha>c642c365e52bd6c5bd979f759963260fb79d710a</Sha>
     </Dependency>
     <Dependency Name="Microsoft.FileFormats" Version="1.0.731102">
       <Uri>https://github.com/dotnet/diagnostics</Uri>
