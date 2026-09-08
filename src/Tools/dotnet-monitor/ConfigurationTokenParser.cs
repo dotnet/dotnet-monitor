@@ -2,10 +2,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleDefaultsInterfaces;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -75,7 +77,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 string replacement = originalPropertyValue.Replace(RuntimeIdReference, context.RuntimeId.ToString("D"), StringComparison.Ordinal);
                 replacement = replacement.Replace(ProcessIdReference, context.ProcessId.ToString(CultureInfo.InvariantCulture), StringComparison.Ordinal);
                 replacement = replacement.Replace(ProcessNameReference, context.ProcessName, StringComparison.Ordinal);
-                replacement = replacement.Replace(CommandLineReference, context.CommandLine, StringComparison.Ordinal);
+                replacement = replacement.Replace(CommandLineReference, GetCommandLineReplacement(settings, propertyInfo, context.CommandLine), StringComparison.Ordinal);
                 replacement = replacement.Replace(HostNameReference, context.MonitorHostName, StringComparison.Ordinal);
                 replacement = replacement.Replace(UnixTimeReference, context.Timestamp.ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture), StringComparison.Ordinal);
 
@@ -117,6 +119,36 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 }
             }
             return true;
+        }
+
+        private static string GetCommandLineReplacement(object? settings, PropertyInfo propertyInfo, string commandLine)
+        {
+            if (settings is IEgressProviderProperties &&
+                propertyInfo.Name == nameof(IEgressProviderProperties.ArtifactName))
+            {
+                string fileName = Path.GetFileName(commandLine.Replace('\\', '/'));
+                if (fileName.Length >= 2 &&
+                    char.IsAsciiLetter(fileName[0]) &&
+                    fileName[1] == ':')
+                {
+                    fileName = fileName.Substring(2);
+                }
+
+                int alternateDataStreamIndex = fileName.IndexOf(':');
+                if (alternateDataStreamIndex >= 0)
+                {
+                    fileName = fileName.Substring(0, alternateDataStreamIndex);
+                }
+
+                if (fileName.TrimEnd('.', ' ').Length == 0)
+                {
+                    return string.Empty;
+                }
+
+                return fileName;
+            }
+
+            return commandLine;
         }
 
         public static IEnumerable<PropertyInfo> GetPropertiesFromSettings(object? settings, Predicate<PropertyInfo>? predicate = null) =>
