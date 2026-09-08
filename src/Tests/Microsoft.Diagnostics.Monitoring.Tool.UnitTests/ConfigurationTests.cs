@@ -89,6 +89,14 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
 
         private const string UserProvidedSettingsFileName = "UserSpecifiedFile.json"; // Note: if this name is updated, it must also be updated in the expected show sources configuration files
 
+        private const string SharedJsonTestKey = "SharedJsonTestKey";
+
+        private const string SharedKeyPerFileTestKey = "SharedKeyPerFileTestKey";
+
+        private const string UserJsonTestKey = "UserJsonTestKey";
+
+        private const string UserProvidedJsonTestKey = "UserProvidedJsonTestKey";
+
         private readonly ITestOutputHelper _outputHelper;
 
         public ConfigurationTests(ITestOutputHelper outputHelper)
@@ -194,6 +202,70 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 Assert.Equal(Enum.GetName(level), configuredUrls);
             }
+        }
+
+        [Theory]
+        [InlineData(true, true, false)]
+        [InlineData(true, false, true)]
+        [InlineData(false, true, true)]
+        public void SharedConfigurationSourcesRespectWindowsElevation(
+            bool isWindows,
+            bool isElevated,
+            bool expectSharedConfiguration)
+        {
+            using TemporaryDirectory contentRootDirectory = new(_outputHelper);
+            using TemporaryDirectory sharedConfigDir = new(_outputHelper);
+            using TemporaryDirectory userConfigDir = new(_outputHelper);
+            using TemporaryDirectory userProvidedConfigDir = new(_outputHelper);
+
+            string userProvidedConfigFullPath = Path.Combine(userProvidedConfigDir.FullName, UserProvidedSettingsFileName);
+
+            File.WriteAllText(
+                Path.Combine(sharedConfigDir.FullName, "settings.json"),
+                JsonSerializer.Serialize(new Dictionary<string, string>
+                {
+                    { SharedJsonTestKey, SharedJsonTestKey }
+                }));
+            File.WriteAllText(
+                Path.Combine(sharedConfigDir.FullName, SharedKeyPerFileTestKey),
+                SharedKeyPerFileTestKey);
+            File.WriteAllText(
+                Path.Combine(userConfigDir.FullName, "settings.json"),
+                JsonSerializer.Serialize(new Dictionary<string, string>
+                {
+                    { UserJsonTestKey, UserJsonTestKey }
+                }));
+            File.WriteAllText(
+                userProvidedConfigFullPath,
+                JsonSerializer.Serialize(new Dictionary<string, string>
+                {
+                    { UserProvidedJsonTestKey, UserProvidedJsonTestKey }
+                }));
+
+            HostBuilderSettings settings = new()
+            {
+                AuthenticationMode = StartupAuthenticationMode.Deferred,
+                ContentRootDirectory = contentRootDirectory.FullName,
+                SharedConfigDirectory = sharedConfigDir.FullName,
+                IncludeSharedConfiguration = HostBuilderSettings.ShouldIncludeSharedConfiguration(
+                    isWindows,
+                    () => isElevated),
+                UserConfigDirectory = userConfigDir.FullName,
+                UserProvidedConfigFilePath = new FileInfo(userProvidedConfigFullPath)
+            };
+
+            IHostBuilder builder = HostBuilderHelper.CreateHostBuilder(settings);
+            builder.ReplaceAspnetEnvironment();
+            builder.ReplaceDotnetEnvironment();
+            builder.ReplaceMonitorEnvironment();
+
+            using IHost host = builder.Build();
+            IConfiguration configuration = host.Services.GetRequiredService<IConfiguration>();
+
+            Assert.Equal(expectSharedConfiguration ? SharedJsonTestKey : null, configuration[SharedJsonTestKey]);
+            Assert.Equal(expectSharedConfiguration ? SharedKeyPerFileTestKey : null, configuration[SharedKeyPerFileTestKey]);
+            Assert.Equal(UserJsonTestKey, configuration[UserJsonTestKey]);
+            Assert.Equal(UserProvidedJsonTestKey, configuration[UserProvidedJsonTestKey]);
         }
 
         /// <summary>
