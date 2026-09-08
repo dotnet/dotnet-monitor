@@ -56,6 +56,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public required string SharedConfigDirectory { get; set; }
 
+        public bool IncludeSharedConfiguration { get; set; } = true;
+
         public required string UserConfigDirectory { get; set; }
 
         public FileInfo? UserProvidedConfigFilePath { get; set; }
@@ -80,9 +82,17 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 AuthenticationMode = startupAuthMode,
                 ContentRootDirectory = AppContext.BaseDirectory,
                 SharedConfigDirectory = SharedConfigDirectoryPath,
+                IncludeSharedConfiguration = ShouldIncludeSharedConfiguration(
+                    RuntimeInformation.IsOSPlatform(OSPlatform.Windows),
+                    () => EnvironmentInformation.IsElevated),
                 UserConfigDirectory = UserConfigDirectoryPath,
                 UserProvidedConfigFilePath = userProvidedConfigFilePath
             };
+        }
+
+        internal static bool ShouldIncludeSharedConfiguration(bool isWindows, Func<bool> isElevated)
+        {
+            return !isWindows || !isElevated();
         }
 
         private static string GetEnvironmentOverrideOrValue(string overrideEnvironmentVariable, string value)
