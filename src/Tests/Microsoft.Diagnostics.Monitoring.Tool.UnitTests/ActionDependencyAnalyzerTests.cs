@@ -8,8 +8,10 @@ using Microsoft.Diagnostics.Tools.Monitor;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Actions;
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -176,6 +178,41 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             {
                 serviceCollection.RegisterCollectionRuleAction<PassThroughActionFactory, PassThroughOptions, PassThroughActionDescriptor>();
             });
+        }
+
+        [Theory]
+        [InlineData("../outside.dmp", "outside.dmp")]
+        [InlineData(@"..\..\outside.dmp", "outside.dmp")]
+        [InlineData("/tmp/outside.dmp", "outside.dmp")]
+        [InlineData(@"\outside.dmp", "outside.dmp")]
+        [InlineData(@"C:\temp\outside.dmp", "outside.dmp")]
+        [InlineData("C:outside.dmp", "outside.dmp")]
+        [InlineData(@"\\server\share\outside.dmp", "outside.dmp")]
+        [InlineData("artifact.dmp:stream", "artifact.dmp")]
+        [InlineData("C:artifact.dmp:stream", "artifact.dmp")]
+        [InlineData("..", "")]
+        [InlineData(".. ", "")]
+        [InlineData("C:..", "")]
+        [InlineData("C:.. ", "")]
+        public void ProcessCommandLineArtifactNameTest(string commandLine, string expectedArtifactName)
+        {
+            CollectDumpOptions settings = new()
+            {
+                ArtifactName = ConfigurationTokenParser.CommandLineReference,
+                Egress = ConfigurationTokenParser.CommandLineReference
+            };
+            TokenContext context = new()
+            {
+                CommandLine = commandLine
+            };
+
+            ConfigurationTokenParser parser = new(NullLogger.Instance);
+            CollectDumpOptions newSettings = (CollectDumpOptions)parser.SubstituteOptionValues(settings, context);
+
+            Assert.Equal(expectedArtifactName, newSettings.ArtifactName);
+            Assert.Equal(commandLine, newSettings.Egress);
+            Assert.Equal(ConfigurationTokenParser.CommandLineReference, settings.ArtifactName);
+            Assert.Equal(ConfigurationTokenParser.CommandLineReference, settings.Egress);
         }
 
         [Fact]

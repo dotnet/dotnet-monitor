@@ -207,7 +207,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                     {
                         Enabled = true
                     };
-                    toolRunner.WriteKeyPerValueConfiguration(new RootOptions().AddFileSystemEgress(FileProviderName, _tempDirectory.FullName));
+                    toolRunner.WriteUserSettings(new RootOptions().AddFileSystemEgress(FileProviderName, _tempDirectory.FullName));
                 },
                 profilerLogLevel: LogLevel.Trace,
                 subScenarioName: subScenarioName,

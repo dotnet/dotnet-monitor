@@ -56,27 +56,31 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     string userSettingsPath = Path.Combine(settings.UserConfigDirectory, SettingsFileName);
                     AddJsonFileHelper(builder, hostBuilderResults, userSettingsPath);
 
-                    string sharedSettingsPath = Path.Combine(settings.SharedConfigDirectory, SettingsFileName);
-                    AddJsonFileHelper(builder, hostBuilderResults, sharedSettingsPath);
-
-                    //HACK Workaround for https://github.com/dotnet/runtime/issues/36091
-                    //KeyPerFile provider uses a file system watcher to trigger changes.
-                    //The watcher does not follow symlinks inside the watched directory, such as mounted files
-                    //in Kubernetes.
-                    //We get around this by watching the target folder of the symlink instead.
-                    //See https://github.com/kubernetes/kubernetes/master/pkg/volume/util/atomic_writer.go
-                    string? path = settings.SharedConfigDirectory;
-                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) && RuntimeInfo.IsInKubernetes)
+                    if (settings.UseSharedConfigSources)
                     {
-                        string symlinkTarget = Path.Combine(settings.SharedConfigDirectory, "..data");
-                        if (Directory.Exists(symlinkTarget))
+                        string sharedSettingsPath = Path.Combine(settings.SharedConfigDirectory, SettingsFileName);
+                        AddJsonFileHelper(builder, hostBuilderResults, sharedSettingsPath);
+
+                        //HACK Workaround for https://github.com/dotnet/runtime/issues/36091
+                        //KeyPerFile provider uses a file system watcher to trigger changes.
+                        //The watcher does not follow symlinks inside the watched directory, such as mounted files
+                        //in Kubernetes.
+                        //We get around this by watching the target folder of the symlink instead.
+                        //See https://github.com/kubernetes/kubernetes/master/pkg/volume/util/atomic_writer.go
+                        string? path = settings.SharedConfigDirectory;
+                        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) && RuntimeInfo.IsInKubernetes)
                         {
-                            path = symlinkTarget;
+                            string symlinkTarget = Path.Combine(settings.SharedConfigDirectory, "..data");
+                            if (Directory.Exists(symlinkTarget))
+                            {
+                                path = symlinkTarget;
+                            }
                         }
+
+                        // If a file at this path does not have read permissions, the application will fail to launch.
+                        builder.AddKeyPerFile(path, optional: true, reloadOnChange: true);
                     }
 
-                    // If a file at this path does not have read permissions, the application will fail to launch.
-                    builder.AddKeyPerFile(path, optional: true, reloadOnChange: true);
                     builder.AddEnvironmentVariables(ToolIdentifiers.StandardPrefix);
 
                     // User-specified configuration file path is considered highest precedence, but does NOT override other configuration sources
