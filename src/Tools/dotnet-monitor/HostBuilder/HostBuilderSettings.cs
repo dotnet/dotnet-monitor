@@ -56,6 +56,8 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         public required string SharedConfigDirectory { get; set; }
 
+        public bool IncludeSharedConfiguration { get; set; } = true;
+
         public required string UserConfigDirectory { get; set; }
 
         public FileInfo? UserProvidedConfigFilePath { get; set; }
@@ -71,6 +73,30 @@ namespace Microsoft.Diagnostics.Tools.Monitor
             StartupAuthenticationMode startupAuthMode,
             FileInfo? userProvidedConfigFilePath)
         {
+            return CreateMonitor(
+                urls,
+                metricUrls,
+                metrics,
+                diagnosticPort,
+                startupAuthMode,
+                userProvidedConfigFilePath,
+                () => RuntimeInformation.IsOSPlatform(OSPlatform.Windows),
+                () => EnvironmentInformation.IsElevated);
+        }
+
+        public static HostBuilderSettings CreateMonitor(
+            string[]? urls,
+            string[]? metricUrls,
+            bool metrics,
+            string? diagnosticPort,
+            StartupAuthenticationMode startupAuthMode,
+            FileInfo? userProvidedConfigFilePath,
+            Func<bool> isWindows,
+            Func<bool> isElevated)
+        {
+            ArgumentNullException.ThrowIfNull(isWindows);
+            ArgumentNullException.ThrowIfNull(isElevated);
+
             return new HostBuilderSettings()
             {
                 Urls = urls,
@@ -80,6 +106,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 AuthenticationMode = startupAuthMode,
                 ContentRootDirectory = AppContext.BaseDirectory,
                 SharedConfigDirectory = SharedConfigDirectoryPath,
+                IncludeSharedConfiguration = !isWindows() || !isElevated(),
                 UserConfigDirectory = UserConfigDirectoryPath,
                 UserProvidedConfigFilePath = userProvidedConfigFilePath
             };

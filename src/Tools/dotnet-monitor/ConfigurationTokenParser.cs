@@ -2,10 +2,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.Actions;
+using Microsoft.Diagnostics.Tools.Monitor.CollectionRules.Options.CollectionRuleDefaultsInterfaces;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -75,7 +77,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                 string replacement = originalPropertyValue.Replace(RuntimeIdReference, context.RuntimeId.ToString("D"), StringComparison.Ordinal);
                 replacement = replacement.Replace(ProcessIdReference, context.ProcessId.ToString(CultureInfo.InvariantCulture), StringComparison.Ordinal);
                 replacement = replacement.Replace(ProcessNameReference, context.ProcessName, StringComparison.Ordinal);
-                replacement = replacement.Replace(CommandLineReference, context.CommandLine, StringComparison.Ordinal);
+                string commandLine = IsArtifactNameProperty(settings, propertyInfo) ?
+                    GetFileName(context.CommandLine) :
+                    context.CommandLine;
+                replacement = replacement.Replace(CommandLineReference, commandLine, StringComparison.Ordinal);
                 replacement = replacement.Replace(HostNameReference, context.MonitorHostName, StringComparison.Ordinal);
                 replacement = replacement.Replace(UnixTimeReference, context.Timestamp.ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture), StringComparison.Ordinal);
 
@@ -127,5 +132,35 @@ namespace Microsoft.Diagnostics.Tools.Monitor
 
         private static string CreateTokenReference(string category, string token) =>
             FormattableString.Invariant($"{SubstitutionPrefix}{category}{Separator}{token}{SubstitutionSuffix}");
+
+        private static string GetFileName(string path)
+        {
+            string fileName = Path.GetFileName(
+                path.Replace('\\', Path.DirectorySeparatorChar)
+                    .Replace('/', Path.DirectorySeparatorChar));
+
+            if (fileName.Length >= 2 &&
+                IsAsciiLetter(fileName[0]) &&
+                fileName[1] == ':')
+            {
+                fileName = fileName.Substring(2);
+            }
+
+            int streamSeparatorIndex = fileName.IndexOf(':');
+            if (streamSeparatorIndex >= 0)
+            {
+                fileName = fileName.Substring(0, streamSeparatorIndex);
+            }
+
+            return string.IsNullOrEmpty(fileName.TrimEnd(' ', '.')) ? string.Empty : fileName;
+        }
+
+        private static bool IsAsciiLetter(char value) =>
+            (value >= 'A' && value <= 'Z') ||
+            (value >= 'a' && value <= 'z');
+
+        private static bool IsArtifactNameProperty(object? settings, PropertyInfo propertyInfo) =>
+            settings is IEgressProviderProperties &&
+            propertyInfo.Name == nameof(IEgressProviderProperties.ArtifactName);
     }
 }

@@ -156,7 +156,7 @@ In addition to dependencies, the following list of token substitutions are also 
 | `$(Process.RuntimeId)` | The unique identifier of the target process. Note for 3.1 applications, this will be the empty Guid. |
 | `$(Process.ProcessId)` | Process id of the target process. |
 | `$(Process.Name)` | Name of the target process. |
-| `$(Process.CommandLine)` | Command line of the target process. |
+| `$(Process.CommandLine)` | Command line of the target process. When used in `ArtifactName`, only the command line's final path segment is substituted. |
 
 ### Action List Execution
 
