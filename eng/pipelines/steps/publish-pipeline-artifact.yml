@@ -14,6 +14,7 @@ steps:
     inputs:
       targetPath: ${{ parameters.targetPath }}
       artifact: ${{ parameters.artifact }}
+      sbomEnabled: true
 - ${{ else }}:
   - task: PublishPipelineArtifact@1
     displayName: ${{ parameters.displayName }}
