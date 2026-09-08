@@ -54,9 +54,9 @@
       <Uri>https://dev.azure.com/dnceng/internal/_git/dotnet-aspnetcore</Uri>
       <Sha>af22effae4069a5dfb9b0735859de48820104f5b</Sha>
     </Dependency>
-    <Dependency Name="VS.Redist.Common.NetCore.SdkPlaceholder.x64.9.0" Version="9.0.100-rtm.24529.9">
+    <Dependency Name="VS.Redist.Common.NetCore.SdkPlaceholder.x64.9.0" Version="9.0.318-servicing.26421.8">
       <Uri>https://dev.azure.com/dnceng/internal/_git/dotnet-sdk</Uri>
-      <Sha>59db016f11bb27d359336cf37524b863d77e7fea</Sha>
+      <Sha>415ddb56e684aa46a3b2c0231341eb503a1063c7</Sha>
     </Dependency>
     <Dependency Name="VS.Redist.Common.NetCore.SharedFramework.x64.9.0" Version="9.0.0-rtm.24528.9" CoherentParentDependency="VS.Redist.Common.NetCore.SdkPlaceholder.x64.9.0">
       <Uri>https://dev.azure.com/dnceng/internal/_git/dotnet-runtime</Uri>

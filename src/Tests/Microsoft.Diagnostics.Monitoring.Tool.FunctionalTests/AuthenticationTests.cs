@@ -130,10 +130,10 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             _outputHelper.WriteLine("Generating API key.");
 
-            // Set API key via key-per-file
+            // Set API key via reloadable user settings
             RootOptions options = new();
             options.UseApiKey(signingAlgo, Guid.NewGuid(), out string apiKey);
-            toolRunner.WriteKeyPerValueConfiguration(options);
+            await toolRunner.WriteUserSettingsAsync(options);
 
             // Start dotnet-monitor
             await toolRunner.StartAsync();
@@ -152,7 +152,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
 
             // Rotate the API key
             options.UseApiKey(signingAlgo, Guid.NewGuid(), out string apiKey2);
-            toolRunner.WriteKeyPerValueConfiguration(options);
+            await toolRunner.WriteUserSettingsAsync(options);
 
             // Wait for the key rotation to be consumed by dotnet-monitor; detect this
             // by checking for when API returns a 401. Ideally, key rotation would write

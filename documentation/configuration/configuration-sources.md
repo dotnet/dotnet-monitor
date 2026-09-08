@@ -20,6 +20,8 @@
 - Environment variables with `DOTNETMONITOR_` prefix e.g. `DOTNETMONITOR_Urls`
 - Full path to a JSON settings file via the `--configuration-file-path` command line option. First available in .NET Monitor 6.3
 
+When `dotnet monitor` runs with elevated permissions on Windows, it does not read the shared settings sources under `%ProgramData%\dotnet-monitor`. Other configuration sources, including a file explicitly specified with `--configuration-file-path`, are unaffected.
+
 ## Translating configuration between providers
 
 While the rest of this document will showcase configuration examples in a JSON format, the same configuration can be expressed via any of the other configuration sources. For example, the API Key configuration can be expressed via shown below:
