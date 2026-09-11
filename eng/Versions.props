@@ -50,15 +50,15 @@
   -->
   <PropertyGroup Label="Automated">
     <!-- dotnet/diagnostics references -->
-    <MicrosoftDiagnosticsMonitoringVersion>10.0.0-preview.26458.1</MicrosoftDiagnosticsMonitoringVersion>
-    <MicrosoftDiagnosticsMonitoringEventPipeVersion>10.0.0-preview.26458.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
-    <MicrosoftFileFormatsVersion>1.0.745801</MicrosoftFileFormatsVersion>
+    <MicrosoftDiagnosticsMonitoringVersion>10.0.0-preview.26460.1</MicrosoftDiagnosticsMonitoringVersion>
+    <MicrosoftDiagnosticsMonitoringEventPipeVersion>10.0.0-preview.26460.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
+    <MicrosoftFileFormatsVersion>1.0.746001</MicrosoftFileFormatsVersion>
     <!-- dotnet/dotnet references -->
     <MicrosoftAspNetCoreAppRuntimewinx64Version>10.0.0</MicrosoftAspNetCoreAppRuntimewinx64Version>
     <MicrosoftCodeAnalysisNetAnalyzersVersion>10.0.301</MicrosoftCodeAnalysisNetAnalyzersVersion>
-    <MicrosoftDotNetBuildTasksArchivesVersion>10.0.0-beta.26458.15</MicrosoftDotNetBuildTasksArchivesVersion>
-    <MicrosoftDotNetCodeAnalysisVersion>10.0.0-beta.26458.15</MicrosoftDotNetCodeAnalysisVersion>
-    <MicrosoftDotNetXUnitExtensionsVersion>10.0.0-beta.26458.15</MicrosoftDotNetXUnitExtensionsVersion>
+    <MicrosoftDotNetBuildTasksArchivesVersion>10.0.0-beta.26459.2</MicrosoftDotNetBuildTasksArchivesVersion>
+    <MicrosoftDotNetCodeAnalysisVersion>10.0.0-beta.26459.2</MicrosoftDotNetCodeAnalysisVersion>
+    <MicrosoftDotNetXUnitExtensionsVersion>10.0.0-beta.26459.2</MicrosoftDotNetXUnitExtensionsVersion>
     <MicrosoftNETCoreAppRuntimewinx64Version>10.0.0</MicrosoftNETCoreAppRuntimewinx64Version>
     <SystemCommandLineVersion>2.0.0</SystemCommandLineVersion>
     <VSRedistCommonAspNetCoreSharedFrameworkx64100Version>10.0.0-rtm.25523.111</VSRedistCommonAspNetCoreSharedFrameworkx64100Version>
