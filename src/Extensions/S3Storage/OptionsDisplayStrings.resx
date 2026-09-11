@@ -145,6 +145,14 @@
     <value>The AWS SecretAccessKey associated AccessKeyId for IAM user to login</value>
     <comment>The description provided for the SecretAccessKey parameter on S3StorageEgressProviderOptions.</comment>
   </data>
+  <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_SessionToken" xml:space="preserve">
+    <value>The AWS SessionToken associated with temporary (STS-issued) credentials. When set, AccessKeyId and SecretAccessKey must also be set.</value>
+    <comment>The description provided for the SessionToken parameter on S3StorageEgressProviderOptions.</comment>
+  </data>
+  <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_DisablePayloadSigning" xml:space="preserve">
+    <value>Sends request payloads with an UNSIGNED-PAYLOAD signature, suppressing flexible-checksum trailers and response checksum validation. Required by S3-compatible services that do not implement chunked or trailered payloads (for example Cloudflare R2). The endpoint must use HTTPS.</value>
+    <comment>The description provided for the DisablePayloadSigning parameter on S3StorageEgressProviderOptions.</comment>
+  </data>
   <data name="DisplayAttributeDescription_S3StorageEgressProviderOptions_GeneratePreSignedUrl" xml:space="preserve">
     <value>A boolean flag indicates if the return value of egress provider should be a pre-signed URL or only the bucket name and object id of uploaded entry.</value>
     <comment>The description provided for the GeneratePresSignedUrl parameter on S3StorageEgressProviderOptions.</comment>
