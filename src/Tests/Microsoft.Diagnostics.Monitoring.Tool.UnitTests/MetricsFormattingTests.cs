@@ -203,6 +203,82 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             Assert.Equal(FormattableString.Invariant($"{metricName}{metricTags} {payload.Value} {new DateTimeOffset(payload.Timestamp).ToUnixTimeMilliseconds()}"), lines[2]);
         }
 
+        [Fact]
+        public async Task CounterFormat_Test_EscapedTags()
+        {
+            // Canonical escaped form of:
+            //   MeterTags:      "Meter,Key" = "meter=value", "Path" = "C:\temp"
+            //   InstrumentTags: "Empty" = "", "Mixed" = "a,b=c\d"
+            string meterTags = @"Meter\,Key=meter\=value,Path=C:\\temp";
+            string instrumentTags = @"Empty=,Mixed=a\,b\=c\\d";
+
+            CounterMetadata counterInfo = new CounterMetadata(MeterName, InstrumentName, meterTags, instrumentTags, scopeHash: null);
+
+            ICounterPayload payload = new RatePayload(counterInfo, "DisplayName", "", null, Value1, IntervalSeconds, Timestamp);
+
+            MemoryStream stream = await GetMetrics(new() { payload });
+
+            List<string> lines = ReadStream(stream);
+
+            string metricName = $"{MeterName.ToLowerInvariant()}_{payload.CounterMetadata.CounterName}";
+            string metricTags = "{Meter_Key=\"meter=value\", Path=\"C:\\\\temp\", Empty=\"\", Mixed=\"a,b=c\\\\d\"}";
+
+            Assert.Equal(3, lines.Count);
+            Assert.Equal($"{metricName}{metricTags} {payload.Value} {new DateTimeOffset(payload.Timestamp).ToUnixTimeMilliseconds()}", lines[2]);
+        }
+
+        [Fact]
+        public async Task CounterFormat_Test_ValueTagWithoutValue()
+        {
+            CounterMetadata counterInfo = new CounterMetadata(MeterName, InstrumentName, meterTags: null, instrumentTags: null, scopeHash: null);
+
+            ICounterPayload payload = new RatePayload(counterInfo, "DisplayName", "", "Flag", Value1, IntervalSeconds, Timestamp);
+
+            MemoryStream stream = await GetMetrics(new() { payload });
+
+            List<string> lines = ReadStream(stream);
+
+            string metricName = $"{MeterName.ToLowerInvariant()}_{payload.CounterMetadata.CounterName}";
+
+            Assert.Equal(3, lines.Count);
+            Assert.Equal($"{metricName}{{Flag=\"\"}} {payload.Value} {new DateTimeOffset(payload.Timestamp).ToUnixTimeMilliseconds()}", lines[2]);
+        }
+
+        [Fact]
+        public async Task HistogramFormat_Test_EscapedTags()
+        {
+            List<ICounterPayload> payload = new();
+
+            CounterMetadata counterInfo = new CounterMetadata(MeterName, InstrumentName, meterTags: null, instrumentTags: null, scopeHash: null);
+
+            payload.Add(new AggregatePercentilePayload(counterInfo, "DisplayName", string.Empty, @"Route=/a\,b",
+                new Quantile[] { new Quantile(0.5, Value1) },
+                Timestamp));
+
+            using MemoryStream stream = await GetMetrics(payload);
+            List<string> lines = ReadStream(stream);
+
+            string metricName = $"{MeterName.ToLowerInvariant()}_{payload[0].CounterMetadata.CounterName}";
+
+            Assert.Equal(3, lines.Count);
+            Assert.Equal(FormattableString.Invariant($"{metricName}{{Route=\"/a,b\", quantile=\"0.5\"}} {Value1}"), lines[2]);
+        }
+
+        [Fact]
+        public async Task EventCounterFormat_Test_MetadataIsNotUnescaped()
+        {
+            // EventCounters metadata is unescaped and ':'-separated; a '\' in it is a literal.
+            ICounterPayload payload = new EventCounterPayload(Timestamp, "System.Runtime", "cpu-usage", "DisplayName", string.Empty,
+                Value1, CounterType.Metric, IntervalSeconds, IntervalSeconds, @"Path:C:\temp,Key2:Value2");
+
+            MemoryStream stream = await GetMetrics(new() { payload });
+
+            List<string> lines = ReadStream(stream);
+
+            Assert.Equal(3, lines.Count);
+            Assert.Equal($"systemruntime_cpu_usage{{Path=\"C:\\\\temp\", Key2=\"Value2\"}} {payload.Value} {new DateTimeOffset(payload.Timestamp).ToUnixTimeMilliseconds()}", lines[2]);
+        }
+
         private async Task<MemoryStream> GetMetrics(List<ICounterPayload> payloads)
         {
             IMetricsStore metricsStore = new MetricsStore(_logger, MetricCount);

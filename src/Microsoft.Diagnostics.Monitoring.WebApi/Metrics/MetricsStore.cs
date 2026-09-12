@@ -165,10 +165,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
         private static string GetMetricLabels(ICounterPayload metric, double? quantile)
         {
-            string allMetadata = metric.CombineTags();
-
-            char separator = IsMeter(metric) ? '=' : ':';
-            var metadataValues = CounterUtilities.GetMetadata(allMetadata, separator);
+            IDictionary<string, string> metadataValues = CounterTags.GetLabels(metric);
             if (quantile.HasValue)
             {
                 metadataValues.Add("quantile", quantile.Value.ToString(CultureInfo.InvariantCulture));
@@ -181,14 +178,6 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi
 
             return metricLabels;
         }
-
-        //HACK We should make this easier in the base api
-        private static bool IsMeter(ICounterPayload payload) =>
-            payload switch
-            {
-                GaugePayload or PercentilePayload or CounterEndedPayload or RatePayload or AggregatePercentilePayload or UpDownCounterPayload => true,
-                _ => false
-            };
 
         private static async Task WriteMetricHeader(ICounterPayload metricInfo, StreamWriter writer, string metricName)
         {
