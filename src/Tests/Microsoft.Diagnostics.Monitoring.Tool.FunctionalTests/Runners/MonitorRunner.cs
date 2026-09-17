@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
@@ -60,6 +61,9 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
         public bool HasExited => _runner.HasExited;
 
         public int ExitCode => _runner.ExitCode;
+
+        public static bool IsSharedConfigurationSupported =>
+            !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) || !EnvironmentInformation.IsElevated;
 
         /// <summary>
         /// The path to dotnet-monitor.
@@ -213,6 +217,12 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
             _outputHelper.WriteLine("Wrote user settings.");
         }
 
+        public void WriteUserSettings(RootOptions options)
+        {
+            WriteSettingsFile(options, UserSettingsFilePath);
+            _outputHelper.WriteLine("Wrote user settings.");
+        }
+
         public async Task WriteExplicitlySetSettingsFileAsync(RootOptions options)
         {
             await WriteSettingsFileAsync(options, ExplicitlySetSettingsFilePath).ConfigureAwait(false);
@@ -227,10 +237,18 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests.Runners
 
         private static async Task WriteSettingsFileAsync(RootOptions options, string filePath)
         {
-            using FileStream stream = new(filePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
+            using FileStream stream = new(filePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
 
             JsonSerializerOptions serializerOptions = JsonSerializerOptionsFactory.Create(JsonIgnoreCondition.WhenWritingNull);
             await JsonSerializer.SerializeAsync(stream, options, serializerOptions).ConfigureAwait(false);
+        }
+
+        private static void WriteSettingsFile(RootOptions options, string filePath)
+        {
+            using FileStream stream = new(filePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+
+            JsonSerializerOptions serializerOptions = JsonSerializerOptionsFactory.Create(JsonIgnoreCondition.WhenWritingNull);
+            JsonSerializer.Serialize(stream, options, serializerOptions);
         }
     }
 }

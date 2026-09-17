@@ -272,7 +272,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 },
                 configureTool: runner =>
                 {
-                    runner.WriteKeyPerValueConfiguration(new RootOptions()
+                    runner.WriteUserSettings(new RootOptions()
                     {
                         Metrics = new MetricsOptions()
                         {
@@ -344,7 +344,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
                 },
                 configureTool: runner =>
                 {
-                    runner.WriteKeyPerValueConfiguration(new RootOptions()
+                    runner.WriteUserSettings(new RootOptions()
                     {
                         Metrics = new MetricsOptions()
                         {
