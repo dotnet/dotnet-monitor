@@ -276,10 +276,8 @@ extends:
               Write-Host "##vso[task.setvariable variable=ShortReleaseVersion]v$shortVersion"
         - template: /eng/common/templates-official/steps/get-github-app-token.yml@self
           parameters:
-            azureSubscription: dnceng-dotnet-monitor-release-githubapp
-            keyVaultName: EngKeyVault
-            keyName: dotnet-monitor-release-app-key
-            appClientId: Iv23liBv4UYcLCWQNpMz
+            appId: $(dotnet-monitor-release-app-app-id)
+            appPrivateKey: $(dotnet-monitor-release-app-app-private-key)
             installationOwner: $(DRP_GithubOrg)
             outputVariableName: GitHubAppInstallationToken
         - task: PowerShell@2
@@ -290,4 +288,3 @@ extends:
             workingDirectory: $(DRP_RepoRoot)
           env:
             GITHUB_TOKEN: $(GitHubAppInstallationToken)
-
