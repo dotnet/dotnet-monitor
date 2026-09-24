@@ -15,7 +15,21 @@ $buildData = & $PSScriptRoot\GetDarcBuild.ps1 `
     -MaestroApiEndPoint $MaestroApiEndPoint `
     -DarcVersion $DarcVersion
 
-[array]$matchingData = $buildData.assets | Where-Object { $_.name -eq 'dotnet-monitor' }
+[array]$monitorAssets = $buildData.assets | Where-Object { $_.name -eq 'dotnet-monitor' }
+
+if (!$monitorAssets -or $monitorAssets.Length -ne 1) {
+    Write-Error 'Unable to determine target .NET version.'
+}
+
+[int]$targetMajorVersion = ($monitorAssets[0].version -split '\.')[0]
+
+# Starting with .NET 10, the dotnet-monitor asset version matches the staging path.
+# Earlier releases use the merged manifest's product build version for that path.
+[array]$matchingData = if ($targetMajorVersion -ge 10) {
+    $monitorAssets
+} else {
+    $buildData.assets | Where-Object { $_.name -match 'MergedManifest.xml$' -and $_.nonShipping }
+}
 
 if (!$matchingData -or $matchingData.Length -ne 1) {
     Write-Error 'Unable to obtain build version.'
