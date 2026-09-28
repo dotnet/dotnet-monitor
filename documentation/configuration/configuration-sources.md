@@ -12,10 +12,10 @@
   - On \*nix, `$XDG_CONFIG_HOME/dotnet-monitor/settings.json`
     - If `$XDG_CONFIG_HOME` isn't defined, we fall back to ` $HOME/.config/dotnet-monitor/settings.json`
 - Shared settings path
-  - On Windows, `%ProgramData%\dotnet-monitor\settings.json`
+  - On Windows, `%ProgramData%\dotnet-monitor\settings.json` (not loaded when `dotnet monitor` is running elevated)
   - On \*nix, `/etc/dotnet-monitor/settings.json`
 - [Key-per-file](https://docs.microsoft.com/aspnet/core/fundamentals/configuration/#key-per-file-configuration-provider) in the shared settings path
-    - On Windows, `%ProgramData%\dotnet-monitor`
+    - On Windows, `%ProgramData%\dotnet-monitor` (not loaded when `dotnet monitor` is running elevated)
     - On \*nix, `/etc/dotnet-monitor`
 - Environment variables with `DOTNETMONITOR_` prefix e.g. `DOTNETMONITOR_Urls`
 - Full path to a JSON settings file via the `--configuration-file-path` command line option. First available in .NET Monitor 6.3

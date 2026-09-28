@@ -105,7 +105,7 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.FunctionalTests
         /// <summary>
         /// Tests that turning off metrics via key-per-file will have the /metrics route not serve metrics.
         /// </summary>
-        [Fact]
+        [ConditionalFact(typeof(MonitorRunner), nameof(MonitorRunner.IsSharedConfigurationSupported))]
         public async Task DisableMetricsViaKeyPerFileTest()
         {
             await using MonitorCollectRunner toolRunner = new(_outputHelper);

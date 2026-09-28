@@ -196,6 +196,72 @@ namespace Microsoft.Diagnostics.Monitoring.Tool.UnitTests
             }
         }
 
+        [Theory]
+        [InlineData(true, true, false)]
+        [InlineData(true, false, true)]
+        [InlineData(false, true, true)]
+        public void SharedConfigurationElevationTest(bool isWindows, bool isElevated, bool useSharedConfigSources)
+        {
+            const string SharedJsonKey = "SharedJson";
+            const string SharedKeyPerFileKey = "SharedKeyPerFile";
+            const string UserJsonKey = "UserJson";
+            const string UserProvidedJsonKey = "UserProvidedJson";
+
+            using TemporaryDirectory sharedConfigDir = new(_outputHelper);
+            using TemporaryDirectory userConfigDir = new(_outputHelper);
+            using TemporaryDirectory userProvidedConfigDir = new(_outputHelper);
+
+            string userProvidedConfigFullPath = Path.Combine(userProvidedConfigDir.FullName, UserProvidedSettingsFileName);
+
+            File.WriteAllText(
+                Path.Combine(sharedConfigDir.FullName, "settings.json"),
+                JsonSerializer.Serialize(new Dictionary<string, string>
+                {
+                    { SharedJsonKey, SharedJsonKey }
+                }));
+            File.WriteAllText(
+                Path.Combine(sharedConfigDir.FullName, SharedKeyPerFileKey),
+                SharedKeyPerFileKey);
+            File.WriteAllText(
+                Path.Combine(userConfigDir.FullName, "settings.json"),
+                JsonSerializer.Serialize(new Dictionary<string, string>
+                {
+                    { UserJsonKey, UserJsonKey }
+                }));
+            File.WriteAllText(
+                userProvidedConfigFullPath,
+                JsonSerializer.Serialize(new Dictionary<string, string>
+                {
+                    { UserProvidedJsonKey, UserProvidedJsonKey }
+                }));
+
+            HostBuilderSettings settings = HostBuilderSettings.CreateMonitor(
+                urls: null,
+                metricUrls: null,
+                metrics: false,
+                diagnosticPort: null,
+                StartupAuthenticationMode.Deferred,
+                new FileInfo(userProvidedConfigFullPath),
+                isWindows,
+                () => isElevated);
+            settings.SharedConfigDirectory = sharedConfigDir.FullName;
+            settings.UserConfigDirectory = userConfigDir.FullName;
+
+            IHostBuilder builder = HostBuilderHelper.CreateHostBuilder(settings);
+            builder.ReplaceAspnetEnvironment();
+            builder.ReplaceDotnetEnvironment();
+            builder.ReplaceMonitorEnvironment();
+
+            using IHost host = builder.Build();
+            IConfiguration configuration = host.Services.GetRequiredService<IConfiguration>();
+
+            Assert.Equal(useSharedConfigSources, settings.UseSharedConfigSources);
+            Assert.Equal(useSharedConfigSources ? SharedJsonKey : null, configuration[SharedJsonKey]);
+            Assert.Equal(useSharedConfigSources ? SharedKeyPerFileKey : null, configuration[SharedKeyPerFileKey]);
+            Assert.Equal(UserJsonKey, configuration[UserJsonKey]);
+            Assert.Equal(UserProvidedJsonKey, configuration[UserProvidedJsonKey]);
+        }
+
         /// <summary>
         /// Instead of having to explicitly define every expected value, this reuses the individual categories to ensure they
         /// assemble properly when combined.
