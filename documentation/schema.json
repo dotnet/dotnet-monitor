@@ -3000,6 +3000,13 @@
           ],
           "description": "The AWS SecretAccessKey associated AccessKeyId for IAM user to login"
         },
+        "SessionToken": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "The AWS SessionToken associated with temporary (STS-issued) credentials. When set, AccessKeyId and SecretAccessKey must also be set."
+        },
         "AwsProfileName": {
           "type": [
             "null",
@@ -3025,6 +3032,10 @@
         "ForcePathStyle": {
           "type": "boolean",
           "description": "The boolean flag set for AWS connection configuration ForcePathStyle option."
+        },
+        "DisablePayloadSigning": {
+          "type": "boolean",
+          "description": "Sends request payloads with an UNSIGNED-PAYLOAD signature, suppressing flexible-checksum trailers and response checksum validation. Required by S3-compatible services that do not implement chunked or trailered payloads (for example Cloudflare R2). The endpoint must use HTTPS."
         },
         "CopyBufferSize": {
           "type": [
