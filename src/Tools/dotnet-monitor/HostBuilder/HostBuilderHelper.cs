@@ -128,7 +128,7 @@ namespace Microsoft.Diagnostics.Tools.Monitor
                     // are executed. Thus, there is opportunity here to get the Urls option to store it and
                     // clear it so that the initial WebHostOptions does not pick it up during host configuration.
                     aspnetUrls = webBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
-                    webBuilder.UseSetting(WebHostDefaults.ServerUrlsKey, string.Empty);
+                    webBuilder.UseSetting(WebHostDefaults.ServerUrlsKey, null);
 
                     AddressListenResults listenResults = new AddressListenResults();
                     webBuilder.ConfigureServices(services =>
