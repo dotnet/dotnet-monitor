@@ -7,6 +7,7 @@
     <PackageTags>Diagnostic</PackageTags>
     <PackageReleaseNotes>$(Description)</PackageReleaseNotes>
     <ServerGarbageCollection>false</ServerGarbageCollection>
+    <RollForward Condition="'$(RollForward)' == ''">Major</RollForward>
     <OpenApiGenerateDocuments>false</OpenApiGenerateDocuments>
     <Nullable>enable</Nullable>
     <EnableConfigurationBindingGenerator>false</EnableConfigurationBindingGenerator>
