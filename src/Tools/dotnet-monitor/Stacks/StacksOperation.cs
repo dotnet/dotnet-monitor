@@ -82,6 +82,10 @@ namespace Microsoft.Diagnostics.Tools.Monitor.Stacks
 
                 _ = await _pipeline.StartAsync(token);
 
+                // The runtime can acknowledge trace startup before enabling providers. Its diagnostics server
+                // processes commands serially, so this round trip waits for provider activation before sampling.
+                _ = await _pipeline.Client.GetProcessInfoAsync(token);
+
                 await _channel.SendMessage(
                     _endpointInfo,
                     new CommandOnlyProfilerMessage(ProfilerCommand.Callstack),
