@@ -290,3 +290,4 @@ extends:
             workingDirectory: $(DRP_RepoRoot)
           env:
             GITHUB_TOKEN: $(GitHubAppInstallationToken)
+            SYSTEM_ACCESSTOKEN: $(System.AccessToken)
