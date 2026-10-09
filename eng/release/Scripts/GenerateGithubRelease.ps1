@@ -56,7 +56,83 @@ function Get-ReleasedPackages ($manifest)
     return $releasedAssetTable
 }
 
-function Post-GithubRelease($manifest, [string]$releaseBody)
+function Test-GitHubCommit([string] $commit)
+{
+    $headers = @{
+        Authorization = "Bearer $env:GITHUB_TOKEN"
+        Accept = "application/vnd.github+json"
+        "X-GitHub-Api-Version" = "2022-11-28"
+        "User-Agent" = "dotnet-monitor-release"
+    }
+
+    try
+    {
+        Invoke-RestMethod `
+            -Uri "https://api.github.com/repos/$GhOrganization/$GhRepository/commits/$commit" `
+            -Headers $headers `
+            -Method Get | Out-Null
+        return $true
+    }
+    catch
+    {
+        $statusCode = [int]$_.Exception.Response.StatusCode
+        if ($statusCode -eq 404 -or $statusCode -eq 422)
+        {
+            return $false
+        }
+
+        throw
+    }
+}
+
+function Resolve-GitHubCommit($manifest)
+{
+    if (Test-GitHubCommit $manifest.Commit)
+    {
+        return $manifest.Commit
+    }
+
+    if ([string]::IsNullOrWhiteSpace($env:SYSTEM_ACCESSTOKEN))
+    {
+        Write-Error "Manifest commit '$($manifest.Commit)' is not available in GitHub, and SYSTEM_ACCESSTOKEN is unavailable to resolve its public parent."
+        exit 1
+    }
+
+    if ($manifest.RepoUrl -notmatch "^(https://dev\.azure\.com/[^/]+/[^/]+)/_git/([^/]+)$")
+    {
+        Write-Error "Manifest commit '$($manifest.Commit)' is not available in GitHub, and repository '$($manifest.RepoUrl)' is not a supported Azure Repos URL."
+        exit 1
+    }
+
+    $projectUrl = $Matches[1]
+    $repositoryName = [Uri]::EscapeDataString($Matches[2])
+    $commitUri = "$projectUrl/_apis/git/repositories/$repositoryName/commits/$($manifest.Commit)?api-version=7.1"
+
+    try
+    {
+        $internalCommit = Invoke-RestMethod `
+            -Uri $commitUri `
+            -Headers @{ Authorization = "Bearer $env:SYSTEM_ACCESSTOKEN" } `
+            -Method Get
+    }
+    catch
+    {
+        Write-Error "Unable to inspect internal manifest commit '$($manifest.Commit)': $_"
+        exit 1
+    }
+
+    $publicParents = @($internalCommit.parents | Where-Object { Test-GitHubCommit $_ })
+    if ($publicParents.Count -ne 1)
+    {
+        Write-Error "Expected exactly one GitHub parent for internal manifest commit '$($manifest.Commit)', but found $($publicParents.Count)."
+        exit 1
+    }
+
+    Write-Host "Resolved internal manifest commit '$($manifest.Commit)' to GitHub commit '$($publicParents[0])'."
+    return $publicParents[0]
+}
+
+function Post-GithubRelease($manifest, [string]$releaseBody, [string]$targetCommit)
 {
     $extractionPath = New-TemporaryFile | % { Remove-Item $_; New-Item -ItemType Directory -Path $_ }
     $zipPath = Join-Path $extractionPath "ghcli.zip"
@@ -108,7 +184,7 @@ function Post-GithubRelease($manifest, [string]$releaseBody)
         --repo "`"$GhOrganization/$GhRepository`"" `
         --title "`"Dotnet-Monitor Release - $TagName`"" `
         --notes-file "`"$releaseNotes`"" `
-        --target $manifest.Commit `
+        --target $targetCommit `
         ($extraParameters -join ' ')
 
     $exitCode = $LASTEXITCODE
@@ -149,6 +225,8 @@ if ($manifestSize -gt 500)
 $manifestJson = Get-Content -Raw -Path $ManifestPath | ConvertFrom-Json
 $releaseNotesText = Get-ReleaseNotes
 $releaseNotesText += Get-ReleasedPackages $manifestJson
+$targetCommit = Resolve-GitHubCommit $manifestJson
 
 Post-GithubRelease -manifest $manifestJson `
                 -releaseBody $releaseNotesText `
+                -targetCommit $targetCommit `
