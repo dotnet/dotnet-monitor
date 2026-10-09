@@ -138,8 +138,10 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 [Description("The egress provider to which the dump is saved.")]
                 string? egressProvider = null,
                 [Description("An optional set of comma-separated identifiers users can include to make an operation easier to identify.")]
-                string? tags = null) =>
-                    new DiagController(context, logger).CaptureDump(pid, uid, name, type?.Value ?? Models.DumpType.WithHeap, egressProvider, tags))
+                string? tags = null,
+                [Description("An optional file name for the dump. Must be a plain file name without directory components. If not specified, a timestamped name is generated.")]
+                string? artifactName = null) =>
+                    new DiagController(context, logger).CaptureDump(pid, uid, name, type?.Value ?? Models.DumpType.WithHeap, egressProvider, tags, artifactName))
                 .WithName(nameof(CaptureDump))
                 .RequireDiagControllerCommon()
                 .Produces<ProblemDetails>(StatusCodes.Status429TooManyRequests)
@@ -483,7 +485,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             string? name,
             Models.DumpType type,
             string? egressProvider,
-            string? tags)
+            string? tags,
+            string? artifactName = null)
         {
             ProcessKey? processKey = Utilities.GetProcessKey(pid, uid, name);
 
@@ -493,7 +496,8 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                     egressProvider,
                     _dumpOperationFactory.Create(processInfo.EndpointInfo, type),
                     processInfo,
-                    tags),
+                    tags,
+                    artifactName: artifactName),
                 processKey,
                 Utilities.ArtifactType_Dump);
         }

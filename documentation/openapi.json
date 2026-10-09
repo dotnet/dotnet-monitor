@@ -205,6 +205,14 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "artifactName",
+            "in": "query",
+            "description": "An optional file name for the dump. Must be a plain file name without directory components. If not specified, a timestamped name is generated.",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
