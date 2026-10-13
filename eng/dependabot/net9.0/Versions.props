@@ -12,7 +12,7 @@
     <!-- Microsoft.Extensions.Logging.Console -->
     <MicrosoftExtensionsLoggingConsole90Version>9.0.20</MicrosoftExtensionsLoggingConsole90Version>
     <!-- Microsoft.NETCore.App -->
-    <MicrosoftNETCoreApp90Version>9.0.20</MicrosoftNETCoreApp90Version>
+    <MicrosoftNETCoreApp90Version>9.0.21</MicrosoftNETCoreApp90Version>
     <!-- System.Security.Cryptography.Xml -->
     <SystemSecurityCryptographyXml90Version>9.0.20</SystemSecurityCryptographyXml90Version>
     <!-- System.Text.Json -->
