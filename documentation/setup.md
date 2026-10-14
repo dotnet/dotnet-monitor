@@ -9,6 +9,10 @@
 
 The `dotnet monitor` global tool requires a .NET 3.1 or newer SDK installed as a pre-requisite. If you do not have a new enough SDK, you can install a new one from the [Download .NET webpage](https://dotnet.microsoft.com/download).
 
+`dotnet monitor` uses `Major` roll-forward: it prefers its targeted runtime when available and falls back to a newer major version when that runtime is absent. Both the .NET and ASP.NET Core runtimes must be installed.
+
+To opt in to selecting a preview runtime, set the `DOTNET_ROLL_FORWARD_TO_PRERELEASE` environment variable to `1`.
+
 You can download the latest version using the following command:
 
 ```cmd
