@@ -131,6 +131,12 @@
   <data name="ErrorMessage_HttpOperationFailed" xml:space="preserve">
     <value>HTTP request failed with status code: '{0}'</value>
   </data>
+  <data name="ErrorMessage_InvalidArtifactName" xml:space="preserve">
+    <value>The artifact name '{0}' is not valid. It must be a plain file name without directory separators, drive or stream specifiers, or invalid characters.</value>
+    <comment>Gets the format string for rejecting an invalid artifact name.
+1 Format Parameter:
+0. artifactName: The artifact name that was rejected.</comment>
+  </data>
   <data name="ErrorMessage_InvalidMetricCount" xml:space="preserve">
     <value>Invalid metric count.</value>
     <comment>Gets a string similar to "Invalid metric count.".</comment>
