@@ -9,6 +9,7 @@
     <MicrosoftIdentityWebVersion>4.10.0</MicrosoftIdentityWebVersion>
     <MicrosoftOpenApiVersion>2.7.5</MicrosoftOpenApiVersion>
     <SystemPrivateUriVersion>4.3.2</SystemPrivateUriVersion>
+    <SystemSecurityCryptographyPkcsVersion>10.0.13</SystemSecurityCryptographyPkcsVersion>
     <SystemSecurityPrincipalWindowsVersion>5.0.0</SystemSecurityPrincipalWindowsVersion>
 
     <!-- Third-party references -->
