@@ -94,6 +94,7 @@
     <MicrosoftExtensionsLoggingVersion>$(MicrosoftExtensionsLogging80Version)</MicrosoftExtensionsLoggingVersion>
     <MicrosoftExtensionsLoggingAbstractionsVersion>$(MicrosoftExtensionsLoggingAbstractions100Version)</MicrosoftExtensionsLoggingAbstractionsVersion>
     <MicrosoftExtensionsLoggingConsoleVersion>$(MicrosoftExtensionsLoggingConsole80Version)</MicrosoftExtensionsLoggingConsoleVersion>
+    <SystemSecurityCryptographyPkcsVersion>$(SystemSecurityCryptographyPkcs80Version)</SystemSecurityCryptographyPkcsVersion>
     <SystemSecurityCryptographyXmlVersion>$(SystemSecurityCryptographyXml80Version)</SystemSecurityCryptographyXmlVersion>
     <SystemTextJsonVersion>$(SystemTextJson100Version)</SystemTextJsonVersion>
   </PropertyGroup>
@@ -108,6 +109,7 @@
     <MicrosoftExtensionsLoggingVersion>$(MicrosoftExtensionsLogging90Version)</MicrosoftExtensionsLoggingVersion>
     <MicrosoftExtensionsLoggingAbstractionsVersion>$(MicrosoftExtensionsLoggingAbstractions100Version)</MicrosoftExtensionsLoggingAbstractionsVersion>
     <MicrosoftExtensionsLoggingConsoleVersion>$(MicrosoftExtensionsLoggingConsole90Version)</MicrosoftExtensionsLoggingConsoleVersion>
+    <SystemSecurityCryptographyPkcsVersion>$(SystemSecurityCryptographyPkcs90Version)</SystemSecurityCryptographyPkcsVersion>
     <SystemSecurityCryptographyXmlVersion>$(SystemSecurityCryptographyXml90Version)</SystemSecurityCryptographyXmlVersion>
     <SystemTextJsonVersion>$(SystemTextJson100Version)</SystemTextJsonVersion>
   </PropertyGroup>

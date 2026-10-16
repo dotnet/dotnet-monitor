@@ -13,6 +13,8 @@
     <MicrosoftExtensionsLoggingConsole80Version>8.0.1</MicrosoftExtensionsLoggingConsole80Version>
     <!-- Microsoft.NETCore.App -->
     <MicrosoftNETCoreApp80Version>8.0.32</MicrosoftNETCoreApp80Version>
+    <!-- System.Security.Cryptography.Pkcs -->
+    <SystemSecurityCryptographyPkcs80Version>8.0.2</SystemSecurityCryptographyPkcs80Version>
     <!-- System.Security.Cryptography.Xml -->
     <SystemSecurityCryptographyXml80Version>8.0.5</SystemSecurityCryptographyXml80Version>
     <!-- System.Text.Json -->
