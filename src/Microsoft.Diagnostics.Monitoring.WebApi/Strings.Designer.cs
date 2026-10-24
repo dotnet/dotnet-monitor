@@ -97,6 +97,15 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The artifact name &apos;{0}&apos; is not valid. It must be a plain file name without directory separators, drive or stream specifiers, or invalid characters..
+        /// </summary>
+        internal static string ErrorMessage_InvalidArtifactName {
+            get {
+                return ResourceManager.GetString("ErrorMessage_InvalidArtifactName", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Invalid metric count..
         /// </summary>
         internal static string ErrorMessage_InvalidMetricCount {

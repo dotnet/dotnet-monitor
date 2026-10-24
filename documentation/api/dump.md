@@ -7,7 +7,7 @@ Captures a managed dump of a specified process without using a debugger.
 ## HTTP Route
 
 ```http
-GET /dump?pid={pid}&uid={uid}&name={name}&type={type}&egressProvider={egressProvider}&tags={tags} HTTP/1.1
+GET /dump?pid={pid}&uid={uid}&name={name}&type={type}&egressProvider={egressProvider}&tags={tags}&artifactName={artifactName} HTTP/1.1
 ```
 
 > [!NOTE]
@@ -27,6 +27,7 @@ The default host address for these routes is `https://localhost:52323`. This rou
 | `type` | query | false | [DumpType](definitions.md#dumptype) | The type of dump to capture. Default value is `WithHeap` |
 | `egressProvider` | query | false | string | If specified, uses the named egress provider for egressing the collected dump. When not specified, the dump is written to the HTTP response stream. See [Egress Providers](../egress.md) for more details. |
 | `tags` | query | false | string | (7.1+) A comma-separated list of user-readable identifiers for the operation. |
+| `artifactName` | query | false | string | The file name of the dump. When written to the HTTP response stream, this is the file name in the `Content-Disposition` header; when an egress provider is specified, this is the name of the egressed artifact. Must be a plain file name: directory separators, drive or stream specifiers (`:`), relative segments (`.`, `..`), and invalid file name characters are rejected with 400 Bad Request. When not specified, a timestamped name is generated (`dump_<timestamp>.dmp` on Windows, `core_<timestamp>` otherwise). |
 
 See [ProcessIdentifier](definitions.md#processidentifier) for more details about the `pid`, `uid`, and `name` parameters.
 
