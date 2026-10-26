@@ -2,22 +2,22 @@
   <!-- Import references updated by Dependabot. -->
   <PropertyGroup>
     <!-- Microsoft.AspNetCore.Authentication.Negotiate -->
-    <MicrosoftAspNetCoreAuthenticationNegotiate90Version>9.0.21</MicrosoftAspNetCoreAuthenticationNegotiate90Version>
+    <MicrosoftAspNetCoreAuthenticationNegotiate90Version>9.0.22</MicrosoftAspNetCoreAuthenticationNegotiate90Version>
     <!-- Microsoft.Extensions.Configuration.Abstractions -->
-    <MicrosoftExtensionsConfigurationAbstractions90Version>9.0.21</MicrosoftExtensionsConfigurationAbstractions90Version>
+    <MicrosoftExtensionsConfigurationAbstractions90Version>9.0.22</MicrosoftExtensionsConfigurationAbstractions90Version>
     <!-- Microsoft.Extensions.Logging -->
-    <MicrosoftExtensionsLogging90Version>9.0.21</MicrosoftExtensionsLogging90Version>
+    <MicrosoftExtensionsLogging90Version>9.0.22</MicrosoftExtensionsLogging90Version>
     <!-- Microsoft.Extensions.Logging.Abstractions -->
-    <MicrosoftExtensionsLoggingAbstractions90Version>9.0.21</MicrosoftExtensionsLoggingAbstractions90Version>
+    <MicrosoftExtensionsLoggingAbstractions90Version>9.0.22</MicrosoftExtensionsLoggingAbstractions90Version>
     <!-- Microsoft.Extensions.Logging.Console -->
-    <MicrosoftExtensionsLoggingConsole90Version>9.0.21</MicrosoftExtensionsLoggingConsole90Version>
+    <MicrosoftExtensionsLoggingConsole90Version>9.0.22</MicrosoftExtensionsLoggingConsole90Version>
     <!-- Microsoft.NETCore.App -->
     <MicrosoftNETCoreApp90Version>9.0.21</MicrosoftNETCoreApp90Version>
     <!-- System.Security.Cryptography.Pkcs -->
-    <SystemSecurityCryptographyPkcs90Version>9.0.21</SystemSecurityCryptographyPkcs90Version>
+    <SystemSecurityCryptographyPkcs90Version>9.0.22</SystemSecurityCryptographyPkcs90Version>
     <!-- System.Security.Cryptography.Xml -->
-    <SystemSecurityCryptographyXml90Version>9.0.21</SystemSecurityCryptographyXml90Version>
+    <SystemSecurityCryptographyXml90Version>9.0.22</SystemSecurityCryptographyXml90Version>
     <!-- System.Text.Json -->
-    <SystemTextJson90Version>9.0.21</SystemTextJson90Version>
+    <SystemTextJson90Version>9.0.22</SystemTextJson90Version>
   </PropertyGroup>
 </Project>
