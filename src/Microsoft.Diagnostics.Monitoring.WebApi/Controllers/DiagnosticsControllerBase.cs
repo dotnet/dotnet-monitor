@@ -83,8 +83,11 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
             IArtifactOperation operation,
             IProcessInfo processInfo,
             string? tags,
-            bool asAttachment = true)
+            bool asAttachment = true,
+            string? artifactName = null)
         {
+            Utilities.ValidateArtifactName(artifactName);
+
             KeyValueLogScope scope = Utilities.CreateArtifactScope(artifactType, processInfo.EndpointInfo);
 
             if (string.IsNullOrEmpty(providerName))
@@ -92,7 +95,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 await RegisterCurrentHttpResponseAsOperation(processInfo, artifactType, tags, operation);
                 return new OutputStreamResult(
                     operation,
-                    asAttachment ? operation.GenerateFileName() : null,
+                    asAttachment ? artifactName ?? operation.GenerateFileName() : null,
                     scope);
             }
             else
@@ -100,7 +103,7 @@ namespace Microsoft.Diagnostics.Monitoring.WebApi.Controllers
                 return await SendToEgress(new EgressOperation(
                     operation,
                     providerName,
-                    default, // Use default artifact name
+                    artifactName, // Null uses default artifact name
                     processInfo,
                     scope,
                     tags),
