@@ -279,7 +279,7 @@ extends:
             azureSubscription: dnceng-dotnet-monitor-release-githubapp
             keyVaultName: EngKeyVault
             appIdSecretName: dotnet-monitor-release-app-app-id
-            appPrivateKeySecretName: dotnet-monitor-release-app-app-private-key
+            keyName: dotnet-monitor-release-app-key
             installationOwner: $(DRP_GithubOrg)
             outputVariableName: GitHubAppInstallationToken
         - task: PowerShell@2
