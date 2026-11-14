@@ -50,9 +50,9 @@
   -->
   <PropertyGroup Label="Automated">
     <!-- dotnet/diagnostics references -->
-    <MicrosoftDiagnosticsMonitoringVersion>11.0.0-preview.26562.1</MicrosoftDiagnosticsMonitoringVersion>
-    <MicrosoftDiagnosticsMonitoringEventPipeVersion>11.0.0-preview.26562.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
-    <MicrosoftFileFormatsVersion>1.0.756201</MicrosoftFileFormatsVersion>
+    <MicrosoftDiagnosticsMonitoringVersion>11.0.0-preview.26563.1</MicrosoftDiagnosticsMonitoringVersion>
+    <MicrosoftDiagnosticsMonitoringEventPipeVersion>11.0.0-preview.26563.1</MicrosoftDiagnosticsMonitoringEventPipeVersion>
+    <MicrosoftFileFormatsVersion>1.0.756301</MicrosoftFileFormatsVersion>
     <!-- dotnet/dotnet references -->
     <MicrosoftAspNetCoreAppRuntimewinx64Version>10.0.0</MicrosoftAspNetCoreAppRuntimewinx64Version>
     <MicrosoftCodeAnalysisNetAnalyzersVersion>10.0.402</MicrosoftCodeAnalysisNetAnalyzersVersion>
