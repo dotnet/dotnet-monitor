@@ -40,7 +40,7 @@ extends:
       helix_linux_amd64:
         image: mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-26.04-helix-amd64
       helix_linux_musl_amd64:
-        image: mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.23-helix-amd64
+        image: mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.24-helix-amd64
 
     pool: ${{ parameters.pool }}
 
