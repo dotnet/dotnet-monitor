@@ -58,11 +58,11 @@
   <!-- Linux gnu libc queues -->
   <ItemGroup Condition="$([MSBuild]::IsOSPlatform(Linux)) and !$(PackageRid.Contains(musl))">
     <!-- linux-arm64 -->
-    <HelixAvailableTargetQueue Include="azurelinux.4.arm64$(QueueSuffix)"
+    <HelixAvailableTargetQueue Include="azurelinux.4.arm64$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:azurelinux-4.0-helix-arm64v8"
                                Condition="'$(HelixArchitecture)' == 'arm64'">
       <TestRunName>Azure Linux 4 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
     </HelixAvailableTargetQueue>
-    <HelixAvailableTargetQueue Include="ubuntu.2604.armarch$(QueueSuffix)"
+    <HelixAvailableTargetQueue Include="azurelinux.4.arm64$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-26.04-helix-arm64v8"
                                Condition="'$(HelixArchitecture)' == 'arm64'">
       <TestRunName>Ubuntu 26.04 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
     </HelixAvailableTargetQueue>
@@ -71,11 +71,11 @@
       <TestRunName>Debian 13 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
     </HelixAvailableTargetQueue>
     <!-- linux-x64 -->
-    <HelixAvailableTargetQueue Include="azurelinux.4.amd64$(QueueSuffix)"
+    <HelixAvailableTargetQueue Include="azurelinux.4.amd64$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:azurelinux-4.0-helix-amd64"
                                Condition="'$(HelixArchitecture)' == 'x64'">
       <TestRunName>Azure Linux 4 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
     </HelixAvailableTargetQueue>
-    <HelixAvailableTargetQueue Include="ubuntu.2604.amd64$(QueueSuffix)"
+    <HelixAvailableTargetQueue Include="azurelinux.4.amd64$(QueueSuffix)@mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-26.04-helix-amd64"
                                Condition="'$(HelixArchitecture)' == 'x64'">
       <TestRunName>Ubuntu 26.04 $(HelixArchitecture) $(HelixConfiguration)</TestRunName>
     </HelixAvailableTargetQueue>
